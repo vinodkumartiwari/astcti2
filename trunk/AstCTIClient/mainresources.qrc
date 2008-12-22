@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/res" >
+        <file>res/agt_forward.png</file>
+        <file>res/agt_pause-queue.png</file>
+        <file>res/cancel.png</file>
+        <file>res/configure.png</file>
+        <file>res/documentinfo.png</file>
+        <file>res/editdelete.png</file>
+        <file>res/exit.png</file>
+        <file>res/greenled.png</file>
+        <file>res/redled.png</file>
+        <file>res/stop.png</file>
+        <file>res/yellowled.png</file>
+    </qresource>
+</RCC>
