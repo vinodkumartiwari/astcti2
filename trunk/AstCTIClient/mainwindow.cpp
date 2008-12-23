@@ -6,7 +6,8 @@ static int LINKS_TIMEOUT = 30;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent,Qt::Dialog) , ui(new Ui::MainWindowClass)
 {
-
+		
+		// Append links to the link label
     links.append("<a href=\"http://code.google.com/p/astcti2\">Asterisk CTI</a>");
     links.append("<a href=\"http://www.advert.it\">Advert SRL</a>");
     links.append("<a href=\"http://centralino-voip.brunosalzano.com\">Centralino Voip</a>");
