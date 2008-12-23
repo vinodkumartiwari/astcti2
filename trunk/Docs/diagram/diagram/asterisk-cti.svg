@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created by diasvg.py -->
+<svg width="49.824cm" height="39.282cm" viewBox="-9.164 -11.950 40.660 27.332"
+ xmlns="http://www.w3.org/2000/svg"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect x="19.100" y="6.350" width="9.100" height="2.250" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="19.100" y="6.350" width="9.100" height="2.250" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="21.431" y="7.617"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Asterisk Server</text>
+<rect x="19.150" y="4.400" width="9.000" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="19.150" y="4.400" width="9.000" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="21.381" y="5.492"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+IAX / SIP Stacks</text>
+<rect x="7.800" y="13.450" width="6.800" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="7.800" y="13.450" width="6.800" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="8.513" y="14.542"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+AsteriskCTI Server</text>
+<rect x="19.064" y="8.600" width="4.973" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="19.064" y="8.600" width="4.973" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="19.614" y="9.692"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+AMI Interface</text>
+<path stroke="none" fill="#FFFFFF" stroke-width="0.100" d="M -4.096,11.402 C -3.378,10.801 -3.018,10.600 -2.300,10.600 C -1.582,10.600 -1.222,10.801 -0.504,11.402 L -0.504,14.612 C -1.222,15.214 -1.582,15.414 -2.300,15.414 C -3.018,15.414 -3.378,15.214 -4.096,14.612 L -4.096,11.402 "/>
+<path stroke="#000000" fill="none" stroke-width="0.100"  d="M -4.096,11.402 C -3.378,10.801 -3.018,10.600 -2.300,10.600 C -1.582,10.600 -1.222,10.801 -0.504,11.402 L -0.504,14.612 C -1.222,15.214 -1.582,15.414 -2.300,15.414 C -3.018,15.414 -3.378,15.214 -4.096,14.612 L -4.096,11.402 "/>
+<path stroke="#000000" fill="none" stroke-width="0.100"  d="M -4.096,11.402 C -3.378,12.004 -3.018,12.205 -2.300,12.205 C -1.582,12.205 -1.222,12.004 -0.504,11.402 "/>
+<text x="-3.693" y="13.151"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Database</text>
+<text x="-3.329" y="13.951"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Config.</text>
+<rect x="-2.280" y="17.400" width="6.600" height="3.400" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="-2.280" y="17.400" width="6.600" height="3.400" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="-1.667" y="18.843"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+AsteriskCTI Server</text>
+<text x="-0.812" y="19.643"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Configurator</text>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="14.600,14.400 21.550,14.400 21.550,10.987 "/>
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="21.550,10.612 21.800,11.112 21.550,10.987 21.300,11.112 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="21.550,10.612 21.800,11.112 21.550,10.987 21.300,11.112 "/>
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="9.684,17.412 13.150,17.412 13.150,20.788 9.299,20.788 9.299,17.750 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="9.684,17.412 13.150,17.412 13.150,20.788 9.299,20.788 9.299,17.750 "/>
+<text x="10.707" y="18.527"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+XML</text>
+<text x="10.832" y="19.327"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+File</text>
+<text x="10.292" y="20.127"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Config.</text>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="4.320,19.100 4.320,19.100 8.812,19.100 "/>
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="9.187,19.100 8.687,19.350 8.812,19.100 8.687,18.850 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="9.187,19.100 8.687,19.350 8.812,19.100 8.687,18.850 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="11.200,15.350 11.200,16.381 11.224,16.381 11.224,16.925 "/>
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="11.224,17.300 10.974,16.800 11.224,16.925 11.474,16.800 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="11.224,17.300 10.974,16.800 11.224,16.925 11.474,16.800 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="1.020,17.400 1.020,16.407 -2.300,16.407 -2.300,15.901 "/>
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="-2.300,15.526 -2.050,16.026 -2.300,15.901 -2.550,16.026 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="-2.300,15.526 -2.050,16.026 -2.300,15.901 -2.550,16.026 "/>
+<text x="7.900" y="8.050"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+The AsteriskCTI Server</text>
+<text x="7.900" y="8.850"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+use AMI Interface to read</text>
+<text x="7.900" y="9.650"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+asterisk&apos; events and issue</text>
+<text x="7.900" y="10.450"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+commands to asterisk server.</text>
+<text x="7.900" y="11.250"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+It should be able to intercept</text>
+<text x="7.900" y="12.050"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+incoming calls for clients on</text>
+<text x="7.900" y="12.850"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+queues and notify the clients. </text>
+<text x="-1.080" y="21.450"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Asterisk CTI Configurator</text>
+<text x="-1.080" y="22.250"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+uses an external database </text>
+<text x="-1.080" y="23.050"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+storage engine to manage</text>
+<text x="-1.080" y="23.850"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+the client configurations</text>
+<text x="-1.080" y="24.650"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+It should be able to write</text>
+<text x="-1.080" y="25.450"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+an XML configuration for</text>
+<text x="-1.080" y="26.250"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+AsteriskCTI server persistency</text>
+<text x="9.770" y="22.100"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+XML Configuration is</text>
+<text x="9.770" y="22.900"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+for persistency: the AsteriskCTI</text>
+<text x="9.770" y="23.700"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+server don&apos;t need to have</text>
+<text x="9.770" y="24.500"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+database connections to start</text>
+<text x="9.770" y="25.300"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+or work. It can be useful to implement</text>
+<text x="9.770" y="26.100"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+a file watcher to check when </text>
+<text x="9.770" y="26.900"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+configuratio changes happens</text>
+<text x="22.320" y="11.450"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+AMI Interface is well </text>
+<text x="22.320" y="12.250"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+documented onVoip-Info</text>
+<text x="22.320" y="13.050"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+http://www.voip-info.org/wiki/view/Asterisk+manager+API</text>
+<rect x="31.610" y="-11.900" width="9.000" height="11.230" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="31.610" y="-11.900" width="9.000" height="11.230" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="37.685" y="-6.142"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Queue n</text>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="23.570,4.200 23.570,1.820 15.290,1.820 15.290,-0.073 "/>
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="15.290,-0.448 15.540,0.052 15.290,-0.073 15.040,0.052 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="15.290,-0.448 15.540,0.052 15.290,-0.073 15.040,0.052 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="23.650,4.400 23.650,1.800 25.790,1.800 25.790,-0.025 "/>
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="25.790,-0.400 26.040,0.100 25.790,-0.025 25.540,0.100 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="25.790,-0.400 26.040,0.100 25.790,-0.025 25.540,0.100 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="23.650,4.400 23.650,1.800 36.110,1.800 36.110,-0.183 "/>
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="36.110,-0.558 36.360,-0.058 36.110,-0.183 35.860,-0.058 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="36.110,-0.558 36.360,-0.058 36.110,-0.183 35.860,-0.058 "/>
+<rect x="31.830" y="-11.380" width="4.580" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="31.830" y="-11.380" width="4.580" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="33.019" y="-10.287"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+SIP/200</text>
+<rect x="31.890" y="-9.160" width="4.580" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="31.890" y="-9.160" width="4.580" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="33.079" y="-8.067"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+SIP/204</text>
+<rect x="31.910" y="-6.970" width="4.580" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="31.910" y="-6.970" width="4.580" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="33.099" y="-5.877"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+SIP/205</text>
+<rect x="-0.067" y="-8.100" width="4.375" height="3.500" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="-0.067" y="-8.100" width="4.375" height="3.500" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="0.483" y="-6.607"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+AsteriskCTI</text>
+<text x="1.275" y="-5.807"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Client</text>
+<line x1="4.370" y1="-6.550" x2="10.562" y2="-9.218" stroke="#000000" stroke-width="0.100" />
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="10.906,-9.366 10.546,-8.938 10.562,-9.218 10.348,-9.398 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="10.906,-9.366 10.546,-8.938 10.562,-9.218 10.348,-9.398 "/>
+<line x1="4.358" y1="-6.693" x2="10.460" y2="-7.628" stroke="#000000" stroke-width="0.100" />
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="10.831,-7.685 10.374,-7.362 10.460,-7.628 10.298,-7.856 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="10.831,-7.685 10.374,-7.362 10.460,-7.628 10.298,-7.856 "/>
+<line x1="4.520" y1="-6.500" x2="10.427" y2="-6.006" stroke="#000000" stroke-width="0.100" />
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="10.801,-5.975 10.282,-5.767 10.427,-6.006 10.323,-6.266 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="10.801,-5.975 10.282,-5.767 10.427,-6.006 10.323,-6.266 "/>
+<line x1="4.357" y1="-6.559" x2="21.125" y2="-8.125" stroke="#000000" stroke-width="0.100" />
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="21.499,-8.160 21.024,-7.864 21.125,-8.125 20.978,-8.362 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="21.499,-8.160 21.024,-7.864 21.125,-8.125 20.978,-8.362 "/>
+<line x1="4.357" y1="-6.480" x2="31.358" y2="-8.046" stroke="#000000" stroke-width="0.100" />
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="31.732,-8.068 31.247,-7.789 31.358,-8.046 31.218,-8.289 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="31.732,-8.068 31.247,-7.789 31.358,-8.046 31.218,-8.289 "/>
+<line x1="4.420" y1="-6.600" x2="31.374" y2="-6.075" stroke="#000000" stroke-width="0.100" />
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="31.749,-6.068 31.244,-5.828 31.374,-6.075 31.254,-6.327 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="31.749,-6.068 31.244,-5.828 31.374,-6.075 31.254,-6.327 "/>
+<rect x="21.290" y="-11.900" width="9.000" height="11.340" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="21.290" y="-11.900" width="9.000" height="11.340" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="27.550" y="-6.087"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Queue2</text>
+<rect x="21.590" y="-11.460" width="4.580" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="21.590" y="-11.460" width="4.580" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="22.779" y="-10.367"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+SIP/200</text>
+<rect x="21.610" y="-9.120" width="4.580" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="21.610" y="-9.120" width="4.580" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="22.799" y="-8.027"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+SIP/203</text>
+<rect x="10.790" y="-11.700" width="9.000" height="11.140" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="10.790" y="-11.700" width="9.000" height="11.140" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="17.050" y="-5.987"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Queue1</text>
+<rect x="11.040" y="-11.360" width="4.580" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="11.040" y="-11.360" width="4.580" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="12.229" y="-10.268"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+SIP/200</text>
+<rect x="10.990" y="-9.010" width="4.580" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="10.990" y="-9.010" width="4.580" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="12.179" y="-7.917"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+SIP/201</text>
+<rect x="10.960" y="-6.720" width="4.580" height="1.900" fill="#FFFFFF" stroke="none" stroke-width="0"/>
+<rect x="10.960" y="-6.720" width="4.580" height="1.900" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="12.149" y="-5.627"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+SIP/202</text>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="2.120,-4.600 2.120,13.925 7.313,13.925 "/>
+<polygon fill="#000000" stroke="none" stroke-width="0.100" points="7.688,13.925 7.188,14.175 7.313,13.925 7.188,13.675 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="7.688,13.925 7.188,14.175 7.313,13.925 7.188,13.675 "/>
+<text x="-9.164" y="-5.250"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+AsteriskCTI Client should</text>
+<text x="-9.164" y="-4.450"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+run on every PC where</text>
+<text x="-9.164" y="-3.650"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+the CTI is needed.</text>
+<text x="-9.164" y="-2.850"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+It connects to AsteriskCTI</text>
+<text x="-9.164" y="-2.050"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+Server and receive configuration</text>
+<text x="-9.164" y="-1.250"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+about it&apos;s extension (SIP/200 for</text>
+<text x="-9.164" y="-0.450"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+example).</text>
+<text x="-9.164" y="0.350"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+When a call on a configured service</text>
+<text x="-9.164" y="1.150"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+arrives (example a call on Queue1</text>
+<text x="-9.164" y="1.950"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+is answered by SIP/200), on</text>
+<text x="-9.164" y="2.750"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+the PC should be triggered the</text>
+<text x="-9.164" y="3.550"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+desired action.</text>
+</svg>
