@@ -71,7 +71,7 @@
   </widget>
   <action name="actionLogin">
    <property name="icon">
-    <iconset>
+    <iconset resource="mainresources.qrc">
      <normaloff>:/res/res/agt_forward.png</normaloff>:/res/res/agt_forward.png</iconset>
    </property>
    <property name="text">
@@ -86,7 +86,7 @@
   </action>
   <action name="actionPause">
    <property name="icon">
-    <iconset>
+    <iconset resource="mainresources.qrc">
      <normaloff>:/res/res/agt_pause-queue.png</normaloff>:/res/res/agt_pause-queue.png</iconset>
    </property>
    <property name="text">
@@ -95,7 +95,7 @@
   </action>
   <action name="actionConfigure">
    <property name="icon">
-    <iconset>
+    <iconset resource="mainresources.qrc">
      <normaloff>:/res/res/configure.png</normaloff>:/res/res/configure.png</iconset>
    </property>
    <property name="text">
@@ -104,7 +104,7 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset>
+    <iconset resource="mainresources.qrc">
      <normaloff>:/res/res/documentinfo.png</normaloff>:/res/res/documentinfo.png</iconset>
    </property>
    <property name="text">
@@ -113,7 +113,7 @@
   </action>
   <action name="actionExit">
    <property name="icon">
-    <iconset>
+    <iconset resource="mainresources.qrc">
      <normaloff>:/res/res/exit.png</normaloff>:/res/res/exit.png</iconset>
    </property>
    <property name="text">
@@ -128,25 +128,10 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
- <connections>
-  <connection>
-   <sender>mainToolBar</sender>
-   <signal>actionTriggered(QAction*)</signal>
-   <receiver>MainWindowClass</receiver>
-   <slot>toolBarActionTriggered(QAction*)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>38</x>
-     <y>21</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>39</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <resources>
+  <include location="mainresources.qrc"/>
+ </resources>
+ <connections/>
  <slots>
   <slot>showDialog()</slot>
   <slot>toolBarActionTriggered(QAction*)</slot>

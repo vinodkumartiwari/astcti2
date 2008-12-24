@@ -6,8 +6,8 @@ static int LINKS_TIMEOUT = 30;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent,Qt::Dialog) , ui(new Ui::MainWindowClass)
 {
-		
-		// Append links to the link label
+
+    // Append links to the link label
     links.append("<a href=\"http://code.google.com/p/astcti2\">Asterisk CTI</a>");
     links.append("<a href=\"http://www.advert.it\">Advert SRL</a>");
     links.append("<a href=\"http://centralino-voip.brunosalzano.com\">Centralino Voip</a>");
@@ -19,14 +19,14 @@ MainWindow::MainWindow(QWidget *parent)
     statusImage = new QIcon(QPixmap(QString::fromUtf8(":/res/res/redled.png")));
     //this->statusBar()->addWidget(statusImage);
 
-    lblCurrentStatus = new QLabel("<b>Not Connected</b>") ;
+    lblCurrentStatus = new QLabel(trUtf8("<b>Not Connected</b>")) ;
     this->statusBar()->addWidget(lblCurrentStatus);
 
 
     lblCurrentTime = new QLabel(QString("00:00:00")) ;
     this->statusBar()->addWidget(lblCurrentTime);
 
-    linkLabel = new QLabel(QString("<a href=\"http://centralino-voip.brunosalzano.com\">Centralino Voip</a>")) ;
+    linkLabel = new QLabel(links.at(0)) ;
     linkLabel->setOpenExternalLinks(true);
 
     linkLabel->setCursor(Qt::PointingHandCursor);
@@ -38,7 +38,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
-
+    connect(ui->actionConfigure, SIGNAL(triggered()), this, SLOT(configure()));
+    connect(ui->actionLogin, SIGNAL(triggered()), this, SLOT(login()));
+    connect(ui->actionPause, SIGNAL(triggered()), this, SLOT(pause()));
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
 
 }
 
@@ -46,6 +49,25 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+ void MainWindow::closeEvent(QCloseEvent *event)
+ {
+     QMessageBox msgBox;
+     msgBox.setText( trUtf8("Confirm application close."));
+     msgBox.setInformativeText( trUtf8("Sure you want to exit?"));
+     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No );
+     msgBox.setDefaultButton(QMessageBox::No);
+     msgBox.setIcon(QMessageBox::Question);
+     int ret = msgBox.exec();
+     switch (ret) {
+         case QMessageBox::Yes:
+             event->accept();
+             return;
+     }
+     event->ignore();
+
+ }
+
 
 void MainWindow::UpdateTimer()
 {
@@ -66,24 +88,26 @@ void MainWindow::UpdateTimer()
     }
 }
 
-void MainWindow::toolBarActionTriggered(QAction* action)
+void MainWindow::about()
 {
-    if (action->text() != "Exit")
-    {
-    QMessageBox msgBox;
-     msgBox.setText(action->text());
+    QMessageBox::about(this, trUtf8("About Application"),
+        trUtf8("The <b>Application</b> is an AsteriskCTI Client based on QT "));
+}
 
-
-     msgBox.setInformativeText("Action triggered");
-     msgBox.setStandardButtons(QMessageBox::Ok);
-     msgBox.setDefaultButton(QMessageBox::Ok);
-     int ret = msgBox.exec();
-    }
+void MainWindow::configure()
+{
+    // does actually nothing
 
 }
 
-void MainWindow::close()
+void MainWindow::login()
 {
-    QApplication::quit();
+    // does actually nothing
+
+}
+
+void MainWindow::pause()
+{
+    // does actually nothing
 
 }
