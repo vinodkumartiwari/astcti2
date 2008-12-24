@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading ui file 'mainwindow.ui'
 **
-** Created: Mon 22. Dec 23:32:56 2008
+** Created: Wed 24. Dec 06:51:51 2008
 **      by: Qt User Interface Compiler version 4.4.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -95,7 +95,6 @@ public:
     mainToolBar->addAction(actionExit);
 
     retranslateUi(MainWindowClass);
-    QObject::connect(mainToolBar, SIGNAL(actionTriggered(QAction*)), MainWindowClass, SLOT(toolBarActionTriggered(QAction*)));
 
     QMetaObject::connectSlotsByName(MainWindowClass);
     } // setupUi

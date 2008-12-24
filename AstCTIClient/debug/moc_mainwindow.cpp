@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'mainwindow.h'
 **
-** Created: Tue 23. Dec 00:14:08 2008
+** Created: Wed 24. Dec 07:06:03 2008
 **      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,21 +23,23 @@ static const uint qt_meta_data_MainWindow[] = {
        1,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   10, // methods
+       5,   10, // methods
        0,    0, // properties
        0,    0, // enums/sets
 
  // slots: signature, parameters, type, tag, flags
       12,   11,   11,   11, 0x0a,
-      45,   11,   11,   11, 0x0a,
-      59,   11,   11,   11, 0x0a,
+      26,   11,   11,   11, 0x0a,
+      38,   11,   11,   11, 0x0a,
+      46,   11,   11,   11, 0x0a,
+      54,   11,   11,   11, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_MainWindow[] = {
-    "MainWindow\0\0toolBarActionTriggered(QAction*)\0"
-    "UpdateTimer()\0close()\0"
+    "MainWindow\0\0UpdateTimer()\0configure()\0"
+    "about()\0login()\0pause()\0"
 };
 
 const QMetaObject MainWindow::staticMetaObject = {
@@ -65,11 +67,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: toolBarActionTriggered((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
-        case 1: UpdateTimer(); break;
-        case 2: close(); break;
+        case 0: UpdateTimer(); break;
+        case 1: configure(); break;
+        case 2: about(); break;
+        case 3: login(); break;
+        case 4: pause(); break;
         }
-        _id -= 3;
+        _id -= 5;
     }
     return _id;
 }

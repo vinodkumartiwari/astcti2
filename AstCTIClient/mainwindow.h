@@ -1,11 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-#include <QMessageBox>
-#include <QTimer>
-#include <QTime>
+#include <QtGui>
 
-#include <QLabel>
-#include <QtGui/QMainWindow>
 
 
 namespace Ui
@@ -26,6 +22,8 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+protected:
+        void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindowClass *ui;
@@ -35,9 +33,11 @@ private:
      QVector<QString> links;
 
 public slots:
-    void toolBarActionTriggered(QAction*);
     void UpdateTimer();
-    void close();
+    void configure();
+    void about();
+    void login();
+    void pause();
 };
 
 #endif // MAINWINDOW_H
