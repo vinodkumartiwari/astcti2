@@ -43,18 +43,18 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    QSettings settings("settings.ini", QSettings::IniFormat );
-
-    settings.beginGroup("Server");
-    writeSetting(&settings, "port", DEFAULT_SERVER_PORT);
-    writeSetting(&settings, "readTimeout" , DEFAULT_READ_TIMEOUT);
-    settings.endGroup();
-
     QAsteriskCTILogger logger;
     QAstCTIConfiguration config;
 
     qDebug("Creating MainServer");
-    logger.writeToLog(LOG_INFO, "Creating MainServer");
+
+
+    logger.writeToLog(LOG_INFO, "Reading Configurations");
+    QSettings settings("settings.ini", QSettings::IniFormat );
+    settings.beginGroup("Server");
+    writeSetting(&settings, "port", DEFAULT_SERVER_PORT);
+    writeSetting(&settings, "readTimeout" , DEFAULT_READ_TIMEOUT);
+    settings.endGroup();
 
     settings.beginGroup("Server");
 
@@ -63,8 +63,9 @@ int main(int argc, char *argv[])
 
     settings.endGroup();
 
-
+    logger.writeToLog(LOG_INFO, "Creating MainServer");
     qDebug() << "MainServer listening on port " <<  config.serverPort;
+
     MainServer server(&config);
     server.listen(QHostAddress::Any,  config.serverPort );
 
