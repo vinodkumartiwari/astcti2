@@ -41,6 +41,7 @@
 
 struct QAstCTIConfiguration
 {
+    bool qDebug;
     quint16 serverPort;
     int readTimeout;
 };
