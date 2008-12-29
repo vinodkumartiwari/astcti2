@@ -11,8 +11,10 @@ CONFIG -= app_bundle
 TEMPLATE = app
 SOURCES += main.cpp \
     mainserver.cpp \
-    clientmanager.cpp
+    clientmanager.cpp \
+    logger.cpp
 HEADERS += mainserver.h \
     clientmanager.h \
     main.h \
-    cticonfig.h
+    cticonfig.h \
+    logger.h

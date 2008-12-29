@@ -7,7 +7,7 @@
 #include <QStringList>
 #include <QDebug>
 #include <QSettings>
-#include "cticonfig.h"
+#include "main.h"
 
 class ClientManager : public QThread
 {

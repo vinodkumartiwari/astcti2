@@ -8,20 +8,23 @@ int main(int argc, char *argv[])
     QSettings settings("settings.ini", QSettings::IniFormat );
 
     settings.beginGroup("Server");
-    writeSetting(&settings, "port", 5000);
-    writeSetting(&settings, "readTimeout" , 15000);
+    writeSetting(&settings, "port", DEFAULT_SERVER_PORT);
+    writeSetting(&settings, "readTimeout" , DEFAULT_READ_TIMEOUT);
     settings.endGroup();
 
-
+    QAsteriskCTILogger logger;
     QAstCTIConfiguration config;
 
     qDebug("Creating MainServer");
+    logger.writeToLog(LOG_INFO, "Creating MainServer");
+
     settings.beginGroup("Server");
 
     config.readTimeout = settings.value("readTimeout").toInt();
     config.serverPort = settings.value("port").toInt();
 
     settings.endGroup();
+
 
     qDebug() << "MainServer listening on port " <<  config.serverPort;
     MainServer server(&config);
