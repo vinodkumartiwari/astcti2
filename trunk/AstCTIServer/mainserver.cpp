@@ -40,20 +40,26 @@
 #include "mainserver.h"
 #include "clientmanager.h"
 
-#include <stdlib.h>
-
-
+/*!
+    Our MainServer derive from QTcpServer
+*/
 MainServer::MainServer(QAstCTIConfiguration *config, QObject *parent)
     : QTcpServer(parent)
 {
+    // Lets set local configuration struct
     this->config = config;
-    qDebug("MainServer initialization");
+    if (config->qDebug) qDebug() << "In MainServer::MainServer constructor";
     // Basic init here
 
 }
 
+/*!
+    Called by QTcpServer when a new connection is avaiable.
+*/
 void MainServer::incomingConnection(int socketDescriptor)
 {
+    if (config->qDebug) qDebug() << "In MainServer::incomingConnection(" << socketDescriptor << ")";
+
     ClientManager *thread = new ClientManager(this->config, socketDescriptor, this);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     thread->start();

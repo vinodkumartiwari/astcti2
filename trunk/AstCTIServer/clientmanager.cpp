@@ -39,69 +39,110 @@
 #include "clientmanager.h"
 
 
-ClientManager::ClientManager(QAstCTIConfiguration *config, int socketDescriptor, QObject *parent) :
-        QThread(parent), socketDescriptor(socketDescriptor)
+ClientManager::ClientManager(QAstCTIConfiguration *config,
+                             int socketDescriptor,
+                             QObject *parent) :
+                QThread(parent),
+                socketDescriptor(socketDescriptor)
 {
+    // Lets copy our configuration struct
     this->config = config;
-    qDebug() << "Read Timeout is " << config->readTimeout;
+
+    if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
+
 
 }
 
 void ClientManager::run()
 {
+    // Our separator
+    // We'll parse incoming data each time we receive an <eol>. By This way,
+    // when we receive from the network incomplete data, we can append them
+    // in receive buffer and parse them when they're completed by a successive
+    // <eol> command.
+    const QString separator = "<eol>";
+
+    if (config->qDebug) qDebug() << "In ClientManager::run";
+
+    // We need to build the socket to manage client connection
     QTcpSocket tcpSocket;
     if (!tcpSocket.setSocketDescriptor(socketDescriptor)) {
-        qDebug() << tcpSocket.errorString();
+        qDebug() << "Error in socket:" << tcpSocket.errorString();
         return;
     }
 
-    QHostAddress remote_addr = tcpSocket.peerAddress();
-    quint16 remote_port = tcpSocket.peerPort();
+    // Let's grab some informations about remote endpoint
+    QHostAddress    remote_addr = tcpSocket.peerAddress();  // Remote ip addr
+    quint16         remote_port = tcpSocket.peerPort();     // Remote port
 
-    qDebug() << "Incoming Connection from " << remote_addr.toString() << ":" << remote_port;
+    if (config->qDebug) qDebug() << "Incoming Connection from " << remote_addr.toString() << ":" << remote_port;
 
-    const QString separator = "<eol>";
+    // Let's say Welcome to our client!
     this->sendData(&tcpSocket, QString("Welcome to AstCTIServer rel. ").append(ASTCTISRV_RELEASE));
 
+    if (config->qDebug) qDebug() << "Read Timeout is " << config->readTimeout;
+
+    // Read timeout will let us wait for data for some time.
+    // When the timeout elapse, the socket will be automatically
+    // closed...
     while(tcpSocket.waitForReadyRead(config->readTimeout))
     {
+        // Read all data from the network
         QString strdata(tcpSocket.readAll());
+        // Append trimmed data to the buffer.
+        // We need trimmed data only ;)
         buffer.append(strdata.trimmed());
+
+        // Now check if we've some separator in the buffered data.
         if(buffer.contains(separator))
         {
-            QString toSplit = "";
-            QString remainingBuffer = "";
+            QString toSplit         = ""; // here we'll store data to be parsed
+            QString remainingBuffer = ""; // here we'll store data that will remain in the buffer
+            // If we have text after the last separator, then
+            // we need to leave it in the buffer and parse all the rest
             int lastIndexOf = buffer.lastIndexOf(separator);
             if (lastIndexOf < buffer.size()-separator.size())
             {
-                toSplit=buffer.left(lastIndexOf);
+                toSplit         = buffer.left(lastIndexOf);
                 remainingBuffer = buffer.mid(lastIndexOf+ separator.size());
 
-            } else {
-                toSplit=buffer;
+            }
+            // otherwise we parse the full buffer
+            else {
+                toSplit         = buffer;
                 remainingBuffer = "";
 
             }
             buffer = remainingBuffer;
 
+            // Let's split our string by separator
             QStringList list = toSplit.split(separator);
             QString itm;
+            // Iterate the list
             foreach(itm, list)
             {
                 itm = itm.trimmed();
                 if (itm.size() > 0)
-                    qDebug() << "--> Received " << itm;
+                {
+                    // TODO : command parser
+                    if (config->qDebug) qDebug() << "ClientManager::run data received:" << itm;
+                }
             }
         }
 
     }
+    // Timeout elapsed: close the socket
     tcpSocket.close();
 
-    qDebug() << "Connection from " << remote_addr.toString() << ":" << remote_port << " closed";
+    if (config->qDebug) qDebug() << "Connection from" << remote_addr.toString() << ":" << remote_port << "closed";
 }
 
+/*!
+    Sends string data over the specified QTcpSocket
+*/
 void ClientManager::sendData(QTcpSocket *tcpSocket, QString data)
 {
+    if (config->qDebug) qDebug() << "In ClientManager::sendData(" << data << ")";
     data = data.append("\n");
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
