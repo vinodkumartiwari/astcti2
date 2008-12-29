@@ -44,6 +44,7 @@ QAsteriskCTILogger::QAsteriskCTILogger(QObject *parent) : QObject (parent)
 
 void QAsteriskCTILogger::writeToLog(QAsteriskCTILoggerLevel level, const QString &logdata)
 {
+    this->buildLogDirectory();
     QDir baseDir = this->logDirectory;
 
     QString todayFileName = QString("log_").append(QDate::currentDate().toString("yyyyMMdd").append(".log"));
@@ -60,8 +61,8 @@ void QAsteriskCTILogger::writeToLog(QAsteriskCTILoggerLevel level, const QString
     QByteArray dataArray;
     QBuffer buf( &dataArray );
     buf.open( QIODevice::WriteOnly );
-    QTextStream ts( &logstring );
-    ts << QTime::currentTime().toString("hh:mm:ss")  << ":" << logdata;
+    QTextStream ts( &buf );
+    ts << QTime::currentTime().toString("hh:mm:ss")  << " (" << levelStringFromLevelId(level) << "): " << logdata << "\n\r";
     buf.close();
 
     logFile.write(dataArray);
@@ -71,14 +72,40 @@ void QAsteriskCTILogger::writeToLog(QAsteriskCTILoggerLevel level, const QString
 
 bool QAsteriskCTILogger::buildLogDirectory()
 {
-    QDir logdir;
-    if (!logdir.exists("logs/"))
+    bool bIsOk = true;
+    QString appPath = QCoreApplication::applicationDirPath();
+    appPath.append("/logs/");
+    QDir logdir(appPath);
+    if (!logdir.exists())
     {
-        this->logDirectory = logdir;
-        return logdir.mkdir("logs/");
+        bIsOk = logdir.mkdir(appPath);
     }
+    this->logDirectory = logdir;
+    return bIsOk;
+}
 
-
-
-    return false;
+QString QAsteriskCTILogger::levelStringFromLevelId(const QAsteriskCTILoggerLevel level)
+{
+    switch(level)
+    {
+        case LOG_NOTICE:
+            return "NOTICE";
+            break;
+        case LOG_INFO:
+            return "INFO";
+            break;
+        case LOG_WARNING:
+            return "WARNING";
+            break;
+        case LOG_ERROR:
+            return "ERROR";
+            break;
+        case LOG_FATAL:
+            return "FATAL";
+            break;
+        case LOG_ALL:
+            return "ALL";
+            break;
+    }
+    return "NONE";
 }

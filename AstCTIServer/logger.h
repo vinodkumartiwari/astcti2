@@ -40,6 +40,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <QtCore/QCoreApplication>
 #include <QObject>
 #include <QtCore>
 
@@ -65,6 +66,7 @@ public:
 private:
     bool buildLogDirectory();
     QDir logDirectory;
+    QString levelStringFromLevelId(const QAsteriskCTILoggerLevel level);
 };
 
 #endif // LOGGER_H
