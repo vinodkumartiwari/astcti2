@@ -42,6 +42,7 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+    QString logtxt;
 
     QAsteriskCTILogger logger;
     QAstCTIConfiguration config;
@@ -62,8 +63,13 @@ int main(int argc, char *argv[])
     config.serverPort = settings.value("port").toInt();
 
     settings.endGroup();
+    logtxt="";
+    QTextStream(&logtxt) << "MainServer version " << ASTCTISRV_RELEASE;
+    logger.writeToLog(LOG_INFO, logtxt );
 
-    logger.writeToLog(LOG_INFO, "Creating MainServer");
+    logtxt="";
+    QTextStream(&logtxt) << "MainServer listening on port " << config.serverPort;
+    logger.writeToLog(LOG_INFO, logtxt);
     qDebug() << "MainServer listening on port " <<  config.serverPort;
 
     MainServer server(&config);
