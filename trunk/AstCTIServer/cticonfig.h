@@ -44,6 +44,7 @@ struct QAstCTIConfiguration
     bool qDebug;
     quint16 serverPort;
     int readTimeout;
+    int compressionLevel;
 };
 
 #endif
