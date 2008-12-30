@@ -188,6 +188,8 @@ void ClientManager::sendData(QTcpSocket *tcpSocket, QString data)
     if (config->qDebug) qDebug() << "In ClientManager::sendData(" << data << ")";
     data = data.append("\n");
     QByteArray block;
+
+    // TODO : We can use a qCompress/qUncompress function to compress data over the network
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
     out << (quint16)0;
