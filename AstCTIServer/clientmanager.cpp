@@ -50,17 +50,21 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
 
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
 
+    commandsList["QUIT"]=CMD_QUIT;
+    commandsList["NOOP"]=CMD_NOOP;
+    commandsList["USER"]=CMD_USER;
+
 
 }
 
 void ClientManager::run()
 {
     // Our separator
-    // We'll parse incoming data each time we receive an <eol>. By This way,
+    // We'll parse incoming data each time we receive an \n. By This way,
     // when we receive from the network incomplete data, we can append them
     // in receive buffer and parse them when they're completed by a successive
-    // <eol> command.
-    const QString separator = "<eol>";
+    // \n command.
+    const QString separator = "\n";
 
     if (config->qDebug) qDebug() << "In ClientManager::run";
 
@@ -89,10 +93,8 @@ void ClientManager::run()
     {
         // Read all data from the network
         QString strdata(tcpSocket.readAll());
-        // Append trimmed data to the buffer.
-        // We need trimmed data only ;)
-        buffer.append(strdata.trimmed());
-
+        // Append data to the buffer.
+        buffer.append(strdata);
         // Now check if we've some separator in the buffered data.
         if(buffer.contains(separator))
         {
@@ -129,38 +131,35 @@ void ClientManager::run()
                     // TODO : command parser
                     if (config->qDebug) qDebug() << "ClientManager::run data received:" << itm;
                     QAstCTICommand  cmd = this->parseCommand(itm);
-                    if (cmd.command.compare("QUIT")==0)
-                    {
-                        tcpSocket.close();
-                        return;
-                    }
 
-                    if (cmd.command.compare("NOOP")==0)
+                    switch(commandsList[cmd.command])
                     {
-                        this->sendData(&tcpSocket, "100 OK");
-                        break;
-                    }
-
-                    if (cmd.command.compare("USER")==0)
-                    {
-                        if (cmd.parameters.count() < 1)
-                        {
-                            this->sendData(&tcpSocket, "101 KO No username given");
+                        case CMD_QUIT:
+                            tcpSocket.close();
+                            return;
+                        case CMD_NOOP:
+                            this->sendData(&tcpSocket, "100 OK");
                             break;
-                        }
-                        else
-                        {
-                            foreach(QString parm, cmd.parameters)
+                        case CMD_USER:
+                            if (cmd.parameters.count() < 1)
                             {
-                                if (config->qDebug) qDebug() << "ClientManager::run params:" << parm;
+                                this->sendData(&tcpSocket, "101 KO No username given");
+                                break;
                             }
-                        }
-                    }
-                }
-            }
-        }
+                            else
+                            {
+                                foreach(QString parm, cmd.parameters)
+                                {
+                                    if (config->qDebug) qDebug() << "ClientManager::run params:" << parm;
+                                }
+                            }
+                            break;
+                    } // end switch
+                } // end if (itm.size())
+            } // foreach
+        } // end buffer.contains(separator)
+    } // end while(tcpSocket.waitForReadyRead)
 
-    }
     // Timeout elapsed: close the socket
     tcpSocket.close();
 
