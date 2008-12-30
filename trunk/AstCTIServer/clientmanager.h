@@ -47,6 +47,12 @@
 #include <QSettings>
 #include "main.h"
 
+struct QAstCTICommand
+{
+    QString command;
+    QStringList parameters;
+};
+
 class ClientManager : public QThread
 {
 public:
@@ -59,6 +65,7 @@ private:
     QAstCTIConfiguration *config;
     int socketDescriptor;
     QString buffer;
+    QAstCTICommand parseCommand(const QString &command);
 };
 
 #endif // CLIENTMANAGER_H

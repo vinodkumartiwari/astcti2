@@ -78,7 +78,7 @@ void ClientManager::run()
     if (config->qDebug) qDebug() << "Incoming Connection from " << remote_addr.toString() << ":" << remote_port;
 
     // Let's say Welcome to our client!
-    this->sendData(&tcpSocket, QString("Welcome to AstCTIServer rel. ").append(ASTCTISRV_RELEASE));
+    this->sendData(&tcpSocket, QString("100 Welcome to AstCTIServer rel. ").append(ASTCTISRV_RELEASE));
 
     if (config->qDebug) qDebug() << "Read Timeout is " << config->readTimeout;
 
@@ -115,6 +115,8 @@ void ClientManager::run()
             }
             buffer = remainingBuffer;
 
+
+
             // Let's split our string by separator
             QStringList list = toSplit.split(separator);
             QString itm;
@@ -126,6 +128,34 @@ void ClientManager::run()
                 {
                     // TODO : command parser
                     if (config->qDebug) qDebug() << "ClientManager::run data received:" << itm;
+                    QAstCTICommand  cmd = this->parseCommand(itm);
+                    if (cmd.command.compare("QUIT")==0)
+                    {
+                        tcpSocket.close();
+                        return;
+                    }
+
+                    if (cmd.command.compare("NOOP")==0)
+                    {
+                        this->sendData(&tcpSocket, "100 OK");
+                        break;
+                    }
+
+                    if (cmd.command.compare("USER")==0)
+                    {
+                        if (cmd.parameters.count() < 1)
+                        {
+                            this->sendData(&tcpSocket, "101 KO No username given");
+                            break;
+                        }
+                        else
+                        {
+                            foreach(QString parm, cmd.parameters)
+                            {
+                                if (config->qDebug) qDebug() << "ClientManager::run params:" << parm;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -135,6 +165,19 @@ void ClientManager::run()
     tcpSocket.close();
 
     if (config->qDebug) qDebug() << "Connection from" << remote_addr.toString() << ":" << remote_port << "closed";
+}
+/*!
+    Parse a string command and returns an QAstCTICommand struct with
+    command and parameters as QStringList;
+*/
+QAstCTICommand ClientManager::parseCommand(const QString &command)
+{
+    QStringList data = command.split(" ");
+    QAstCTICommand newCommand;
+    newCommand.command = QString(data.at(0)).toUpper();
+    data.removeFirst();
+    newCommand.parameters = data;
+    return newCommand;
 }
 
 /*!
