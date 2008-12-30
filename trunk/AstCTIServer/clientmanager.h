@@ -45,6 +45,7 @@
 #include <QStringList>
 #include <QDebug>
 #include <QSettings>
+#include <QHash>
 #include "main.h"
 
 struct QAstCTICommand
@@ -52,6 +53,15 @@ struct QAstCTICommand
     QString command;
     QStringList parameters;
 };
+
+enum QAstCTICommands {
+    CMD_NOT_DEFINED,
+    CMD_NOOP,
+    CMD_QUIT,
+    CMD_USER,
+    CMD_ENDLIST
+};
+
 
 class ClientManager : public QThread
 {
@@ -62,10 +72,11 @@ public:
 
 
 private:
-    QAstCTIConfiguration *config;
-    int socketDescriptor;
-    QString buffer;
-    QAstCTICommand parseCommand(const QString &command);
+    QAstCTIConfiguration    *config;
+    int                     socketDescriptor;
+    QString                 buffer;
+    QHash<QString, int>     commandsList;
+    QAstCTICommand          parseCommand(const QString &command);
 };
 
 #endif // CLIENTMANAGER_H
