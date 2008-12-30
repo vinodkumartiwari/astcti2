@@ -76,6 +76,7 @@ private:
     int                     socketDescriptor;
     QString                 buffer;
     QHash<QString, int>     commandsList;
+    void                    initParserCommands();
     QAstCTICommand          parseCommand(const QString &command);
 };
 

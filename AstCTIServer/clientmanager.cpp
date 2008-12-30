@@ -50,12 +50,20 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
 
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
 
-    commandsList["QUIT"]=CMD_QUIT;
-    commandsList["NOOP"]=CMD_NOOP;
-    commandsList["USER"]=CMD_USER;
+    // We need to initialize our parser
+    this->initParserCommands();
 
 
 }
+
+void ClientManager::initParserCommands()
+{
+    if (config->qDebug) qDebug() << "In ClientManager::initParserCommands()";
+    commandsList["QUIT"]=CMD_QUIT;
+    commandsList["NOOP"]=CMD_NOOP;
+    commandsList["USER"]=CMD_USER;
+}
+
 
 void ClientManager::run()
 {
@@ -82,7 +90,8 @@ void ClientManager::run()
     if (config->qDebug) qDebug() << "Incoming Connection from " << remote_addr.toString() << ":" << remote_port;
 
     // Let's say Welcome to our client!
-    this->sendData(&tcpSocket, QString("100 Welcome to AstCTIServer rel. ").append(ASTCTISRV_RELEASE));
+
+    this->sendData(&tcpSocket, "100 Welcome to AstCTIServer");
 
     if (config->qDebug) qDebug() << "Read Timeout is " << config->readTimeout;
 
@@ -91,8 +100,18 @@ void ClientManager::run()
     // closed...
     while(tcpSocket.waitForReadyRead(config->readTimeout))
     {
-        // Read all data from the network
-        QString strdata(tcpSocket.readAll());
+        QString strdata;
+        QByteArray sockData = tcpSocket.readAll();
+
+        if (config->compressionLevel > 0)
+        {
+            strdata = QString(qUncompress(sockData));
+        }
+        else
+        {
+            // Read all data from the network
+            strdata = QString(sockData);
+        }
         // Append data to the buffer.
         buffer.append(strdata);
         // Now check if we've some separator in the buffered data.
@@ -135,8 +154,9 @@ void ClientManager::run()
                     switch(commandsList[cmd.command])
                     {
                         case CMD_QUIT:
+                            this->sendData(&tcpSocket, "900 BYE");
                             tcpSocket.close();
-                            return;
+                            break;
                         case CMD_NOOP:
                             this->sendData(&tcpSocket, "100 OK");
                             break;
@@ -153,6 +173,9 @@ void ClientManager::run()
                                     if (config->qDebug) qDebug() << "ClientManager::run params:" << parm;
                                 }
                             }
+                            break;
+                        case CMD_NOT_DEFINED:
+                             this->sendData(&tcpSocket, "101 KO Invalid Command");
                             break;
                     } // end switch
                 } // end if (itm.size())
@@ -185,15 +208,19 @@ QAstCTICommand ClientManager::parseCommand(const QString &command)
 void ClientManager::sendData(QTcpSocket *tcpSocket, QString data)
 {
     if (config->qDebug) qDebug() << "In ClientManager::sendData(" << data << ")";
-    data = data.append("\n");
+
     QByteArray block;
 
     // TODO : We can use a qCompress/qUncompress function to compress data over the network
     QDataStream out(&block, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_4_0);
-    out << (quint16)0;
-    out << data;
-    out.device()->seek(0);
-    out << (quint16)(block.size() - sizeof(quint16));
-    tcpSocket->write(block);
+
+    // We output simple ascii strings (no utf8)
+    out << data.toAscii() << "\n";
+    if (config->compressionLevel > 0)
+    {
+        QByteArray compressed = qCompress(block, config->compressionLevel);
+        tcpSocket->write(compressed);
+    }
+    else
+        tcpSocket->write(block);
 }

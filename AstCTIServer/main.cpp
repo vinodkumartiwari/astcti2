@@ -72,14 +72,16 @@ int main(int argc, char *argv[])
     // Just for the group named Server
     // write default values if keys are not set
     settings.beginGroup("Server");
-    writeSetting(&settings, "port",         DEFAULT_SERVER_PORT);
-    writeSetting(&settings, "readTimeout",  DEFAULT_READ_TIMEOUT);
+    writeSetting(&settings, "port",             DEFAULT_SERVER_PORT);
+    writeSetting(&settings, "readTimeout",      DEFAULT_READ_TIMEOUT);
+    writeSetting(&settings, "compressionLevel", DEFAULT_COMPRESSION_LEVEL);
     settings.endGroup();
 
     // read values from the keys and store them in a config object
     settings.beginGroup("Server");
-    config.readTimeout  = settings.value("readTimeout").toInt();
-    config.serverPort   = settings.value("port").toInt();
+    config.readTimeout      = settings.value("readTimeout").toInt();
+    config.serverPort       = settings.value("port").toInt();
+    config.compressionLevel = settings.value("compressionLevel").toInt();
     settings.endGroup();
 
 

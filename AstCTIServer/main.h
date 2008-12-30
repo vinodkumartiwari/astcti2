@@ -43,9 +43,10 @@
 #include "cticonfig.h"
 #include "logger.h"
 
-#define ASTCTISRV_RELEASE       "0.1a"
-#define DEFAULT_SERVER_PORT     5000
-#define DEFAULT_READ_TIMEOUT    15000
+#define ASTCTISRV_RELEASE           "0.1a"
+#define DEFAULT_SERVER_PORT         5000
+#define DEFAULT_READ_TIMEOUT        15000
+#define DEFAULT_COMPRESSION_LEVEL   0
 
 void writeSetting( QSettings *settings, const QString & key, const  QVariant & defvalue);
 
