@@ -79,7 +79,7 @@ public:
 signals:
     void addClient(QString exten, ClientManager *cl);
     void removeClient(QString exten);
-    void notify(ClientManager *cl);
+    void notify(QString data);
 
 public slots:
     void sendDataSlot(QString data);
