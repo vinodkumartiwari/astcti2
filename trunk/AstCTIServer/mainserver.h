@@ -40,8 +40,14 @@
 #define MAINSERVER_H
 
 #include <QObject>
+#include <QMutex>
 #include <QtNetwork>
 #include <QSettings>
+#include <QHash>
+
+
+#include "main.h"
+#include "clientmanager.h"
 #include "cticonfig.h"
 class MainServer : public QTcpServer
 {
@@ -50,15 +56,24 @@ class MainServer : public QTcpServer
 private:
     QSettings settings;
     QAstCTIConfiguration *config;
+    QMutex mutexClientList;
 
 public:
     MainServer(QAstCTIConfiguration *config, QObject *parent=0);
 
+signals:
+    void dataToClient(QString data);
+
 
 protected:
+    QHash<QString, ClientManager*> clients;
     void incomingConnection(int socketDescriptor);
+    bool containClient(QString exten);
 
-
+protected slots:
+    void addClient(QString exten, ClientManager *cl);
+    void removeClient(QString exten);
+    void clientNotify(ClientManager *cl);
 };
 
 
