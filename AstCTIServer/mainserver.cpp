@@ -66,7 +66,7 @@ void MainServer::incomingConnection(int socketDescriptor)
     // Inform us about client authentications / disconnections
     connect(thread, SIGNAL(addClient(QString,ClientManager *)) , this, SLOT(addClient(QString,ClientManager *)));
     connect(thread, SIGNAL(removeClient(QString)), this, SLOT(removeClient(QString)));
-    connect(thread, SIGNAL(notify(ClientManager *)), this, SLOT(clientNotify(ClientManager *)));
+    connect(thread, SIGNAL(notify(QString)), this, SLOT(clientNotify(QString)));
     thread->start();
 }
 
@@ -107,9 +107,9 @@ bool MainServer::containClient(QString exten)
     return retval;
 }
 
-void MainServer::clientNotify(ClientManager *cl)
+void MainServer::clientNotify(QString data)
 {
-    emit dataToClient(QString("HELLO"));
+    emit dataToClient(data);
 }
 
 

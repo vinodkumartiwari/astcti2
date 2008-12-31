@@ -73,7 +73,7 @@ protected:
 protected slots:
     void addClient(QString exten, ClientManager *cl);
     void removeClient(QString exten);
-    void clientNotify(ClientManager *cl);
+    void clientNotify(QString data);
 };
 
 

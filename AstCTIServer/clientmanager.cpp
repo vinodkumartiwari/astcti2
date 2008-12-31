@@ -153,6 +153,7 @@ void ClientManager::run()
             // Let's split our string by separator
             QStringList list = toSplit.split(separator);
             QString itm;
+            QString parm;
             // Iterate the list
             foreach(itm, list)
             {
@@ -180,7 +181,7 @@ void ClientManager::run()
                             }
                             else
                             {
-                                foreach(QString parm, cmd.parameters)
+                                foreach(parm, cmd.parameters)
                                 {
                                     if (config->qDebug) qDebug() << "ClientManager::run params:" << parm;
                                 }
@@ -192,7 +193,10 @@ void ClientManager::run()
                             this->sendData("100 OK Authentication successful");
                             break;
                         case CMD_ORIG:
-                            emit this->notify(this);
+                            foreach(parm, cmd.parameters)
+                            {
+                                emit this->notify(parm);
+                            }
                             this->sendData("100 OK");
                             break;
                         case CMD_NOT_DEFINED:
@@ -205,8 +209,8 @@ void ClientManager::run()
     } // end while(tcpSocket.waitForReadyRead)
 
     // Timeout elapsed: close the socket
-    if (tcpSocket.state() != QAbstractSocket::UnconnectedState
-        | tcpSocket.state() != QAbstractSocket::ClosingState)
+    if ( (tcpSocket.state() != QAbstractSocket::UnconnectedState)
+        | (tcpSocket.state() != QAbstractSocket::ClosingState) )
         tcpSocket.close();
 
     // Emit a signal when disconnection is in progress
