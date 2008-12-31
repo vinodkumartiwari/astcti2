@@ -36,9 +36,9 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include "main.h"
+
 #include "mainserver.h"
-#include "clientmanager.h"
+
 
 /*!
     Our MainServer derive from QTcpServer
@@ -62,5 +62,65 @@ void MainServer::incomingConnection(int socketDescriptor)
 
     ClientManager *thread = new ClientManager(this->config, socketDescriptor, this);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+
+    // Inform us about client authentications / disconnections
+    connect(thread, SIGNAL(addClient(QString,ClientManager *)) , this, SLOT(addClient(QString,ClientManager *)));
+    connect(thread, SIGNAL(removeClient(QString)), this, SLOT(removeClient(QString)));
+    connect(thread, SIGNAL(notify(ClientManager *)), this, SLOT(clientNotify(ClientManager *)));
     thread->start();
 }
+
+void MainServer::addClient(QString exten, ClientManager *cl)
+{
+    mutexClientList.lock();
+    if (!clients.contains(exten))
+    {
+        if (config->qDebug) qDebug() << "Adding exten" << exten;
+        clients[exten] = cl;
+    }
+    else
+    {
+        if (config->qDebug) qDebug() << "Cannot add exten" << exten << "because is already in list";
+    }
+    if (config->qDebug) qDebug() << "Number of clients:" << clients.count();
+    mutexClientList.unlock();
+}
+
+void MainServer::removeClient(QString exten)
+{
+    if (config->qDebug) qDebug() << "Removing exten" << exten;
+    mutexClientList.lock();
+    if (clients.contains(exten))
+    {
+        clients.remove(exten);
+    }
+    if (config->qDebug) qDebug() << "Number of clients:" << clients.count();
+    mutexClientList.unlock();
+}
+
+bool MainServer::containClient(QString exten)
+{
+
+    mutexClientList.lock();
+    bool retval = clients.contains(exten);
+    mutexClientList.unlock();
+    return retval;
+}
+
+void MainServer::clientNotify(ClientManager *cl)
+{
+    emit dataToClient(QString("HELLO"));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

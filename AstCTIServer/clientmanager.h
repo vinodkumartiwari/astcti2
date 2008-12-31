@@ -46,6 +46,8 @@
 #include <QDebug>
 #include <QSettings>
 #include <QHash>
+#include <QCryptographicHash>
+
 #include "main.h"
 
 struct QAstCTICommand
@@ -59,17 +61,28 @@ enum QAstCTICommands {
     CMD_NOOP,
     CMD_QUIT,
     CMD_USER,
+    CMD_PASS,
+    CMD_ORIG,
     CMD_ENDLIST
 };
 
 
-class ClientManager : public QThread
+class ClientManager : public  QThread
 {
+    Q_OBJECT
+
 public:
     ClientManager(QAstCTIConfiguration *config, int socketDescriptor, QObject *parent);
     void run();
-    void sendData(QTcpSocket *tcpSocket, QString data);
 
+
+signals:
+    void addClient(QString exten, ClientManager *cl);
+    void removeClient(QString exten);
+    void notify(ClientManager *cl);
+
+public slots:
+    void sendDataSlot(QString data);
 
 private:
     QAstCTIConfiguration    *config;
@@ -78,6 +91,12 @@ private:
     QHash<QString, int>     commandsList;
     void                    initParserCommands();
     QAstCTICommand          parseCommand(const QString &command);
+    bool                    checkPassword(const QString &password, const QString &checkPassword);
+    void                    sendData(const QString &data);
+
+protected:
+    QTcpSocket              *theSocket;
+
 };
 
 #endif // CLIENTMANAGER_H

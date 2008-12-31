@@ -38,7 +38,9 @@
 
 #include "clientmanager.h"
 
-
+/*!
+    ClientManager Constructor
+*/
 ClientManager::ClientManager(QAstCTIConfiguration *config,
                              int socketDescriptor,
                              QObject *parent) :
@@ -48,6 +50,9 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
     // Lets copy our configuration struct
     this->config = config;
 
+
+    connect(parent, SIGNAL(dataToClient(QString)), this, SLOT(sendDataSlot(QString)));
+
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
 
     // We need to initialize our parser
@@ -56,12 +61,18 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
 
 }
 
+/*!
+    Initialize the commandList QHash
+*/
 void ClientManager::initParserCommands()
 {
     if (config->qDebug) qDebug() << "In ClientManager::initParserCommands()";
     commandsList["QUIT"]=CMD_QUIT;
     commandsList["NOOP"]=CMD_NOOP;
     commandsList["USER"]=CMD_USER;
+    commandsList["PASS"]=CMD_PASS;
+    commandsList["ORIG"]=CMD_ORIG;
+
 }
 
 
@@ -82,6 +93,7 @@ void ClientManager::run()
         qDebug() << "Error in socket:" << tcpSocket.errorString();
         return;
     }
+    this->theSocket = &tcpSocket;
 
     // Let's grab some informations about remote endpoint
     QHostAddress    remote_addr = tcpSocket.peerAddress();  // Remote ip addr
@@ -91,7 +103,7 @@ void ClientManager::run()
 
     // Let's say Welcome to our client!
 
-    this->sendData(&tcpSocket, "100 Welcome to AstCTIServer");
+    this->sendData("100 Welcome to AstCTIServer");
 
     if (config->qDebug) qDebug() << "Read Timeout is " << config->readTimeout;
 
@@ -154,16 +166,16 @@ void ClientManager::run()
                     switch(commandsList[cmd.command])
                     {
                         case CMD_QUIT:
-                            this->sendData(&tcpSocket, "900 BYE");
+                            this->sendData("900 BYE");
                             tcpSocket.close();
                             break;
                         case CMD_NOOP:
-                            this->sendData(&tcpSocket, "100 OK");
+                            this->sendData("100 OK");
                             break;
                         case CMD_USER:
                             if (cmd.parameters.count() < 1)
                             {
-                                this->sendData(&tcpSocket, "101 KO No username given");
+                                this->sendData("101 KO No username given");
                                 break;
                             }
                             else
@@ -174,8 +186,17 @@ void ClientManager::run()
                                 }
                             }
                             break;
+                        case CMD_PASS:
+                            // TODO : emit only if user done a successfull authentication
+                            emit this->addClient(QString("SIP/200"), this);
+                            this->sendData("100 OK Authentication successful");
+                            break;
+                        case CMD_ORIG:
+                            emit this->notify(this);
+                            this->sendData("100 OK");
+                            break;
                         case CMD_NOT_DEFINED:
-                             this->sendData(&tcpSocket, "101 KO Invalid Command");
+                             this->sendData("101 KO Invalid Command");
                             break;
                     } // end switch
                 } // end if (itm.size())
@@ -184,10 +205,16 @@ void ClientManager::run()
     } // end while(tcpSocket.waitForReadyRead)
 
     // Timeout elapsed: close the socket
-    tcpSocket.close();
+    if (tcpSocket.state() != QAbstractSocket::UnconnectedState
+        | tcpSocket.state() != QAbstractSocket::ClosingState)
+        tcpSocket.close();
 
+    // Emit a signal when disconnection is in progress
+    // TODO : emit only if user done a successfull authentication
+    emit this->removeClient(QString("SIP/200"));
     if (config->qDebug) qDebug() << "Connection from" << remote_addr.toString() << ":" << remote_port << "closed";
 }
+
 /*!
     Parse a string command and returns an QAstCTICommand struct with
     command and parameters as QStringList;
@@ -205,7 +232,7 @@ QAstCTICommand ClientManager::parseCommand(const QString &command)
 /*!
     Sends string data over the specified QTcpSocket
 */
-void ClientManager::sendData(QTcpSocket *tcpSocket, QString data)
+void ClientManager::sendData(const QString &data)
 {
     if (config->qDebug) qDebug() << "In ClientManager::sendData(" << data << ")";
 
@@ -219,8 +246,47 @@ void ClientManager::sendData(QTcpSocket *tcpSocket, QString data)
     if (config->compressionLevel > 0)
     {
         QByteArray compressed = qCompress(block, config->compressionLevel);
-        tcpSocket->write(compressed);
+        this->theSocket->write(compressed);
     }
     else
-        tcpSocket->write(block);
+        this->theSocket->write(block);
+
 }
+
+void ClientManager::sendDataSlot(QString data)
+{
+    this->sendData(data);
+}
+
+/*!
+    Compare a plain string "password" with a pre-generated md5 QString "checkPassword"
+*/
+bool ClientManager::checkPassword(const QString &password, const QString &checkPassword)
+{
+
+    QCryptographicHash md5(QCryptographicHash::Md5);
+    md5.addData(QByteArray(password.toUtf8()));
+    QByteArray result = md5.result();
+
+    return (QString(result).compare(checkPassword) == 0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
