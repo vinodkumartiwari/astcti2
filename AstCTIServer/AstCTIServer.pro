@@ -12,9 +12,11 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainserver.cpp \
     clientmanager.cpp \
-    logger.cpp
+    logger.cpp \
+    amiclient.cpp
 HEADERS += mainserver.h \
     clientmanager.h \
     main.h \
     cticonfig.h \
-    logger.h
+    logger.h \
+    amiclient.h

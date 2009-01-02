@@ -47,6 +47,10 @@
 #define DEFAULT_SERVER_PORT         5000
 #define DEFAULT_READ_TIMEOUT        15000
 #define DEFAULT_COMPRESSION_LEVEL   0
+#define DEFAULT_AMI_HOSTIP          "localhost"
+#define DEFAULT_AMI_PORT            5038
+#define DEFAULT_AMI_USER            "manager"
+#define DEFAULT_AMI_SECRET          "password"
 
 void writeSetting( QSettings *settings, const QString & key, const  QVariant & defvalue);
 

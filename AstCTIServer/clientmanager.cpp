@@ -257,7 +257,7 @@ void ClientManager::sendData(const QString &data)
 
 }
 
-void ClientManager::sendDataSlot(QString data)
+void ClientManager::sendDataSlot(const QString &data)
 {
     this->sendData(data);
 }

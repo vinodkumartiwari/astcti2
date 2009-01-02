@@ -77,12 +77,12 @@ public:
 
 
 signals:
-    void addClient(QString exten, ClientManager *cl);
-    void removeClient(QString exten);
-    void notify(QString data);
+    void addClient(const QString &exten, ClientManager *cl);
+    void removeClient(const QString &exten);
+    void notify(const QString &data);
 
 public slots:
-    void sendDataSlot(QString data);
+    void sendDataSlot(const QString &data);
 
 private:
     QAstCTIConfiguration    *config;
