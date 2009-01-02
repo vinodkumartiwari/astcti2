@@ -64,13 +64,13 @@ void MainServer::incomingConnection(int socketDescriptor)
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
     // Inform us about client authentications / disconnections
-    connect(thread, SIGNAL(addClient(QString,ClientManager *)) , this, SLOT(addClient(QString,ClientManager *)));
-    connect(thread, SIGNAL(removeClient(QString)), this, SLOT(removeClient(QString)));
-    connect(thread, SIGNAL(notify(QString)), this, SLOT(clientNotify(QString)));
+    connect(thread, SIGNAL(addClient(const QString,ClientManager *)) , this, SLOT(addClient(const QString,ClientManager *)));
+    connect(thread, SIGNAL(removeClient(const QString)), this, SLOT(removeClient(const QString)));
+    connect(thread, SIGNAL(notify(const QString)), this, SLOT(clientNotify(const QString)));
     thread->start();
 }
 
-void MainServer::addClient(QString exten, ClientManager *cl)
+void MainServer::addClient(const QString &exten, ClientManager *cl)
 {
     mutexClientList.lock();
     if (!clients.contains(exten))
@@ -86,7 +86,7 @@ void MainServer::addClient(QString exten, ClientManager *cl)
     mutexClientList.unlock();
 }
 
-void MainServer::removeClient(QString exten)
+void MainServer::removeClient(const QString &exten)
 {
     if (config->qDebug) qDebug() << "Removing exten" << exten;
     mutexClientList.lock();
@@ -98,7 +98,7 @@ void MainServer::removeClient(QString exten)
     mutexClientList.unlock();
 }
 
-bool MainServer::containClient(QString exten)
+bool MainServer::containClient(const QString &exten)
 {
 
     mutexClientList.lock();
@@ -107,7 +107,7 @@ bool MainServer::containClient(QString exten)
     return retval;
 }
 
-void MainServer::clientNotify(QString data)
+void MainServer::clientNotify(const QString &data)
 {
     emit dataToClient(data);
 }

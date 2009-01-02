@@ -36,20 +36,35 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef CTICONFIG_H
-#define CTICONFIG_H
+#ifndef AMICLIENT_H
+#define AMICLIENT_H
 
-struct QAstCTIConfiguration
+#include <QObject>
+#include <QThread>
+#include <QTcpSocket>
+#include <QHostAddress>
+#include <QStringList>
+#include <QDebug>
+#include <QSettings>
+#include <QHash>
+
+
+#include "main.h"
+
+class AMIClient : public  QThread
 {
-    bool        qDebug;
-    quint16     serverPort;
-    int         readTimeout;
-    int         compressionLevel;
-    QString     ami_host;
-    quint16     ami_port;
-    QString     ami_user;
-    QString     ami_secret;
+    Q_OBJECT
 
+public:
+    AMIClient(QAstCTIConfiguration *config, QObject *parent);
+    void run();
+
+private:
+    QAstCTIConfiguration    *config;
+    int                     socketDescriptor;
+
+protected:
+    QTcpSocket              *theSocket;
 };
 
-#endif
+#endif // AMICLIENT_H

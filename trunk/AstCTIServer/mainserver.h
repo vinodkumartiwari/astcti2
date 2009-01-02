@@ -62,18 +62,18 @@ public:
     MainServer(QAstCTIConfiguration *config, QObject *parent=0);
 
 signals:
-    void dataToClient(QString data);
+    void dataToClient(const QString &data);
 
 
 protected:
     QHash<QString, ClientManager*> clients;
     void incomingConnection(int socketDescriptor);
-    bool containClient(QString exten);
+    bool containClient(const QString &exten);
 
 protected slots:
-    void addClient(QString exten, ClientManager *cl);
-    void removeClient(QString exten);
-    void clientNotify(QString data);
+    void addClient(const QString &exten, ClientManager *cl);
+    void removeClient(const QString &exten);
+    void clientNotify(const QString &data);
 };
 
 

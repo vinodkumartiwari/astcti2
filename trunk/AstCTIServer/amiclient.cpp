@@ -36,20 +36,16 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef CTICONFIG_H
-#define CTICONFIG_H
+#include "amiclient.h"
 
-struct QAstCTIConfiguration
+AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
+        : QThread(parent)
 {
-    bool        qDebug;
-    quint16     serverPort;
-    int         readTimeout;
-    int         compressionLevel;
-    QString     ami_host;
-    quint16     ami_port;
-    QString     ami_user;
-    QString     ami_secret;
+    this->config = config;
+}
 
-};
+void AMIClient::run()
+{
 
-#endif
+
+}
