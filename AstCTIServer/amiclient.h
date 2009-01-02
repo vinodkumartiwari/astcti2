@@ -57,11 +57,16 @@ class AMIClient : public  QThread
 
 public:
     AMIClient(QAstCTIConfiguration *config, QObject *parent);
+    ~AMIClient();
     void run();
+
+signals:
+    void error(int socketError, const QString &message);
 
 private:
     QAstCTIConfiguration    *config;
     int                     socketDescriptor;
+    bool                    quit;
 
 protected:
     QTcpSocket              *theSocket;

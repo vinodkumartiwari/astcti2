@@ -42,10 +42,32 @@ AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
         : QThread(parent)
 {
     this->config = config;
+    this->quit = true;
+}
+
+AMIClient::~AMIClient()
+{
+    // When quit is false, we are running
+    // so we need to stop..
+    if (!quit)
+    {
+        quit = true;
+        wait();
+    }
 }
 
 void AMIClient::run()
 {
-
+    QTcpSocket socket;
+    socket.connectToHost(config->ami_host , config->ami_port);
+    if (!socket.waitForConnected(config->ami_connect_timeout))
+    {
+        emit error(socket.error(), socket.errorString());
+        return;
+    }
+    while(!quit)
+    {
+        // TODO: main loop for receinving data..
+    }
 
 }

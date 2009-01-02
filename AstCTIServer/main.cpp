@@ -83,20 +83,22 @@ int main(int argc, char *argv[])
     writeSetting(&settings, "port",            DEFAULT_AMI_PORT);
     writeSetting(&settings, "user",            DEFAULT_AMI_USER);
     writeSetting(&settings, "secret",          DEFAULT_AMI_SECRET);
+    writeSetting(&settings, "connect_timeout", DEFAULT_AMI_CONNECT_TIMEOUT);
     settings.endGroup();
 
     // read values from the keys and store them in a config object
     settings.beginGroup("Server");
-    config.readTimeout      = settings.value("readTimeout").toInt();
-    config.serverPort       = settings.value("port").toInt();
-    config.compressionLevel = settings.value("compressionLevel").toInt();
+    config.readTimeout          = settings.value("readTimeout").toInt();
+    config.serverPort           = settings.value("port").toInt();
+    config.compressionLevel     = settings.value("compressionLevel").toInt();
     settings.endGroup();
 
     settings.beginGroup("AsteriskAMI");
-    config.ami_host         = settings.value("host").toString();
-    config.ami_port         = settings.value("port").toInt();
-    config.ami_user         = settings.value("user").toString();
-    config.ami_secret       = settings.value("secret").toString();
+    config.ami_host             = settings.value("host").toString();
+    config.ami_port             = settings.value("port").toInt();
+    config.ami_user             = settings.value("user").toString();
+    config.ami_secret           = settings.value("secret").toString();
+    config.ami_connect_timeout  = settings.value("connect_timeout").toInt() * 1000;
     settings.endGroup();
 
 

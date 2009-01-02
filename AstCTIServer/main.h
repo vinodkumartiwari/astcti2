@@ -51,6 +51,7 @@
 #define DEFAULT_AMI_PORT            5038
 #define DEFAULT_AMI_USER            "manager"
 #define DEFAULT_AMI_SECRET          "password"
+#define DEFAULT_AMI_CONNECT_TIMEOUT 5
 
 void writeSetting( QSettings *settings, const QString & key, const  QVariant & defvalue);
 
