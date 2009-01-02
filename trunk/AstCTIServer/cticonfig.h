@@ -49,7 +49,7 @@ struct QAstCTIConfiguration
     quint16     ami_port;
     QString     ami_user;
     QString     ami_secret;
-
+    quint16     ami_connect_timeout;
 };
 
 #endif
