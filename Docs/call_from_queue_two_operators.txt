@@ -1,0 +1,188 @@
+Event: Newchannel
+Privilege: call,all
+Channel: SIP/200-08d9b880
+State: Down
+CallerIDNum: 200
+CallerIDName: Demo 1
+Uniqueid: asterisk-1232400070.16
+
+Event: Newstate
+Privilege: call,all
+Channel: SIP/200-08d9b880
+State: Ring
+CallerID: 200
+CallerIDName: Demo 1
+Uniqueid: asterisk-1232400070.16
+
+Event: Newexten
+Privilege: call,all
+Channel: SIP/200-08d9b880
+Context: astctidemo
+Extension: 101
+Priority: 1
+Application: Answer
+AppData: 
+Uniqueid: asterisk-1232400070.16
+
+Event: Newstate
+Privilege: call,all
+Channel: SIP/200-08d9b880
+State: Up
+CallerID: 200
+CallerIDName: Demo 1
+Uniqueid: asterisk-1232400070.16
+
+Event: Newexten
+Privilege: call,all
+Channel: SIP/200-08d9b880
+Context: astctidemo
+Extension: 101
+Priority: 2
+Application: Read
+AppData: cdata|/var/lib/asterisk/sounds/astctidemo/enter_five_digits|5|
+Uniqueid: asterisk-1232400070.16
+
+Event: Newexten
+Privilege: call,all
+Channel: SIP/200-08d9b880
+Context: astctidemo
+Extension: 101
+Priority: 3
+Application: Set
+AppData: calldata=12345
+Uniqueid: asterisk-1232400070.16
+
+Event: Newexten
+Privilege: call,all
+Channel: SIP/200-08d9b880
+Context: astctidemo
+Extension: 101
+Priority: 4
+Application: Queue
+AppData: astcti|htw|http://centralino-voip.brunosalzano.com||60
+Uniqueid: asterisk-1232400070.16
+
+Event: Join
+Privilege: call,all
+Channel: SIP/200-08d9b880
+CallerID: 200
+CallerIDName: Demo 1
+Queue: astcti
+Position: 1
+Count: 1
+Uniqueid: asterisk-1232400070.16
+
+Event: Newchannel
+Privilege: call,all
+Channel: SIP/201-08d67af8
+State: Down
+CallerIDNum: <unknown>
+CallerIDName: <unknown>
+Uniqueid: asterisk-1232400073.17
+
+Event: Newstate
+Privilege: call,all
+Channel: SIP/201-08d67af8
+State: Ringing
+CallerID: 200
+CallerIDName: Demo 1
+Uniqueid: asterisk-1232400073.17
+
+Event: PeerStatus
+Privilege: system,all
+Peer: SIP/202
+PeerStatus: Registered
+
+Event: Hangup
+Privilege: call,all
+Channel: SIP/201-08d67af8
+Uniqueid: asterisk-1232400073.17
+Cause: 16
+Cause-txt: Normal Clearing
+
+Event: Newchannel
+Privilege: call,all
+Channel: SIP/201-08d67af8
+State: Down
+CallerIDNum: <unknown>
+CallerIDName: <unknown>
+Uniqueid: asterisk-1232400101.18
+
+Event: Newstate
+Privilege: call,all
+Channel: SIP/201-08d67af8
+State: Ringing
+CallerID: 200
+CallerIDName: Demo 1
+Uniqueid: asterisk-1232400101.18
+
+Event: Hangup
+Privilege: call,all
+Channel: SIP/201-08d67af8
+Uniqueid: asterisk-1232400101.18
+Cause: 21
+Cause-txt: Call Rejected
+
+Event: Newchannel
+Privilege: call,all
+Channel: SIP/202-08daefe8
+State: Down
+CallerIDNum: <unknown>
+CallerIDName: <unknown>
+Uniqueid: asterisk-1232400103.19
+
+Event: Newstate
+Privilege: call,all
+Channel: SIP/202-08daefe8
+State: Ringing
+CallerID: 200
+CallerIDName: Demo 1
+Uniqueid: asterisk-1232400103.19
+
+Event: Newstate
+Privilege: call,all
+Channel: SIP/202-08daefe8
+State: Up
+CallerID: 200
+CallerIDName: Demo 1
+Uniqueid: asterisk-1232400103.19
+
+Event: Leave
+Privilege: call,all
+Channel: SIP/200-08d9b880
+Queue: astcti
+Count: 0
+Uniqueid: asterisk-1232400070.16
+
+Event: Link
+Privilege: call,all
+Channel1: SIP/200-08d9b880
+Channel2: SIP/202-08daefe8
+Uniqueid1: asterisk-1232400070.16
+Uniqueid2: asterisk-1232400103.19
+CallerID1: 200
+CallerID2: 200
+
+Event: Unlink
+Privilege: call,all
+Channel1: SIP/200-08d9b880
+Channel2: SIP/202-08daefe8
+Uniqueid1: asterisk-1232400070.16
+Uniqueid2: asterisk-1232400103.19
+CallerID1: 200
+CallerID2: 200
+
+Event: Hangup
+Privilege: call,all
+Channel: SIP/202-08daefe8
+Uniqueid: asterisk-1232400103.19
+Cause: 16
+Cause-txt: Normal Clearing
+
+Event: Hangup
+Privilege: call,all
+Channel: SIP/200-08d9b880
+Uniqueid: asterisk-1232400070.16
+Cause: 0
+Cause-txt: Unknown
+
