@@ -39,7 +39,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include <QtGui>
-
+#include "aboutdialog.h"
 
 
 namespace Ui
@@ -74,6 +74,7 @@ public slots:
     void UpdateTimer();
     void configure();
     void about();
+    void aboutQt();
     void login();
     void pause();
 };

@@ -11,5 +11,8 @@
         <file>res/redled.png</file>
         <file>res/stop.png</file>
         <file>res/yellowled.png</file>
+        <file>res/applications-system.png</file>
+        <file>res/asteriskcti.png</file>
+        <file>res/asteriskcti-3d.png</file>
     </qresource>
 </RCC>
