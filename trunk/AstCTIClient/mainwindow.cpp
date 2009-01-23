@@ -39,7 +39,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-static int LINKS_TIMEOUT = 30;
+static int LINKS_TIMEOUT = 10;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent,Qt::Dialog) , ui(new Ui::MainWindowClass)
@@ -55,16 +55,21 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     statusImage = new QIcon(QPixmap(QString::fromUtf8(":/res/res/redled.png")));
-    //this->statusBar()->addWidget(statusImage);
+    // setFixedSize( sizeHint() );
+
 
     lblCurrentStatus = new QLabel(trUtf8("<b>Not Connected</b>")) ;
     this->statusBar()->addWidget(lblCurrentStatus);
 
 
     lblCurrentTime = new QLabel(QString("00:00:00")) ;
+    lblCurrentTime->setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Fixed);
+    lblCurrentTime->setAlignment(Qt::AlignCenter);
     this->statusBar()->addWidget(lblCurrentTime);
 
     linkLabel = new QLabel(links.at(0)) ;
+    linkLabel->setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Fixed);
+    linkLabel->setAlignment(Qt::AlignRight);
     linkLabel->setOpenExternalLinks(true);
 
     linkLabel->setCursor(Qt::PointingHandCursor);
@@ -76,10 +81,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(ui->actionExit_2, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->actionConfigure, SIGNAL(triggered()), this, SLOT(configure()));
+    connect(ui->actionConfigure_2, SIGNAL(triggered()), this, SLOT(configure()));
     connect(ui->actionLogin, SIGNAL(triggered()), this, SLOT(login()));
     connect(ui->actionPause, SIGNAL(triggered()), this, SLOT(pause()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+    connect(ui->actionAbout_2, SIGNAL(triggered()), this, SLOT(about()));
+    connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
 }
 
@@ -90,15 +99,18 @@ MainWindow::~MainWindow()
 
  void MainWindow::closeEvent(QCloseEvent *event)
  {
-     QMessageBox msgBox;
+     QMessageBox msgBox(this);
+     
      msgBox.setText( trUtf8("Confirm application close."));
      msgBox.setInformativeText( trUtf8("Sure you want to exit?"));
-     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No );
-     msgBox.setDefaultButton(QMessageBox::No);
+     QPushButton *yesBtn = msgBox.addButton( trUtf8("Yes"),QMessageBox::YesRole);
+     QPushButton *noBtn = msgBox.addButton( trUtf8("No"),QMessageBox::NoRole);
+     msgBox.setDefaultButton( noBtn );
      msgBox.setIcon(QMessageBox::Question);
-     int ret = msgBox.exec();
-     switch (ret) {
-         case QMessageBox::Yes:
+
+     msgBox.exec();
+     if (msgBox.clickedButton() == yesBtn)
+     {
              event->accept();
              return;
      }
@@ -128,9 +140,15 @@ void MainWindow::UpdateTimer()
 
 void MainWindow::about()
 {
-    QMessageBox::about(this, trUtf8("About Application"),
-        trUtf8("The <b>Application</b> is an AsteriskCTI Client based on QT "));
+    AboutDialog aboutDialog(this);
+    aboutDialog.exec();
 }
+
+void MainWindow::aboutQt()
+{
+    QMessageBox::aboutQt(this, trUtf8("About Qt Version"));
+}
+
 
 void MainWindow::configure()
 {
