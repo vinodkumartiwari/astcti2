@@ -10,7 +10,8 @@ HEADERS += mainwindow.h \
     aboutdialog.h \
     coreconstants.h
 FORMS += mainwindow.ui \
-    aboutdialog.ui
+    aboutdialog.ui \
+    browserdialog.ui
 RESOURCES += mainresources.qrc
 TRANSLATIONS = AstCTIClient_en_US.ts \
     AstCTIClient_it_IT.ts
