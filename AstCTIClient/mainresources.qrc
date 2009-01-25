@@ -14,5 +14,9 @@
         <file>res/applications-system.png</file>
         <file>res/asteriskcti.png</file>
         <file>res/asteriskcti-3d.png</file>
+        <file>res/asteriskcti16x16.png</file>
+        <file>res/asteriskcti-3d128x128.png</file>
+        <file>res/asteriskcti128x128.png</file>
+        <file>res/ok.png</file>
     </qresource>
 </RCC>

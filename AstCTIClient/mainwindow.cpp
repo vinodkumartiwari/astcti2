@@ -39,11 +39,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-static int LINKS_TIMEOUT = 10;
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent,Qt::Dialog) , ui(new Ui::MainWindowClass)
 {
+    createActions();
+    createTrayIcon();
+
 
     // Append links to the link label
     links.append("<a href=\"http://code.google.com/p/astcti2\">Asterisk CTI</a>");
@@ -53,14 +54,32 @@ MainWindow::MainWindow(QWidget *parent)
     labelPos = 0;
     labelTime = LINKS_TIMEOUT;
     ui->setupUi(this);
+    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 
+    this->setDesktopPosition();
+    this->addExtraWidgets();
+    this->enableBannerTimer();
+    this->connectSlots();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::enableBannerTimer()
+{
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(UpdateTimer()));
+    timer->start(1000);
+}
+
+void MainWindow::addExtraWidgets()
+{
     statusImage = new QIcon(QPixmap(QString::fromUtf8(":/res/res/redled.png")));
-    // setFixedSize( sizeHint() );
-
 
     lblCurrentStatus = new QLabel(trUtf8("<b>Not Connected</b>")) ;
     this->statusBar()->addWidget(lblCurrentStatus);
-
 
     lblCurrentTime = new QLabel(QString("00:00:00")) ;
     lblCurrentTime->setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Fixed);
@@ -74,12 +93,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     linkLabel->setCursor(Qt::PointingHandCursor);
     this->statusBar()->addWidget(linkLabel);
+}
 
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(UpdateTimer()));
-    timer->start(1000);
-
-
+void MainWindow::connectSlots()
+{
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->actionExit_2, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->actionConfigure, SIGNAL(triggered()), this, SLOT(configure()));
@@ -89,13 +106,75 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionAbout_2, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
-
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+             this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 }
 
-MainWindow::~MainWindow()
+void MainWindow::setDesktopPosition()
 {
-    delete ui;
+    QDesktopWidget *desktop = QApplication::desktop();
+    QRect screenRect = desktop->screenGeometry();
+    QPoint location = QPoint(( (screenRect.width() - this->width()) / 2), ((screenRect.height() - this->height()) / 2));
+    this->move(location);
 }
+
+void MainWindow::createActions()
+ {
+     minimizeAction = new QAction(trUtf8("Mi&nimize"), this);
+     connect(minimizeAction, SIGNAL(triggered()), this, SLOT(hide()));
+
+     restoreAction = new QAction(trUtf8("&Restore"), this);
+     connect(restoreAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+
+     quitAction = new QAction(trUtf8("&Quit"), this);
+     connect(quitAction, SIGNAL(triggered()), this, SLOT(quit()));
+ }
+
+ void MainWindow::createTrayIcon()
+ {
+     QIcon icon;
+     icon.addPixmap(QPixmap(QString::fromUtf8(":/res/res/asteriskcti16x16.png")), QIcon::Normal, QIcon::Off);
+     trayIconMenu = new QMenu(this);
+     trayIconMenu->addAction(minimizeAction);
+     trayIconMenu->addAction(restoreAction);
+     trayIconMenu->addSeparator();
+     trayIconMenu->addAction(quitAction);
+
+     trayIcon = new QSystemTrayIcon(icon, this);
+     trayIcon->setContextMenu(trayIconMenu);
+     trayIcon->show();
+ }
+
+ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
+ {
+     switch (reason)
+     {
+         case QSystemTrayIcon::Trigger:
+            this->isVisible() ? this->hide() :  this->show();
+            break;
+
+         case QSystemTrayIcon::DoubleClick:
+             break;
+         case QSystemTrayIcon::MiddleClick:
+             showMessage();
+             break;
+         default:
+            ;
+     }
+ }
+
+
+ void MainWindow::showMessage()
+ {
+     trayIcon->showMessage("Test", "this is a test", QSystemTrayIcon::Information , 3000);
+ }
+
+
+ void MainWindow::messageClicked()
+ {
+     QMessageBox::information(0, trUtf8("Systray"), trUtf8("Test"));
+ }
+
 
  void MainWindow::closeEvent(QCloseEvent *event)
  {
@@ -103,8 +182,12 @@ MainWindow::~MainWindow()
      
      msgBox.setText( trUtf8("Confirm application close."));
      msgBox.setInformativeText( trUtf8("Sure you want to exit?"));
-     QPushButton *yesBtn = msgBox.addButton( trUtf8("Yes"),QMessageBox::YesRole);
-     QPushButton *noBtn = msgBox.addButton( trUtf8("No"),QMessageBox::NoRole);
+     QPushButton *yesBtn = msgBox.addButton( trUtf8("&Yes"),QMessageBox::YesRole);
+     yesBtn->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
+     QPushButton *noBtn = msgBox.addButton( trUtf8("&No"),QMessageBox::NoRole);
+     noBtn->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
+
+
      msgBox.setDefaultButton( noBtn );
      msgBox.setIcon(QMessageBox::Question);
 
