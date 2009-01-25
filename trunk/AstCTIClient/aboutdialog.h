@@ -2,6 +2,8 @@
 #define ABOUTDIALOG_H
 
 #include <QtGui>
+#include "coreconstants.h"
+
 namespace Ui {
     class AboutDialog;
 }
@@ -16,10 +18,13 @@ public:
 protected:
     virtual void changeEvent(QEvent *e);
 
+
 private:
     Ui::AboutDialog *m_ui;
+    void setUpInfoLabel();
 
 private slots:
+    void on_btnShowLicence_clicked();
     void on_btnClose_clicked();
     void on_btnAboutQt_clicked();
 };

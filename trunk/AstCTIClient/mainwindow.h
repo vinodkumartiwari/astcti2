@@ -39,6 +39,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include <QtGui>
+#include <QSystemTrayIcon>
+
 #include "aboutdialog.h"
 
 
@@ -66,9 +68,32 @@ protected:
 private:
     Ui::MainWindowClass *ui;
 
+    QAction *minimizeAction;
+
+    QAction *restoreAction;
+    QAction *quitAction;
+
+
+    QSystemTrayIcon *trayIcon;
+    QMenu *trayIconMenu;
+
     int labelTime;
     int labelPos;
-     QVector<QString> links;
+    QVector<QString> links;
+
+    void setDesktopPosition();
+    void createActions();
+    void createTrayIcon();
+    void addExtraWidgets();
+    void enableBannerTimer();
+    void connectSlots();
+
+private slots:
+    void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void showMessage();
+    void messageClicked();
+
+
 
 public slots:
     void UpdateTimer();

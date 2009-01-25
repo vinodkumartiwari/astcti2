@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>344</width>
-    <height>123</height>
+    <height>116</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,6 +21,10 @@
   </property>
   <property name="windowTitle">
    <string>AstCTIClient</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="mainresources.qrc">
+    <normaloff>:/res/res/asteriskcti16x16.png</normaloff>:/res/res/asteriskcti16x16.png</iconset>
   </property>
   <property name="styleSheet">
    <string/>
@@ -40,7 +44,7 @@
     </sizepolicy>
    </property>
    <property name="styleSheet">
-    <string>background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 64, 255, 255), stop:1 rgba(255, 255, 255, 255));
+    <string>background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(184, 97, 158, 255), stop:1 rgba(255, 255, 255, 255));
 </string>
    </property>
    <property name="movable">
@@ -77,6 +81,9 @@
    <property name="styleSheet">
     <string>padding: 2px;</string>
    </property>
+   <property name="sizeGripEnabled">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -84,7 +91,7 @@
      <x>0</x>
      <y>0</y>
      <width>344</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -112,13 +119,13 @@
      <normaloff>:/res/res/agt_forward.png</normaloff>:/res/res/agt_forward.png</iconset>
    </property>
    <property name="text">
-    <string>Login</string>
+    <string>&amp;Login</string>
    </property>
    <property name="toolTip">
     <string>Login</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+L</string>
+    <string>F1</string>
    </property>
   </action>
   <action name="actionPause">
@@ -127,7 +134,10 @@
      <normaloff>:/res/res/agt_pause-queue.png</normaloff>:/res/res/agt_pause-queue.png</iconset>
    </property>
    <property name="text">
-    <string>Pause</string>
+    <string>&amp;Pause</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
    </property>
   </action>
   <action name="actionConfigure">
@@ -136,7 +146,7 @@
      <normaloff>:/res/res/configure.png</normaloff>:/res/res/configure.png</iconset>
    </property>
    <property name="text">
-    <string>Configure</string>
+    <string>&amp;Configure</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -154,13 +164,10 @@
      <normaloff>:/res/res/exit.png</normaloff>:/res/res/exit.png</iconset>
    </property>
    <property name="text">
-    <string>Exit</string>
+    <string>&amp;Quit</string>
    </property>
    <property name="toolTip">
     <string>Exit</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+E</string>
    </property>
   </action>
   <action name="actionAbout_2">
@@ -195,7 +202,7 @@
      <normaloff>:/res/res/exit.png</normaloff>:/res/res/exit.png</iconset>
    </property>
    <property name="text">
-    <string>Exit</string>
+    <string>&amp;Quit</string>
    </property>
   </action>
  </widget>
