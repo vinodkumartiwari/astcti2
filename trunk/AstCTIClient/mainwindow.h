@@ -39,10 +39,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include <QtGui>
+#include <QtGui/QApplication>
 #include <QSystemTrayIcon>
 
 #include "aboutdialog.h"
-
+#include "browserdialog.h"
 
 namespace Ui
 {

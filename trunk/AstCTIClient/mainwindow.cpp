@@ -235,8 +235,9 @@ void MainWindow::aboutQt()
 
 void MainWindow::configure()
 {
-    // does actually nothing
-
+    BrowserDialog browse(this);
+    browse.setModal(false);
+    browse.exec();
 }
 
 void MainWindow::login()
