@@ -71,6 +71,12 @@ void AboutDialog::on_btnClose_clicked()
 void AboutDialog::on_btnShowLicence_clicked()
 {
     QDialog *dialog = new QDialog(this);
+
+    Qt::WindowFlags flags = dialog->windowFlags();
+    flags |= Qt::WindowMinMaxButtonsHint;
+    flags |= Qt::WindowContextHelpButtonHint;
+    dialog->setWindowFlags(flags);
+
     dialog->setWindowTitle("License");
     QVBoxLayout *layout = new QVBoxLayout(dialog);
     QTextBrowser *licenseBrowser = new QTextBrowser(dialog);
@@ -92,7 +98,7 @@ void AboutDialog::on_btnShowLicence_clicked()
 
     licenseBrowser->setPlainText(licenseText);
 
-    dialog->setMinimumSize(QSize(550, 690));
+    dialog->setMinimumSize(QSize(640, 480));
     dialog->exec();
     delete dialog;
 }

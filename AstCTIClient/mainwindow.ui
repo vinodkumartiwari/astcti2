@@ -23,7 +23,7 @@
    <string>AstCTIClient</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="mainresources.qrc">
+   <iconset>
     <normaloff>:/res/res/asteriskcti16x16.png</normaloff>:/res/res/asteriskcti16x16.png</iconset>
   </property>
   <property name="styleSheet">
@@ -115,7 +115,7 @@
   </widget>
   <action name="actionLogin">
    <property name="icon">
-    <iconset resource="mainresources.qrc">
+    <iconset>
      <normaloff>:/res/res/agt_forward.png</normaloff>:/res/res/agt_forward.png</iconset>
    </property>
    <property name="text">
@@ -130,7 +130,7 @@
   </action>
   <action name="actionPause">
    <property name="icon">
-    <iconset resource="mainresources.qrc">
+    <iconset>
      <normaloff>:/res/res/agt_pause-queue.png</normaloff>:/res/res/agt_pause-queue.png</iconset>
    </property>
    <property name="text">
@@ -142,7 +142,7 @@
   </action>
   <action name="actionConfigure">
    <property name="icon">
-    <iconset resource="mainresources.qrc">
+    <iconset>
      <normaloff>:/res/res/configure.png</normaloff>:/res/res/configure.png</iconset>
    </property>
    <property name="text">
@@ -151,7 +151,7 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset resource="mainresources.qrc">
+    <iconset>
      <normaloff>:/res/res/documentinfo.png</normaloff>:/res/res/documentinfo.png</iconset>
    </property>
    <property name="text">
@@ -160,7 +160,7 @@
   </action>
   <action name="actionExit">
    <property name="icon">
-    <iconset resource="mainresources.qrc">
+    <iconset>
      <normaloff>:/res/res/exit.png</normaloff>:/res/res/exit.png</iconset>
    </property>
    <property name="text">
@@ -172,7 +172,7 @@
   </action>
   <action name="actionAbout_2">
    <property name="icon">
-    <iconset resource="mainresources.qrc">
+    <iconset>
      <normaloff>:/res/res/documentinfo.png</normaloff>:/res/res/documentinfo.png</iconset>
    </property>
    <property name="text">
@@ -189,7 +189,7 @@
   </action>
   <action name="actionConfigure_2">
    <property name="icon">
-    <iconset resource="mainresources.qrc">
+    <iconset>
      <normaloff>:/res/res/configure.png</normaloff>:/res/res/configure.png</iconset>
    </property>
    <property name="text">
@@ -198,7 +198,7 @@
   </action>
   <action name="actionExit_2">
    <property name="icon">
-    <iconset resource="mainresources.qrc">
+    <iconset>
      <normaloff>:/res/res/exit.png</normaloff>:/res/res/exit.png</iconset>
    </property>
    <property name="text">
@@ -207,9 +207,7 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="mainresources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
  <slots>
   <slot>showDialog()</slot>

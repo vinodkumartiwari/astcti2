@@ -3,12 +3,15 @@
 # -------------------------------------------------
 TARGET = AstCTIClient
 TEMPLATE = app
+QT += webkit
 SOURCES += main.cpp \
     mainwindow.cpp \
-    aboutdialog.cpp
+    aboutdialog.cpp \
+    browserdialog.cpp
 HEADERS += mainwindow.h \
     aboutdialog.h \
-    coreconstants.h
+    coreconstants.h \
+    browserdialog.h
 FORMS += mainwindow.ui \
     aboutdialog.ui \
     browserdialog.ui
