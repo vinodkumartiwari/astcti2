@@ -235,9 +235,9 @@ void MainWindow::aboutQt()
 
 void MainWindow::configure()
 {
-    BrowserDialog browse(this);
-    browse.setModal(false);
-    browse.exec();
+    BrowserWindow *sec = new BrowserWindow();
+    sec->move(x() + 40, y() + 40);
+    sec->show();
 }
 
 void MainWindow::login()
