@@ -43,7 +43,8 @@
 #include <QSystemTrayIcon>
 
 #include "aboutdialog.h"
-#include "browserdialog.h"
+#include "browserwindow.h"
+
 
 namespace Ui
 {

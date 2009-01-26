@@ -7,14 +7,14 @@ QT += webkit
 SOURCES += main.cpp \
     mainwindow.cpp \
     aboutdialog.cpp \
-    browserdialog.cpp
+    browserwindow.cpp
 HEADERS += mainwindow.h \
     aboutdialog.h \
     coreconstants.h \
-    browserdialog.h
+    browserwindow.h
 FORMS += mainwindow.ui \
     aboutdialog.ui \
-    browserdialog.ui
+    browserwindow.ui
 RESOURCES += mainresources.qrc
 TRANSLATIONS = AstCTIClient_en_US.ts \
     AstCTIClient_it_IT.ts
