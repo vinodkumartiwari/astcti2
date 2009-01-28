@@ -35,35 +35,58 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
 
-#include <QtGui>
-#include "coreconstants.h"
+#include "cticlientapplication.h"
 
-namespace Ui {
-    class AboutDialog;
+#include "mainwindow.h"
+#include "browserwindow.h"
+
+
+CtiClientApplication::CtiClientApplication(int &argc, char **argv)
+             : QApplication(argc, argv)
+{
+    QString locale = QLocale::system().name();
+
+    QTranslator translator;
+    translator.load(QString("AstCTIClient_") + locale);
+    installTranslator(&translator);
+
+#if defined(Q_WS_MAC)
+    QApplication::setQuitOnLastWindowClosed(false);
+#else
+        QApplication::setQuitOnLastWindowClosed(true);
+#endif
+
 }
 
-class AboutDialog : public QDialog {
-    Q_OBJECT
-    Q_DISABLE_COPY(AboutDialog)
-public:
-    explicit AboutDialog(QWidget *parent = 0);
-    virtual ~AboutDialog();
+CtiClientApplication::~CtiClientApplication()
+{
+    // delete all browser windows
+    qDeleteAll(m_mainWindows);
+}
 
-protected:
-    virtual void changeEvent(QEvent *e);
+CtiClientApplication *CtiClientApplication::instance()
+{
+    return (static_cast<CtiClientApplication *>(QCoreApplication::instance()));
+}
 
 
-private:
-    Ui::AboutDialog *m_ui;
-    void setUpInfoLabel();
+MainWindow *CtiClientApplication::newMainWindow()
+{
+    // Let's build our main window
+    this->m_mainWnd = new MainWindow();
+    this->m_mainWnd->show();
+    return this->m_mainWnd;
+}
 
-private slots:
-    void on_btnShowLicence_clicked();
-    void on_btnClose_clicked();
-    void on_btnAboutQt_clicked();
-};
 
-#endif // ABOUTDIALOG_H
+BrowserWindow *CtiClientApplication::newBrowserWindow()
+{
+    // All browsers will be child of our main window
+    // if we close main window all browser' windows will close too
+    BrowserWindow *browser = new BrowserWindow(this->m_mainWnd);
+    m_mainWindows.prepend(browser);
+    browser->show();
+    return browser;
+
+}

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading ui file 'browserwindow.ui'
 **
-** Created: Mon Jan 26 06:58:18 2009
+** Created: Wed Jan 28 21:56:03 2009
 **      by: Qt User Interface Compiler version 4.4.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -21,7 +21,6 @@
 #include <QtGui/QStatusBar>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
-#include <QtWebKit/QWebView>
 
 QT_BEGIN_NAMESPACE
 
@@ -35,7 +34,6 @@ public:
     QLineEdit *txtUrl;
     QPushButton *btnGo;
     QPushButton *pushButton_2;
-    QWebView *webView;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *BrowserWindowClass)
@@ -68,12 +66,6 @@ public:
 
 
     verticalLayout->addLayout(horizontalLayout);
-
-    webView = new QWebView(centralwidget);
-    webView->setObjectName(QString::fromUtf8("webView"));
-    webView->setUrl(QUrl("about:blank"));
-
-    verticalLayout->addWidget(webView);
 
 
     verticalLayout_2->addLayout(verticalLayout);
