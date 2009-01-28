@@ -39,6 +39,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "cticlientapplication.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent,Qt::Dialog) , ui(new Ui::MainWindowClass)
 {
@@ -235,9 +237,7 @@ void MainWindow::aboutQt()
 
 void MainWindow::configure()
 {
-    BrowserWindow *sec = new BrowserWindow();
-    sec->move(x() + 40, y() + 40);
-    sec->show();
+    CtiClientApplication::instance()->newBrowserWindow();
 }
 
 void MainWindow::login()

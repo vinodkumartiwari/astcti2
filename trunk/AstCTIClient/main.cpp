@@ -36,20 +36,12 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include <QtGui/QApplication>
-#include "mainwindow.h"
+#include "cticlientapplication.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    CtiClientApplication application(argc, argv);
+    application.newMainWindow();
 
-    QString locale = QLocale::system().name();
-
-    QTranslator translator;
-    translator.load(QString("AstCTIClient_") + locale);
-    a.installTranslator(&translator);
-
-    MainWindow w;
-    w.show();
-    return a.exec();
+    return application.exec();
 }

@@ -35,35 +35,68 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
+#ifndef WEBVIEW_H
+#define WEBVIEW_H
 
-#include <QtGui>
-#include "coreconstants.h"
+#include <QtWebKit/QWebView>
 
-namespace Ui {
-    class AboutDialog;
-}
+QT_BEGIN_NAMESPACE
+class QAuthenticator;
+class QMouseEvent;
+class QNetworkProxy;
+class QNetworkReply;
+class QSslError;
+QT_END_NAMESPACE
 
-class AboutDialog : public QDialog {
+class BrowserWindow;
+class WebPage : public QWebPage {
     Q_OBJECT
-    Q_DISABLE_COPY(AboutDialog)
+
+signals:
+    void loadingUrl(const QUrl &url);
+
 public:
-    explicit AboutDialog(QWidget *parent = 0);
-    virtual ~AboutDialog();
-
-protected:
-    virtual void changeEvent(QEvent *e);
-
-
-private:
-    Ui::AboutDialog *m_ui;
-    void setUpInfoLabel();
+    WebPage(QObject *parent = 0);
+    BrowserWindow *mainWindow();
 
 private slots:
-    void on_btnShowLicence_clicked();
-    void on_btnClose_clicked();
-    void on_btnAboutQt_clicked();
+    void handleUnsupportedContent(QNetworkReply *reply);
+
+protected:
+    bool acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type);
+    QWebPage *createWindow(QWebPage::WebWindowType type);
+#if !defined(QT_NO_UITOOLS)
+    QObject *createPlugin(const QString &classId, const QUrl &url, const QStringList &paramNames, const QStringList &paramValues);
+#endif
+
+private:
+    friend class WebView;
+    QUrl m_loadingUrl;
 };
 
-#endif // ABOUTDIALOG_H
+class WebView : public QWebView {
+    Q_OBJECT
+
+public:
+    WebView(QWidget *parent = 0);
+    WebPage *webPage() const { return m_page; }
+
+    void loadUrl(const QUrl &url);
+    QUrl url() const;
+
+    QString lastStatusBarText() const;
+    inline int progress() const { return m_progress; }
+
+private slots:
+    void setProgress(int progress);
+    void loadFinished();
+    void setStatusBarText(const QString &string);
+
+private:
+    QString m_statusBarText;
+    QUrl m_initialUrl;
+    int m_progress;
+    WebPage *m_page;
+};
+
+#endif

@@ -35,35 +35,37 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
 
-#include <QtGui>
-#include "coreconstants.h"
+#ifndef CTICLIENTAPPLICATION_H
+#define CTICLIENTAPPLICATION_H
 
-namespace Ui {
-    class AboutDialog;
-}
+#include <QtGui/QApplication>
 
-class AboutDialog : public QDialog {
+#include <QtCore/QUrl>
+#include <QtCore/QPointer>
+
+#include <QtGui/QIcon>
+
+class BrowserWindow;
+class MainWindow;
+
+class CtiClientApplication : public QApplication
+{
     Q_OBJECT
-    Q_DISABLE_COPY(AboutDialog)
+
 public:
-    explicit AboutDialog(QWidget *parent = 0);
-    virtual ~AboutDialog();
+    CtiClientApplication(int &argc, char **argv);
+    ~CtiClientApplication();
+    static CtiClientApplication *instance();
 
-protected:
-    virtual void changeEvent(QEvent *e);
 
+public slots:
+    MainWindow *newMainWindow();
+    BrowserWindow *newBrowserWindow();
 
 private:
-    Ui::AboutDialog *m_ui;
-    void setUpInfoLabel();
-
-private slots:
-    void on_btnShowLicence_clicked();
-    void on_btnClose_clicked();
-    void on_btnAboutQt_clicked();
+    QList<QPointer<BrowserWindow> > m_mainWindows;
+    MainWindow *m_mainWnd;
 };
 
-#endif // ABOUTDIALOG_H
+#endif // CTICLIENTAPPLICATION_H
