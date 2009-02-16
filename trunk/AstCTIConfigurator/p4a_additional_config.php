@@ -18,18 +18,7 @@
  * @author Fabrizio Balliano <fabrizio.balliano@crealabs.it>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
-
-define("P4A_LOCALE", 'en_US');
-define("P4A_DSN", 'sqlite:/asteriskcti.db3');
-
-$additional_config = dirname(__FILE__) . "/p4a_additional_config.php";
-if (file_exists($additional_config)) 
-{
-	include($additional_config);
-}
-
-define("P4A_AJAX_ENABLED", false);
-
-require_once dirname(__FILE__) . '/p4a/p4a.php';
-
-p4a::singleton("astcti2")->main();
+	
+	// Put here additional P4A configurations.
+	
+?>

@@ -1,0 +1,33 @@
+1. P4A Framework
+2. SQLite database
+
+--------------------------------------------------------------------------------
+1. P4A Framework
+--------------------------------------------------------------------------------
+AsteriskCTI Configurator make use of P4A Framework.
+To get the whole thing working, please make sure that you read P4A documentation
+before.
+In particular, is important to pay attention to P4A framework configuration
+to avoid errors like "Cannot instantiate non-existent class...".
+Please read the FAQ here: 
+
+http://p4a.crealabsfoundation.org/wiki/Frequently_Asked_Questions
+
+You can put additional configuration define in the file:
+
+p4a_additional_config.php
+
+This file is read before bootstrap the P4A Framework.
+
+--------------------------------------------------------------------------------
+2. SQLite database
+--------------------------------------------------------------------------------
+If you face problems on insert/update/delete records in SQLite database like:
+
+SQLSTATE[HY000]: General error: 14 unable to open database file in ...
+
+please pay attention to the fact that SQLite needs to be able to create and 
+delete a journal file during database modification. So you should check that
+the directory containing the database is writeable by the webserver.
+
+
