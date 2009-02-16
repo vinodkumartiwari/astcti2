@@ -40,8 +40,8 @@ class services extends p4a_simple_edit_mask
 		$this->fieldset->setLabel("Details about current service");
 		
 		$service_context_types = array();
-		$service_context_types[] = array("id"=>"'INBOUND'", "desc"=>"INBOUND");
-		$service_context_types[] = array("id"=>"'OUTBOUND'", "desc"=>"OUTBOUND");
+		$service_context_types[] = array("id"=>"INBOUND", "desc"=>"Inbound");
+		$service_context_types[] = array("id"=>"OUTBOUND", "desc"=>"Outbound");
 		$this->build("p4a_array_source", "service_context_types")
 			->load($service_context_types)
 			->setPk("id");
@@ -50,9 +50,9 @@ class services extends p4a_simple_edit_mask
 			->setSource($this->service_context_types);
 			
 		$service_trigger_types = array();
-		$service_trigger_types[] = array("id"=>"'NONE'", "desc"=>"NONE");
-		$service_trigger_types[] = array("id"=>"'APPLICATION'", "desc"=>"APPLICATION");
-		$service_trigger_types[] = array("id"=>"'BROWSER'", "desc"=>"BROWSER");
+		$service_trigger_types[] = array("id"=>"NONE", "desc"=>"None");
+		$service_trigger_types[] = array("id"=>"APPLICATION", "desc"=>"Application");
+		$service_trigger_types[] = array("id"=>"BROWSER", "desc"=>"Browser");
 		$this->build("p4a_array_source", "service_trigger_types")
 			->load($service_trigger_types)
 			->setPk("id");
