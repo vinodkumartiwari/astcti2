@@ -21,15 +21,9 @@
 
 define("P4A_LOCALE", 'en_US');
 define("P4A_DSN", 'sqlite:/asteriskcti.db3');
+define("P4A_AJAX_ENABLED", false); // just during development
 
-$additional_config = dirname(__FILE__) . "/p4a_additional_config.php";
-if (file_exists($additional_config)) 
-{
-	include($additional_config);
-}
-
-define("P4A_AJAX_ENABLED", false);
-
+@include dirname(__FILE__) . "/p4a_additional_config.php";
 require_once dirname(__FILE__) . '/p4a/p4a.php';
 
 p4a::singleton("astcti2")->main();
