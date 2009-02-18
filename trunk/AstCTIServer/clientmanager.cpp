@@ -37,6 +37,7 @@
  */
 
 #include "clientmanager.h"
+#include "mainserver.h"
 
 /*!
     ClientManager Constructor
@@ -72,9 +73,15 @@ void ClientManager::initParserCommands()
     commandsList["USER"]=CMD_USER;
     commandsList["PASS"]=CMD_PASS;
     commandsList["ORIG"]=CMD_ORIG;
+    commandsList["STOP"]=CMD_STOP;
 
 }
 
+void ClientManager::stop()
+{
+    this->theSocket->disconnectFromHost();
+
+}
 
 void ClientManager::run()
 {
@@ -88,16 +95,22 @@ void ClientManager::run()
     if (config->qDebug) qDebug() << "In ClientManager::run";
 
     // We need to build the socket to manage client connection
-    QTcpSocket tcpSocket;
+    QTcpSocket              tcpSocket;
+
     if (!tcpSocket.setSocketDescriptor(socketDescriptor)) {
         qDebug() << "Error in socket:" << tcpSocket.errorString();
         return;
     }
     this->theSocket = &tcpSocket;
 
+
+
     // Let's grab some informations about remote endpoint
     QHostAddress    remote_addr = tcpSocket.peerAddress();  // Remote ip addr
     quint16         remote_port = tcpSocket.peerPort();     // Remote port
+
+    this->localIdentifier = QString("client-%1-%2").arg(remote_addr.toString()).arg(remote_port);
+    emit this->addClient(this->localIdentifier, this);
 
     if (config->qDebug) qDebug() << "Incoming Connection from " << remote_addr.toString() << ":" << remote_port;
 
@@ -189,7 +202,9 @@ void ClientManager::run()
                             break;
                         case CMD_PASS:
                             // TODO : emit only if user done a successfull authentication
-                            emit this->addClient(QString("SIP/200"), this);
+
+                            emit this->changeClient(this->localIdentifier, QString("exten-SIP/200"));
+                            this->localIdentifier = QString("exten-SIP/200");
                             this->sendData("100 OK Authentication successful");
                             break;
                         case CMD_ORIG:
@@ -198,6 +213,10 @@ void ClientManager::run()
                                 emit this->notify(parm);
                             }
                             this->sendData("100 OK");
+                            break;
+                        case CMD_STOP:
+                            emit this->stopRequested(this->localIdentifier, this);
+                            qDebug() << "Emitted signal STOP";
                             break;
                         case CMD_NOT_DEFINED:
                              this->sendData("101 KO Invalid Command");
@@ -215,7 +234,7 @@ void ClientManager::run()
 
     // Emit a signal when disconnection is in progress
     // TODO : emit only if user done a successfull authentication
-    emit this->removeClient(QString("SIP/200"));
+    emit this->removeClient(this->localIdentifier);
     if (config->qDebug) qDebug() << "Connection from" << remote_addr.toString() << ":" << remote_port << "closed";
 }
 

@@ -13,10 +13,14 @@ SOURCES += main.cpp \
     mainserver.cpp \
     clientmanager.cpp \
     logger.cpp \
-    amiclient.cpp
+    amiclient.cpp \
+    argumentlist.cpp \
+    ctiserverapplication.cpp
 HEADERS += mainserver.h \
     clientmanager.h \
-    main.h \
     cticonfig.h \
     logger.h \
-    amiclient.h
+    amiclient.h \
+    coreconstants.h \
+    argumentlist.h \
+    ctiserverapplication.h

@@ -38,7 +38,9 @@
 
 
 #include "mainserver.h"
+#include "ctiserverapplication.h"
 
+#include <QtSql>
 
 /*!
     Our MainServer derive from QTcpServer
@@ -46,10 +48,22 @@
 MainServer::MainServer(QAstCTIConfiguration *config, QObject *parent)
     : QTcpServer(parent)
 {
+    this->isClosing = false;
     // Lets set local configuration struct
     this->config = config;
-    if (config->qDebug) qDebug() << "In MainServer::MainServer constructor";
+    if (config->qDebug) qDebug() << "In MainServer:MainServer:MainServer constructor";
     // Basic init here
+
+    /* code testing start: used for testing purpose only */
+    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlQuery query(db);
+    query.exec("SELECT * FROM operators");
+    while (query.next())
+    {
+         QString name = query.value(1).toString();
+         qDebug() << name;
+    }
+    /* code testing end */
 
 }
 
@@ -65,8 +79,10 @@ void MainServer::incomingConnection(int socketDescriptor)
 
     // Inform us about client authentications / disconnections
     connect(thread, SIGNAL(addClient(const QString,ClientManager *)) , this, SLOT(addClient(const QString,ClientManager *)));
+    connect(thread, SIGNAL(changeClient(const QString,const QString)), this, SLOT(changeClient(const QString,const QString)));
     connect(thread, SIGNAL(removeClient(const QString)), this, SLOT(removeClient(const QString)));
     connect(thread, SIGNAL(notify(const QString)), this, SLOT(clientNotify(const QString)));
+    connect(thread, SIGNAL(stopRequested(QString,ClientManager*)), this, SLOT(closeServer(const QString,ClientManager *)));
     thread->start();
 }
 
@@ -96,6 +112,27 @@ void MainServer::removeClient(const QString &exten)
     }
     if (config->qDebug) qDebug() << "Number of clients:" << clients.count();
     mutexClientList.unlock();
+
+    if ((this->isClosing) & (clients.count() == 0) )
+    {
+        if (config->qDebug) qDebug() << "Clients are 0 and we're asked to close";
+        this->close();
+
+
+    }
+}
+void MainServer::changeClient(const QString &oldexten,const QString &newexten)
+{
+    if (config->qDebug) qDebug() << "Changing client exten from" << oldexten << "to" << newexten;
+    mutexClientList.lock();
+    if (clients.contains(oldexten))
+    {
+        ClientManager *cl = clients.value(oldexten);
+        clients.remove(oldexten);
+        clients[newexten] = cl;
+    }
+
+    mutexClientList.unlock();
 }
 
 bool MainServer::containClient(const QString &exten)
@@ -112,15 +149,18 @@ void MainServer::clientNotify(const QString &data)
     emit dataToClient(data);
 }
 
+void MainServer::closeServer(const QString &exten, ClientManager *cl)
+{
+    this->isClosing = true;
+    qDebug() << "Received STOP signal";
 
+    QMutableHashIterator<QString, ClientManager*> i(this->clients);
+    while (i.hasNext()) {
+        i.next();
+        qDebug() << "Destroiyng client" << i.key();
+        i.value()->stop();
 
-
-
-
-
-
-
-
-
-
-
+    }
+    // After removed all client, exit the application.
+    CtiServerApplication::instance()->exit(0);
+}

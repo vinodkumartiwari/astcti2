@@ -39,6 +39,9 @@
 #ifndef CTICONFIG_H
 #define CTICONFIG_H
 
+#include <QSqlDatabase>
+
+
 struct QAstCTIConfiguration
 {
     bool        qDebug;
@@ -50,6 +53,10 @@ struct QAstCTIConfiguration
     QString     ami_user;
     QString     ami_secret;
     quint16     ami_connect_timeout;
+    QString     sqlite_file;
+    QString     sqlite_user;
+    QString     sqlite_secret;
+    QSqlDatabase *db;
 };
 
 #endif

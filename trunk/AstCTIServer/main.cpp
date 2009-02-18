@@ -36,93 +36,38 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include "main.h"
-#include "mainserver.h"
+#include "coreconstants.h"
+#include "ctiserverapplication.h"
+
+// TODO:
+// replace, where possible, preprocessor macros with consts
+QAsteriskCTILogger      logger; // Our logger object
+
+void logOutput(QtMsgType type, const char *msg)
+{
+    logger.writeToLog(type, msg);
+}
 
 int main(int argc, char *argv[])
 {
+    
+    qDebug() << "AsteriskCTI Server version" << APP_VERSION_LONG;
+    qDebug() << "Based on Qt" << QT_VERSION_STR;
+    qDebug() << "Built on " __DATE__ " at " __TIME__;
+    qDebug() << "Copyright" <<  APP_YEAR << ". All rights reserved.";
+    qDebug() << "The program is provided AS IS with NO WARRANTY OF ANY KIND,";
+    qDebug() << "INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND";
+    qDebug() << "FITNESS FOR A PARTICULAR PURPOSE.";
+
+    qInstallMsgHandler(logOutput);
+
     // QCoreApplication needs to be initialized here
-    QCoreApplication a(argc, argv);
+    CtiServerApplication app(argc, argv);
+    if (app.newMainServer() == NULL)
+        return 1;
 
-    QString                 logtxt; // A string for logging purposes
-    QAsteriskCTILogger      logger; // Our logger object
-    QAstCTIConfiguration    config; // Main configuration struct
-
-    // Please, no debug on console if not requested
-    config.qDebug = false;
-
-    // Check command line if some arguments are set
-    if (QCoreApplication::arguments().count() > 1)
-    {
-        // Check if debug on command line is enabled
-        config.qDebug = (QCoreApplication::arguments().contains("-debug"));
-    }
-
-    if (config.qDebug) qDebug("Creating MainServer");
-    logtxt.clear(); QTextStream(&logtxt) << "Creating MainServer";
-    logger.writeToLog(LOG_INFO, logtxt);
-
-    if (config.qDebug) qDebug("Reading Configurations");
-    logtxt.clear(); QTextStream(&logtxt) << "Creating MainServer";
-    logger.writeToLog(LOG_INFO, "Reading Configurations");
-
-    // Instantiate a QSettings object for read/write from/to ini file
-    QSettings settings("settings.ini", QSettings::IniFormat );
-
-    // Just for the group named Server
-    // write default values if keys are not set
-    settings.beginGroup("Server");
-    writeSetting(&settings, "port",             DEFAULT_SERVER_PORT);
-    writeSetting(&settings, "readTimeout",      DEFAULT_READ_TIMEOUT);
-    writeSetting(&settings, "compressionLevel", DEFAULT_COMPRESSION_LEVEL);
-    settings.endGroup();
-
-    // write default values for Asterisk AMI
-    settings.beginGroup("AsteriskAMI");
-    writeSetting(&settings, "host",            DEFAULT_AMI_HOSTIP);
-    writeSetting(&settings, "port",            DEFAULT_AMI_PORT);
-    writeSetting(&settings, "user",            DEFAULT_AMI_USER);
-    writeSetting(&settings, "secret",          DEFAULT_AMI_SECRET);
-    writeSetting(&settings, "connect_timeout", DEFAULT_AMI_CONNECT_TIMEOUT);
-    settings.endGroup();
-
-    // read values from the keys and store them in a config object
-    settings.beginGroup("Server");
-    config.readTimeout          = settings.value("readTimeout").toInt();
-    config.serverPort           = settings.value("port").toInt();
-    config.compressionLevel     = settings.value("compressionLevel").toInt();
-    settings.endGroup();
-
-    settings.beginGroup("AsteriskAMI");
-    config.ami_host             = settings.value("host").toString();
-    config.ami_port             = settings.value("port").toInt();
-    config.ami_user             = settings.value("user").toString();
-    config.ami_secret           = settings.value("secret").toString();
-    config.ami_connect_timeout  = settings.value("connect_timeout").toInt() * 1000;
-    settings.endGroup();
-
-
-    logtxt.clear(); QTextStream(&logtxt) << "MainServer version " << ASTCTISRV_RELEASE;
-    logger.writeToLog(LOG_INFO, logtxt);
-
-    // Say we're listening on port..
-    if (config.qDebug) qDebug() << "MainServer listening on port " <<  config.serverPort;
-    logtxt.clear(); QTextStream(&logtxt) << "MainServer listening on port " << config.serverPort;
-    logger.writeToLog(LOG_INFO, logtxt );
-
-    // Here we start the server
-    MainServer server(&config);
-
-    // TODO : fix to listen also on specific addresses
-    server.listen(QHostAddress::Any,  config.serverPort );
-
-    return a.exec();
+    return app.exec();
 }
 
-void writeSetting( QSettings *settings, const QString & key, const QVariant & defvalue)
-{
-    if (!settings->contains(key))
-    {
-        settings->setValue(key,defvalue);
-    }
-}
+
+
