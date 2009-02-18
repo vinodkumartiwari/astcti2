@@ -48,7 +48,7 @@
 #include <QHash>
 #include <QCryptographicHash>
 
-#include "main.h"
+#include "cticonfig.h"
 
 struct QAstCTICommand
 {
@@ -63,6 +63,7 @@ enum QAstCTICommands {
     CMD_USER,
     CMD_PASS,
     CMD_ORIG,
+    CMD_STOP,
     CMD_ENDLIST
 };
 
@@ -74,12 +75,14 @@ class ClientManager : public  QThread
 public:
     ClientManager(QAstCTIConfiguration *config, int socketDescriptor, QObject *parent);
     void run();
-
+    void stop();
 
 signals:
     void addClient(const QString &exten, ClientManager *cl);
+    void changeClient(const QString &oldexten, const QString &newexten);
     void removeClient(const QString &exten);
     void notify(const QString &data);
+    void stopRequested(const QString &exten, ClientManager *cl);
 
 public slots:
     void sendDataSlot(const QString &data);
@@ -87,12 +90,14 @@ public slots:
 private:
     QAstCTIConfiguration    *config;
     int                     socketDescriptor;
+    QString                 localIdentifier;
     QString                 buffer;
     QHash<QString, int>     commandsList;
     void                    initParserCommands();
     QAstCTICommand          parseCommand(const QString &command);
     bool                    checkPassword(const QString &password, const QString &checkPassword);
     void                    sendData(const QString &data);
+    QString                 StringToMd5(const QString &toConvert);
 
 protected:
     QTcpSocket              *theSocket;

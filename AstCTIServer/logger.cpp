@@ -38,11 +38,12 @@
 
 #include "logger.h"
 
-QAsteriskCTILogger::QAsteriskCTILogger(QObject *parent) : QObject (parent)
+QAsteriskCTILogger::QAsteriskCTILogger(QObject *parent) :
+        QObject (parent)
 {
 }
 
-void QAsteriskCTILogger::writeToLog(QAsteriskCTILoggerLevel level, const QString &logdata)
+void QAsteriskCTILogger::writeToLog(QtMsgType level, const QString &logdata)
 {
     this->buildLogDirectory();
     QDir baseDir = this->logDirectory;
@@ -84,28 +85,22 @@ bool QAsteriskCTILogger::buildLogDirectory()
     return bIsOk;
 }
 
-QString QAsteriskCTILogger::levelStringFromLevelId(const QAsteriskCTILoggerLevel level)
+QString QAsteriskCTILogger::levelStringFromLevelId(const QtMsgType level)
 {
-    switch(level)
+    QString retLevel = "NONE";
+    switch (level)
     {
-        case LOG_NOTICE:
-            return "NOTICE";
+        case QtDebugMsg:
+            retLevel = "DEBUG";
             break;
-        case LOG_INFO:
-            return "INFO";
+        case QtWarningMsg:
+            retLevel = "WARNING";
             break;
-        case LOG_WARNING:
-            return "WARNING";
+        case QtCriticalMsg:
+            retLevel = "CRITICAL";
             break;
-        case LOG_ERROR:
-            return "ERROR";
-            break;
-        case LOG_FATAL:
-            return "FATAL";
-            break;
-        case LOG_ALL:
-            return "ALL";
-            break;
+        case QtFatalMsg:
+            retLevel = "FATAL";
     }
-    return "NONE";
+    return retLevel;
 }

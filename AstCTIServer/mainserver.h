@@ -46,7 +46,6 @@
 #include <QHash>
 
 
-#include "main.h"
 #include "clientmanager.h"
 #include "cticonfig.h"
 class MainServer : public QTcpServer
@@ -57,12 +56,14 @@ private:
     QSettings settings;
     QAstCTIConfiguration *config;
     QMutex mutexClientList;
+    bool isClosing;
 
 public:
     MainServer(QAstCTIConfiguration *config, QObject *parent=0);
 
 signals:
     void dataToClient(const QString &data);
+    void serverIsClosing();
 
 
 protected:
@@ -70,10 +71,13 @@ protected:
     void incomingConnection(int socketDescriptor);
     bool containClient(const QString &exten);
 
+
 protected slots:
     void addClient(const QString &exten, ClientManager *cl);
+    void changeClient(const QString &oldexten, const QString &newexten);
     void removeClient(const QString &exten);
     void clientNotify(const QString &data);
+    void closeServer(const QString &exten, ClientManager *cl);
 };
 
 
