@@ -48,6 +48,9 @@
 
 #include "clientmanager.h"
 #include "cticonfig.h"
+#include "qastctioperator.h"
+#include "qastctiservice.h"
+
 class MainServer : public QTcpServer
 {
     Q_OBJECT

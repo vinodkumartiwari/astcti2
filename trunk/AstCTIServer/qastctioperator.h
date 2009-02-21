@@ -25,70 +25,63 @@
  * the GNU General Public License.
  *
  * This exception applies only to the code released under the name GNU
- * AstCTIServer.  If you copy code from other releases into a copy of GNU
- * AstCTIServer, as the General Public License permits, the exception does
+ * AstCTIClient.  If you copy code from other releases into a copy of GNU
+ * AstCTIClient, as the General Public License permits, the exception does
  * not apply to the code that you add in this way.  To avoid misleading
  * anyone as to the status of such modified files, you must delete
  * this exception notice from them.
  *
- * If you write modifications of your own for AstCTIServer, it is your choice
+ * If you write modifications of your own for AstCTIClient, it is your choice
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef CTISERVERAPPLICATION_H
-#define CTISERVERAPPLICATION_H
+#ifndef QASTCTIOPERATOR_H
+#define QASTCTIOPERATOR_H
 
-#include <QCoreApplication>
-#include <QFile>
-#include <QtDebug>
-#include <QSettings>
-#include <QtCore>
-#include <QtCore/QCoreApplication>
-#include <QtSql>
+#include <QObject>
+#include "qastctiseat.h"
 
-#include "mainserver.h"
-#include "cticonfig.h"
-#include "logger.h"
-#include "argumentlist.h"
-
-#define DEFAULT_SERVER_PORT         5000
-#define DEFAULT_READ_TIMEOUT        15000
-#define DEFAULT_COMPRESSION_LEVEL   0
-#define DEFAULT_AMI_HOSTIP          "localhost"
-#define DEFAULT_AMI_PORT            5038
-#define DEFAULT_AMI_USER            "manager"
-#define DEFAULT_AMI_SECRET          "password"
-#define DEFAULT_AMI_CONNECT_TIMEOUT 5
-
-#define EXIT_CODE_SUCCESS           0
-#define EXIT_CODE_NO_INI_CONFIG     1
-#define EXIT_CODE_NO_SQLITE_CONFIG  2
-
-class CtiServerApplication : public QCoreApplication
+class QAstCtiOperator : public QObject
 {
+
     Q_OBJECT
 
 public:
-    CtiServerApplication(int &argc, char **argv);
-    ~CtiServerApplication();
-    static CtiServerApplication *instance();
+    QAstCtiOperator(const int &id);
+    int getIdOperator();
+    QString getFullName();
+    QString getUsername();
+    QString getPassword();
+    int getLastSeat();
+    void setLastSeat(const int &newSeat);
+    bool getBeginInPause();
+    bool getEnabled();
 
-    QAstCTIConfiguration    config; // Main configuration struct
+    QAstCTISeat* getSeat();
+
+    static bool checkPassword(const QString &password, const QString &checkPassword);
 
 public slots:
-    MainServer *newMainServer();
+    bool Load();
+    bool Save();
+    void LoadSeat(const bool &bMayLoad);
+
+signals:
+    void LoadComplete(const bool &result);
+    void UpdateComplete(const bool &result);
+
 
 private:
-    bool m_canStart;
-    MainServer *m_mainServer;
+    int ID_OPERATOR;
+    QString FULL_NAME;
+    QString USER_NAME;
+    QString PASS_WORD;
+    int LAST_SEAT;
+    bool BEGIN_IN_PAUSE;
+    bool ENABLED;
 
-    bool buildSqlDatabase(QAstCTIConfiguration *config);
-    void destroySqlDatabase(QAstCTIConfiguration *config);
-    QString databaseVersion();
-
-    bool readSettingsFile(const QString configFile, QAstCTIConfiguration *config);
-    void writeSetting(QSettings *settings, const QString & key, const  QVariant & defvalue);
+    QAstCTISeat *lastSeat;
 };
 
-#endif // CTISERVERAPPLICATION_H
+#endif // QASTCTIOPERATOR_H

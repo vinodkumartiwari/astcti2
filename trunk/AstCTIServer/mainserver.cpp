@@ -55,14 +55,41 @@ MainServer::MainServer(QAstCTIConfiguration *config, QObject *parent)
     // Basic init here
 
     /* code testing start: used for testing purpose only */
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
-    QSqlQuery query(db);
-    query.exec("SELECT * FROM operators");
-    while (query.next())
+    QAstCtiOperator oper(2);
+    if (oper.Load())
     {
-         QString name = query.value(1).toString();
-         qDebug() << name;
+        if (oper.getSeat() != 0)
+        {
+            qDebug() << "EXTEN FOR OPERATOR SEAT IS" << oper.getSeat()->getSeatExten();
+        }
+        qDebug() << oper.getFullName();
+        oper.setLastSeat(1);
+        if (oper.Save())
+        {
+            qDebug() << oper.getFullName() << "updated";
+            if (oper.getSeat() != 0)
+            {
+                qDebug() << "EXTEN FOR OPERATOR SEAT NOW IS" << oper.getSeat()->getSeatExten();
+            }
+        }
+        else
+            qDebug() << oper.getFullName() << "not updated";
     }
+    else
+    {
+        qDebug() << "Non-existent Operator";
+    }
+
+    QAstCTIService service(1);
+    if (service.Load())
+    {
+        qDebug() << "Service" << service.getServiceName() << "loaded";
+    }
+    else
+    {
+        qDebug() << "Service 1 not loaded";
+    }
+
     /* code testing end */
 
 }
@@ -151,6 +178,9 @@ void MainServer::clientNotify(const QString &data)
 
 void MainServer::closeServer(const QString &exten, ClientManager *cl)
 {
+    Q_UNUSED(exten);
+    Q_UNUSED(cl);
+
     this->isClosing = true;
     qDebug() << "Received STOP signal";
 

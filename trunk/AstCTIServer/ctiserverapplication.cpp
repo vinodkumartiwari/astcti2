@@ -110,9 +110,27 @@ bool CtiServerApplication::buildSqlDatabase(QAstCTIConfiguration *config)
     }
 
     if (config->qDebug) qDebug() << "SQLite database successfully opened" << config->sqlite_file << "\n";
+
+    if (config->qDebug) qDebug() << "SQLite database version " << this->databaseVersion() << "\n";
+
     config->db = &db;
     return true;
 
+}
+
+QString CtiServerApplication::databaseVersion()
+{
+    QString result = "";
+    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlQuery query(db);
+    if (query.exec("SELECT VERSION FROM dbversion LIMIT 1"))
+    {
+        query.first();
+        result = query.value(0).toString();
+        query.finish();
+    }
+    query.clear();
+    return result;
 }
 
 void CtiServerApplication::destroySqlDatabase(QAstCTIConfiguration *config)
@@ -120,6 +138,7 @@ void CtiServerApplication::destroySqlDatabase(QAstCTIConfiguration *config)
     if (QSqlDatabase::contains("sqlitedb"))
     {
         QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+
         if (db.isValid())
         {
             if (db.isOpen()) db.close();
