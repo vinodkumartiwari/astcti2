@@ -25,70 +25,65 @@
  * the GNU General Public License.
  *
  * This exception applies only to the code released under the name GNU
- * AstCTIServer.  If you copy code from other releases into a copy of GNU
- * AstCTIServer, as the General Public License permits, the exception does
+ * AstCTIClient.  If you copy code from other releases into a copy of GNU
+ * AstCTIClient, as the General Public License permits, the exception does
  * not apply to the code that you add in this way.  To avoid misleading
  * anyone as to the status of such modified files, you must delete
  * this exception notice from them.
  *
- * If you write modifications of your own for AstCTIServer, it is your choice
+ * If you write modifications of your own for AstCTIClient, it is your choice
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-
-#ifndef CTISERVERAPPLICATION_H
-#define CTISERVERAPPLICATION_H
-
-#include <QCoreApplication>
-#include <QFile>
-#include <QtDebug>
-#include <QSettings>
-#include <QtCore>
-#include <QtCore/QCoreApplication>
 #include <QtSql>
 
-#include "mainserver.h"
-#include "cticonfig.h"
-#include "logger.h"
-#include "argumentlist.h"
+#include "qastctiseat.h"
 
-#define DEFAULT_SERVER_PORT         5000
-#define DEFAULT_READ_TIMEOUT        15000
-#define DEFAULT_COMPRESSION_LEVEL   0
-#define DEFAULT_AMI_HOSTIP          "localhost"
-#define DEFAULT_AMI_PORT            5038
-#define DEFAULT_AMI_USER            "manager"
-#define DEFAULT_AMI_SECRET          "password"
-#define DEFAULT_AMI_CONNECT_TIMEOUT 5
-
-#define EXIT_CODE_SUCCESS           0
-#define EXIT_CODE_NO_INI_CONFIG     1
-#define EXIT_CODE_NO_SQLITE_CONFIG  2
-
-class CtiServerApplication : public QCoreApplication
+QAstCTISeat::QAstCTISeat(const int &id)
+        : ID_SEAT(id), SEAT_MAC("00:00:00:00:00:00"),
+        SEAT_EXTEN(""), DESCRIPTION("")
 {
-    Q_OBJECT
 
-public:
-    CtiServerApplication(int &argc, char **argv);
-    ~CtiServerApplication();
-    static CtiServerApplication *instance();
+}
 
-    QAstCTIConfiguration    config; // Main configuration struct
+bool QAstCTISeat::Load()
+{
+    bool retVal = false;
+    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlQuery query(db);
+    query.prepare("SELECT * FROM seats WHERE ID_SEAT=:id");
+    query.bindValue(":id", this->ID_SEAT);
+    retVal = query.exec();
+    if ( (retVal) &  (query.first()) )
+    {
+        this->SEAT_MAC= query.value(1).toString();
+        this->SEAT_EXTEN  = query.value(2).toString();
+        this->DESCRIPTION = query.value(3).toString();
 
-public slots:
-    MainServer *newMainServer();
+        query.finish();
+    }
+    query.clear();
 
-private:
-    bool m_canStart;
-    MainServer *m_mainServer;
+    emit this->LoadComplete(retVal);
+    return retVal;
+}
 
-    bool buildSqlDatabase(QAstCTIConfiguration *config);
-    void destroySqlDatabase(QAstCTIConfiguration *config);
-    QString databaseVersion();
+int  QAstCTISeat::getIdSeat()
+{
+    return this->ID_SEAT;
+}
 
-    bool readSettingsFile(const QString configFile, QAstCTIConfiguration *config);
-    void writeSetting(QSettings *settings, const QString & key, const  QVariant & defvalue);
-};
+QString  QAstCTISeat::getSeatMac()
+{
+    return this->SEAT_MAC;
+}
 
-#endif // CTISERVERAPPLICATION_H
+QString  QAstCTISeat::getSeatExten()
+{
+    return this->SEAT_EXTEN;
+}
+
+QString  QAstCTISeat::getDescription()
+{
+    return this->DESCRIPTION;
+}

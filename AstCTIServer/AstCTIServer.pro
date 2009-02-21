@@ -15,7 +15,13 @@ SOURCES += main.cpp \
     logger.cpp \
     amiclient.cpp \
     argumentlist.cpp \
-    ctiserverapplication.cpp
+    ctiserverapplication.cpp \
+    qastctioperator.cpp \
+    qastctiseat.cpp \
+    qastctiservice.cpp \
+    qastctivariable.cpp \
+    qastctiapplication.cpp \
+    qastctiservices.cpp
 HEADERS += mainserver.h \
     clientmanager.h \
     cticonfig.h \
@@ -23,4 +29,10 @@ HEADERS += mainserver.h \
     amiclient.h \
     coreconstants.h \
     argumentlist.h \
-    ctiserverapplication.h
+    ctiserverapplication.h \
+    qastctioperator.h \
+    qastctiseat.h \
+    qastctiservice.h \
+    qastctivariable.h \
+    qastctiapplication.h \
+    qastctiservices.h
