@@ -21,7 +21,8 @@ SOURCES += main.cpp \
     qastctiservice.cpp \
     qastctivariable.cpp \
     qastctiapplication.cpp \
-    qastctiservices.cpp
+    qastctiservices.cpp \
+    qastctiservicesoperators.cpp
 HEADERS += mainserver.h \
     clientmanager.h \
     cticonfig.h \
@@ -35,4 +36,5 @@ HEADERS += mainserver.h \
     qastctiservice.h \
     qastctivariable.h \
     qastctiapplication.h \
-    qastctiservices.h
+    qastctiservices.h \
+    qastctiservicesoperators.h
