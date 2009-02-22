@@ -62,6 +62,11 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
 
 }
 
+ClientManager::~ClientManager()
+{
+    qDebug() << "ClientManager terminated";
+}
+
 /*!
     Initialize the commandList QHash
 */

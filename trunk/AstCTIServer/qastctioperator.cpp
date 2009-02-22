@@ -41,7 +41,7 @@
 #include "qastctioperator.h"
 
 
-QAstCtiOperator::QAstCtiOperator(const int &id)
+QAstCTIOperator::QAstCTIOperator(const int &id)
         : ID_OPERATOR(id), FULL_NAME(""), USER_NAME(""),
         PASS_WORD(""), LAST_SEAT(0), BEGIN_IN_PAUSE(false),
         ENABLED(false), lastSeat(0)
@@ -51,7 +51,7 @@ QAstCtiOperator::QAstCtiOperator(const int &id)
     connect(this, SIGNAL(UpdateComplete(const bool&)), this, SLOT(LoadSeat(const bool&)));
 }
 
-bool QAstCtiOperator::Load()
+bool QAstCTIOperator::Load()
 {
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
@@ -76,7 +76,7 @@ bool QAstCtiOperator::Load()
     return retVal;
 }
 
-void QAstCtiOperator::LoadSeat(const bool &bMayLoad)
+void QAstCTIOperator::LoadSeat(const bool &bMayLoad)
 {
     if (!bMayLoad) return;
 
@@ -87,7 +87,7 @@ void QAstCtiOperator::LoadSeat(const bool &bMayLoad)
     }
 }
 
-bool QAstCtiOperator::Save()
+bool QAstCTIOperator::Save()
 {
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
@@ -112,48 +112,48 @@ bool QAstCtiOperator::Save()
     return retVal;
 }
 
-int  QAstCtiOperator::getIdOperator()
+int  QAstCTIOperator::getIdOperator()
 {
     return this->ID_OPERATOR;
 }
 
-QString  QAstCtiOperator::getUsername()
+QString  QAstCTIOperator::getUsername()
 {
     return this->USER_NAME;
 }
 
-QString  QAstCtiOperator::getFullName()
+QString  QAstCTIOperator::getFullName()
 {
     return this->FULL_NAME;
 }
 
-QString  QAstCtiOperator::getPassword()
+QString  QAstCTIOperator::getPassword()
 {
     return this->PASS_WORD;
 }
 
-int QAstCtiOperator::getLastSeat()
+int QAstCTIOperator::getLastSeat()
 {
     return this->LAST_SEAT;
 }
 
-QAstCTISeat* QAstCtiOperator::getSeat()
+QAstCTISeat* QAstCTIOperator::getSeat()
 {
     return this->lastSeat;
 }
 
 
-void QAstCtiOperator::setLastSeat(const int &newSeat)
+void QAstCTIOperator::setLastSeat(const int &newSeat)
 {
     this->LAST_SEAT = newSeat;
 }
 
-bool QAstCtiOperator::getBeginInPause()
+bool QAstCTIOperator::getBeginInPause()
 {
     return this->BEGIN_IN_PAUSE;
 }
 
-bool QAstCtiOperator::getEnabled()
+bool QAstCTIOperator::getEnabled()
 {
     return this->ENABLED;
 }

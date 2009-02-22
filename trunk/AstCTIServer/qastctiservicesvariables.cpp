@@ -35,94 +35,92 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-
 #include <QtSql>
 
-#include "qastctiservicesoperators.h"
-#include "qastctioperator.h"
+#include "qastctiservicesvariables.h"
+#include "qastctivariable.h"
 
-QAstCTIServicesOperators::QAstCTIServicesOperators()
-        : ID_SERVICE(0)
+QAstCTIServicesVariables::QAstCTIServicesVariables() :
+        ID_SERVICE(0)
 {
 }
 
-QAstCTIServicesOperators::QAstCTIServicesOperators(const int &idservice)
-        : ID_SERVICE(idservice)
+QAstCTIServicesVariables::QAstCTIServicesVariables(const int &idservice) :
+        ID_SERVICE(idservice)
 {
-    this->fillOperators();
+    this->fillVariables();
 }
 
-QAstCTIServicesOperators::~QAstCTIServicesOperators()
+QAstCTIServicesVariables::~QAstCTIServicesVariables()
 {
     this->clear();
 }
 
-
-QAstCTIOperator *QAstCTIServicesOperators::operator[](const QString &key)
+QAstCTIVariable *QAstCTIServicesVariables::operator[](const QString &key)
 {
-    return (this->operators.contains(key)) ? this->operators[key] : 0;
+    return (this->variables.contains(key)) ? this->variables[key] : 0;
 
 }
 
-void QAstCTIServicesOperators::setIdService(const int &idservice)
+void QAstCTIServicesVariables::setIdService(const int &idservice)
 {
     this->ID_SERVICE = idservice;
-    this->fillOperators();
+    this->fillVariables();
 }
-void QAstCTIServicesOperators::addOperator(QAstCTIOperator *oper)
+void QAstCTIServicesVariables::addVariable(QAstCTIVariable *var)
 {
-    this->operators.insert(oper->getUsername(), oper);
+    this->variables.insert(var->getVarName(), var);
 }
 
-void QAstCTIServicesOperators::removeOperator(const QString &key)
+void QAstCTIServicesVariables::removeVariable(const QString &key)
 {
-    if (this->operators.contains(key))
+    if (this->variables.contains(key))
     {
-        QAstCTIOperator *oper = this->operators[key];
-        if (oper != 0)
+        QAstCTIVariable *var = this->variables[key];
+        if (var != 0)
         {
-            delete(oper);
+            delete(var);
         }
-        this->operators.remove(key);
+        this->variables.remove(key);
     }
 }
-int QAstCTIServicesOperators::count()
+int QAstCTIServicesVariables::count()
 {
     // Count how many elements we have
-    return this->operators.count();
+    return this->variables.count();
 }
 
-void QAstCTIServicesOperators::clear()
+void QAstCTIServicesVariables::clear()
 {
     // Do a clear only if really needed
-    if (this->operators.count() > 0)
+    if (this->variables.count() > 0)
     {
-        QMutableHashIterator<QString, QAstCTIOperator*> i(this->operators);
+        QMutableHashIterator<QString, QAstCTIVariable*> i(this->variables);
         while (i.hasNext()) {
             i.next();
             delete(i.value());
         }
-        this->operators.clear();
+        this->variables.clear();
     }
 }
 
-void QAstCTIServicesOperators::fillOperators()
+void QAstCTIServicesVariables::fillVariables()
 {
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
-    query.prepare("SELECT ID_OPERATOR FROM services_operators WHERE ID_SERVICE=:id ORDER BY ID_OPERATOR ASC");
+    query.prepare("SELECT ID_VARIABLE FROM services_variables WHERE ID_SERVICE=:id ORDER BY ID_VARIABLE ASC");
     query.bindValue(":id", this->ID_SERVICE);
     query.exec();
     while(query.next())
     {
-        QAstCTIOperator *oper = new QAstCTIOperator(query.value(0).toInt(0));
-        if (oper->Load())
+        QAstCTIVariable *var = new QAstCTIVariable(query.value(0).toInt(0));
+        if (var->Load())
         {
-            QString operName = oper->getUsername();
+            QString varName = var->getVarName();
 
             // Remove service if exists before load
-            this->removeOperator(operName);
-            this->addOperator(oper);
+            this->removeVariable(varName);
+            this->addVariable(var);
         }
     }
     query.finish();

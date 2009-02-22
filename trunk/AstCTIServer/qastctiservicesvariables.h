@@ -35,35 +35,34 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-
-#ifndef QASTCTISERVICESOPERATORS_H
-#define QASTCTISERVICESOPERATORS_H
+#ifndef QASTCTISERVICESVARIABLES_H
+#define QASTCTISERVICESVARIABLES_H
 
 #include <QObject>
 #include <QHash>
 
-class QAstCTIOperator;
+class QAstCTIVariable;
 
-class QAstCTIServicesOperators : public QObject
+class QAstCTIServicesVariables : public QObject
 {
     Q_OBJECT
 
 public:
-    QAstCTIServicesOperators();
-    QAstCTIServicesOperators(const int &idservice);
-    ~QAstCTIServicesOperators();
-    QAstCTIOperator *operator[](const QString &key);
+    QAstCTIServicesVariables();
+    QAstCTIServicesVariables(const int &idservice);
+    ~QAstCTIServicesVariables();
+    QAstCTIVariable *operator[](const QString &key);
     int count();
     void setIdService(const int &idservice);
 
 private:
-    QHash<QString, QAstCTIOperator*> operators;
-    void addOperator(QAstCTIOperator *oper);
-    void removeOperator(const QString &key);
-    void fillOperators();
+    QHash<QString, QAstCTIVariable*> variables;
+    void addVariable(QAstCTIVariable *var);
+    void removeVariable(const QString &key);
+    void fillVariables();
     void clear();
 
     int ID_SERVICE;
 };
 
-#endif // QASTCTISERVICESOPERATORS_H
+#endif // QASTCTISERVICESVARIABLES_H

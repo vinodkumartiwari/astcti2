@@ -42,13 +42,13 @@
 #include <QObject>
 #include "qastctiseat.h"
 
-class QAstCtiOperator : public QObject
+class QAstCTIOperator : public QObject
 {
 
     Q_OBJECT
 
 public:
-    QAstCtiOperator(const int &id);
+    QAstCTIOperator(const int &id);
     int getIdOperator();
     QString getFullName();
     QString getUsername();
