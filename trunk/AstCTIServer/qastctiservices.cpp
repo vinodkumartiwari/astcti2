@@ -35,8 +35,73 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+#include <QtSql>
+
 #include "qastctiservices.h"
+#include "qastctiservice.h"
 
 QAstCTIServices::QAstCTIServices()
 {
+    this->fillServices();
+}
+
+QAstCTIServices::~QAstCTIServices()
+{
+    this->clear();
+}
+
+QAstCTIService *QAstCTIServices::operator[](const QString &key)
+{
+    return (this->services.contains(key)) ? this->services[key] : 0;
+
+}
+
+void QAstCTIServices::addService(QAstCTIService *service)
+{
+    this->services.insert(service->getServiceName(), service);
+}
+
+void QAstCTIServices::removeService(const QString &key)
+{
+    if (this->services.contains(key))
+    {
+        QAstCTIService *ser = this->services[key];
+        delete(ser);
+        this->services.remove(key);
+    }
+}
+int QAstCTIServices::count()
+{
+    return this->services.count();
+}
+
+void QAstCTIServices::clear()
+{
+    QMutableHashIterator<QString, QAstCTIService*> i(this->services);
+    while (i.hasNext()) {
+        i.next();
+        delete(i.value());
+    }
+    this->services.clear();
+}
+
+void QAstCTIServices::fillServices()
+{
+    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlQuery query(db);
+    query.exec("SELECT ID_SERVICE FROM services ORDER BY ID_SERVICE ASC");
+    while(query.next())
+    {
+        QAstCTIService *service = new QAstCTIService(query.value(0).toInt(0));
+        if (service->Load())
+        {
+            QString serviceName = service->getServiceName();
+
+            // Remove service if exists before load
+            this->removeService(serviceName);
+            this->addService(service);
+        }
+    }
+    query.finish();
+    query.clear();
 }
