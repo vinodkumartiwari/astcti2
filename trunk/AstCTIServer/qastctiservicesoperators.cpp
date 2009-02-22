@@ -35,37 +35,8 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+#include "qastctiservicesoperators.h"
 
-#ifndef QASTCTIAPPLICATION_H
-#define QASTCTIAPPLICATION_H
-
-#include <QObject>
-
-class QAstCTIApplication : public QObject
+QAstCTIServicesOperators::QAstCTIServicesOperators()
 {
-    Q_OBJECT
-
-public:
-    QAstCTIApplication(const int &id);
-    int getIdApplication();
-    int getIdService();
-    QString getApplicationOsType();
-    QString getApplicationPath();
-    QString getParameters();
-
-public slots:
-    bool Load();
-
-signals:
-    void LoadComplete(const bool &result);
-
-private:
-    int ID_APPLICATION;
-    int ID_SERVICE;
-    QString APPLICATION_OS_TYPE;
-    QString APPLICATION_PATH;
-    QString PARAMETERS;
-
-};
-
-#endif // QASTCTIAPPLICATION_H
+}

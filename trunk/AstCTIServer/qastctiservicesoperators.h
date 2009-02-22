@@ -36,36 +36,15 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTIAPPLICATION_H
-#define QASTCTIAPPLICATION_H
+#ifndef QASTCTISERVICESOPERATORS_H
+#define QASTCTISERVICESOPERATORS_H
 
 #include <QObject>
 
-class QAstCTIApplication : public QObject
+class QAstCTIServicesOperators : public QObject
 {
-    Q_OBJECT
-
 public:
-    QAstCTIApplication(const int &id);
-    int getIdApplication();
-    int getIdService();
-    QString getApplicationOsType();
-    QString getApplicationPath();
-    QString getParameters();
-
-public slots:
-    bool Load();
-
-signals:
-    void LoadComplete(const bool &result);
-
-private:
-    int ID_APPLICATION;
-    int ID_SERVICE;
-    QString APPLICATION_OS_TYPE;
-    QString APPLICATION_PATH;
-    QString PARAMETERS;
-
+    QAstCTIServicesOperators();
 };
 
-#endif // QASTCTIAPPLICATION_H
+#endif // QASTCTISERVICESOPERATORS_H

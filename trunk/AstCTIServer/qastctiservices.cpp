@@ -25,13 +25,13 @@
  * the GNU General Public License.
  *
  * This exception applies only to the code released under the name GNU
- * AstCTIClient.  If you copy code from other releases into a copy of GNU
- * AstCTIClient, as the General Public License permits, the exception does
+ * AstCTIServer.  If you copy code from other releases into a copy of GNU
+ * AstCTIServer, as the General Public License permits, the exception does
  * not apply to the code that you add in this way.  To avoid misleading
  * anyone as to the status of such modified files, you must delete
  * this exception notice from them.
  *
- * If you write modifications of your own for AstCTIClient, it is your choice
+ * If you write modifications of your own for AstCTIServer, it is your choice
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
@@ -65,24 +65,29 @@ void QAstCTIServices::removeService(const QString &key)
 {
     if (this->services.contains(key))
     {
-        QAstCTIService *ser = this->services[key];
-        delete(ser);
+        QAstCTIService *service = this->services[key];
+        delete(service);
         this->services.remove(key);
     }
 }
 int QAstCTIServices::count()
 {
+    // Count how many elements we have
     return this->services.count();
 }
 
 void QAstCTIServices::clear()
 {
-    QMutableHashIterator<QString, QAstCTIService*> i(this->services);
-    while (i.hasNext()) {
-        i.next();
-        delete(i.value());
+    // Do a clear only if really needed
+    if (this->services.count() > 0)
+    {
+        QMutableHashIterator<QString, QAstCTIService*> i(this->services);
+        while (i.hasNext()) {
+            i.next();
+            delete(i.value());
+        }
+        this->services.clear();
     }
-    this->services.clear();
 }
 
 void QAstCTIServices::fillServices()
