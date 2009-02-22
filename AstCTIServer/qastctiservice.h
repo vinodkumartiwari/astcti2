@@ -47,6 +47,7 @@ class QAstCTIService : public QObject
 
 public:
     QAstCTIService(const int &id);
+    ~QAstCTIService();
     int     getIdService();
     QString getServiceName();
     QString getServiceContextType();

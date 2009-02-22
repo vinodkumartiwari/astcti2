@@ -47,6 +47,12 @@ QAstCTIService::QAstCTIService(const int &id)
 
 }
 
+QAstCTIService::~QAstCTIService()
+{
+    qDebug() << "Destroying QAstCTIService";
+
+}
+
 bool QAstCTIService::Load()
 {
     bool retVal = false;

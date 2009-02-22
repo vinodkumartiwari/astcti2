@@ -50,6 +50,7 @@
 #include "cticonfig.h"
 #include "qastctioperator.h"
 #include "qastctiservice.h"
+#include "qastctiservices.h"
 
 class MainServer : public QTcpServer
 {
@@ -60,6 +61,7 @@ private:
     QAstCTIConfiguration *config;
     QMutex mutexClientList;
     bool isClosing;
+    QAstCTIServices services;
 
 public:
     MainServer(QAstCTIConfiguration *config, QObject *parent=0);

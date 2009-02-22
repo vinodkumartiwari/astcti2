@@ -54,7 +54,10 @@ MainServer::MainServer(QAstCTIConfiguration *config, QObject *parent)
     if (config->qDebug) qDebug() << "In MainServer:MainServer:MainServer constructor";
     // Basic init here
 
-    /* code testing start: used for testing purpose only */
+    /* CODE TESTING START: used for testing purpose only */
+
+    qDebug("CODE TESTING AT %s:%d",  __FILE__ , __LINE__);
+
     QAstCtiOperator oper(2);
     if (oper.Load())
     {
@@ -79,19 +82,12 @@ MainServer::MainServer(QAstCTIConfiguration *config, QObject *parent)
     {
         qDebug() << "Non-existent Operator";
     }
-
-    QAstCTIService service(1);
-    if (service.Load())
-    {
-        qDebug() << "Service" << service.getServiceName() << "loaded";
-    }
-    else
-    {
-        qDebug() << "Service 1 not loaded";
-    }
-
-    /* code testing end */
-
+    QString sername = "ast-cti-demo";
+    qDebug() << "Count now is" << services.count();
+    qDebug() << "Service alive is " << services[sername]->getServiceName();
+    services.removeService(sername);
+    qDebug() << "Count now is" << services.count();
+    /* CODE TESTING END*/
 }
 
 /*!

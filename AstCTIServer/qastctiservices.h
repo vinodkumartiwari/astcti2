@@ -50,10 +50,18 @@ class QAstCTIServices : public QObject
 
 public:
     QAstCTIServices();
-    QAstCTIService &operator[](const QString &key);
+    ~QAstCTIServices();
+    QAstCTIService *operator[](const QString &key);
+    void addService(QAstCTIService *service);
+    void removeService(const QString &key);
+    int count();
+
 
 private:
     QHash<QString, QAstCTIService*> services;
+    void fillServices();
+    void clear();
+
 };
 
 #endif // QASTCTISERVICES_H
