@@ -48,7 +48,7 @@
 
 #include "clientmanager.h"
 #include "cticonfig.h"
-#include "qastctioperator.h"
+#include "qastctiservicesoperators.h"
 #include "qastctiservice.h"
 #include "qastctiservices.h"
 

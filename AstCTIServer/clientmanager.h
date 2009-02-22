@@ -74,6 +74,7 @@ class ClientManager : public  QThread
 
 public:
     ClientManager(QAstCTIConfiguration *config, int socketDescriptor, QObject *parent);
+    ~ClientManager();
     void run();
     void stop();
 

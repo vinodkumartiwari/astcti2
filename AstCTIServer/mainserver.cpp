@@ -58,35 +58,16 @@ MainServer::MainServer(QAstCTIConfiguration *config, QObject *parent)
 
     qDebug("CODE TESTING AT %s:%d",  __FILE__ , __LINE__);
 
-    QAstCtiOperator oper(2);
-    if (oper.Load())
-    {
-        if (oper.getSeat() != 0)
-        {
-            qDebug() << "EXTEN FOR OPERATOR SEAT IS" << oper.getSeat()->getSeatExten();
-        }
-        qDebug() << oper.getFullName();
-        oper.setLastSeat(1);
-        if (oper.Save())
-        {
-            qDebug() << oper.getFullName() << "updated";
-            if (oper.getSeat() != 0)
-            {
-                qDebug() << "EXTEN FOR OPERATOR SEAT NOW IS" << oper.getSeat()->getSeatExten();
-            }
-        }
-        else
-            qDebug() << oper.getFullName() << "not updated";
-    }
-    else
-    {
-        qDebug() << "Non-existent Operator";
-    }
+
     QString sername = "ast-cti-demo";
-    qDebug() << "Count now is" << services.count();
-    qDebug() << "Service alive is " << services[sername]->getServiceName();
-    services.removeService(sername);
-    qDebug() << "Count now is" << services.count();
+    QAstCTIService *service = services[sername];
+    if (service != 0)
+    {
+        qDebug() << "Service alive is " << service->getServiceName();
+        qDebug() << "Number of operators on service is " << service->getOperators()->count();
+    }
+
+
     /* CODE TESTING END*/
 }
 
@@ -133,14 +114,16 @@ void MainServer::removeClient(const QString &exten)
     {
         clients.remove(exten);
     }
-    if (config->qDebug) qDebug() << "Number of clients:" << clients.count();
+    int clientCount = clients.count();
+    if (config->qDebug) qDebug() << "Number of clients:" << clientCount;
+    if (clientCount == 0) clients.squeeze();
+
     mutexClientList.unlock();
 
     if ((this->isClosing) & (clients.count() == 0) )
     {
         if (config->qDebug) qDebug() << "Clients are 0 and we're asked to close";
         this->close();
-
 
     }
 }

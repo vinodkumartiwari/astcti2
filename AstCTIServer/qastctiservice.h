@@ -40,6 +40,8 @@
 #define QASTCTISERVICE_H
 
 #include <QObject>
+#include "qastctiservicesoperators.h"
+#include "qastctiservicesvariables.h"
 
 class QAstCTIService : public QObject
 {
@@ -55,9 +57,12 @@ public:
     QString getServiceQueueName();
     QString getServiceTriggerType();
     bool    getEnabled();
+    QAstCTIServicesOperators* getOperators();
 
 public slots:
     bool Load();
+    void LoadOperators(const bool &bMayLoad);
+    void LoadVariables(const bool &bMayLoad);
 
 signals:
     void LoadComplete(const bool &result);
@@ -70,6 +75,9 @@ private:
     QString SERVICE_QUEUE_NAME;
     QString SERVICE_TRIGGER_TYPE;
     bool ENABLED;
+
+    QAstCTIServicesOperators operators;
+    QAstCTIServicesVariables variables;
 };
 
 #endif // QASTCTISERVICE_H

@@ -37,14 +37,17 @@
  */
 #include <QtSql>
 
+#include "qastctiservicesoperators.h"
 #include "qastctiservice.h"
+
 
 QAstCTIService::QAstCTIService(const int &id)
         : ID_SERVICE(id), SERVICE_NAME(""), SERVICE_CONTEXT_TYPE(""),
         SERVICE_IS_QUEUE(false), SERVICE_QUEUE_NAME(""),
         SERVICE_TRIGGER_TYPE(""), ENABLED(false)
 {
-
+     connect(this, SIGNAL(LoadComplete(const bool&)), this, SLOT(LoadOperators(const bool&)));
+     connect(this, SIGNAL(LoadComplete(const bool&)), this, SLOT(LoadVariables(const bool&)));
 }
 
 QAstCTIService::~QAstCTIService()
@@ -78,6 +81,22 @@ bool QAstCTIService::Load()
     return retVal;
 }
 
+void QAstCTIService::LoadOperators(const bool &bMayLoad)
+{
+    if (bMayLoad)
+    {
+        this->operators.setIdService(this->ID_SERVICE);
+    }
+}
+
+void QAstCTIService::LoadVariables(const bool &bMayLoad)
+{
+    if (bMayLoad)
+    {
+        this->variables.setIdService(this->ID_SERVICE);
+    }
+}
+
 int QAstCTIService::getIdService()
 {
     return this->ID_SERVICE;
@@ -93,7 +112,7 @@ QString QAstCTIService::getServiceContextType()
     return this->SERVICE_CONTEXT_TYPE;
 }
 
-bool    QAstCTIService::getServiceIsQueue()
+bool QAstCTIService::getServiceIsQueue()
 {
     return this->SERVICE_IS_QUEUE;
 }
@@ -108,7 +127,12 @@ QString QAstCTIService::getServiceTriggerType()
     return this->SERVICE_TRIGGER_TYPE;
 }
 
-bool    QAstCTIService::getEnabled()
+bool QAstCTIService::getEnabled()
 {
     return this->ENABLED;
+}
+
+QAstCTIServicesOperators* QAstCTIService::getOperators()
+{
+    return &this->operators;
 }
