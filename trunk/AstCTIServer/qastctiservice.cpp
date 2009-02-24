@@ -48,6 +48,7 @@ QAstCTIService::QAstCTIService(const int &id)
 {
      connect(this, SIGNAL(LoadComplete(const bool&)), this, SLOT(LoadOperators(const bool&)));
      connect(this, SIGNAL(LoadComplete(const bool&)), this, SLOT(LoadVariables(const bool&)));
+     connect(this, SIGNAL(LoadComplete(const bool&)), this, SLOT(LoadApplications(const bool&)));
 }
 
 QAstCTIService::~QAstCTIService()
@@ -97,6 +98,14 @@ void QAstCTIService::LoadVariables(const bool &bMayLoad)
     }
 }
 
+void QAstCTIService::LoadApplications(const bool &bMayLoad)
+{
+    if (bMayLoad)
+    {
+        this->applications.setIdService(this->ID_SERVICE);
+    }
+}
+
 int QAstCTIService::getIdService()
 {
     return this->ID_SERVICE;
@@ -135,4 +144,14 @@ bool QAstCTIService::getEnabled()
 QAstCTIServicesOperators* QAstCTIService::getOperators()
 {
     return &this->operators;
+}
+
+QAstCTIServicesVariables* QAstCTIService::getVariables()
+{
+    return &this->variables;
+}
+
+QAstCTIServicesApplications* QAstCTIService::getApplications()
+{
+    return &this->applications;
 }

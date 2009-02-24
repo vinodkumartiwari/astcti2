@@ -73,6 +73,7 @@ CtiServerApplication::~CtiServerApplication()
     if (config.qDebug) qDebug() << "MainServer closing";
     this->destroySqlDatabase(&this->config);
     if (config.qDebug) qDebug() << "SQLite database connection closed";
+    if (config.qDebug) qDebug() << "Stopped";
 }
 
 MainServer *CtiServerApplication::newMainServer()

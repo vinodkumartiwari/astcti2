@@ -48,6 +48,7 @@
 
 #include "clientmanager.h"
 #include "cticonfig.h"
+#include "qastctiapplication.h"
 #include "qastctiservicesoperators.h"
 #include "qastctiservice.h"
 #include "qastctiservices.h"
@@ -65,6 +66,7 @@ private:
 
 public:
     MainServer(QAstCTIConfiguration *config, QObject *parent=0);
+    ~MainServer();
 
 signals:
     void dataToClient(const QString &data);
@@ -72,7 +74,7 @@ signals:
 
 
 protected:
-    QHash<QString, ClientManager*> clients;
+    QHash<QString, ClientManager*> *clients;
     void incomingConnection(int socketDescriptor);
     bool containClient(const QString &exten);
 

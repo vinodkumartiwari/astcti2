@@ -48,6 +48,8 @@
 MainServer::MainServer(QAstCTIConfiguration *config, QObject *parent)
     : QTcpServer(parent)
 {
+    this->clients = new QHash <QString,ClientManager*>;
+
     this->isClosing = false;
     // Lets set local configuration struct
     this->config = config;
@@ -55,9 +57,7 @@ MainServer::MainServer(QAstCTIConfiguration *config, QObject *parent)
     // Basic init here
 
     /* CODE TESTING START: used for testing purpose only */
-
-    qDebug("CODE TESTING AT %s:%d",  __FILE__ , __LINE__);
-
+    qDebug("CODE TESTING START AT %s:%d",  __FILE__ , __LINE__);
 
     QString sername = "ast-cti-demo";
     QAstCTIService *service = services[sername];
@@ -65,10 +65,23 @@ MainServer::MainServer(QAstCTIConfiguration *config, QObject *parent)
     {
         qDebug() << "Service alive is " << service->getServiceName();
         qDebug() << "Number of operators on service is " << service->getOperators()->count();
+        QAstCTIApplication *app = service->getApplications()->operator []("LIN");
+        if (app != 0)
+            qDebug() << "Application for lin is " << app->getApplicationPath();
+
+        app = service->getApplications()->operator []("WIN");
+        if (app != 0)
+            qDebug() << "Application for win is " << app->getApplicationPath();
+
+        delete(app);
     }
-
-
+    qDebug("CODE TESTING END AT %s:%d",  __FILE__ , __LINE__);
     /* CODE TESTING END*/
+}
+MainServer::~MainServer()
+{
+    if (this->config->qDebug) qDebug() << "MainServer destructor";
+    if (this->clients != 0) delete(this->clients);
 }
 
 /*!
@@ -93,16 +106,16 @@ void MainServer::incomingConnection(int socketDescriptor)
 void MainServer::addClient(const QString &exten, ClientManager *cl)
 {
     mutexClientList.lock();
-    if (!clients.contains(exten))
+    if (!clients->contains(exten))
     {
         if (config->qDebug) qDebug() << "Adding exten" << exten;
-        clients[exten] = cl;
+        clients->insert(exten, cl);
     }
     else
     {
         if (config->qDebug) qDebug() << "Cannot add exten" << exten << "because is already in list";
     }
-    if (config->qDebug) qDebug() << "Number of clients:" << clients.count();
+    if (config->qDebug) qDebug() << "Number of clients:" << clients->count();
     mutexClientList.unlock();
 }
 
@@ -110,19 +123,27 @@ void MainServer::removeClient(const QString &exten)
 {
     if (config->qDebug) qDebug() << "Removing exten" << exten;
     mutexClientList.lock();
-    if (clients.contains(exten))
+    if (clients->contains(exten))
     {
-        clients.remove(exten);
+        clients->remove(exten);
     }
-    int clientCount = clients.count();
+    else
+    {
+        if (config->qDebug) qDebug() << "Cannot find client:" << exten;
+    }
+    int clientCount = clients->count();
     if (config->qDebug) qDebug() << "Number of clients:" << clientCount;
-    if (clientCount == 0) clients.squeeze();
+    if (clientCount == 0)
+    {
+        this->clients->squeeze();
+    }
 
     mutexClientList.unlock();
 
-    if ((this->isClosing) & (clients.count() == 0) )
+    if ((this->isClosing) & (clients->count() == 0) )
     {
-        if (config->qDebug) qDebug() << "Clients are 0 and we're asked to close";
+
+        if (config->qDebug) qDebug() << "Clients are now 0 and we're asked to close";
         this->close();
 
     }
@@ -131,11 +152,10 @@ void MainServer::changeClient(const QString &oldexten,const QString &newexten)
 {
     if (config->qDebug) qDebug() << "Changing client exten from" << oldexten << "to" << newexten;
     mutexClientList.lock();
-    if (clients.contains(oldexten))
+    if (clients->contains(oldexten))
     {
-        ClientManager *cl = clients.value(oldexten);
-        clients.remove(oldexten);
-        clients[newexten] = cl;
+        ClientManager *cl = clients->take(oldexten);
+        clients->insert(newexten, cl);
     }
 
     mutexClientList.unlock();
@@ -145,7 +165,7 @@ bool MainServer::containClient(const QString &exten)
 {
 
     mutexClientList.lock();
-    bool retval = clients.contains(exten);
+    bool retval = clients->contains(exten);
     mutexClientList.unlock();
     return retval;
 }
@@ -163,7 +183,7 @@ void MainServer::closeServer(const QString &exten, ClientManager *cl)
     this->isClosing = true;
     qDebug() << "Received STOP signal";
 
-    QMutableHashIterator<QString, ClientManager*> i(this->clients);
+    QMutableHashIterator<QString, ClientManager*> i(*this->clients);
     while (i.hasNext()) {
         i.next();
         qDebug() << "Destroiyng client" << i.key();
