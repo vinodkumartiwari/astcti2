@@ -108,8 +108,6 @@ void ClientManager::run()
     }
     this->theSocket = &tcpSocket;
 
-
-
     // Let's grab some informations about remote endpoint
     QHostAddress    remote_addr = tcpSocket.peerAddress();  // Remote ip addr
     quint16         remote_port = tcpSocket.peerPort();     // Remote port
@@ -237,10 +235,12 @@ void ClientManager::run()
         | (tcpSocket.state() != QAbstractSocket::ClosingState) )
         tcpSocket.close();
 
+    if (config->qDebug) qDebug() << "Connection from" << remote_addr.toString() << ":" << remote_port << "closed";
+
     // Emit a signal when disconnection is in progress
     // TODO : emit only if user done a successfull authentication
     emit this->removeClient(this->localIdentifier);
-    if (config->qDebug) qDebug() << "Connection from" << remote_addr.toString() << ":" << remote_port << "closed";
+
 }
 
 /*!

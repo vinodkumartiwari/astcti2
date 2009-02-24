@@ -36,54 +36,34 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTISERVICE_H
-#define QASTCTISERVICE_H
+#ifndef QASTCTISERVICESAPPLICATIONS_H
+#define QASTCTISERVICESAPPLICATIONS_H
 
 #include <QObject>
-#include "qastctiservicesoperators.h"
-#include "qastctiservicesvariables.h"
-#include "qastctiservicesapplications.h"
+#include <QHash>
 
-class QAstCTIService : public QObject
+class QAstCTIApplication;
+
+class QAstCTIServicesApplications : public QObject
 {
     Q_OBJECT
 
 public:
-    QAstCTIService(const int &id);
-    ~QAstCTIService();
-
-    int                         getIdService();
-    QString                     getServiceName();
-    QString                     getServiceContextType();
-    bool                        getServiceIsQueue();
-    QString                     getServiceQueueName();
-    QString                     getServiceTriggerType();
-    bool                        getEnabled();
-    QAstCTIServicesOperators*   getOperators();
-    QAstCTIServicesVariables*   getVariables();
-    QAstCTIServicesApplications* getApplications();
-
-public slots:
-    bool        Load();
-    void        LoadOperators(const bool &bMayLoad);
-    void        LoadVariables(const bool &bMayLoad);
-    void        LoadApplications(const bool &bMayLoad);
-
-signals:
-    void        LoadComplete(const bool &result);
+    QAstCTIServicesApplications();
+    QAstCTIServicesApplications(const int &idservice);
+    ~QAstCTIServicesApplications();
+    QAstCTIApplication *operator[](const QString &key);
+    int count();
+    void setIdService(const int &idservice);
 
 private:
-    int         ID_SERVICE;
-    QString     SERVICE_NAME;
-    QString     SERVICE_CONTEXT_TYPE;
-    bool        SERVICE_IS_QUEUE;
-    QString     SERVICE_QUEUE_NAME;
-    QString     SERVICE_TRIGGER_TYPE;
-    bool        ENABLED;
+    QHash<QString, QAstCTIApplication*> applications;
+    void addApplication(QAstCTIApplication *app);
+    void removeApplication(const QString &key);
+    void fillApplications();
+    void clear();
 
-    QAstCTIServicesOperators    operators;
-    QAstCTIServicesVariables    variables;
-    QAstCTIServicesApplications applications;
+    int ID_SERVICE;
 };
 
-#endif // QASTCTISERVICE_H
+#endif // QASTCTISERVICESAPPLICATIONS_H
