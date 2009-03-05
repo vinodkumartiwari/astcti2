@@ -47,11 +47,11 @@ QAstCTIOperator::QAstCTIOperator(const int &id)
         ENABLED(false), lastSeat(0)
 {
     // Let's connect our signals
-    connect(this, SIGNAL(LoadComplete(const bool&)), this, SLOT(LoadSeat(const bool&)));
-    connect(this, SIGNAL(UpdateComplete(const bool&)), this, SLOT(LoadSeat(const bool&)));
+    connect(this, SIGNAL(LoadComplete(const bool&)), this, SLOT(load_seat(const bool&)));
+    connect(this, SIGNAL(UpdateComplete(const bool&)), this, SLOT(load_seat(const bool&)));
 }
 
-bool QAstCTIOperator::Load()
+bool QAstCTIOperator::load()
 {
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
@@ -72,22 +72,22 @@ bool QAstCTIOperator::Load()
     }
     query.clear();
 
-    emit this->LoadComplete(retVal);
+    emit this->load_complete(retVal);
     return retVal;
 }
 
-void QAstCTIOperator::LoadSeat(const bool &bMayLoad)
+void QAstCTIOperator::load_seat(const bool &bMayLoad)
 {
     if (!bMayLoad) return;
 
     if (this->LAST_SEAT > 0)
     {
         this->lastSeat = new QAstCTISeat(this->LAST_SEAT);
-        this->lastSeat->Load();
+        this->lastSeat->load();
     }
 }
 
-bool QAstCTIOperator::Save()
+bool QAstCTIOperator::save()
 {
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
@@ -108,52 +108,52 @@ bool QAstCTIOperator::Save()
 
     query.clear();
 
-    emit this->UpdateComplete(retVal);
+    emit this->update_complete(retVal);
     return retVal;
 }
 
-int  QAstCTIOperator::getIdOperator()
+int  QAstCTIOperator::get_id_operator()
 {
     return this->ID_OPERATOR;
 }
 
-QString  QAstCTIOperator::getUsername()
+QString  QAstCTIOperator::get_user_name()
 {
     return this->USER_NAME;
 }
 
-QString  QAstCTIOperator::getFullName()
+QString  QAstCTIOperator::get_full_name()
 {
     return this->FULL_NAME;
 }
 
-QString  QAstCTIOperator::getPassword()
+QString  QAstCTIOperator::get_pass_word()
 {
     return this->PASS_WORD;
 }
 
-int QAstCTIOperator::getLastSeat()
+int QAstCTIOperator::get_last_seat()
 {
     return this->LAST_SEAT;
 }
 
-QAstCTISeat* QAstCTIOperator::getSeat()
+QAstCTISeat* QAstCTIOperator::get_seat()
 {
     return this->lastSeat;
 }
 
 
-void QAstCTIOperator::setLastSeat(const int &newSeat)
+void QAstCTIOperator::set_last_seat(const int &newSeat)
 {
     this->LAST_SEAT = newSeat;
 }
 
-bool QAstCTIOperator::getBeginInPause()
+bool QAstCTIOperator::get_begin_in_pause()
 {
     return this->BEGIN_IN_PAUSE;
 }
 
-bool QAstCTIOperator::getEnabled()
+bool QAstCTIOperator::get_enabled()
 {
     return this->ENABLED;
 }

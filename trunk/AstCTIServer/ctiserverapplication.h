@@ -45,16 +45,24 @@
 #include <QSettings>
 #include <QtCore>
 #include <QtCore/QCoreApplication>
+#include <QFileInfo>
 #include <QtSql>
 
-#include "mainserver.h"
+#include "coretcpserver.h"
 #include "cticonfig.h"
 #include "logger.h"
 #include "argumentlist.h"
+#include "configurationchecker.h"
+#include "qastctiapplication.h"
+#include "qastctiservicesoperators.h"
+#include "qastctiservice.h"
+#include "qastctiservices.h"
 
 #define DEFAULT_SERVER_PORT         5000
 #define DEFAULT_READ_TIMEOUT        15000
 #define DEFAULT_COMPRESSION_LEVEL   0
+#define DEFAULT_RTCONFIG            "rtconfig/"
+
 #define DEFAULT_AMI_HOSTIP          "localhost"
 #define DEFAULT_AMI_PORT            5038
 #define DEFAULT_AMI_USER            "manager"
@@ -72,23 +80,29 @@ class CtiServerApplication : public QCoreApplication
 public:
     CtiServerApplication(int &argc, char **argv);
     ~CtiServerApplication();
-    static CtiServerApplication *instance();
+    static CtiServerApplication* instance();
 
     QAstCTIConfiguration    config; // Main configuration struct
 
 public slots:
-    MainServer *newMainServer();
+    CoreTcpServer*          build_new_coretcpserver();
+    void                    reload_sql_database(QFileInfo * databaseFile);
 
 private:
-    bool m_canStart;
-    MainServer *m_mainServer;
+    bool                    can_start;
+    CoreTcpServer*          core_tcp_server;
+    ConfigurationChecker*   config_checker;
+    bool                    is_config_loading;
+    QAstCTIServices*        services;
 
-    bool buildSqlDatabase(QAstCTIConfiguration *config);
-    void destroySqlDatabase(QAstCTIConfiguration *config);
-    QString databaseVersion();
+    bool                    build_sql_database(const QString & databaseFile);
+    void                    destroy_sql_database();
+    QString                 read_database_version();
 
-    bool readSettingsFile(const QString configFile, QAstCTIConfiguration *config);
-    void writeSetting(QSettings *settings, const QString & key, const  QVariant & defvalue);
+    bool                    read_settings_file(const QString configFile, QAstCTIConfiguration* config);
+    void                    write_settings_file(QSettings* settings, const QString & key, const  QVariant & defvalue);
+
+
 };
 
 #endif // CTISERVERAPPLICATION_H

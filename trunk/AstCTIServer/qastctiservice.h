@@ -49,28 +49,28 @@ class QAstCTIService : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIService(const int &id);
+    QAstCTIService(const int& id);
     ~QAstCTIService();
 
-    int                         getIdService();
-    QString                     getServiceName();
-    QString                     getServiceContextType();
-    bool                        getServiceIsQueue();
-    QString                     getServiceQueueName();
-    QString                     getServiceTriggerType();
-    bool                        getEnabled();
-    QAstCTIServicesOperators*   getOperators();
-    QAstCTIServicesVariables*   getVariables();
-    QAstCTIServicesApplications* getApplications();
+    int                         get_id_service();
+    QString                     get_service_name();
+    QString                     get_service_context_type();
+    bool                        get_service_is_queue();
+    QString                     get_service_queue_name();
+    QString                     get_service_trigger_type();
+    bool                        get_enabled();
+    QAstCTIServicesOperators*   get_operators();
+    QAstCTIServicesVariables*   get_variables();
+    QAstCTIServicesApplications* get_applications();
 
 public slots:
-    bool        Load();
-    void        LoadOperators(const bool &bMayLoad);
-    void        LoadVariables(const bool &bMayLoad);
-    void        LoadApplications(const bool &bMayLoad);
+    bool        load();
+    void        load_operators(const bool& bMayLoad);
+    void        load_variables(const bool& bMayLoad);
+    void        load_applications(const bool& bMayLoad);
 
 signals:
-    void        LoadComplete(const bool &result);
+    void        load_complete(const bool& result);
 
 private:
     int         ID_SERVICE;

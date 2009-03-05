@@ -37,27 +37,27 @@
  */
 
 #include "clientmanager.h"
-#include "mainserver.h"
+#include "coretcpserver.h"
 
 /*!
     ClientManager Constructor
 */
-ClientManager::ClientManager(QAstCTIConfiguration *config,
+ClientManager::ClientManager(QAstCTIConfiguration* config,
                              int socketDescriptor,
-                             QObject *parent) :
-                QThread(parent),
-                socketDescriptor(socketDescriptor)
+                             QObject* parent) :
+                             QThread(parent),
+                             socketDescriptor(socketDescriptor)
 {
     // Lets copy our configuration struct
     this->config = config;
 
 
-    connect(parent, SIGNAL(dataToClient(QString)), this, SLOT(sendDataSlot(QString)));
+    connect(parent, SIGNAL(dataToClient(QString)), this, SLOT(send_data_to_client(QString)));
 
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
 
     // We need to initialize our parser
-    this->initParserCommands();
+    this->init_parser_commands();
 
 
 }
@@ -70,21 +70,21 @@ ClientManager::~ClientManager()
 /*!
     Initialize the commandList QHash
 */
-void ClientManager::initParserCommands()
+void ClientManager::init_parser_commands()
 {
-    if (config->qDebug) qDebug() << "In ClientManager::initParserCommands()";
-    commandsList["QUIT"]=CMD_QUIT;
-    commandsList["NOOP"]=CMD_NOOP;
-    commandsList["USER"]=CMD_USER;
-    commandsList["PASS"]=CMD_PASS;
-    commandsList["ORIG"]=CMD_ORIG;
-    commandsList["STOP"]=CMD_STOP;
+    if (config->qDebug) qDebug() << "In ClientManager::init_parser_commands()";
+    commands_list["QUIT"]=CMD_QUIT;
+    commands_list["NOOP"]=CMD_NOOP;
+    commands_list["USER"]=CMD_USER;
+    commands_list["PASS"]=CMD_PASS;
+    commands_list["ORIG"]=CMD_ORIG;
+    commands_list["STOP"]=CMD_STOP;
 
 }
 
 void ClientManager::stop()
 {
-    this->theSocket->disconnectFromHost();
+    this->local_socket->disconnectFromHost();
 
 }
 
@@ -106,20 +106,20 @@ void ClientManager::run()
         qDebug() << "Error in socket:" << tcpSocket.errorString();
         return;
     }
-    this->theSocket = &tcpSocket;
+    this->local_socket = &tcpSocket;
 
     // Let's grab some informations about remote endpoint
     QHostAddress    remote_addr = tcpSocket.peerAddress();  // Remote ip addr
     quint16         remote_port = tcpSocket.peerPort();     // Remote port
 
-    this->localIdentifier = QString("client-%1-%2").arg(remote_addr.toString()).arg(remote_port);
-    emit this->addClient(this->localIdentifier, this);
+    this->local_identifier = QString("client-%1-%2").arg(remote_addr.toString()).arg(remote_port);
+    emit this->add_client(this->local_identifier, this);
 
     if (config->qDebug) qDebug() << "Incoming Connection from " << remote_addr.toString() << ":" << remote_port;
 
     // Let's say Welcome to our client!
 
-    this->sendData("100 Welcome to AstCTIServer");
+    this->send_data_to_client("100 Welcome to AstCTIServer");
 
     if (config->qDebug) qDebug() << "Read Timeout is " << config->readTimeout;
 
@@ -164,8 +164,6 @@ void ClientManager::run()
             }
             buffer = remainingBuffer;
 
-
-
             // Let's split our string by separator
             QStringList list = toSplit.split(separator);
             QString itm;
@@ -178,21 +176,21 @@ void ClientManager::run()
                 {
                     // TODO : command parser
                     if (config->qDebug) qDebug() << "ClientManager::run data received:" << itm;
-                    QAstCTICommand  cmd = this->parseCommand(itm);
+                    QAstCTICommand  cmd = this->parse_command(itm);
 
-                    switch(commandsList[cmd.command])
+                    switch(commands_list[cmd.command])
                     {
                         case CMD_QUIT:
-                            this->sendData("900 BYE");
+                            this->send_data_to_client("900 BYE");
                             tcpSocket.close();
                             break;
                         case CMD_NOOP:
-                            this->sendData("100 OK");
+                            this->send_data_to_client("100 OK");
                             break;
                         case CMD_USER:
                             if (cmd.parameters.count() < 1)
                             {
-                                this->sendData("101 KO No username given");
+                                this->send_data_to_client("101 KO No username given");
                                 break;
                             }
                             else
@@ -206,23 +204,23 @@ void ClientManager::run()
                         case CMD_PASS:
                             // TODO : emit only if user done a successfull authentication
 
-                            emit this->changeClient(this->localIdentifier, QString("exten-SIP/200"));
-                            this->localIdentifier = QString("exten-SIP/200");
-                            this->sendData("100 OK Authentication successful");
+                            emit this->change_client(this->local_identifier, QString("exten-SIP/200"));
+                            this->local_identifier = QString("exten-SIP/200");
+                            this->send_data_to_client("100 OK Authentication successful");
                             break;
                         case CMD_ORIG:
                             foreach(parm, cmd.parameters)
                             {
-                                emit this->notify(parm);
+                                emit this->notify_server(parm);
                             }
-                            this->sendData("100 OK");
+                            this->send_data_to_client("100 OK");
                             break;
                         case CMD_STOP:
-                            emit this->stopRequested(this->localIdentifier, this);
+                            emit this->stop_request(this->local_identifier, this);
                             qDebug() << "Emitted signal STOP";
                             break;
                         case CMD_NOT_DEFINED:
-                             this->sendData("101 KO Invalid Command");
+                             this->send_data_to_client("101 KO Invalid Command");
                             break;
                     } // end switch
                 } // end if (itm.size())
@@ -239,7 +237,7 @@ void ClientManager::run()
 
     // Emit a signal when disconnection is in progress
     // TODO : emit only if user done a successfull authentication
-    emit this->removeClient(this->localIdentifier);
+    emit this->remove_client(this->local_identifier);
 
 }
 
@@ -247,7 +245,7 @@ void ClientManager::run()
     Parse a string command and returns an QAstCTICommand struct with
     command and parameters as QStringList;
 */
-QAstCTICommand ClientManager::parseCommand(const QString &command)
+QAstCTICommand ClientManager::parse_command(const QString& command)
 {
     QStringList data = command.split(" ");
     QAstCTICommand newCommand;
@@ -260,9 +258,9 @@ QAstCTICommand ClientManager::parseCommand(const QString &command)
 /*!
     Sends string data over the specified QTcpSocket
 */
-void ClientManager::sendData(const QString &data)
+void ClientManager::send_data_to_client(const QString& data)
 {
-    if (config->qDebug) qDebug() << "In ClientManager::sendData(" << data << ")";
+    if (config->qDebug) qDebug() << "In ClientManager::send_data_to_client(" << data << ")";
 
     QByteArray block;
 
@@ -274,22 +272,17 @@ void ClientManager::sendData(const QString &data)
     if (config->compressionLevel > 0)
     {
         QByteArray compressed = qCompress(block, config->compressionLevel);
-        this->theSocket->write(compressed);
+        this->local_socket->write(compressed);
     }
     else
-        this->theSocket->write(block);
+        this->local_socket->write(block);
 
-}
-
-void ClientManager::sendDataSlot(const QString &data)
-{
-    this->sendData(data);
 }
 
 /*!
     Compare a plain string "password" with a pre-generated md5 QString "checkPassword"
 */
-bool ClientManager::checkPassword(const QString &password, const QString &checkPassword)
+bool ClientManager::check_password(const QString& password, const QString& checkPassword)
 {
 
     QCryptographicHash md5(QCryptographicHash::Md5);
@@ -298,23 +291,3 @@ bool ClientManager::checkPassword(const QString &password, const QString &checkP
 
     return (QString(result).compare(checkPassword) == 0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

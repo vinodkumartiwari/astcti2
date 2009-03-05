@@ -39,13 +39,13 @@
 
 #include "qastctiapplication.h"
 
-QAstCTIApplication::QAstCTIApplication(const int &id) :
+QAstCTIApplication::QAstCTIApplication(const int& id) :
         ID_APPLICATION(id), ID_SERVICE(0), APPLICATION_OS_TYPE(""),
         APPLICATION_PATH(""), PARAMETERS("")
 {
 }
 
-bool QAstCTIApplication::Load()
+bool QAstCTIApplication::load()
 {
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
@@ -63,31 +63,31 @@ bool QAstCTIApplication::Load()
     }
     query.clear();
 
-    emit this->LoadComplete(retVal);
+    emit this->load_complete(retVal);
     return retVal;
 }
 
-int QAstCTIApplication::getIdApplication()
+int QAstCTIApplication::get_id_application()
 {
     return this->ID_APPLICATION;
 }
 
-int QAstCTIApplication::getIdService()
+int QAstCTIApplication::get_id_service()
 {
     return this->ID_SERVICE;
 }
 
-QString QAstCTIApplication::getApplicationOsType()
+QString QAstCTIApplication::get_application_os_type()
 {
     return this->APPLICATION_OS_TYPE;
 }
 
-QString QAstCTIApplication::getApplicationPath()
+QString QAstCTIApplication::get_application_path()
 {
     return this->APPLICATION_PATH;
 }
 
-QString QAstCTIApplication::getParameters()
+QString QAstCTIApplication::get_parameters()
 {
     return this->PARAMETERS;
 }

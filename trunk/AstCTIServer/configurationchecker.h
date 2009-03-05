@@ -35,53 +35,39 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+#ifndef CONFIGURATIONCHECKER_H
+#define CONFIGURATIONCHECKER_H
 
-#ifndef QASTCTIOPERATOR_H
-#define QASTCTIOPERATOR_H
 
 #include <QObject>
-#include "qastctiseat.h"
+#include <QtCore/QFileSystemWatcher>
+#include <QtCore/QDir>
+#include <QtCore/QDateTime>
+#include <QtCore/QFileInfo>
+#include <QtCore/QFileInfoList>
+#include <QDebug>
 
-class QAstCTIOperator : public QObject
+class ConfigurationChecker : public QObject
 {
-
     Q_OBJECT
 
 public:
-    QAstCTIOperator(const int& id);
-    int get_id_operator();
-    QString get_full_name();
-    QString get_user_name();
-    QString get_pass_word();
-    int get_last_seat();
-    void set_last_seat(const int& newSeat);
-    bool get_begin_in_pause();
-    bool get_enabled();
+    ConfigurationChecker(const QString & path);
+    ~ConfigurationChecker();
+    QFileInfo* loadFirstConfiguration();
 
-    QAstCTISeat* get_seat();
-
-    static bool check_password_match(const QString& password, const QString& check_password_match);
 
 public slots:
-    bool load();
-    bool save();
-    void load_seat(const bool& bMayLoad);
+    void configurationChanged(const QString & path);
 
 signals:
-    void load_complete(const bool& result);
-    void update_complete(const bool& result);
-
+    void newConfiguration(QFileInfo* file);
 
 private:
-    int ID_OPERATOR;
-    QString FULL_NAME;
-    QString USER_NAME;
-    QString PASS_WORD;
-    int LAST_SEAT;
-    bool BEGIN_IN_PAUSE;
-    bool ENABLED;
-
-    QAstCTISeat *lastSeat;
+    QFileInfo*          readLastModifiedConfigurationFile();
+    QString             configurationPath;
+    QFileInfo*          lastConfiguration;
+    QFileSystemWatcher* watcher;
 };
 
-#endif // QASTCTIOPERATOR_H
+#endif // CONFIGURATIONCHECKER_H

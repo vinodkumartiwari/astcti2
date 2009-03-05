@@ -44,19 +44,19 @@
 
 struct QAstCTIConfiguration
 {
-    bool        qDebug;
-    quint16     serverPort;
-    int         readTimeout;
-    int         compressionLevel;
-    QString     ami_host;
-    quint16     ami_port;
-    QString     ami_user;
-    QString     ami_secret;
-    quint16     ami_connect_timeout;
-    QString     sqlite_file;
-    QString     sqlite_user;
-    QString     sqlite_secret;
-    QSqlDatabase *db;
+    bool            qDebug;
+    QString         runtimeConfiguration;
+    quint16         serverPort;
+    int             readTimeout;
+    int             compressionLevel;
+    QString         ami_host;
+    quint16         ami_port;
+    QString         ami_user;
+    QString         ami_secret;
+    quint16         ami_connect_timeout;
+    QString         sqlite_file;
+    QString         sqlite_user;
+    QString         sqlite_secret;
+    QSqlDatabase*   db;
 };
-
 #endif

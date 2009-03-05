@@ -82,7 +82,8 @@ someObject.processEveryFile(args);
 
 */
 
-class QArgumentList : public QStringList {
+class QArgumentList : public QStringList
+{
   public:
     /**
     retrieve argument list from the qApp->argc() and argv() methods.
@@ -132,4 +133,3 @@ class QArgumentList : public QStringList {
     void argsToStringlist(int argc,  char* argv[]);
 };
 #endif
-

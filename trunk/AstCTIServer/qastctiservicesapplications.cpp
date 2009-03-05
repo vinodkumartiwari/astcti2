@@ -46,10 +46,10 @@ QAstCTIServicesApplications::QAstCTIServicesApplications()
 {
 }
 
-QAstCTIServicesApplications::QAstCTIServicesApplications(const int &idservice)
+QAstCTIServicesApplications::QAstCTIServicesApplications(const int& idservice)
         : ID_SERVICE(idservice)
 {
-    this->fillApplications();
+    this->fill_applications();
 }
 
 QAstCTIServicesApplications::~QAstCTIServicesApplications()
@@ -58,27 +58,27 @@ QAstCTIServicesApplications::~QAstCTIServicesApplications()
 }
 
 
-QAstCTIApplication *QAstCTIServicesApplications::operator[](const QString &key)
+QAstCTIApplication* QAstCTIServicesApplications::operator[](const QString& key)
 {
     return (this->applications.contains(key)) ? this->applications[key] : 0;
 
 }
 
-void QAstCTIServicesApplications::setIdService(const int &idservice)
+void QAstCTIServicesApplications::set_id_service(const int &idservice)
 {
     this->ID_SERVICE = idservice;
-    this->fillApplications();
+    this->fill_applications();
 }
-void QAstCTIServicesApplications::addApplication(QAstCTIApplication *app)
+void QAstCTIServicesApplications::add_application(QAstCTIApplication* app)
 {
-    this->applications.insert(app->getApplicationOsType() , app);
+    this->applications.insert(app->get_application_os_type() , app);
 }
 
-void QAstCTIServicesApplications::removeApplication(const QString &key)
+void QAstCTIServicesApplications::remove_application(const QString& key)
 {
     if (this->applications.contains(key))
     {
-        QAstCTIApplication *app = this->applications[key];
+        QAstCTIApplication* app = this->applications[key];
         if (app != 0)
         {
             delete(app);
@@ -106,7 +106,7 @@ void QAstCTIServicesApplications::clear()
     }
 }
 
-void QAstCTIServicesApplications::fillApplications()
+void QAstCTIServicesApplications::fill_applications()
 {
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
@@ -115,14 +115,14 @@ void QAstCTIServicesApplications::fillApplications()
     query.exec();
     while(query.next())
     {
-        QAstCTIApplication *app = new QAstCTIApplication(query.value(0).toInt(0));
-        if (app->Load())
+        QAstCTIApplication* app = new QAstCTIApplication(query.value(0).toInt(0));
+        if (app->load())
         {
-            QString appType = app->getApplicationOsType();
+            QString appType = app->get_application_os_type();
 
             // Remove service if exists before load
-            this->removeApplication(appType);
-            this->addApplication(app);
+            this->remove_application(appType);
+            this->add_application(app);
         }
     }
     query.finish();

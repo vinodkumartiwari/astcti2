@@ -46,15 +46,15 @@
 
 QAsteriskCTILogger      logger; // Our logger object
 
-void logOutput(QtMsgType type, const char *msg)
+void log_handler(QtMsgType type, const char *msg)
 {
-    logger.writeToLog(type, msg);
+    logger.write_to_log(type, msg);
 }
 
 int main(int argc, char *argv[])
 {
     
-    QString logo = "";
+    /*QString logo = "";
     logo += "            '.~.-'                                              \n";
     logo += "           -.~~~~~.-'                                           \n";
     logo += "         '-~~~~~~~~~~.-'                                        \n";
@@ -80,20 +80,20 @@ int main(int argc, char *argv[])
     logo += "                    -~oooooo~..-''                              \n";
     logo += "                     ~ooo~.                                     \n";
     qDebug("%s", qPrintable(logo));
-
+    */
     qDebug() << "AsteriskCTI Server version" << APP_VERSION_LONG;
     qDebug() << "Based on Qt" << QT_VERSION_STR;
-    qDebug() << "Built on " __DATE__ " at " __TIME__;
+    /*qDebug() << "Built on " __DATE__ " at " __TIME__;
     qDebug() << "Copyright" <<  APP_YEAR << ". All rights reserved.";
     qDebug() << "The program is provided AS IS with NO WARRANTY OF ANY ";
     qDebug() << "KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY";
-    qDebug() << "AND FITNESS FOR A PARTICULAR PURPOSE.";
+    qDebug() << "AND FITNESS FOR A PARTICULAR PURPOSE.";*/
 
-    qInstallMsgHandler(logOutput);
+    qInstallMsgHandler(log_handler);
 
     // QCoreApplication needs to be initialized here
     CtiServerApplication app(argc, argv);
-    if (app.newMainServer() == NULL)
+    if (app.build_new_coretcpserver() == NULL)
         return 1;
 
     return app.exec();

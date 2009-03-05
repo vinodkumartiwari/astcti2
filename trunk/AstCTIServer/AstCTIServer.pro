@@ -10,7 +10,6 @@ CONFIG += console
 CONFIG -= app_bundle
 TEMPLATE = app
 SOURCES += main.cpp \
-    mainserver.cpp \
     clientmanager.cpp \
     logger.cpp \
     amiclient.cpp \
@@ -23,9 +22,11 @@ SOURCES += main.cpp \
     qastctiapplication.cpp \
     qastctiservices.cpp \
     qastctiservicesoperators.cpp \
-    qastctiservicesvariables.cpp
-HEADERS += mainserver.h \
-    clientmanager.h \
+    qastctiservicesvariables.cpp \
+    qastctiservicesapplications.cpp \
+    configurationchecker.cpp \
+    coretcpserver.cpp
+HEADERS += clientmanager.h \
     cticonfig.h \
     logger.h \
     amiclient.h \
@@ -39,4 +40,7 @@ HEADERS += mainserver.h \
     qastctiapplication.h \
     qastctiservices.h \
     qastctiservicesoperators.h \
-    qastctiservicesvariables.h
+    qastctiservicesvariables.h \
+    qastctiservicesapplications.h \
+    configurationchecker.h \
+    coretcpserver.h

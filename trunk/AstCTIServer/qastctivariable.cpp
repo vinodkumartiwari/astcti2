@@ -39,13 +39,13 @@
 
 #include "qastctivariable.h"
 
-QAstCTIVariable::QAstCTIVariable(const int &id) :
+QAstCTIVariable::QAstCTIVariable(const int& id) :
         ID_VARIABLE(id), ID_SERVICE(0), VARNAME("")
 {
 
 }
 
-bool QAstCTIVariable::Load()
+bool QAstCTIVariable::load()
 {
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
@@ -61,21 +61,21 @@ bool QAstCTIVariable::Load()
     }
     query.clear();
 
-    emit this->LoadComplete(retVal);
+    emit this->load_complete(retVal);
     return retVal;
 }
 
-int QAstCTIVariable::getIdVariable()
+int QAstCTIVariable::get_id_variable()
 {
     return this->ID_VARIABLE;
 }
 
-int QAstCTIVariable::getIdService()
+int QAstCTIVariable::get_id_service()
 {
     return this->ID_SERVICE;
 }
 
-QString QAstCTIVariable::getVarName()
+QString QAstCTIVariable::get_var_name()
 {
     return this->VARNAME;
 }

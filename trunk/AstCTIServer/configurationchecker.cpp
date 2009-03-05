@@ -35,53 +35,62 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+#include "configurationchecker.h"
 
-#ifndef QASTCTIOPERATOR_H
-#define QASTCTIOPERATOR_H
-
-#include <QObject>
-#include "qastctiseat.h"
-
-class QAstCTIOperator : public QObject
+ConfigurationChecker::ConfigurationChecker(const QString& path)
 {
+    this->configurationPath = path;
+    this->watcher = new QFileSystemWatcher();
 
-    Q_OBJECT
+    connect(this->watcher, SIGNAL(directoryChanged(QString)), this, SLOT(configurationChanged(QString)));
+    this->watcher->addPath(path);
+}
 
-public:
-    QAstCTIOperator(const int& id);
-    int get_id_operator();
-    QString get_full_name();
-    QString get_user_name();
-    QString get_pass_word();
-    int get_last_seat();
-    void set_last_seat(const int& newSeat);
-    bool get_begin_in_pause();
-    bool get_enabled();
+ConfigurationChecker::~ConfigurationChecker()
+{
+    if (this->lastConfiguration !=0 )
+    {
+        delete(this->lastConfiguration);
+    }
+}
 
-    QAstCTISeat* get_seat();
-
-    static bool check_password_match(const QString& password, const QString& check_password_match);
-
-public slots:
-    bool load();
-    bool save();
-    void load_seat(const bool& bMayLoad);
-
-signals:
-    void load_complete(const bool& result);
-    void update_complete(const bool& result);
+QFileInfo* ConfigurationChecker::loadFirstConfiguration()
+{
+    QFileInfo *result = readLastModifiedConfigurationFile();
+    if (this->lastConfiguration == 0)
+    {
+        this->lastConfiguration = result;
+    }
+    return result;
+}
 
 
-private:
-    int ID_OPERATOR;
-    QString FULL_NAME;
-    QString USER_NAME;
-    QString PASS_WORD;
-    int LAST_SEAT;
-    bool BEGIN_IN_PAUSE;
-    bool ENABLED;
+void ConfigurationChecker::configurationChanged(const QString& path)
+{
+    Q_UNUSED(path);
+    QFileInfo* info = this->readLastModifiedConfigurationFile();
+    if (info == 0) return;
+    if (this->lastConfiguration != 0)
+    {
+        if (this->lastConfiguration->absoluteFilePath() != info->absoluteFilePath())
+        {            
+            delete(this->lastConfiguration);
+            this->lastConfiguration = info;
+            emit this->newConfiguration(info);
+        }
+    }
+}
 
-    QAstCTISeat *lastSeat;
-};
-
-#endif // QASTCTIOPERATOR_H
+QFileInfo* ConfigurationChecker::readLastModifiedConfigurationFile()
+{
+    QDir dir(this->configurationPath);
+    if (!dir.exists()) return 0;
+    QStringList fileFilter;
+    fileFilter << "*.db3";
+    QFileInfoList list = dir.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot, QDir::Time);
+    if (list.size() > 0)
+    {
+        return new QFileInfo(list[0]);
+    }
+    return 0;
+}

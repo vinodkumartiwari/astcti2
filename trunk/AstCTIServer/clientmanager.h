@@ -73,35 +73,34 @@ class ClientManager : public  QThread
     Q_OBJECT
 
 public:
-    ClientManager(QAstCTIConfiguration *config, int socketDescriptor, QObject *parent);
+    ClientManager(QAstCTIConfiguration* config, int socketDescriptor, QObject* parent);
     ~ClientManager();
     void run();
     void stop();
 
 signals:
-    void addClient(const QString &exten, ClientManager *cl);
-    void changeClient(const QString &oldexten, const QString &newexten);
-    void removeClient(const QString &exten);
-    void notify(const QString &data);
-    void stopRequested(const QString &exten, ClientManager *cl);
-
-public slots:
-    void sendDataSlot(const QString &data);
+    void add_client(const QString& exten, ClientManager* cl);
+    void change_client(const QString& oldexten, const QString& newexten);
+    void remove_client(const QString& exten);
+    void notify_server(const QString& data);
+    void stop_request(const QString& exten, ClientManager* cl);
 
 private:
-    QAstCTIConfiguration    *config;
+    QAstCTIConfiguration*   config;
     int                     socketDescriptor;
-    QString                 localIdentifier;
+    QString                 local_identifier;
     QString                 buffer;
-    QHash<QString, int>     commandsList;
-    void                    initParserCommands();
-    QAstCTICommand          parseCommand(const QString &command);
-    bool                    checkPassword(const QString &password, const QString &checkPassword);
-    void                    sendData(const QString &data);
-    QString                 StringToMd5(const QString &toConvert);
+    QHash<QString, int>     commands_list;
+    void                    init_parser_commands();
+    QAstCTICommand          parse_command(const QString& command);
+    bool                    check_password(const QString& password, const QString& checkPassword);    
+    QString                 string_to_md5(const QString& toConvert);
+
+private slots:
+    void                    send_data_to_client(const QString& data);
 
 protected:
-    QTcpSocket              *theSocket;
+    QTcpSocket*             local_socket;
 
 };
 

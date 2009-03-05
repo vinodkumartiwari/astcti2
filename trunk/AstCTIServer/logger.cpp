@@ -38,40 +38,40 @@
 
 #include "logger.h"
 
-QAsteriskCTILogger::QAsteriskCTILogger(QObject *parent) :
+QAsteriskCTILogger::QAsteriskCTILogger(QObject* parent) :
         QObject (parent)
 {
 }
 
-void QAsteriskCTILogger::writeToLog(QtMsgType level, const QString &logdata)
+void QAsteriskCTILogger::write_to_log(QtMsgType level, const QString& logdata)
 {
-    this->buildLogDirectory();
-    QDir baseDir = this->logDirectory;
+    this->build_log_directory_if_not_exists();
+    QDir base_directory = this->logging_directory;
 
-    QString todayFileName = QString("log_").append(QDate::currentDate().toString("yyyyMMdd").append(".log"));
+    QString today_filename = QString("log_").append(QDate::currentDate().toString("yyyyMMdd").append(".log"));
 
-    QFile logFile(baseDir.absolutePath().append("/").append(todayFileName));
-    if (!logFile.open(QIODevice::Append | QIODevice::Text ))
+    QFile log_file(base_directory.absolutePath().append("/").append(today_filename));
+    if (!log_file.open(QIODevice::Append | QIODevice::Text ))
     {
-        qDebug() << "Cannot open logfile" << todayFileName;
+        qDebug() << "Cannot open log_file" << today_filename;
         return;
     }
-    QString logstring;
+    QString log_string;
 
 
-    QByteArray dataArray;
-    QBuffer buf( &dataArray );
-    buf.open( QIODevice::WriteOnly );
-    QTextStream ts( &buf );
-    ts << QTime::currentTime().toString("hh:mm:ss")  << " (" << levelStringFromLevelId(level) << "): " << logdata << "\n\r";
-    buf.close();
+    QByteArray data_array;
+    QBuffer data_buffer( &data_array );
+    data_buffer.open( QIODevice::WriteOnly );
+    QTextStream text_stream( &data_buffer );
+    text_stream << QTime::currentTime().toString("hh:mm:ss")  << " (" << get_level_description_from_id(level) << "): " << logdata << "\n\r";
+    data_buffer.close();
 
-    logFile.write(dataArray);
+    log_file.write(data_array);
 
-    logFile.close();
+    log_file.close();
 }
 
-bool QAsteriskCTILogger::buildLogDirectory()
+bool QAsteriskCTILogger::build_log_directory_if_not_exists()
 {
     bool bIsOk = true;
     QString appPath = QCoreApplication::applicationDirPath();
@@ -81,11 +81,11 @@ bool QAsteriskCTILogger::buildLogDirectory()
     {
         bIsOk = logdir.mkdir(appPath);
     }
-    this->logDirectory = logdir;
+    this->logging_directory = logdir;
     return bIsOk;
 }
 
-QString QAsteriskCTILogger::levelStringFromLevelId(const QtMsgType level)
+QString QAsteriskCTILogger::get_level_description_from_id(const QtMsgType level)
 {
     QString retLevel = "NONE";
     switch (level)
