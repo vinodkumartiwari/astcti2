@@ -85,7 +85,7 @@ public:
     QAstCTIConfiguration    config; // Main configuration struct
 
 public slots:
-    CoreTcpServer*          build_new_coretcpserver();
+    CoreTcpServer*          build_new_core_tcpserver();
     void                    reload_sql_database(QFileInfo * databaseFile);
 
 private:

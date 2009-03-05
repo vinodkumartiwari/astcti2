@@ -73,7 +73,7 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
 
     // here we connect an event that will be triggered everytime
     // there's a newer runtime configuration database to read
-    connect(this->config_checker, SIGNAL(new_configuration(QFileInfo *)), this, SLOT(reload_sql_database(QFileInfo *)));
+    connect(this->config_checker, SIGNAL(new_configuration(QFileInfo*)), this, SLOT(reload_sql_database(QFileInfo*)));
     can_start = true;
 }
 
@@ -131,7 +131,7 @@ CtiServerApplication::~CtiServerApplication()
     if (config.qDebug) qDebug() << "Stopped";
 }
 
-CoreTcpServer *CtiServerApplication::build_new_coretcpserver()
+CoreTcpServer *CtiServerApplication::build_new_core_tcpserver()
 {
     if (!can_start) return NULL;
 
