@@ -58,7 +58,7 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
     // Here we get from our configuration checker object the name
     // of the sqlite database containing the runtime configuration
     this->config_checker = new ConfigurationChecker(config.runtimeConfiguration);
-    QFileInfo* lastDbFile = this->config_checker->loadFirstConfiguration();
+    QFileInfo* lastDbFile = this->config_checker->load_first_configuration();
     if (lastDbFile == 0)
     {
         qCritical() << "Cannot read runtime configuration file";
@@ -73,7 +73,7 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
 
     // here we connect an event that will be triggered everytime
     // there's a newer runtime configuration database to read
-    connect(this->config_checker, SIGNAL(newConfiguration(QFileInfo *)), this, SLOT(reload_sql_database(QFileInfo *)));
+    connect(this->config_checker, SIGNAL(new_configuration(QFileInfo *)), this, SLOT(reload_sql_database(QFileInfo *)));
     can_start = true;
 }
 

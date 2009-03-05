@@ -42,46 +42,46 @@ ConfigurationChecker::ConfigurationChecker(const QString& path)
     this->configurationPath = path;
     this->watcher = new QFileSystemWatcher();
 
-    connect(this->watcher, SIGNAL(directoryChanged(QString)), this, SLOT(configurationChanged(QString)));
+    connect(this->watcher, SIGNAL(directoryChanged(QString)), this, SLOT(check_configuration_dir(QString)));
     this->watcher->addPath(path);
 }
 
 ConfigurationChecker::~ConfigurationChecker()
 {
-    if (this->lastConfiguration !=0 )
+    if (this->last_configuration !=0 )
     {
-        delete(this->lastConfiguration);
+        delete(this->last_configuration);
     }
 }
 
-QFileInfo* ConfigurationChecker::loadFirstConfiguration()
+QFileInfo* ConfigurationChecker::load_first_configuration()
 {
-    QFileInfo *result = readLastModifiedConfigurationFile();
-    if (this->lastConfiguration == 0)
+    QFileInfo *result = read_last_modified_configuration_file();
+    if (this->last_configuration == 0)
     {
-        this->lastConfiguration = result;
+        this->last_configuration = result;
     }
     return result;
 }
 
 
-void ConfigurationChecker::configurationChanged(const QString& path)
+void ConfigurationChecker::check_configuration_dir(const QString& path)
 {
     Q_UNUSED(path);
-    QFileInfo* info = this->readLastModifiedConfigurationFile();
+    QFileInfo* info = this->read_last_modified_configuration_file();
     if (info == 0) return;
-    if (this->lastConfiguration != 0)
+    if (this->last_configuration != 0)
     {
-        if (this->lastConfiguration->absoluteFilePath() != info->absoluteFilePath())
+        if (this->last_configuration->absoluteFilePath() != info->absoluteFilePath())
         {            
-            delete(this->lastConfiguration);
-            this->lastConfiguration = info;
-            emit this->newConfiguration(info);
+            delete(this->last_configuration);
+            this->last_configuration = info;
+            emit this->new_configuration(info);
         }
     }
 }
 
-QFileInfo* ConfigurationChecker::readLastModifiedConfigurationFile()
+QFileInfo* ConfigurationChecker::read_last_modified_configuration_file()
 {
     QDir dir(this->configurationPath);
     if (!dir.exists()) return 0;
