@@ -45,10 +45,10 @@ QAstCTIServicesVariables::QAstCTIServicesVariables() :
 {
 }
 
-QAstCTIServicesVariables::QAstCTIServicesVariables(const int &idservice) :
+QAstCTIServicesVariables::QAstCTIServicesVariables(const int& idservice) :
         ID_SERVICE(idservice)
 {
-    this->fillVariables();
+    this->fill_variables();
 }
 
 QAstCTIServicesVariables::~QAstCTIServicesVariables()
@@ -56,27 +56,27 @@ QAstCTIServicesVariables::~QAstCTIServicesVariables()
     this->clear();
 }
 
-QAstCTIVariable *QAstCTIServicesVariables::operator[](const QString &key)
+QAstCTIVariable* QAstCTIServicesVariables::operator[](const QString& key)
 {
     return (this->variables.contains(key)) ? this->variables[key] : 0;
 
 }
 
-void QAstCTIServicesVariables::setIdService(const int &idservice)
+void QAstCTIServicesVariables::set_id_service(const int& idservice)
 {
     this->ID_SERVICE = idservice;
-    this->fillVariables();
+    this->fill_variables();
 }
-void QAstCTIServicesVariables::addVariable(QAstCTIVariable *var)
+void QAstCTIServicesVariables::add_variable(QAstCTIVariable* var)
 {
-    this->variables.insert(var->getVarName(), var);
+    this->variables.insert(var->get_var_name(), var);
 }
 
-void QAstCTIServicesVariables::removeVariable(const QString &key)
+void QAstCTIServicesVariables::remove_variable(const QString& key)
 {
     if (this->variables.contains(key))
     {
-        QAstCTIVariable *var = this->variables[key];
+        QAstCTIVariable* var = this->variables[key];
         if (var != 0)
         {
             delete(var);
@@ -104,7 +104,7 @@ void QAstCTIServicesVariables::clear()
     }
 }
 
-void QAstCTIServicesVariables::fillVariables()
+void QAstCTIServicesVariables::fill_variables()
 {
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
@@ -113,14 +113,14 @@ void QAstCTIServicesVariables::fillVariables()
     query.exec();
     while(query.next())
     {
-        QAstCTIVariable *var = new QAstCTIVariable(query.value(0).toInt(0));
-        if (var->Load())
+        QAstCTIVariable* var = new QAstCTIVariable(query.value(0).toInt(0));
+        if (var->load())
         {
-            QString varName = var->getVarName();
+            QString varName = var->get_var_name();
 
             // Remove service if exists before load
-            this->removeVariable(varName);
-            this->addVariable(var);
+            this->remove_variable(varName);
+            this->add_variable(var);
         }
     }
     query.finish();

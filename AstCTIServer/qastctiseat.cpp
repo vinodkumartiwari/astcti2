@@ -39,14 +39,14 @@
 
 #include "qastctiseat.h"
 
-QAstCTISeat::QAstCTISeat(const int &id)
+QAstCTISeat::QAstCTISeat(const int& id)
         : ID_SEAT(id), SEAT_MAC("00:00:00:00:00:00"),
         SEAT_EXTEN(""), DESCRIPTION("")
 {
 
 }
 
-bool QAstCTISeat::Load()
+bool QAstCTISeat::load()
 {
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
@@ -64,26 +64,26 @@ bool QAstCTISeat::Load()
     }
     query.clear();
 
-    emit this->LoadComplete(retVal);
+    emit this->load_complete(retVal);
     return retVal;
 }
 
-int  QAstCTISeat::getIdSeat()
+int  QAstCTISeat::get_id_seat()
 {
     return this->ID_SEAT;
 }
 
-QString  QAstCTISeat::getSeatMac()
+QString  QAstCTISeat::get_seat_mac()
 {
     return this->SEAT_MAC;
 }
 
-QString  QAstCTISeat::getSeatExten()
+QString  QAstCTISeat::get_seat_exten()
 {
     return this->SEAT_EXTEN;
 }
 
-QString  QAstCTISeat::getDescription()
+QString  QAstCTISeat::get_description()
 {
     return this->DESCRIPTION;
 }

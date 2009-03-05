@@ -50,17 +50,17 @@ class QAstCTIServicesOperators : public QObject
 
 public:
     QAstCTIServicesOperators();
-    QAstCTIServicesOperators(const int &idservice);
+    QAstCTIServicesOperators(const int& idservice);
     ~QAstCTIServicesOperators();
-    QAstCTIOperator *operator[](const QString &key);
+    QAstCTIOperator* operator[](const QString& key);
     int count();
-    void setIdService(const int &idservice);
+    void set_id_service(const int& idservice);
 
 private:
     QHash<QString, QAstCTIOperator*> operators;
-    void addOperator(QAstCTIOperator *oper);
-    void removeOperator(const QString &key);
-    void fillOperators();
+    void add_operator(QAstCTIOperator* oper);
+    void remove_operator(const QString& key);
+    void fill_operators();
     void clear();
 
     int ID_SERVICE;

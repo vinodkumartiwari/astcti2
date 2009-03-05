@@ -41,85 +41,146 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
         : QCoreApplication(argc, argv)
 {
 
-
-    m_canStart = false;
+    is_config_loading = false;
+    can_start      = false;
 
     QArgumentList args(argc, argv);
     config.qDebug = args.getSwitch("--debug") | args.getSwitch("-d");
     QString configFile = args.getSwitchArg("-c", "settings.ini");
 
-
     if (config.qDebug) qDebug("Reading Configurations");
 
-    if (!readSettingsFile(configFile, &config))
+    if (!read_settings_file(configFile, &config))
     {
         return;
     }
 
-    if (!buildSqlDatabase(&config))
+    // Here we get from our configuration checker object the name
+    // of the sqlite database containing the runtime configuration
+    this->config_checker = new ConfigurationChecker(config.runtimeConfiguration);
+    QFileInfo* lastDbFile = this->config_checker->loadFirstConfiguration();
+    if (lastDbFile == 0)
+    {
+        qCritical() << "Cannot read runtime configuration file";
+        return;
+    }
+    qDebug() << "Reading first runtime configuration from file " << lastDbFile->absoluteFilePath();
+    if (!build_sql_database(lastDbFile->absoluteFilePath()))
     {
         return;
     }
-    m_canStart = true;
+
+
+    // here we connect an event that will be triggered everytime
+    // there's a newer runtime configuration database to read
+    connect(this->config_checker, SIGNAL(newConfiguration(QFileInfo *)), this, SLOT(reload_sql_database(QFileInfo *)));
+    can_start = true;
+}
+
+void  CtiServerApplication::reload_sql_database(QFileInfo * databaseFile)
+{
+    qDebug() << "Configuration changes" << databaseFile->absoluteFilePath();
+
+    build_sql_database(databaseFile->absoluteFilePath());
+
+    /* CODE TESTING START: used for testing purpose only */
+    qDebug("CODE TESTING START AT %s:%d",  __FILE__ , __LINE__);
+    if (this->services != 0)
+    {
+        delete(this->services);
+    }
+    if (this->services == 0)
+    {
+        this->services = new QAstCTIServices();
+    }
+
+    QString sername = "ast-cti-demo";
+    QAstCTIService* service = services->operator [](sername);
+    if (service != 0)
+    {
+        qDebug() << "Service alive is " << service->get_service_name();
+        qDebug() << "Number of operators on service is " << service->get_operators()->count();
+        QAstCTIApplication* app = service->get_applications()->operator []("LIN");
+        if (app != 0)
+            qDebug() << "Application for lin is " << app->get_application_path();
+
+        app = service->get_applications()->operator []("WIN");
+        if (app != 0)
+            qDebug() << "Application for win is " << app->get_application_path();
+
+
+    }
+
+    qDebug("CODE TESTING END AT %s:%d",  __FILE__ , __LINE__);
+    /* CODE TESTING END*/
+
 }
 
 CtiServerApplication *CtiServerApplication::instance()
 {
-    return (static_cast<CtiServerApplication *>(QCoreApplication::instance()));
+
+    return (static_cast<CtiServerApplication*>(QCoreApplication::instance()));
 }
 
 CtiServerApplication::~CtiServerApplication()
 {
-    if (config.qDebug) qDebug() << "MainServer closing";
-    this->destroySqlDatabase(&this->config);
+    if (this->config_checker != 0) delete(config_checker);
+    if (config.qDebug) qDebug() << "CtiServerApplication closing";
+    this->destroy_sql_database();
     if (config.qDebug) qDebug() << "SQLite database connection closed";
     if (config.qDebug) qDebug() << "Stopped";
 }
 
-MainServer *CtiServerApplication::newMainServer()
+CoreTcpServer *CtiServerApplication::build_new_coretcpserver()
 {
-    if (!m_canStart) return NULL;
+    if (!can_start) return NULL;
 
     // Let's build our main window
-    this->m_mainServer = new MainServer(&this->config);
+    this->core_tcp_server = new CoreTcpServer(&this->config);
 
     // Say we're listening on port..
-    if (config.qDebug) qDebug() << "MainServer listening on port " <<  config.serverPort;
+    if (config.qDebug) qDebug() << "CoreTcpServer listening on port " <<  config.serverPort;
 
     // TODO : fix to listen also on specific addresses
-    this->m_mainServer->listen(QHostAddress::Any, this->config.serverPort );
-    connect(this->m_mainServer, SIGNAL(destroyed()), this, SLOT(quit()));
+    this->core_tcp_server->listen(QHostAddress::Any, this->config.serverPort );
+    connect(this->core_tcp_server, SIGNAL(destroyed()), this, SLOT(quit()));
 
-    return this->m_mainServer;
+    return this->core_tcp_server;
 }
 
-bool CtiServerApplication::buildSqlDatabase(QAstCTIConfiguration *config)
+bool CtiServerApplication::build_sql_database(const QString & databaseFile)
 {
+    if (config.db != 0)
+    {
+        this->destroy_sql_database();
+    }
+
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "sqlitedb");
-    db.setDatabaseName(config->sqlite_file);
+    db.setDatabaseName(databaseFile);
 
-    if (config->sqlite_user.length() > 0)
-        db.setUserName(config->sqlite_user);
+    if (config.sqlite_user.length() > 0)
+        db.setUserName(config.sqlite_user);
 
-    if (config->sqlite_secret.length() > 0)
-        db.setPassword(config->sqlite_secret);
+    if (config.sqlite_secret.length() > 0)
+        db.setPassword(config.sqlite_secret);
 
     if(!db.open())
     {
-        qCritical() << "Unable to open SQLite database" << config->sqlite_file << "\n";
+        qCritical() << "Unable to open SQLite database" << config.sqlite_file << "\n";
         return false;
     }
 
-    if (config->qDebug) qDebug() << "SQLite database successfully opened" << config->sqlite_file << "\n";
+    if (config.qDebug) qDebug() << "SQLite database successfully opened" << config.sqlite_file << "\n";
 
-    if (config->qDebug) qDebug() << "SQLite database version " << this->databaseVersion() << "\n";
+    if (config.qDebug) qDebug() << "SQLite database version " << this->read_database_version() << "\n";
 
-    config->db = &db;
+    config.sqlite_file = databaseFile;
+    config.db = &db;
     return true;
 
 }
 
-QString CtiServerApplication::databaseVersion()
+QString CtiServerApplication::read_database_version()
 {
     QString result = "";
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
@@ -134,8 +195,9 @@ QString CtiServerApplication::databaseVersion()
     return result;
 }
 
-void CtiServerApplication::destroySqlDatabase(QAstCTIConfiguration *config)
+void CtiServerApplication::destroy_sql_database()
 {
+
     if (QSqlDatabase::contains("sqlitedb"))
     {
         QSqlDatabase db = QSqlDatabase::database("sqlitedb");
@@ -146,10 +208,11 @@ void CtiServerApplication::destroySqlDatabase(QAstCTIConfiguration *config)
             QSqlDatabase::removeDatabase("sqlitedb");
         }
     }
-    config->db = NULL;
+    config.sqlite_file.clear();
+    config.db = 0;
 }
 
-bool CtiServerApplication::readSettingsFile(const QString configFile, QAstCTIConfiguration *config)
+bool CtiServerApplication::read_settings_file(const QString configFile, QAstCTIConfiguration* config)
 {
     QString logtxt;
 
@@ -174,24 +237,25 @@ bool CtiServerApplication::readSettingsFile(const QString configFile, QAstCTICon
     // Just for the group named Server
     // write default values if keys are not set
     settings.beginGroup("Server");
-    writeSetting(&settings, "port",             DEFAULT_SERVER_PORT);
-    writeSetting(&settings, "readTimeout",      DEFAULT_READ_TIMEOUT);
-    writeSetting(&settings, "compressionLevel", DEFAULT_COMPRESSION_LEVEL);
+    write_settings_file(&settings, "port",                 DEFAULT_SERVER_PORT);
+    write_settings_file(&settings, "readTimeout",          DEFAULT_READ_TIMEOUT);
+    write_settings_file(&settings, "compressionLevel",     DEFAULT_COMPRESSION_LEVEL);
+
     settings.endGroup();
 
     // write default values for Asterisk AMI
     settings.beginGroup("AsteriskAMI");
-    writeSetting(&settings, "host",            DEFAULT_AMI_HOSTIP);
-    writeSetting(&settings, "port",            DEFAULT_AMI_PORT);
-    writeSetting(&settings, "user",            DEFAULT_AMI_USER);
-    writeSetting(&settings, "secret",          DEFAULT_AMI_SECRET);
-    writeSetting(&settings, "connect_timeout", DEFAULT_AMI_CONNECT_TIMEOUT);
+    write_settings_file(&settings, "host",            DEFAULT_AMI_HOSTIP);
+    write_settings_file(&settings, "port",            DEFAULT_AMI_PORT);
+    write_settings_file(&settings, "user",            DEFAULT_AMI_USER);
+    write_settings_file(&settings, "secret",          DEFAULT_AMI_SECRET);
+    write_settings_file(&settings, "connect_timeout", DEFAULT_AMI_CONNECT_TIMEOUT);
     settings.endGroup();
 
     settings.beginGroup("RuntimeDb");
-    writeSetting(&settings, "file",            "asteriskcti.db3");
-    writeSetting(&settings, "user",            "");
-    writeSetting(&settings, "secret",          "");
+    write_settings_file(&settings, "runtimeConfiguration", DEFAULT_RTCONFIG);
+    write_settings_file(&settings, "user",            "");
+    write_settings_file(&settings, "secret",          "");
     settings.endGroup();
 
     // read values from the keys and store them in a config object
@@ -210,14 +274,14 @@ bool CtiServerApplication::readSettingsFile(const QString configFile, QAstCTICon
     settings.endGroup();
 
     settings.beginGroup("RuntimeDb");
-    config->sqlite_file          = settings.value("file").toString();
+    config->runtimeConfiguration = settings.value("runtimeConfiguration").toString();
     config->sqlite_user          = settings.value("user").toString();
     config->sqlite_secret        = settings.value("secret").toString();
     settings.endGroup();
     return true;
 }
 
-void CtiServerApplication::writeSetting( QSettings *settings, const QString & key, const QVariant & defvalue)
+void CtiServerApplication::write_settings_file( QSettings *settings, const QString & key, const QVariant & defvalue)
 {
     if (!settings->contains(key))
     {

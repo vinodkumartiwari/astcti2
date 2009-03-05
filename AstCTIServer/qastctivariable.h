@@ -47,16 +47,16 @@ class QAstCTIVariable : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIVariable(const int &id);
-    int getIdVariable();
-    int getIdService();
-    QString getVarName();
+    QAstCTIVariable(const int& id);
+    int get_id_variable();
+    int get_id_service();
+    QString get_var_name();
 
 public slots:
-    bool Load();
+    bool load();
 
 signals:
-    void LoadComplete(const bool &result);
+    void load_complete(const bool& result);
 
 private:
     int ID_VARIABLE;

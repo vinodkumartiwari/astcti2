@@ -50,17 +50,17 @@ class QAstCTIServicesApplications : public QObject
 
 public:
     QAstCTIServicesApplications();
-    QAstCTIServicesApplications(const int &idservice);
+    QAstCTIServicesApplications(const int& idservice);
     ~QAstCTIServicesApplications();
-    QAstCTIApplication *operator[](const QString &key);
+    QAstCTIApplication* operator[](const QString& key);
     int count();
-    void setIdService(const int &idservice);
+    void set_id_service(const int &idservice);
 
 private:
     QHash<QString, QAstCTIApplication*> applications;
-    void addApplication(QAstCTIApplication *app);
-    void removeApplication(const QString &key);
-    void fillApplications();
+    void add_application(QAstCTIApplication* app);
+    void remove_application(const QString& key);
+    void fill_applications();
     void clear();
 
     int ID_SERVICE;

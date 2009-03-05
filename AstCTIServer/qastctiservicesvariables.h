@@ -49,17 +49,17 @@ class QAstCTIServicesVariables : public QObject
 
 public:
     QAstCTIServicesVariables();
-    QAstCTIServicesVariables(const int &idservice);
+    QAstCTIServicesVariables(const int& idservice);
     ~QAstCTIServicesVariables();
-    QAstCTIVariable *operator[](const QString &key);
+    QAstCTIVariable* operator[](const QString& key);
     int count();
-    void setIdService(const int &idservice);
+    void set_id_service(const int& idservice);
 
 private:
     QHash<QString, QAstCTIVariable*> variables;
-    void addVariable(QAstCTIVariable *var);
-    void removeVariable(const QString &key);
-    void fillVariables();
+    void add_variable(QAstCTIVariable* var);
+    void remove_variable(const QString& key);
+    void fill_variables();
     void clear();
 
     int ID_SERVICE;

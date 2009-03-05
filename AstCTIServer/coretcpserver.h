@@ -36,30 +36,54 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#ifndef CORETCPSERVER_H
+#define CORETCPSERVER_H
 
-#ifndef LOGGER_H
-#define LOGGER_H
-
-#include <QtCore/QCoreApplication>
 #include <QObject>
-#include <QtCore>
+#include <QMutex>
+#include <QtNetwork>
+#include <QSettings>
+#include <QHash>
 
 
-class QAsteriskCTILogger : public QObject
+#include "clientmanager.h"
+#include "cticonfig.h"
+
+
+class CoreTcpServer : public QTcpServer
 {
     Q_OBJECT
 
-public:
-    QtMsgType minimum_log_level;
-
-    QAsteriskCTILogger(QObject* parent=0);
-    void write_to_log(const QtMsgType level, const QString &logdata="");
-
 private:
-    QDir logging_directory;
+    QSettings settings;
+    QAstCTIConfiguration *config;
+    QMutex mutexClientList;
+    bool isClosing;
 
-    bool build_log_directory_if_not_exists();
-    QString get_level_description_from_id(const QtMsgType level);
+
+
+public:
+    CoreTcpServer(QAstCTIConfiguration *config, QObject *parent=0);
+    ~CoreTcpServer();
+
+signals:
+    void send_data_from_server(const QString &data);
+    void server_is_closing();
+
+
+protected:
+    QHash<QString, ClientManager*> *clients;
+    void incomingConnection(int socketDescriptor);
+    bool contain_client(const QString &exten);
+
+
+protected slots:
+    void add_client(const QString& exten, ClientManager* cl);
+    void change_client(const QString& oldexten, const QString& newexten);
+    void remove_client(const QString& exten);
+    void notify_client(const QString& data);
+    void stop_the_server(const QString& exten, ClientManager* cl);
 };
 
-#endif // LOGGER_H
+
+#endif // CORETCPSERVER_H

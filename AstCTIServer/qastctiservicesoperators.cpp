@@ -46,10 +46,10 @@ QAstCTIServicesOperators::QAstCTIServicesOperators()
 {
 }
 
-QAstCTIServicesOperators::QAstCTIServicesOperators(const int &idservice)
+QAstCTIServicesOperators::QAstCTIServicesOperators(const int& idservice)
         : ID_SERVICE(idservice)
 {
-    this->fillOperators();
+    this->fill_operators();
 }
 
 QAstCTIServicesOperators::~QAstCTIServicesOperators()
@@ -58,27 +58,27 @@ QAstCTIServicesOperators::~QAstCTIServicesOperators()
 }
 
 
-QAstCTIOperator *QAstCTIServicesOperators::operator[](const QString &key)
+QAstCTIOperator* QAstCTIServicesOperators::operator[](const QString& key)
 {
     return (this->operators.contains(key)) ? this->operators[key] : 0;
 
 }
 
-void QAstCTIServicesOperators::setIdService(const int &idservice)
+void QAstCTIServicesOperators::set_id_service(const int &idservice)
 {
     this->ID_SERVICE = idservice;
-    this->fillOperators();
+    this->fill_operators();
 }
-void QAstCTIServicesOperators::addOperator(QAstCTIOperator *oper)
+void QAstCTIServicesOperators::add_operator(QAstCTIOperator* oper)
 {
-    this->operators.insert(oper->getUsername(), oper);
+    this->operators.insert(oper->get_user_name(), oper);
 }
 
-void QAstCTIServicesOperators::removeOperator(const QString &key)
+void QAstCTIServicesOperators::remove_operator(const QString& key)
 {
     if (this->operators.contains(key))
     {
-        QAstCTIOperator *oper = this->operators[key];
+        QAstCTIOperator* oper = this->operators[key];
         if (oper != 0)
         {
             delete(oper);
@@ -106,7 +106,7 @@ void QAstCTIServicesOperators::clear()
     }
 }
 
-void QAstCTIServicesOperators::fillOperators()
+void QAstCTIServicesOperators::fill_operators()
 {
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
@@ -115,14 +115,14 @@ void QAstCTIServicesOperators::fillOperators()
     query.exec();
     while(query.next())
     {
-        QAstCTIOperator *oper = new QAstCTIOperator(query.value(0).toInt(0));
-        if (oper->Load())
+        QAstCTIOperator* oper = new QAstCTIOperator(query.value(0).toInt(0));
+        if (oper->load())
         {
-            QString operName = oper->getUsername();
+            QString operName = oper->get_user_name();
 
             // Remove service if exists before load
-            this->removeOperator(operName);
-            this->addOperator(oper);
+            this->remove_operator(operName);
+            this->add_operator(oper);
         }
     }
     query.finish();

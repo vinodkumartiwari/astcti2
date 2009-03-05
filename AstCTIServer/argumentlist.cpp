@@ -46,22 +46,30 @@
   Obtain the command line arguments from the currently
   running QApplication */
 
-QArgumentList::QArgumentList() {
-    if (qApp != NULL)  /* a global pointer to the current
-        qApplication */
+QArgumentList::QArgumentList()
+{
+    if (qApp != NULL)
+    {
+        /* a global pointer to the current qApplication */
         argsToStringlist(qApp->argc(), qApp->argv());
+    }
 }
 
-void QArgumentList::argsToStringlist(int argc, char * argv []) {
-    for (int i=0; i < argc; ++i) {
+void QArgumentList::argsToStringlist(int argc, char * argv [])
+{
+    for (int i=0; i < argc; ++i)
+    {
         *this += argv[i];
     }
 }
 
-bool QArgumentList::getSwitch (QString option) {
+bool QArgumentList::getSwitch (QString option)
+{
     QMutableStringListIterator itr(*this);
-    while (itr.hasNext()) {
-        if (option == itr.next()) {
+    while (itr.hasNext())
+    {
+        if (option == itr.next())
+        {
             itr.remove();
             return true;
         }
@@ -69,19 +77,26 @@ bool QArgumentList::getSwitch (QString option) {
     return false;
 }
 
-QString QArgumentList::getSwitchArg(QString option, QString defaultValue) {
+QString QArgumentList::getSwitchArg(QString option, QString defaultValue)
+{
     if (isEmpty())
+    {
         return defaultValue;
+    }
     QMutableStringListIterator itr(*this);
-    while (itr.hasNext()) {
-        if (option == itr.next()) {
+    while (itr.hasNext())
+    {
+        if (option == itr.next())
+        {
             itr.remove();
-            if (itr.hasNext()) {
+            if (itr.hasNext())
+            {
                 QString retval = itr.next();
                 itr.remove();
                 return retval;
             }
-            else {
+            else
+            {
                 qDebug() << "Missing Argument for " << option;
                 return QString();
             }
