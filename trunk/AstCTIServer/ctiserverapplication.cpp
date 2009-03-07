@@ -118,7 +118,6 @@ void  CtiServerApplication::reload_sql_database(QFileInfo * databaseFile)
 
 CtiServerApplication *CtiServerApplication::instance()
 {
-
     return (static_cast<CtiServerApplication*>(QCoreApplication::instance()));
 }
 
@@ -133,7 +132,7 @@ CtiServerApplication::~CtiServerApplication()
 
 CoreTcpServer *CtiServerApplication::build_new_core_tcpserver()
 {
-    if (!can_start) return NULL;
+    if (!can_start) return 0;
 
     // Let's build our main window
     this->core_tcp_server = new CoreTcpServer(&this->config);

@@ -52,7 +52,7 @@ ClientManager::ClientManager(QAstCTIConfiguration* config,
     this->config = config;
 
 
-    connect(parent, SIGNAL(dataToClient(QString)), this, SLOT(send_data_to_client(QString)));
+    connect(parent, SIGNAL(send_data_from_server(QString)), this, SLOT(send_data_to_client(QString)));
 
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
 
