@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
     // QCoreApplication needs to be initialized here
     CtiServerApplication app(argc, argv);
-    if (app.build_new_core_tcpserver() == NULL)
+    if (app.build_new_core_tcpserver() == 0)
         return 1;
 
     return app.exec();
