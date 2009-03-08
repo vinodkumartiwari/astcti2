@@ -46,7 +46,8 @@ class QAstCTIApplication : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIApplication(const int& id);
+    QAstCTIApplication(const int& id, QObject* parent);
+    ~QAstCTIApplication();
     int get_id_application();
     int get_id_service();
     QString get_application_os_type();

@@ -48,8 +48,8 @@ class QAstCTIServicesVariables : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIServicesVariables();
-    QAstCTIServicesVariables(const int& idservice);
+    QAstCTIServicesVariables(QObject* parent);
+    QAstCTIServicesVariables(const int& idservice, QObject* parent);
     ~QAstCTIServicesVariables();
     QAstCTIVariable* operator[](const QString& key);
     int count();

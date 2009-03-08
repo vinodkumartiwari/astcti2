@@ -47,7 +47,8 @@ class QAstCTIVariable : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIVariable(const int& id);
+    QAstCTIVariable(const int& id, QObject* parent);
+    ~QAstCTIVariable();
     int get_id_variable();
     int get_id_service();
     QString get_var_name();

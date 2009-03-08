@@ -46,7 +46,8 @@ class QAstCTISeat : public QObject
     Q_OBJECT
 
 public:
-    QAstCTISeat(const int& id);
+    QAstCTISeat(const int& id, QObject* parent);
+    ~QAstCTISeat();
     int get_id_seat();
     QString get_seat_mac();
     QString get_seat_exten();

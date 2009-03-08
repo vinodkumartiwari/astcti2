@@ -36,17 +36,19 @@
  * If you do not wish that, delete this exception notice.
  */
 #include <QtSql>
-
+#include <QDebug>
 #include "qastctiservices.h"
 #include "qastctiservice.h"
 
-QAstCTIServices::QAstCTIServices()
+QAstCTIServices::QAstCTIServices(QObject* parent) :
+        QObject(parent)
 {
     this->fill_services();
 }
 
 QAstCTIServices::~QAstCTIServices()
 {
+    qDebug() << "In QAstCTIServices::~QAstCTIServices()";
     this->clear();
 }
 
@@ -97,7 +99,7 @@ void QAstCTIServices::fill_services()
     query.exec("SELECT ID_SERVICE FROM services ORDER BY ID_SERVICE ASC");
     while(query.next())
     {
-        QAstCTIService *service = new QAstCTIService(query.value(0).toInt(0));
+        QAstCTIService *service = new QAstCTIService(query.value(0).toInt(0), this);
         if (service->load())
         {
             QString serviceName = service->get_service_name();

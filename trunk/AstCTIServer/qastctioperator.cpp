@@ -37,19 +37,25 @@
  */
 
 #include <QtSql>
-
+#include <QDebug>
 #include "qastctioperator.h"
 
 
-QAstCTIOperator::QAstCTIOperator(const int &id)
-        : ID_OPERATOR(id), FULL_NAME(""), USER_NAME(""),
+QAstCTIOperator::QAstCTIOperator(const int &id, QObject* parent)
+        : QObject(parent), ID_OPERATOR(id), FULL_NAME(""), USER_NAME(""),
         PASS_WORD(""), LAST_SEAT(0), BEGIN_IN_PAUSE(false),
         ENABLED(false), lastSeat(0)
 {
     // Let's connect our signals
-    connect(this, SIGNAL(LoadComplete(const bool&)), this, SLOT(load_seat(const bool&)));
-    connect(this, SIGNAL(UpdateComplete(const bool&)), this, SLOT(load_seat(const bool&)));
+    connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_seat(const bool&)));
+    connect(this, SIGNAL(update_complete(const bool&)), this, SLOT(load_seat(const bool&)));
 }
+
+QAstCTIOperator::~QAstCTIOperator()
+{
+    qDebug() << "In QAstCTIOperator::~QAstCTIOperator()";
+}
+
 
 bool QAstCTIOperator::load()
 {
@@ -82,7 +88,7 @@ void QAstCTIOperator::load_seat(const bool &bMayLoad)
 
     if (this->LAST_SEAT > 0)
     {
-        this->lastSeat = new QAstCTISeat(this->LAST_SEAT);
+        this->lastSeat = new QAstCTISeat(this->LAST_SEAT, this);
         this->lastSeat->load();
     }
 }

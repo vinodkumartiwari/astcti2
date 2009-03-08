@@ -36,14 +36,19 @@
  * If you do not wish that, delete this exception notice.
  */
 #include <QtSql>
+#include <QDebug>
 
 #include "qastctiseat.h"
 
-QAstCTISeat::QAstCTISeat(const int& id)
-        : ID_SEAT(id), SEAT_MAC("00:00:00:00:00:00"),
+QAstCTISeat::QAstCTISeat(const int& id, QObject* parent)
+        : QObject(parent),  ID_SEAT(id), SEAT_MAC("00:00:00:00:00:00"),
         SEAT_EXTEN(""), DESCRIPTION("")
 {
 
+}
+QAstCTISeat::~QAstCTISeat()
+{
+    qDebug() << "In QAstCTISeat::~QAstCTISeat()";
 }
 
 bool QAstCTISeat::load()

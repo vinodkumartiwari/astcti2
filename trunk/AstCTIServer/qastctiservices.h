@@ -49,7 +49,7 @@ class QAstCTIServices : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIServices();
+    QAstCTIServices(QObject* parent);
     ~QAstCTIServices();
     QAstCTIService* operator[](const QString& key);
     int count();

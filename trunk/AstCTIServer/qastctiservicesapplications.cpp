@@ -37,23 +37,24 @@
  */
 
 #include <QtSql>
-
+#include <QDebug>
 #include "qastctiservicesapplications.h"
 #include "qastctiapplication.h"
 
-QAstCTIServicesApplications::QAstCTIServicesApplications()
-        : ID_SERVICE(0)
+QAstCTIServicesApplications::QAstCTIServicesApplications(QObject* parent)
+        : QObject(parent), ID_SERVICE(0)
 {
 }
 
-QAstCTIServicesApplications::QAstCTIServicesApplications(const int& idservice)
-        : ID_SERVICE(idservice)
+QAstCTIServicesApplications::QAstCTIServicesApplications(const int& idservice, QObject* parent)
+        : QObject(parent), ID_SERVICE(idservice)
 {
     this->fill_applications();
 }
 
 QAstCTIServicesApplications::~QAstCTIServicesApplications()
 {
+    qDebug() << "In QAstCTIServicesApplications::~QAstCTIServicesApplications()";
     this->clear();
 }
 
@@ -115,7 +116,7 @@ void QAstCTIServicesApplications::fill_applications()
     query.exec();
     while(query.next())
     {
-        QAstCTIApplication* app = new QAstCTIApplication(query.value(0).toInt(0));
+        QAstCTIApplication* app = new QAstCTIApplication(query.value(0).toInt(0), this);
         if (app->load())
         {
             QString appType = app->get_application_os_type();

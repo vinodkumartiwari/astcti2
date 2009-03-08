@@ -36,23 +36,25 @@
  * If you do not wish that, delete this exception notice.
  */
 #include <QtSql>
+#include <QDebug>
 
 #include "qastctiservicesvariables.h"
 #include "qastctivariable.h"
 
-QAstCTIServicesVariables::QAstCTIServicesVariables() :
-        ID_SERVICE(0)
+QAstCTIServicesVariables::QAstCTIServicesVariables(QObject* parent) :
+        QObject(parent), ID_SERVICE(0)
 {
 }
 
-QAstCTIServicesVariables::QAstCTIServicesVariables(const int& idservice) :
-        ID_SERVICE(idservice)
+QAstCTIServicesVariables::QAstCTIServicesVariables(const int& idservice, QObject* parent) :
+        QObject(parent), ID_SERVICE(idservice)
 {
     this->fill_variables();
 }
 
 QAstCTIServicesVariables::~QAstCTIServicesVariables()
 {
+    qDebug() << "In QAstCTIServicesVariables::~QAstCTIServicesVariables()";
     this->clear();
 }
 
@@ -113,7 +115,7 @@ void QAstCTIServicesVariables::fill_variables()
     query.exec();
     while(query.next())
     {
-        QAstCTIVariable* var = new QAstCTIVariable(query.value(0).toInt(0));
+        QAstCTIVariable* var = new QAstCTIVariable(query.value(0).toInt(0), this);
         if (var->load())
         {
             QString varName = var->get_var_name();

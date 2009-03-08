@@ -36,13 +36,19 @@
  * If you do not wish that, delete this exception notice.
  */
 #include <QtSql>
+#include <QDebug>
 
 #include "qastctiapplication.h"
 
-QAstCTIApplication::QAstCTIApplication(const int& id) :
-        ID_APPLICATION(id), ID_SERVICE(0), APPLICATION_OS_TYPE(""),
+QAstCTIApplication::QAstCTIApplication(const int& id, QObject* parent) :
+        QObject(parent), ID_APPLICATION(id), ID_SERVICE(0), APPLICATION_OS_TYPE(""),
         APPLICATION_PATH(""), PARAMETERS("")
 {
+}
+
+QAstCTIApplication::~QAstCTIApplication()
+{
+    qDebug() << "In QAstCTIApplication::~QAstCTIApplication()";
 }
 
 bool QAstCTIApplication::load()
