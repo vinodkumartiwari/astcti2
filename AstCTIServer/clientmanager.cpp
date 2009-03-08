@@ -51,7 +51,6 @@ ClientManager::ClientManager(QAstCTIConfiguration* config,
     // Lets copy our configuration struct
     this->config = config;
 
-
     connect(parent, SIGNAL(send_data_from_server(QString)), this, SLOT(send_data_to_client(QString)));
 
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
@@ -64,7 +63,7 @@ ClientManager::ClientManager(QAstCTIConfiguration* config,
 
 ClientManager::~ClientManager()
 {
-    qDebug() << "ClientManager terminated";
+    if (config->qDebug) qDebug() << "ClientManager terminated";
 }
 
 /*!
@@ -79,12 +78,6 @@ void ClientManager::init_parser_commands()
     commands_list["PASS"]=CMD_PASS;
     commands_list["ORIG"]=CMD_ORIG;
     commands_list["STOP"]=CMD_STOP;
-
-}
-
-void ClientManager::stop()
-{
-    this->local_socket->disconnectFromHost();
 
 }
 
@@ -118,8 +111,7 @@ void ClientManager::run()
     if (config->qDebug) qDebug() << "Incoming Connection from " << remote_addr.toString() << ":" << remote_port;
 
     // Let's say Welcome to our client!
-
-    this->send_data_to_client("100 Welcome to AstCTIServer");
+    this->send_data_to_client("Welcome to AstCTIServer");
 
     if (config->qDebug) qDebug() << "Read Timeout is " << config->readTimeout;
 
@@ -217,6 +209,7 @@ void ClientManager::run()
                             break;
                         case CMD_STOP:
                             emit this->stop_request(this->local_identifier, this);
+                            tcpSocket.close();
                             qDebug() << "Emitted signal STOP";
                             break;
                         case CMD_NOT_DEFINED:

@@ -48,7 +48,8 @@ class QAstCTIOperator : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIOperator(const int& id);
+    QAstCTIOperator(const int& id, QObject* parent);
+    ~QAstCTIOperator();
     int get_id_operator();
     QString get_full_name();
     QString get_user_name();

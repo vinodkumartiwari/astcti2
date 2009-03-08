@@ -54,7 +54,7 @@ class ConfigurationChecker : public QObject
 public:
     ConfigurationChecker(const QString & path);
     ~ConfigurationChecker();
-    QFileInfo* load_first_configuration();
+    QString load_first_configuration();
 
 
 public slots:
@@ -64,9 +64,9 @@ signals:
     void new_configuration(QFileInfo* file);
 
 private:
-    QFileInfo*          read_last_modified_configuration_file();
+    QString             read_last_modified_configuration_file();
     QString             configurationPath;
-    QFileInfo*          last_configuration;
+    QString             last_configuration;
     QFileSystemWatcher* watcher;
 };
 

@@ -36,13 +36,19 @@
  * If you do not wish that, delete this exception notice.
  */
 #include <QtSql>
+#include <QDebug>
 
 #include "qastctivariable.h"
 
-QAstCTIVariable::QAstCTIVariable(const int& id) :
-        ID_VARIABLE(id), ID_SERVICE(0), VARNAME("")
+QAstCTIVariable::QAstCTIVariable(const int& id, QObject* parent) :
+        QObject(parent), ID_VARIABLE(id), ID_SERVICE(0), VARNAME("")
 {
 
+}
+
+QAstCTIVariable::~QAstCTIVariable()
+{
+    qDebug() << "In QAstCTIVariable::~QAstCTIVariable()";
 }
 
 bool QAstCTIVariable::load()

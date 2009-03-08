@@ -48,40 +48,43 @@ ConfigurationChecker::ConfigurationChecker(const QString& path)
 
 ConfigurationChecker::~ConfigurationChecker()
 {
-    if (this->last_configuration !=0 )
+    qDebug() << "In ConfigurationChecker::~ConfigurationChecker()";
+    /*if (this->last_configuration !=0 )
     {
         delete(this->last_configuration);
-    }
+    }*/
 }
 
-QFileInfo* ConfigurationChecker::load_first_configuration()
+QString ConfigurationChecker::load_first_configuration()
 {
-    QFileInfo *result = read_last_modified_configuration_file();
-    if (this->last_configuration == 0)
+    QString last_config_filename = read_last_modified_configuration_file();
+    if ( (last_config_filename != "") &
+        (this->last_configuration == 0) )
     {
-        this->last_configuration = result;
+        this->last_configuration = last_config_filename;
     }
-    return result;
+    return last_config_filename;
 }
 
 
 void ConfigurationChecker::check_configuration_dir(const QString& path)
 {
     Q_UNUSED(path);
-    QFileInfo* info = this->read_last_modified_configuration_file();
-    if (info == 0) return;
+    QString last_config_filename = this->read_last_modified_configuration_file();
+
+    if (last_config_filename == "") return;
     if (this->last_configuration != 0)
     {
-        if (this->last_configuration->absoluteFilePath() != info->absoluteFilePath())
+        if (this->last_configuration != last_config_filename)
         {            
-            delete(this->last_configuration);
-            this->last_configuration = info;
+            this->last_configuration = last_config_filename;
+            QFileInfo* info = new QFileInfo(last_config_filename);
             emit this->new_configuration(info);
         }
     }
 }
 
-QFileInfo* ConfigurationChecker::read_last_modified_configuration_file()
+QString ConfigurationChecker::read_last_modified_configuration_file()
 {
     QDir dir(this->configurationPath);
     if (!dir.exists()) return 0;
@@ -90,7 +93,8 @@ QFileInfo* ConfigurationChecker::read_last_modified_configuration_file()
     QFileInfoList list = dir.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot, QDir::Time);
     if (list.size() > 0)
     {
-        return new QFileInfo(list[0]);
+        QFileInfo fi = list[0];
+        return fi.absoluteFilePath();
     }
-    return 0;
+    return "";
 }

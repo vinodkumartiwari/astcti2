@@ -124,7 +124,7 @@ void CoreTcpServer::remove_client(const QString &exten)
     if ((this->isClosing) & (clients->count() == 0) )
     {
 
-        if (config->qDebug) qDebug() << "Clients are now 0 and we're asked to close";
+        if (config->qDebug) qDebug() << "Clients are now 0 and we were asked to close";
         this->close();
 
     }
@@ -163,14 +163,17 @@ void CoreTcpServer::stop_the_server(const QString &exten, ClientManager *cl)
 
     this->isClosing = true;
     qDebug() << "Received STOP signal";
+    emit(this->server_is_closing());
 
-    QMutableHashIterator<QString, ClientManager*> i(*this->clients);
+    /*QMutableHashIterator<QString, ClientManager*> i(*this->clients);
     while (i.hasNext()) {
         i.next();
         qDebug() << "Destroiyng client" << i.key();
         i.value()->stop();
+        //delete(i.value());
+    }*/
 
-    }
     // After removed all client, exit the application.
+    //
     CtiServerApplication::instance()->exit(0);
 }

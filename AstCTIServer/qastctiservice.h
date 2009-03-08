@@ -49,7 +49,7 @@ class QAstCTIService : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIService(const int& id);
+    QAstCTIService(const int& id, QObject* parent);
     ~QAstCTIService();
 
     int                         get_id_service();
@@ -81,9 +81,9 @@ private:
     QString     SERVICE_TRIGGER_TYPE;
     bool        ENABLED;
 
-    QAstCTIServicesOperators    operators;
-    QAstCTIServicesVariables    variables;
-    QAstCTIServicesApplications applications;
+    QAstCTIServicesOperators*       operators;
+    QAstCTIServicesVariables*       variables;
+    QAstCTIServicesApplications*    applications;
 };
 
 #endif // QASTCTISERVICE_H

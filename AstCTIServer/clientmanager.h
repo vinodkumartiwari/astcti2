@@ -76,7 +76,7 @@ public:
     ClientManager(QAstCTIConfiguration* config, int socketDescriptor, QObject* parent);
     ~ClientManager();
     void run();
-    void stop();
+
 
 signals:
     void add_client(const QString& exten, ClientManager* cl);

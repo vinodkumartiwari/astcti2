@@ -40,7 +40,7 @@
 CtiServerApplication::CtiServerApplication(int &argc, char **argv)
         : QCoreApplication(argc, argv)
 {
-
+    this->services = 0;
     is_config_loading = false;
     can_start      = false;
 
@@ -58,14 +58,14 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
     // Here we get from our configuration checker object the name
     // of the sqlite database containing the runtime configuration
     this->config_checker = new ConfigurationChecker(config.runtimeConfiguration);
-    QFileInfo* lastDbFile = this->config_checker->load_first_configuration();
-    if (lastDbFile == 0)
+    QString last_config_filename = this->config_checker->load_first_configuration();
+    if (last_config_filename == "")
     {
         qCritical() << "Cannot read runtime configuration file";
         return;
     }
-    qDebug() << "Reading first runtime configuration from file " << lastDbFile->absoluteFilePath();
-    if (!build_sql_database(lastDbFile->absoluteFilePath()))
+    qDebug() << "Reading first runtime configuration from file " << last_config_filename;
+    if (!build_sql_database(last_config_filename))
     {
         return;
     }
@@ -88,10 +88,11 @@ void  CtiServerApplication::reload_sql_database(QFileInfo * databaseFile)
     if (this->services != 0)
     {
         delete(this->services);
+        this->services = 0;
     }
     if (this->services == 0)
     {
-        this->services = new QAstCTIServices();
+        this->services = new QAstCTIServices(this);
     }
 
     QString sername = "ast-cti-demo";

@@ -41,19 +41,22 @@
 #include "qastctiservice.h"
 
 
-QAstCTIService::QAstCTIService(const int& id)
-        : ID_SERVICE(id), SERVICE_NAME(""), SERVICE_CONTEXT_TYPE(""),
+QAstCTIService::QAstCTIService(const int& id, QObject* parent)
+        : QObject(parent), ID_SERVICE(id), SERVICE_NAME(""), SERVICE_CONTEXT_TYPE(""),
         SERVICE_IS_QUEUE(false), SERVICE_QUEUE_NAME(""),
         SERVICE_TRIGGER_TYPE(""), ENABLED(false)
 {
-     connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_operators(const bool&)));
-     connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_variables(const bool&)));
-     connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_applications(const bool&)));
+    this->operators = new QAstCTIServicesOperators(this);
+    this->applications = new QAstCTIServicesApplications(this);
+    this->variables = new QAstCTIServicesVariables(this);
+    connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_operators(const bool&)));
+    connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_variables(const bool&)));
+    connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_applications(const bool&)));
 }
 
 QAstCTIService::~QAstCTIService()
 {
-    qDebug() << "Destroying QAstCTIService";
+    qDebug() << "In QAstCTIService::~QAstCTIService()";
 
 }
 
@@ -86,7 +89,7 @@ void QAstCTIService::load_operators(const bool& bMayLoad)
 {
     if (bMayLoad)
     {
-        this->operators.set_id_service(this->ID_SERVICE);
+        this->operators->set_id_service(this->ID_SERVICE);
     }
 }
 
@@ -94,7 +97,7 @@ void QAstCTIService::load_variables(const bool& bMayLoad)
 {
     if (bMayLoad)
     {
-        this->variables.set_id_service(this->ID_SERVICE);
+        this->variables->set_id_service(this->ID_SERVICE);
     }
 }
 
@@ -102,7 +105,7 @@ void QAstCTIService::load_applications(const bool& bMayLoad)
 {
     if (bMayLoad)
     {
-        this->applications.set_id_service(this->ID_SERVICE);
+        this->applications->set_id_service(this->ID_SERVICE);
     }
 }
 
@@ -143,15 +146,15 @@ bool QAstCTIService::get_enabled()
 
 QAstCTIServicesOperators* QAstCTIService::get_operators()
 {
-    return &this->operators;
+    return this->operators;
 }
 
 QAstCTIServicesVariables* QAstCTIService::get_variables()
 {
-    return &this->variables;
+    return this->variables;
 }
 
 QAstCTIServicesApplications* QAstCTIService::get_applications()
 {
-    return &this->applications;
+    return this->applications;
 }

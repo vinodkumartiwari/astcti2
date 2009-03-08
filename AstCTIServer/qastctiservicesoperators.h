@@ -49,8 +49,8 @@ class QAstCTIServicesOperators : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIServicesOperators();
-    QAstCTIServicesOperators(const int& idservice);
+    QAstCTIServicesOperators(QObject* parent);
+    QAstCTIServicesOperators(const int& idservice, QObject* parent);
     ~QAstCTIServicesOperators();
     QAstCTIOperator* operator[](const QString& key);
     int count();

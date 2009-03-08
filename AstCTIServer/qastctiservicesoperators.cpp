@@ -37,23 +37,25 @@
  */
 
 #include <QtSql>
+#include <QDebug>
 
 #include "qastctiservicesoperators.h"
 #include "qastctioperator.h"
 
-QAstCTIServicesOperators::QAstCTIServicesOperators()
-        : ID_SERVICE(0)
+QAstCTIServicesOperators::QAstCTIServicesOperators(QObject* parent)
+        : QObject(parent), ID_SERVICE(0)
 {
 }
 
-QAstCTIServicesOperators::QAstCTIServicesOperators(const int& idservice)
-        : ID_SERVICE(idservice)
+QAstCTIServicesOperators::QAstCTIServicesOperators(const int& idservice, QObject* parent)
+        : QObject(parent), ID_SERVICE(idservice)
 {
     this->fill_operators();
 }
 
 QAstCTIServicesOperators::~QAstCTIServicesOperators()
 {
+    qDebug() << "In QAstCTIServicesOperators::~QAstCTIServicesOperators()";
     this->clear();
 }
 
@@ -115,7 +117,7 @@ void QAstCTIServicesOperators::fill_operators()
     query.exec();
     while(query.next())
     {
-        QAstCTIOperator* oper = new QAstCTIOperator(query.value(0).toInt(0));
+        QAstCTIOperator* oper = new QAstCTIOperator(query.value(0).toInt(0), this);
         if (oper->load())
         {
             QString operName = oper->get_user_name();
