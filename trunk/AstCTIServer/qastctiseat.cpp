@@ -46,6 +46,13 @@ QAstCTISeat::QAstCTISeat(const int& id, QObject* parent)
 {
 
 }
+
+QAstCTISeat::QAstCTISeat(const QString& mac, QObject* parent)
+        : QObject(parent),  ID_SEAT(0), SEAT_MAC(mac),
+        SEAT_EXTEN(""), DESCRIPTION("")
+{
+}
+
 QAstCTISeat::~QAstCTISeat()
 {
     qDebug() << "In QAstCTISeat::~QAstCTISeat()";
@@ -56,12 +63,36 @@ bool QAstCTISeat::load()
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
+
     query.prepare("SELECT * FROM seats WHERE ID_SEAT=:id");
     query.bindValue(":id", this->ID_SEAT);
     retVal = query.exec();
     if ( (retVal) &  (query.first()) )
     {
         this->SEAT_MAC= query.value(1).toString();
+        this->SEAT_EXTEN  = query.value(2).toString();
+        this->DESCRIPTION = query.value(3).toString();
+
+        query.finish();
+    }
+    query.clear();
+
+    emit this->load_complete(retVal);
+    return retVal;
+}
+
+bool QAstCTISeat::load_from_mac()
+{
+    bool retVal = false;
+    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlQuery query(db);
+
+    query.prepare("SELECT * FROM seats WHERE SEAT_MAC=:mac");
+    query.bindValue(":mac", this->SEAT_MAC);
+    retVal = query.exec();
+    if ( (retVal) &  (query.first()) )
+    {
+        this->ID_SEAT = query.value(0).toInt();
         this->SEAT_EXTEN  = query.value(2).toString();
         this->DESCRIPTION = query.value(3).toString();
 

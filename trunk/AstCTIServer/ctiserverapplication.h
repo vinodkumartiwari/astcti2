@@ -54,6 +54,7 @@
 #include "argumentlist.h"
 #include "configurationchecker.h"
 #include "qastctiapplication.h"
+#include "qastctioperators.h"
 #include "qastctiservicesoperators.h"
 #include "qastctiservice.h"
 #include "qastctiservices.h"
@@ -81,6 +82,7 @@ public:
     CtiServerApplication(int &argc, char **argv);
     ~CtiServerApplication();
     static CtiServerApplication* instance();
+    QAstCTIOperator*        get_operator_by_username(const QString& username);
 
     QAstCTIConfiguration    config; // Main configuration struct
 
@@ -94,8 +96,9 @@ private:
     ConfigurationChecker*   config_checker;
     bool                    is_config_loading;
     QAstCTIServices*        services;
+    QAstCTIOperators*       cti_operators;
 
-    bool                    build_sql_database(const QString & databaseFile);
+    bool                    build_sql_database(const QString& databaseFile);
     void                    destroy_sql_database();
     QString                 read_database_version();
 

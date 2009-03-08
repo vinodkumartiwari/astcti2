@@ -36,71 +36,31 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef CLIENTMANAGER_H
-#define CLIENTMANAGER_H
+#ifndef QASTCTIOPERATORS_H
+#define QASTCTIOPERATORS_H
 
-#include <QThread>
-#include <QTcpSocket>
-#include <QHostAddress>
-#include <QStringList>
-#include <QDebug>
-#include <QSettings>
+#include <QObject>
 #include <QHash>
 
-#include "cticonfig.h"
-#include "qastctioperator.h"
+class QAstCTIOperator;
 
-struct QAstCTICommand
-{
-    QString command;
-    QStringList parameters;
-};
-
-enum QAstCTICommands {
-    CMD_NOT_DEFINED,
-    CMD_NOOP,
-    CMD_QUIT,
-    CMD_USER,
-    CMD_PASS,
-    CMD_MAC,
-    CMD_ORIG,
-    CMD_STOP,
-    CMD_ENDLIST
-};
-
-
-class ClientManager : public  QThread
+class QAstCTIOperators : public QObject
 {
     Q_OBJECT
 
 public:
-    ClientManager(QAstCTIConfiguration* config, int socketDescriptor, QObject* parent);
-    ~ClientManager();
-    void run();
+    QAstCTIOperators(QObject* parent);
+    ~QAstCTIOperators();
+    QAstCTIOperator* operator[](const QString& key);
+    int count();
 
-
-signals:
-    void add_client(const QString& exten, ClientManager* cl);
-    void change_client(const QString& oldexten, const QString& newexten);
-    void remove_client(const QString& exten);
-    void notify_server(const QString& data);
-    void stop_request(const QString& exten, ClientManager* cl);
 
 private:
-    QAstCTIConfiguration*   config;
-    int                     socketDescriptor;
-    QString                 local_identifier;
-    QString                 buffer;
-    QHash<QString, int>     commands_list;
-    void                    init_parser_commands();
-    QAstCTICommand          parse_command(const QString& command);
-    QAstCTIOperator*        active_operator;
-private slots:
-    void                    send_data_to_client(const QString& data);
-
-protected:
-    QTcpSocket*             local_socket;
-
+    QHash<QString, QAstCTIOperator*> operators;
+    void add_operator(QAstCTIOperator* oper);
+    void remove_operator(const QString& key);
+    void fill_operators();
+    void clear();    
 };
 
-#endif // CLIENTMANAGER_H
+#endif // QASTCTIOPERATORS_H

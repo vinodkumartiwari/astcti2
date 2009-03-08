@@ -40,6 +40,8 @@
 #define QASTCTIOPERATOR_H
 
 #include <QObject>
+#include <QCryptographicHash>
+
 #include "qastctiseat.h"
 
 class QAstCTIOperator : public QObject
@@ -58,7 +60,7 @@ public:
     void set_last_seat(const int& newSeat);
     bool get_begin_in_pause();
     bool get_enabled();
-
+    bool check_password(const QString& password);
     QAstCTISeat* get_seat();
 
     static bool check_password_match(const QString& password, const QString& check_password_match);
@@ -73,7 +75,7 @@ signals:
     void update_complete(const bool& result);
 
 
-private:
+private:    
     int ID_OPERATOR;
     QString FULL_NAME;
     QString USER_NAME;

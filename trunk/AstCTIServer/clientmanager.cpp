@@ -38,6 +38,8 @@
 
 #include "clientmanager.h"
 #include "coretcpserver.h"
+#include "ctiserverapplication.h"
+#include "qastctiseat.h"
 
 /*!
     ClientManager Constructor
@@ -50,7 +52,7 @@ ClientManager::ClientManager(QAstCTIConfiguration* config,
 {
     // Lets copy our configuration struct
     this->config = config;
-
+    this->active_operator = 0;
     connect(parent, SIGNAL(send_data_from_server(QString)), this, SLOT(send_data_to_client(QString)));
 
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
@@ -78,6 +80,7 @@ void ClientManager::init_parser_commands()
     commands_list["PASS"]=CMD_PASS;
     commands_list["ORIG"]=CMD_ORIG;
     commands_list["STOP"]=CMD_STOP;
+    commands_list["MAC"]=CMD_MAC;
 
 }
 
@@ -89,6 +92,8 @@ void ClientManager::run()
     // in receive buffer and parse them when they're completed by a successive
     // \n command.
     const QString separator = "\n";
+
+    QString cti_username;
 
     if (config->qDebug) qDebug() << "In ClientManager::run";
 
@@ -187,18 +192,57 @@ void ClientManager::run()
                             }
                             else
                             {
-                                foreach(parm, cmd.parameters)
+                                cti_username = cmd.parameters.at(0);
+                                this->send_data_to_client("100 OK Send Password Now");
+                            }
+                            break;
+                        case CMD_MAC:
+                            if (cmd.parameters.count() < 1)
+                            {
+                                this->send_data_to_client("101 KO No mac given");
+                                break;
+                            }
+                            else
+                            {
+                                QString mac = cmd.parameters.at(0).toLower();
+                                QAstCTISeat seat(mac, 0);
+                                if (seat.load_from_mac())
                                 {
-                                    if (config->qDebug) qDebug() << "ClientManager::run params:" << parm;
+                                    if (this->active_operator != 0)
+                                    {
+                                        this->active_operator->set_last_seat(seat.get_id_seat());
+                                        this->active_operator->save();
+                                        QString new_identifier = QString("exten-%1").arg(seat.get_seat_exten());
+                                        emit this->change_client(this->local_identifier, new_identifier);
+                                        this->local_identifier = new_identifier;
+
+                                        this->send_data_to_client("100 OK");
+                                    }
                                 }
                             }
                             break;
                         case CMD_PASS:
                             // TODO : emit only if user done a successfull authentication
+                            // this->active_operator
+                            QAstCTIOperator* the_operator = CtiServerApplication::instance()->get_operator_by_username(cti_username);
+                            if (the_operator == 0)
+                            {
+                                this->send_data_to_client("101 KO Operator Not Found");
+                            }
+                            else
+                            {
+                                if (!the_operator->check_password(cmd.parameters.at(0)))
+                                {
+                                    this->send_data_to_client("101 KO Wrong password");
+                                }
+                                else
+                                {
+                                    this->active_operator = the_operator;
+                                    this->send_data_to_client("102 OK Authentication successful");
 
-                            emit this->change_client(this->local_identifier, QString("exten-SIP/200"));
-                            this->local_identifier = QString("exten-SIP/200");
-                            this->send_data_to_client("100 OK Authentication successful");
+
+                                }
+                            }
                             break;
                         case CMD_ORIG:
                             foreach(parm, cmd.parameters)
@@ -213,7 +257,7 @@ void ClientManager::run()
                             qDebug() << "Emitted signal STOP";
                             break;
                         case CMD_NOT_DEFINED:
-                             this->send_data_to_client("101 KO Invalid Command");
+                            this->send_data_to_client("101 KO Invalid Command");
                             break;
                     } // end switch
                 } // end if (itm.size())
@@ -272,15 +316,4 @@ void ClientManager::send_data_to_client(const QString& data)
 
 }
 
-/*!
-    Compare a plain string "password" with a pre-generated md5 QString "checkPassword"
-*/
-bool ClientManager::check_password(const QString& password, const QString& checkPassword)
-{
 
-    QCryptographicHash md5(QCryptographicHash::Md5);
-    md5.addData(QByteArray(password.toUtf8()));
-    QByteArray result = md5.result();
-
-    return (QString(result).compare(checkPassword) == 0);
-}

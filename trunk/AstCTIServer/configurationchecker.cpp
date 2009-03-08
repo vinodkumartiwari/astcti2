@@ -37,7 +37,8 @@
  */
 #include "configurationchecker.h"
 
-ConfigurationChecker::ConfigurationChecker(const QString& path)
+ConfigurationChecker::ConfigurationChecker(const QString& path) :
+       last_configuration("")
 {
     this->configurationPath = path;
     this->watcher = new QFileSystemWatcher();
@@ -59,7 +60,7 @@ QString ConfigurationChecker::load_first_configuration()
 {
     QString last_config_filename = read_last_modified_configuration_file();
     if ( (last_config_filename != "") &
-        (this->last_configuration == 0) )
+        (this->last_configuration == "") )
     {
         this->last_configuration = last_config_filename;
     }

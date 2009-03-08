@@ -89,7 +89,10 @@ void QAstCTIOperator::load_seat(const bool &bMayLoad)
     if (this->LAST_SEAT > 0)
     {
         this->lastSeat = new QAstCTISeat(this->LAST_SEAT, this);
-        this->lastSeat->load();
+        if (this->lastSeat->load())
+        {
+            qDebug() << "load_seat complete for operator" << this->USER_NAME;
+        }
     }
 }
 
@@ -116,6 +119,16 @@ bool QAstCTIOperator::save()
 
     emit this->update_complete(retVal);
     return retVal;
+}
+
+bool QAstCTIOperator::check_password(const QString& password)
+{
+
+    /*QCryptographicHash md5(QCryptographicHash::Md5);
+    md5.addData(QByteArray(password.toUtf8()));
+    QByteArray result = md5.result();*/
+
+    return (password.compare(this->PASS_WORD) == 0);
 }
 
 int  QAstCTIOperator::get_id_operator()
