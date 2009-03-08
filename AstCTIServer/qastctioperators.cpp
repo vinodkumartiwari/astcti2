@@ -36,71 +36,89 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef CLIENTMANAGER_H
-#define CLIENTMANAGER_H
-
-#include <QThread>
-#include <QTcpSocket>
-#include <QHostAddress>
-#include <QStringList>
+#include <QtSql>
 #include <QDebug>
-#include <QSettings>
-#include <QHash>
 
-#include "cticonfig.h"
+#include "qastctioperators.h"
 #include "qastctioperator.h"
 
-struct QAstCTICommand
+QAstCTIOperators::QAstCTIOperators(QObject* parent)
+        : QObject(parent)
 {
-    QString command;
-    QStringList parameters;
-};
-
-enum QAstCTICommands {
-    CMD_NOT_DEFINED,
-    CMD_NOOP,
-    CMD_QUIT,
-    CMD_USER,
-    CMD_PASS,
-    CMD_MAC,
-    CMD_ORIG,
-    CMD_STOP,
-    CMD_ENDLIST
-};
+    this->fill_operators();
+}
 
 
-class ClientManager : public  QThread
+
+QAstCTIOperators::~QAstCTIOperators()
 {
-    Q_OBJECT
-
-public:
-    ClientManager(QAstCTIConfiguration* config, int socketDescriptor, QObject* parent);
-    ~ClientManager();
-    void run();
+    qDebug() << "In QAstCTIOperators::~QAstCTIOperators()";
+    this->clear();
+}
 
 
-signals:
-    void add_client(const QString& exten, ClientManager* cl);
-    void change_client(const QString& oldexten, const QString& newexten);
-    void remove_client(const QString& exten);
-    void notify_server(const QString& data);
-    void stop_request(const QString& exten, ClientManager* cl);
+QAstCTIOperator* QAstCTIOperators::operator[](const QString& key)
+{
+    return (this->operators.contains(key)) ? this->operators[key] : 0;
 
-private:
-    QAstCTIConfiguration*   config;
-    int                     socketDescriptor;
-    QString                 local_identifier;
-    QString                 buffer;
-    QHash<QString, int>     commands_list;
-    void                    init_parser_commands();
-    QAstCTICommand          parse_command(const QString& command);
-    QAstCTIOperator*        active_operator;
-private slots:
-    void                    send_data_to_client(const QString& data);
+}
 
-protected:
-    QTcpSocket*             local_socket;
 
-};
+void QAstCTIOperators::add_operator(QAstCTIOperator* oper)
+{
+    this->operators.insert(oper->get_user_name(), oper);
+}
 
-#endif // CLIENTMANAGER_H
+void QAstCTIOperators::remove_operator(const QString& key)
+{
+    if (this->operators.contains(key))
+    {
+        QAstCTIOperator* oper = this->operators[key];
+        if (oper != 0)
+        {
+            delete(oper);
+        }
+        this->operators.remove(key);
+    }
+}
+int QAstCTIOperators::count()
+{
+    // Count how many elements we have
+    return this->operators.count();
+}
+
+void QAstCTIOperators::clear()
+{
+    // Do a clear only if really needed
+    if (this->operators.count() > 0)
+    {
+        QMutableHashIterator<QString, QAstCTIOperator*> i(this->operators);
+        while (i.hasNext()) {
+            i.next();
+            delete(i.value());
+        }
+        this->operators.clear();
+    }
+}
+
+void QAstCTIOperators::fill_operators()
+{
+    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlQuery query(db);
+    query.prepare("SELECT ID_OPERATOR FROM operators ORDER BY ID_OPERATOR ASC");
+    query.exec();
+    while(query.next())
+    {
+        QAstCTIOperator* oper = new QAstCTIOperator(query.value(0).toInt(0), this);
+        if (oper->load())
+        {
+            QString operName = oper->get_user_name();
+
+            // Remove service if exists before load
+            this->remove_operator(operName);
+            this->add_operator(oper);
+        }
+    }
+    query.finish();
+    query.clear();
+}

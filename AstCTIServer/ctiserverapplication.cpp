@@ -41,6 +41,7 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
         : QCoreApplication(argc, argv)
 {
     this->services = 0;
+    this->cti_operators = 0;
     is_config_loading = false;
     can_start      = false;
 
@@ -70,6 +71,9 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
         return;
     }
 
+    // This will build all services list
+    this->services = new QAstCTIServices(this);
+    this->cti_operators = new QAstCTIOperators(this);
 
     // here we connect an event that will be triggered everytime
     // there's a newer runtime configuration database to read
@@ -85,6 +89,8 @@ void  CtiServerApplication::reload_sql_database(QFileInfo * databaseFile)
 
     /* CODE TESTING START: used for testing purpose only */
     qDebug("CODE TESTING START AT %s:%d",  __FILE__ , __LINE__);
+
+
     if (this->services != 0)
     {
         delete(this->services);
@@ -93,6 +99,16 @@ void  CtiServerApplication::reload_sql_database(QFileInfo * databaseFile)
     if (this->services == 0)
     {
         this->services = new QAstCTIServices(this);
+    }
+
+    if (this->cti_operators != 0)
+    {
+        delete(this->cti_operators);
+        this->cti_operators= 0;
+    }
+    if (this->cti_operators == 0)
+    {
+        this->cti_operators = new QAstCTIOperators(this);
     }
 
     QString sername = "ast-cti-demo";
@@ -287,4 +303,14 @@ void CtiServerApplication::write_settings_file( QSettings *settings, const QStri
     {
         settings->setValue(key,defvalue);
     }
+}
+
+QAstCTIOperator* CtiServerApplication::get_operator_by_username(const QString& username)
+{
+    if (this->cti_operators != 0)
+    {
+        QAstCTIOperator* the_operator = this->cti_operators->operator [](username);
+        return the_operator;
+    }
+    return 0;
 }
