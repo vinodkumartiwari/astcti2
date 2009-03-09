@@ -74,13 +74,17 @@ ClientManager::~ClientManager()
 void ClientManager::init_parser_commands()
 {
     if (config->qDebug) qDebug() << "In ClientManager::init_parser_commands()";
-    commands_list["QUIT"]=CMD_QUIT;
-    commands_list["NOOP"]=CMD_NOOP;
-    commands_list["USER"]=CMD_USER;
-    commands_list["PASS"]=CMD_PASS;
-    commands_list["ORIG"]=CMD_ORIG;
-    commands_list["STOP"]=CMD_STOP;
-    commands_list["MAC"]=CMD_MAC;
+    commands_list["QUIT"]       = CMD_QUIT;
+    commands_list["NOOP"]       = CMD_NOOP;
+    commands_list["USER"]       = CMD_USER;
+    commands_list["PASS"]       = CMD_PASS;
+    commands_list["OSTYPE"]     = CMD_OSTYPE;
+    commands_list["SERVICES"]   = CMD_SERVICES;
+    commands_list["QUEUES"]     = CMD_QUEUES;
+    commands_list["PAUSE"]      = CMD_PAUSE;
+    commands_list["ORIG"]       = CMD_ORIG;
+    commands_list["STOP"]       = CMD_STOP;
+    commands_list["MAC"]        = CMD_MAC;
 
 }
 
@@ -94,6 +98,9 @@ void ClientManager::run()
     const QString separator = "\n";
 
     QString cti_username;
+    QString os_type;
+    int retries = 3;
+    bool authenticated = false;
 
     if (config->qDebug) qDebug() << "In ClientManager::run";
 
@@ -197,6 +204,12 @@ void ClientManager::run()
                             }
                             break;
                         case CMD_MAC:
+                            if (!authenticated)
+                            {
+                                this->send_data_to_client("101 KO Not authenticated");
+                                break;
+                            }
+
                             if (cmd.parameters.count() < 1)
                             {
                                 this->send_data_to_client("101 KO No mac given");
@@ -224,34 +237,89 @@ void ClientManager::run()
                         case CMD_PASS:
                             // TODO : emit only if user done a successfull authentication
                             // this->active_operator
+
+                            if (cti_username == "")
                             {
-                                QAstCTIOperator* the_operator = CtiServerApplication::instance()->get_operator_by_username(cti_username);
-                                if (the_operator == 0)
+                                this->send_data_to_client("101 KO Send User First");
+                            }
+                            else
+                            {
                                 {
-                                    this->send_data_to_client("101 KO Operator Not Found");
-                                }
-                                else
-                                {
-                                    if (!the_operator->check_password(cmd.parameters.at(0)))
+                                    QAstCTIOperator* the_operator = CtiServerApplication::instance()->get_operator_by_username(cti_username);
+                                    if (the_operator == 0)
                                     {
-                                        this->send_data_to_client("101 KO Wrong password");
+                                        this->send_data_to_client("101 KO Operator Not Found");
+                                        cti_username = "";
+                                        retries--;
                                     }
                                     else
                                     {
-                                        this->active_operator = the_operator;
-                                        this->send_data_to_client("102 OK Authentication successful");
+                                        if (!the_operator->check_password(cmd.parameters.at(0)))
+                                        {
+                                            this->send_data_to_client("101 KO Wrong password");
+                                            cti_username = "";
+                                            retries--;
+                                        }
+                                        else
+                                        {
+                                            this->active_operator = the_operator;
+                                            authenticated = true;
+                                            this->send_data_to_client("102 OK Authentication successful");
+
+                                        }
                                     }
+                                }
+
+                                if (retries == 0)
+                                {
+                                    tcpSocket.close();
                                 }
                             }
                             break;
+                        case CMD_OSTYPE:
+                            if (!authenticated)
+                            {
+                                this->send_data_to_client("101 KO Not authenticated");
+                                break;
+                            }
+                            if (cmd.parameters.count() < 1)
+                            {
+                                this->send_data_to_client("101 KO No mac given");
+                                break;
+                            }
+                            else
+                            {
+                                os_type = cmd.parameters.at(0).toLower();
+                                this->send_data_to_client("100 OK Operating System Is Set");
+                            }
+                            break;
+
                         case CMD_ORIG:
+                            if (!authenticated)
+                            {
+                                this->send_data_to_client("101 KO Not authenticated");
+                                break;
+                            }
                             foreach(parm, cmd.parameters)
                             {
                                 emit this->notify_server(parm);
                             }
                             this->send_data_to_client("100 OK");
                             break;
+                        case CMD_SERVICES:
+                            if (!authenticated)
+                            {
+                                this->send_data_to_client("101 KO Not authenticated");
+                                break;
+                            }
+
+                            break;
                         case CMD_STOP:
+                            if (!authenticated)
+                            {
+                                this->send_data_to_client("101 KO Not authenticated");
+                                break;
+                            }
                             emit this->stop_request(this->local_identifier, this);
                             tcpSocket.close();
                             qDebug() << "Emitted signal STOP";
