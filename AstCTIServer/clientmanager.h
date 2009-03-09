@@ -63,6 +63,10 @@ enum QAstCTICommands {
     CMD_USER,
     CMD_PASS,
     CMD_MAC,
+    CMD_OSTYPE,
+    CMD_SERVICES,
+    CMD_QUEUES,
+    CMD_PAUSE,
     CMD_ORIG,
     CMD_STOP,
     CMD_ENDLIST
