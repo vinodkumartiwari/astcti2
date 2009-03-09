@@ -224,23 +224,23 @@ void ClientManager::run()
                         case CMD_PASS:
                             // TODO : emit only if user done a successfull authentication
                             // this->active_operator
-                            QAstCTIOperator* the_operator = CtiServerApplication::instance()->get_operator_by_username(cti_username);
-                            if (the_operator == 0)
                             {
-                                this->send_data_to_client("101 KO Operator Not Found");
-                            }
-                            else
-                            {
-                                if (!the_operator->check_password(cmd.parameters.at(0)))
+                                QAstCTIOperator* the_operator = CtiServerApplication::instance()->get_operator_by_username(cti_username);
+                                if (the_operator == 0)
                                 {
-                                    this->send_data_to_client("101 KO Wrong password");
+                                    this->send_data_to_client("101 KO Operator Not Found");
                                 }
                                 else
                                 {
-                                    this->active_operator = the_operator;
-                                    this->send_data_to_client("102 OK Authentication successful");
-
-
+                                    if (!the_operator->check_password(cmd.parameters.at(0)))
+                                    {
+                                        this->send_data_to_client("101 KO Wrong password");
+                                    }
+                                    else
+                                    {
+                                        this->active_operator = the_operator;
+                                        this->send_data_to_client("102 OK Authentication successful");
+                                    }
                                 }
                             }
                             break;
