@@ -1,0 +1,8 @@
+#summary Ubuntu Server Setup in VirtualBox
+
+===This video tutorial shows how to create a Virtual Box Virtual Machine with an Ubuntu Server setup.0===
+
+<wiki:gadget url="http://asteriskcti.brunosalzano.com/video.xml" up_videoName="tut-2.swf" width="813" height="585" /> 
+
+
+[http://centralino-voip.brunosalzano.com Centralino Voip]
