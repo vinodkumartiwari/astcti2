@@ -1,0 +1,7 @@
+#summary Configure and Install Asterisk Server 1.4
+===This video tutorial shows how to configure Asterisk installation over the previous installed Virtual Machine ===
+
+<wiki:gadget url="http://asteriskcti.brunosalzano.com/video.xml" up_videoName="tut-3.swf" width="813" height="585" /> 
+
+
+[http://centralino-voip.brunosalzano.com Centralino Voip]
