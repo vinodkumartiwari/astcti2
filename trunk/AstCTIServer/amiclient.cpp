@@ -42,32 +42,186 @@ AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
         : QThread(parent)
 {
     this->config = config;
-    this->quit = true;
+    this->quit = false;
+    this->ami_client_status = AMI_STATUS_NOT_DEFINED;
+    this->local_socket = new QTcpSocket();
+
+    if (this->config->ami_reconnect_retries > 0)
+    {
+        this->retries = this->config->ami_reconnect_retries;
+    }
+    connect(this, SIGNAL(thread_stopped()) , this, SLOT(restart_ami_thread()));
+
+    connect(this, SIGNAL(error(int,QString)), this, SLOT(log_socket_error(int,QString)));
+    connect(this, SIGNAL(receive_data_from_asterisk(QString)), this, SLOT(parse_data_received_from_asterisk(QString)));
+    connect(this->local_socket, SIGNAL(disconnected()), this, SLOT(stop_ami_thread()) );
+
 }
 
 AMIClient::~AMIClient()
 {
-    // When quit is false, we are running
-    // so we need to stop..
-    if (!quit)
+    if (config->qDebug) qDebug() << "In AMIClient::~AMIClient()";
+    delete(this->local_socket);
+}
+
+void AMIClient::start_ami_thread()
+{
+    this->run();
+}
+
+void AMIClient::restart_ami_thread()
+{
+    if (this->config->ami_reconnect_retries == 0)
     {
-        quit = true;
-        wait();
+
+        qDebug() << "AMI Client will retry reconnect within " << this->config->ami_connect_timeout << " seconds";
+        QTimer::singleShot(this->config->ami_connect_timeout*1000 , this, SLOT(start_ami_thread()));
+
     }
+    else
+    {
+        this->retries --;
+        if (this->retries > 0)
+        {
+            qDebug() << "AMI Client will retry reconnect within " << this->config->ami_connect_timeout << " seconds";
+            QTimer::singleShot(this->config->ami_connect_timeout*1000, this, SLOT(start_ami_thread()));
+        }
+        else
+        {
+            qDebug() << "AMI Client will now stop definitively";
+            emit ami_client_noretries();
+        }
+    }
+}
+
+void AMIClient::log_socket_error(int socketError, const QString& message)
+{
+    qDebug() << "Received error" << socketError << "from socket:" << message;
+    restart_ami_thread();
+
 }
 
 void AMIClient::run()
 {
-    QTcpSocket socket;
-    socket.connectToHost(config->ami_host , config->ami_port);
-    if (!socket.waitForConnected(config->ami_connect_timeout))
+    this->quit = false;
+    this->emit_stopped_signal_on_quit = true;
+    this->local_socket->connectToHost(config->ami_host , config->ami_port);
+
+    if (!this->local_socket->waitForConnected(config->ami_connect_timeout))
     {
-        emit error(socket.error(), socket.errorString());
+        emit error(this->local_socket->error(), this->local_socket->errorString());
         return;
     }
     while(!quit)
     {
         // TODO: main loop for receinving data..
+        while(this->local_socket->waitForReadyRead(500))
+        {
+
+            QByteArray sockData = local_socket->readAll();
+            QString data_received = QString(sockData);
+            emit this->receive_data_from_asterisk(data_received);
+        }
+    }
+    this->local_socket->close();
+    this->ami_client_status = AMI_STATUS_NOT_DEFINED;
+    if (this->emit_stopped_signal_on_quit)
+    {
+        emit this->thread_stopped();
+    }
+}
+
+void AMIClient::stop_ami_thread()
+{
+    this->stop_ami_thread(true);
+}
+void AMIClient::stop_ami_thread(bool emit_stopped_signal)
+{
+    this->emit_stopped_signal_on_quit = emit_stopped_signal;
+    this->quit = true;
+}
+
+
+
+void AMIClient::perform_login()
+{
+    this->ami_client_status = AMI_STATUS_LOGGING_IN;
+    QString login_data = QString("Action: Login\r\nUsername: %1\r\nSecret: %2\r\n\r\n")
+                            .arg(this->config->ami_user)
+                            .arg(this->config->ami_secret);
+    if (config->qDebug) qDebug() << login_data;
+    this->send_data_to_asterisk(login_data);
+
+}
+
+void AMIClient::parse_data_received_from_asterisk(const QString& message)
+{
+
+    qDebug() << "pdrfm:" << message;
+
+    if (this->ami_client_status != AMI_STATUS_NOT_DEFINED)
+    {
+        this->data_buffer+=message;
+        if (this->data_buffer.contains("\r\n\r\n"))
+        {
+            // here we can execute actions on buffer
+            this->execute_actions();
+        }
+    }
+    else
+    {
+        if (message.contains( "Asterisk Call Manager", Qt::CaseInsensitive  ))
+        {
+            this->perform_login();
+        }
+        if (this->ami_client_status == AMI_STATUS_LOGGING_IN)
+        {
+            if (message.contains("Message: Authentication accepted"))
+            {
+                qDebug() << "We're authenticated by AMI Server";
+                this->ami_client_status = AMI_STATUS_LOGGED_IN;
+            }
+        }
     }
 
 }
+
+void AMIClient::execute_actions()
+{
+    // do a copy of the local buffer and...
+    QString local_buffer = this->data_buffer;
+    // ... then clean it!
+    this->data_buffer.clear();
+
+    switch(this->ami_client_status)
+    {
+        case AMI_STATUS_LOGGING_IN:
+            if (local_buffer.contains("Message: Authentication accepted"))
+            {
+                qDebug() << "We're authenticated by AMI Server";
+                this->ami_client_status = AMI_STATUS_LOGGED_IN;
+            }
+            break;
+        default:
+            return;
+
+    }
+
+}
+
+void AMIClient::send_data_to_asterisk(const QString& data)
+{
+    if (config->qDebug) qDebug() << "In AMIClient::send_data_to_asterisk(" << data << ")";
+
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+
+    // We output simple ascii strings (no utf8)    
+    out.writeRawData(data.toAscii(), data.length());
+
+    qDebug() << block;
+
+    this->local_socket->write(block);
+}
+
+

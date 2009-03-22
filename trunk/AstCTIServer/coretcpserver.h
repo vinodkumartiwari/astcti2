@@ -48,41 +48,43 @@
 
 #include "clientmanager.h"
 #include "cticonfig.h"
-
+#include "amiclient.h"
 
 class CoreTcpServer : public QTcpServer
 {
     Q_OBJECT
-
-private:
-    QSettings settings;
-    QAstCTIConfiguration *config;
-    QMutex mutexClientList;
-    bool isClosing;
-
-
 
 public:
     CoreTcpServer(QAstCTIConfiguration *config, QObject *parent=0);
     ~CoreTcpServer();
 
 signals:
-    void send_data_from_server(const QString &data);
-    void server_is_closing();
+    void                            send_data_from_server(const QString &data);
+    void                            server_is_closing();
 
 
 protected:
-    QHash<QString, ClientManager*> *clients;
-    void incomingConnection(int socketDescriptor);
-    bool contain_client(const QString &exten);
+    QHash<QString, ClientManager*>* clients;
+    void                            incomingConnection(int socketDescriptor);
+    bool                            contain_client(const QString &exten);
 
 
 protected slots:
-    void add_client(const QString& exten, ClientManager* cl);
-    void change_client(const QString& oldexten, const QString& newexten);
-    void remove_client(const QString& exten);
-    void notify_client(const QString& data);
-    void stop_the_server(const QString& exten, ClientManager* cl);
+    void                            add_client(const QString& exten, ClientManager* cl);
+    void                            change_client(const QString& oldexten, const QString& newexten);
+    void                            remove_client(const QString& exten);
+    void                            notify_client(const QString& data);
+    void                            stop_the_server();
+    void                            stop_the_server(bool close_the_socket);
+
+
+private:
+    QSettings               settings;
+    QAstCTIConfiguration*   config;
+    QMutex                  mutexClientList;
+    bool                    isClosing;
+    AMIClient*              ct;
+
 };
 
 

@@ -51,25 +51,54 @@
 
 #include "main.h"
 
+enum AMIClientStatus {
+    AMI_STATUS_NOT_DEFINED,
+    AMI_STATUS_LOGGING_IN,
+    AMI_STATUS_LOGGED_IN,
+    AMI_STATUS_REQEUSTING_EXTENSIONS,
+    AMI_STATUS_REQUESTING_SIP,
+    AMI_STATUS_REQUESTING_QUEUES,
+    AMI_STATUS_ENDLIST
+};
+
 class AMIClient : public  QThread
 {
     Q_OBJECT
 
 public:
-    AMIClient(QAstCTIConfiguration *config, QObject *parent);
+    AMIClient(QAstCTIConfiguration* config, QObject* parent);
     ~AMIClient();
     void run();
+public slots:
+    void                    send_data_to_asterisk(const QString& data);
+    void                    stop_ami_thread();
+    void                    stop_ami_thread(bool emit_stopped_signal);
 
 signals:
-    void error(int socketError, const QString &message);
+    void                    error(int socketError, const QString& message);
+    void                    receive_data_from_asterisk(const QString& data);
+    void                    thread_stopped();
+    void                    ami_client_noretries();
 
 private:
-    QAstCTIConfiguration    *config;
-    int                     socketDescriptor;
+    QAstCTIConfiguration*   config;
+    int                     socket_descriptor;
     bool                    quit;
+    bool                    emit_stopped_signal_on_quit;
+    QString                 data_buffer;
+    AMIClientStatus         ami_client_status;
+    int                     retries;
+
+private slots:
+    void                    parse_data_received_from_asterisk(const QString& message);
+    void                    restart_ami_thread();
+    void                    start_ami_thread();
+    void                    perform_login();
+    void                    execute_actions();
+    void                    log_socket_error(int socketError, const QString& message);
 
 protected:
-    QTcpSocket              *theSocket;
+    QTcpSocket              *local_socket;
 };
 
 #endif // AMICLIENT_H

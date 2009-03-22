@@ -54,15 +54,23 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
     this->isClosing = false;
     // Lets set local configuration struct
     this->config = config;
-    if (config->qDebug) qDebug() << "In CoreTcpServer:CoreTcpServer constructor";
+    if (config->qDebug) qDebug() << "In CoreTcpServer:CoreTcpServer()";
     // Basic init here
 
+     /* CODE TESTING START */
+    this->ct = new AMIClient(this->config, 0 );
+    this->ct->start();
 
+    //e3928a3bc4be46516aa33a79bbdfdb08
+    /* CODE TESTING END*/
 }
+
+
 CoreTcpServer::~CoreTcpServer()
 {
-    if (this->config->qDebug) qDebug() << "CoreTcpServer destructor";
+    if (this->config->qDebug) qDebug() << "In CoreTcpServer::~CoreTcpServer()";
     if (this->clients != 0) delete(this->clients);
+    if (this->ct != 0) delete(this->ct);
 }
 
 /*!
@@ -80,7 +88,7 @@ void CoreTcpServer::incomingConnection(int socketDescriptor)
     connect(thread, SIGNAL(change_client(const QString,const QString)), this, SLOT(change_client(const QString,const QString)));
     connect(thread, SIGNAL(remove_client(const QString)), this, SLOT(remove_client(const QString)));
     connect(thread, SIGNAL(notify_server(const QString)), this, SLOT(notify_client(const QString)));
-    connect(thread, SIGNAL(stop_request(QString,ClientManager*)), this, SLOT(stop_the_server(const QString,ClientManager*)));
+    connect(thread, SIGNAL(stop_request(QString,ClientManager*)), this, SLOT(stop_the_server()));
     thread->start();
 }
 
@@ -156,24 +164,21 @@ void CoreTcpServer::notify_client(const QString &data)
     emit send_data_from_server(data);
 }
 
-void CoreTcpServer::stop_the_server(const QString &exten, ClientManager *cl)
+void CoreTcpServer::stop_the_server()
 {
-    Q_UNUSED(exten);
-    Q_UNUSED(cl);
+    this->stop_the_server(false);
+}
 
+void CoreTcpServer::stop_the_server(bool close_the_socket)
+{
     this->isClosing = true;
     qDebug() << "Received STOP signal";
     emit(this->server_is_closing());
 
-    /*QMutableHashIterator<QString, ClientManager*> i(*this->clients);
-    while (i.hasNext()) {
-        i.next();
-        qDebug() << "Destroiyng client" << i.key();
-        i.value()->stop();
-        //delete(i.value());
-    }*/
-
-    // After removed all client, exit the application.
-    //
+    if (close_the_socket)
+    {
+        this->close();
+    }
+    
     CtiServerApplication::instance()->exit(0);
 }

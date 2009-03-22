@@ -69,6 +69,7 @@
 #define DEFAULT_AMI_USER            "manager"
 #define DEFAULT_AMI_SECRET          "password"
 #define DEFAULT_AMI_CONNECT_TIMEOUT 5
+#define DEFAULT_AMI_CONNECT_RETRIES 0
 
 #define EXIT_CODE_SUCCESS           0
 #define EXIT_CODE_NO_INI_CONFIG     1
