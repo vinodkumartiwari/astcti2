@@ -42,6 +42,7 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
 {
     this->services = 0;
     this->cti_operators = 0;
+    this->config_checker = 0;
     is_config_loading = false;
     can_start      = false;
 
@@ -75,10 +76,25 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
     this->services = new QAstCTIServices(this);
     this->cti_operators = new QAstCTIOperators(this);
 
+
     // here we connect an event that will be triggered everytime
     // there's a newer runtime configuration database to read
     connect(this->config_checker, SIGNAL(new_configuration(QFileInfo*)), this, SLOT(reload_sql_database(QFileInfo*)));
     can_start = true;
+}
+
+CtiServerApplication::~CtiServerApplication()
+{
+    if (config.qDebug) qDebug() << "In CtiServerApplication::~CtiServerApplication()";
+    if (this->config_checker != 0) delete(this->config_checker);
+    if (this->core_tcp_server != 0) delete(this->core_tcp_server);
+    if (config.qDebug) qDebug() << "CtiServerApplication closing";
+    this->destroy_sql_database();
+    if (config.qDebug) qDebug() << "SQLite database connection closed";
+    if (config.qDebug) qDebug() << "Stopped";
+
+    // Remove msg handler to avoid access to this QApplication
+    qInstallMsgHandler(0);
 }
 
 void  CtiServerApplication::reload_sql_database(QFileInfo * databaseFile)
@@ -138,14 +154,7 @@ CtiServerApplication *CtiServerApplication::instance()
     return (static_cast<CtiServerApplication*>(QCoreApplication::instance()));
 }
 
-CtiServerApplication::~CtiServerApplication()
-{
-    if (this->config_checker != 0) delete(config_checker);
-    if (config.qDebug) qDebug() << "CtiServerApplication closing";
-    this->destroy_sql_database();
-    if (config.qDebug) qDebug() << "SQLite database connection closed";
-    if (config.qDebug) qDebug() << "Stopped";
-}
+
 
 CoreTcpServer *CtiServerApplication::build_new_core_tcpserver()
 {
@@ -166,12 +175,13 @@ CoreTcpServer *CtiServerApplication::build_new_core_tcpserver()
 
 bool CtiServerApplication::build_sql_database(const QString & databaseFile)
 {
-    if (config.db != 0)
+    QSqlDatabase db  = QSqlDatabase::database("sqlitedb");
+    if (db.isValid())
     {
         this->destroy_sql_database();
     }
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "sqlitedb");
+    db = QSqlDatabase::addDatabase("QSQLITE", "sqlitedb");
     db.setDatabaseName(databaseFile);
 
     if (config.sqlite_user.length() > 0)
@@ -191,7 +201,7 @@ bool CtiServerApplication::build_sql_database(const QString & databaseFile)
     if (config.qDebug) qDebug() << "SQLite database version " << this->read_database_version() << "\n";
 
     config.sqlite_file = databaseFile;
-    config.db = &db;
+    // config.db = &db;
     return true;
 
 }
@@ -225,7 +235,8 @@ void CtiServerApplication::destroy_sql_database()
         }
     }
     config.sqlite_file.clear();
-    config.db = 0;
+
+    // config.db = 0;
 }
 
 bool CtiServerApplication::read_settings_file(const QString configFile, QAstCTIConfiguration* config)
@@ -266,6 +277,8 @@ bool CtiServerApplication::read_settings_file(const QString configFile, QAstCTIC
     write_settings_file(&settings, "user",            DEFAULT_AMI_USER);
     write_settings_file(&settings, "secret",          DEFAULT_AMI_SECRET);
     write_settings_file(&settings, "connect_timeout", DEFAULT_AMI_CONNECT_TIMEOUT);
+    write_settings_file(&settings, "connect_retries", DEFAULT_AMI_CONNECT_RETRIES);
+
     settings.endGroup();
 
     settings.beginGroup("RuntimeDb");
@@ -286,7 +299,8 @@ bool CtiServerApplication::read_settings_file(const QString configFile, QAstCTIC
     config->ami_port             = settings.value("port").toInt();
     config->ami_user             = settings.value("user").toString();
     config->ami_secret           = settings.value("secret").toString();
-    config->ami_connect_timeout  = settings.value("connect_timeout").toInt() * 1000;
+    config->ami_connect_timeout  = settings.value("connect_timeout").toInt();
+    config->ami_reconnect_retries= settings.value("connect_retries").toInt();
     settings.endGroup();
 
     settings.beginGroup("RuntimeDb");

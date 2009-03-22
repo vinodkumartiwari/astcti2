@@ -50,10 +50,7 @@ ConfigurationChecker::ConfigurationChecker(const QString& path) :
 ConfigurationChecker::~ConfigurationChecker()
 {
     qDebug() << "In ConfigurationChecker::~ConfigurationChecker()";
-    /*if (this->last_configuration !=0 )
-    {
-        delete(this->last_configuration);
-    }*/
+
 }
 
 QString ConfigurationChecker::load_first_configuration()

@@ -81,7 +81,7 @@ public:
     ClientManager(QAstCTIConfiguration* config, int socketDescriptor, QObject* parent);
     ~ClientManager();
     void run();
-
+    bool is_in_pause();
 
 signals:
     void add_client(const QString& exten, ClientManager* cl);
@@ -99,6 +99,7 @@ private:
     void                    init_parser_commands();
     QAstCTICommand          parse_command(const QString& command);
     QAstCTIOperator*        active_operator;
+    bool                    in_pause;
 private slots:
     void                    send_data_to_client(const QString& data);
 

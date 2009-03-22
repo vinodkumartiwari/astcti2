@@ -49,10 +49,12 @@ ClientManager::ClientManager(QAstCTIConfiguration* config,
                              QObject* parent) :
                              QThread(parent),
                              socketDescriptor(socketDescriptor)
+
 {
     // Lets copy our configuration struct
     this->config = config;
     this->active_operator = 0;
+
     connect(parent, SIGNAL(send_data_from_server(QString)), this, SLOT(send_data_to_client(QString)));
 
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
@@ -60,6 +62,7 @@ ClientManager::ClientManager(QAstCTIConfiguration* config,
     // We need to initialize our parser
     this->init_parser_commands();
 
+    this->in_pause = false;
 
 }
 
@@ -244,6 +247,12 @@ void ClientManager::run()
                             }
                             else
                             {
+                                if (cmd.parameters.count() < 1)
+                                {
+                                    this->send_data_to_client("101 KO No password given");
+                                    break;
+                                }
+
                                 {
                                     QAstCTIOperator* the_operator = CtiServerApplication::instance()->get_operator_by_username(cti_username);
                                     if (the_operator == 0)
@@ -254,6 +263,7 @@ void ClientManager::run()
                                     }
                                     else
                                     {
+
                                         if (!the_operator->check_password(cmd.parameters.at(0)))
                                         {
                                             this->send_data_to_client("101 KO Wrong password");
@@ -262,6 +272,7 @@ void ClientManager::run()
                                         }
                                         else
                                         {
+                                            this->in_pause = the_operator->get_begin_in_pause();
                                             this->active_operator = the_operator;
                                             authenticated = true;
                                             this->send_data_to_client("102 OK Authentication successful");
@@ -314,6 +325,23 @@ void ClientManager::run()
                             }
 
                             break;
+                        case CMD_PAUSE:
+                            if (!authenticated)
+                            {
+                                this->send_data_to_client("101 KO Not authenticated");
+                                break;
+                            }
+                            if (cmd.parameters.count() < 1)
+                            {
+                                this->send_data_to_client("101 KO No mac given");
+                                break;
+                            }
+                            else
+                            {
+                                this->send_data_to_client("100 OK");
+
+                            }
+                            break;
                         case CMD_STOP:
                             if (!authenticated)
                             {
@@ -344,6 +372,11 @@ void ClientManager::run()
     // TODO : emit only if user done a successfull authentication
     emit this->remove_client(this->local_identifier);
 
+}
+
+bool ClientManager::is_in_pause()
+{
+    return this->in_pause;
 }
 
 /*!
