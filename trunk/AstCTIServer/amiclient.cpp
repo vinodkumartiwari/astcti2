@@ -40,22 +40,12 @@
 
 AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
         : QThread(parent)
+
 {
     this->config = config;
     this->quit = false;
+    this->local_socket = 0;
     this->ami_client_status = AMI_STATUS_NOT_DEFINED;
-    this->local_socket = new QTcpSocket();
-
-    if (this->config->ami_reconnect_retries > 0)
-    {
-        this->retries = this->config->ami_reconnect_retries;
-    }
-    connect(this, SIGNAL(thread_stopped()) , this, SLOT(restart_ami_thread()));
-
-    connect(this, SIGNAL(error(int,QString)), this, SLOT(log_socket_error(int,QString)));
-    connect(this, SIGNAL(receive_data_from_asterisk(QString)), this, SLOT(parse_data_received_from_asterisk(QString)));
-    connect(this->local_socket, SIGNAL(disconnected()), this, SLOT(stop_ami_thread()) );
-
 }
 
 AMIClient::~AMIClient()
@@ -66,30 +56,31 @@ AMIClient::~AMIClient()
 
 void AMIClient::start_ami_thread()
 {
-    this->run();
+    this->start();
 }
 
 void AMIClient::restart_ami_thread()
 {
     if (this->config->ami_reconnect_retries == 0)
     {
-
         qDebug() << "AMI Client will retry reconnect within " << this->config->ami_connect_timeout << " seconds";
-        QTimer::singleShot(this->config->ami_connect_timeout*1000 , this, SLOT(start_ami_thread()));
-
+        this->sleep(this->config->ami_connect_timeout);
+        start_ami_thread();
     }
     else
     {
-        this->retries --;
-        if (this->retries > 0)
-        {
-            qDebug() << "AMI Client will retry reconnect within " << this->config->ami_connect_timeout << " seconds";
-            QTimer::singleShot(this->config->ami_connect_timeout*1000, this, SLOT(start_ami_thread()));
-        }
-        else
+        // We need to retry "retries" time plus the first connect
+        if (this->retries == 0)
         {
             qDebug() << "AMI Client will now stop definitively";
             emit ami_client_noretries();
+        }
+        else
+        {
+            qDebug() << "AMI Client will retry reconnect within " << this->config->ami_connect_timeout << " seconds";
+            this->sleep(this->config->ami_connect_timeout);
+            this->retries --;
+            start_ami_thread();
         }
     }
 }
@@ -101,8 +92,34 @@ void AMIClient::log_socket_error(int socketError, const QString& message)
 
 }
 
+void AMIClient::build_the_socket()
+{
+    // Builds the socket
+    this->local_socket = new QTcpSocket();
+
+    // Initialize how many times we need to restart
+    if (this->config->ami_reconnect_retries > 0)
+    {
+        this->retries = this->config->ami_reconnect_retries;
+    }
+
+    // Connect all the required signals.. just once!
+    connect(this, SIGNAL(thread_stopped()) , this, SLOT(restart_ami_thread()));
+    connect(this, SIGNAL(error(int,QString)), this, SLOT(log_socket_error(int,QString)));
+    connect(this, SIGNAL(receive_data_from_asterisk(QString)), this, SLOT(parse_data_received_from_asterisk(QString)));
+    connect(this->local_socket, SIGNAL(disconnected()), this, SLOT(stop_ami_thread()) );
+}
+
 void AMIClient::run()
 {
+    // We need to build here the socket to avoid warnings from QObject like
+    // "Cannot create children for a parent that is in a different thread.
+    if (this->local_socket == 0)
+    {
+        // Build the socket only once
+        build_the_socket();
+    }
+
     this->quit = false;
     this->emit_stopped_signal_on_quit = true;
     this->local_socket->connectToHost(config->ami_host , config->ami_port);
