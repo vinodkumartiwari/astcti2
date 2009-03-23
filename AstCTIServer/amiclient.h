@@ -90,6 +90,7 @@ private:
     int                     retries;
 
 private slots:
+    void                    build_the_socket();
     void                    parse_data_received_from_asterisk(const QString& message);
     void                    restart_ami_thread();
     void                    start_ami_thread();

@@ -59,6 +59,7 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
 
      /* CODE TESTING START */
     this->ct = new AMIClient(this->config, 0 );
+    connect(this->ct, SIGNAL(ami_client_noretries()), this, SLOT(stop_the_server()));
     this->ct->start();
 
     //e3928a3bc4be46516aa33a79bbdfdb08
