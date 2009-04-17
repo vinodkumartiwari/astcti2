@@ -37,6 +37,7 @@
  */
 #include "ctiserverapplication.h"
 
+
 CtiServerApplication::CtiServerApplication(int &argc, char **argv)
         : QCoreApplication(argc, argv)
 {
@@ -154,7 +155,10 @@ CtiServerApplication *CtiServerApplication::instance()
     return (static_cast<CtiServerApplication*>(QCoreApplication::instance()));
 }
 
-
+QAstCTIServices *CtiServerApplication::get_services()
+{
+    return this->services;
+}
 
 CoreTcpServer *CtiServerApplication::build_new_core_tcpserver()
 {

@@ -85,6 +85,8 @@ public:
     static CtiServerApplication* instance();
     QAstCTIOperator*        get_operator_by_username(const QString& username);
 
+    QAstCTIServices*        get_services();
+
     QAstCTIConfiguration    config; // Main configuration struct
 
 public slots:
@@ -96,8 +98,6 @@ private:
     CoreTcpServer*          core_tcp_server;
     ConfigurationChecker*   config_checker;
     bool                    is_config_loading;
-    QAstCTIServices*        services;
-    QAstCTIOperators*       cti_operators;
 
     bool                    build_sql_database(const QString& databaseFile);
     void                    destroy_sql_database();
@@ -105,6 +105,10 @@ private:
 
     bool                    read_settings_file(const QString configFile, QAstCTIConfiguration* config);
     void                    write_settings_file(QSettings* settings, const QString & key, const  QVariant & defvalue);
+
+protected:
+    QAstCTIServices*        services;
+    QAstCTIOperators*       cti_operators;
 
 
 };

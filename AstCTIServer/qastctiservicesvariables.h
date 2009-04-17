@@ -54,6 +54,7 @@ public:
     QAstCTIVariable* operator[](const QString& key);
     int count();
     void set_id_service(const int& idservice);
+    bool contains(const QString& key);
 
 private:
     QHash<QString, QAstCTIVariable*> variables;

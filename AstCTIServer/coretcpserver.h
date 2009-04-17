@@ -76,7 +76,8 @@ protected slots:
     void                            notify_client(const QString& data);
     void                            stop_the_server();
     void                            stop_the_server(bool close_the_socket);
-
+    // TODO: Complete slot declaration
+    void                            receive_cti_event(const AMIEvent& eventid, QAstCTICall* the_call);
 
 private:
     QSettings               settings;

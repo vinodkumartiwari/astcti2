@@ -74,6 +74,11 @@ void QAstCTIServicesVariables::add_variable(QAstCTIVariable* var)
     this->variables.insert(var->get_var_name(), var);
 }
 
+bool QAstCTIServicesVariables::contains(const QString& key)
+{
+    return this->variables.contains(key);
+}
+
 void QAstCTIServicesVariables::remove_variable(const QString& key)
 {
     if (this->variables.contains(key))
