@@ -35,53 +35,70 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#include <QtSql>
-#include <QDebug>
 
-#include "qastctivariable.h"
+#include "qastcticall.h"
 
-QAstCTIVariable::QAstCTIVariable(const int& id, QObject* parent) :
-        QObject(parent), ID_VARIABLE(id), ID_SERVICE(0), VARNAME("")
+QAstCTICall::QAstCTICall(QObject* parent)
+        : QObject(parent), channel(""), parsed_channel(""),
+        callerid_num(""), callerid_name(""),
+        uniqueid(""), context(""), state("")
 {
 
 }
 
-QAstCTIVariable::~QAstCTIVariable()
+QString& QAstCTICall::get_channel()
 {
-    qDebug() << "In QAstCTIVariable::~QAstCTIVariable()";
+    return this->channel;
 }
-
-bool QAstCTIVariable::load()
+void QAstCTICall::set_channel(QString channel)
 {
-    bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
-    QSqlQuery query(db);
-    query.prepare("SELECT * FROM services_variables WHERE ID_VARIABLE=:id");
-    query.bindValue(":id", this->ID_VARIABLE);
-    retVal = query.exec();
-    if ( (retVal) &  (query.first()) )
-    {
-        this->ID_SERVICE = query.value(1).toInt(0);
-        this->VARNAME = query.value(2).toString();
-        query.finish();
-    }
-    query.clear();
-
-    emit this->load_complete(retVal);
-    return retVal;
+    this->channel = channel;
 }
-
-int QAstCTIVariable::get_id_variable()
+QString& QAstCTICall::get_parsed_channel()
 {
-    return this->ID_VARIABLE;
+    return this->parsed_channel;
 }
-
-int QAstCTIVariable::get_id_service()
+void QAstCTICall::set_parsed_channel(QString parsedchannel)
 {
-    return this->ID_SERVICE;
+    this->parsed_channel = parsedchannel;
 }
-
-QString QAstCTIVariable::get_var_name()
+QString& QAstCTICall::get_callerid_num()
 {
-    return this->VARNAME;
+    return this->callerid_num;
+}
+void QAstCTICall::set_callerid_num(QString calleridnum)
+{
+    this->callerid_num = calleridnum;
+}
+QString& QAstCTICall::get_callerid_name()
+{
+    return this->callerid_name;
+}
+void QAstCTICall::set_callerid_name(QString calleridname)
+{
+    this->callerid_name = calleridname;
+}
+QString& QAstCTICall::get_uniqueid()
+{
+    return this->uniqueid;
+}
+void QAstCTICall::set_uniqueid(QString uniqueid)
+{
+    this->uniqueid = uniqueid;
+}
+QString& QAstCTICall::get_context()
+{
+    return this->context;
+}
+void QAstCTICall::set_context(QString context)
+{
+    this->context = context;
+}
+QString& QAstCTICall::get_state()
+{
+    return this->state;
+}
+void QAstCTICall::set_state(QString state)
+{
+    this->state = state;
 }

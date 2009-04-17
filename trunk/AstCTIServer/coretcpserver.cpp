@@ -60,6 +60,7 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
      /* CODE TESTING START */
     this->ct = new AMIClient(this->config, 0 );
     connect(this->ct, SIGNAL(ami_client_noretries()), this, SLOT(stop_the_server()));
+    connect(this->ct, SIGNAL(cti_event(const AMIEvent, QAstCTICall*)), this, SLOT(receive_cti_event(const AMIEvent, QAstCTICall*)));
     this->ct->start();
 
     //e3928a3bc4be46516aa33a79bbdfdb08
@@ -182,4 +183,15 @@ void CoreTcpServer::stop_the_server(bool close_the_socket)
     }
     
     CtiServerApplication::instance()->exit(0);
+}
+
+void CoreTcpServer::receive_cti_event(const AMIEvent& eventid, QAstCTICall* the_call)
+{
+    QString log_msg("");
+    if (the_call != 0)
+    {
+        log_msg = "for call" + the_call->get_uniqueid();
+    }
+
+    qDebug() << "Received CTI Event" << eventid << log_msg;
 }

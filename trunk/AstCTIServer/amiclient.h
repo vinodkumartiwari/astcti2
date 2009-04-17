@@ -50,6 +50,9 @@
 
 
 #include "main.h"
+#include "qastctiservice.h"
+#include "qastctiservices.h"
+#include "qastcticall.h"
 
 enum AMIClientStatus {
     AMI_STATUS_NOT_DEFINED,
@@ -61,6 +64,16 @@ enum AMIClientStatus {
     AMI_STATUS_ENDLIST
 };
 
+enum AMIEvent {
+    AMI_EVENT_UNDEFINED,
+    AMI_EVENT_SHUTDOWN,
+    AMI_EVENT_NEW_CHANNEL,
+    AMI_EVENT_HANGUP,
+    AMI_EVENT_NEW_EXTEN,
+    AMI_EVENT_VAR_SET,
+    AMI_EVENT_JOIN
+};
+
 class AMIClient : public  QThread
 {
     Q_OBJECT
@@ -70,36 +83,39 @@ public:
     ~AMIClient();
     void run();
 public slots:
-    void                    send_data_to_asterisk(const QString& data);
-    void                    stop_ami_thread();
-    void                    stop_ami_thread(bool emit_stopped_signal);
+    void                            send_data_to_asterisk(const QString& data);
+    void                            stop_ami_thread();
+    void                            stop_ami_thread(bool emit_stopped_signal);
 
 signals:
-    void                    error(int socketError, const QString& message);
-    void                    receive_data_from_asterisk(const QString& data);
-    void                    thread_stopped();
-    void                    ami_client_noretries();
+    void                            error(int socketError, const QString& message);
+    void                            receive_data_from_asterisk(const QString& data);
+    void                            thread_stopped();
+    void                            ami_client_noretries();
+    // TODO: complete the signal declaration
+    void                            cti_event(const AMIEvent& eventid, QAstCTICall* the_call);
 
 private:
-    QAstCTIConfiguration*   config;
-    int                     socket_descriptor;
-    bool                    quit;
-    bool                    emit_stopped_signal_on_quit;
-    QString                 data_buffer;
-    AMIClientStatus         ami_client_status;
-    int                     retries;
-
+    QAstCTIConfiguration*           config;
+    int                             socket_descriptor;
+    bool                            quit;
+    bool                            emit_stopped_signal_on_quit;
+    QString                         data_buffer;
+    AMIClientStatus                 ami_client_status;
+    int                             retries;
+    QHash<QString, QAstCTICall*>*   active_calls;
 private slots:
-    void                    build_the_socket();
-    void                    parse_data_received_from_asterisk(const QString& message);
-    void                    restart_ami_thread();
-    void                    start_ami_thread();
-    void                    perform_login();
-    void                    execute_actions();
-    void                    log_socket_error(int socketError, const QString& message);
-
+    void                            build_the_socket();
+    void                            parse_data_received_from_asterisk(const QString& message);
+    void                            restart_ami_thread();
+    void                            start_ami_thread();
+    void                            perform_login();
+    void                            execute_actions();
+    void                            log_socket_error(int socketError, const QString& message);
+    QHash<QString, QString>*        hash_from_message(QString data);
+    void                            evaluate_event(QHash<QString, QString>* event);
 protected:
-    QTcpSocket              *local_socket;
+    QTcpSocket*                     local_socket;
 };
 
 #endif // AMICLIENT_H
