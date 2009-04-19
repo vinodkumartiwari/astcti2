@@ -43,6 +43,12 @@ QAstCTICall::QAstCTICall(QObject* parent)
         callerid_num(""), callerid_name(""),
         uniqueid(""), context(""), state("")
 {
+    this->variables = new QHash <QString,QString>;
+}
+
+QAstCTICall::~QAstCTICall()
+{
+    if (this->variables != 0) delete(this->variables);
 
 }
 
@@ -53,6 +59,7 @@ QString& QAstCTICall::get_channel()
 void QAstCTICall::set_channel(QString channel)
 {
     this->channel = channel;
+    this->parse_channel();
 }
 QString& QAstCTICall::get_parsed_channel()
 {
@@ -62,6 +69,25 @@ void QAstCTICall::set_parsed_channel(QString parsedchannel)
 {
     this->parsed_channel = parsedchannel;
 }
+
+QString& QAstCTICall::get_dest_channel()
+{
+    return this->dest_channel;
+}
+void QAstCTICall::set_dest_channel(QString channel)
+{
+    this->dest_channel = channel;
+    this->parse_dest_channel();
+}
+QString& QAstCTICall::get_parsed_dest_channel()
+{
+    return this->parsed_dest_channel;
+}
+void QAstCTICall::set_parsed_dest_channel(QString parsedchannel)
+{
+    this->parsed_dest_channel = parsedchannel;
+}
+
 QString& QAstCTICall::get_callerid_num()
 {
     return this->callerid_num;
@@ -86,6 +112,16 @@ void QAstCTICall::set_uniqueid(QString uniqueid)
 {
     this->uniqueid = uniqueid;
 }
+
+QString& QAstCTICall::get_dest_uniqueid()
+{
+    return this->dest_uniqueid;
+}
+void QAstCTICall::set_dest_uniqueid(QString uniqueid)
+{
+    this->dest_uniqueid = uniqueid;
+}
+
 QString& QAstCTICall::get_context()
 {
     return this->context;
@@ -101,4 +137,145 @@ QString& QAstCTICall::get_state()
 void QAstCTICall::set_state(QString state)
 {
     this->state = state;
+}
+
+void QAstCTICall::add_variable(QString key, QString value)
+{
+    // We need only one variable with the same name..
+    if (this->variables->contains(key))
+    {
+        this->variables->remove(key);
+    }
+    this->variables->insert(key, value);
+}
+
+void QAstCTICall::parse_channel()
+{
+    // Channels are usually built like SIP/200-0899e2c8
+    // So we need to extract channel by split the string
+    if (this->channel.contains('-'))
+    {
+        QStringList parts = this->channel.split('-');
+        if (parts.count() == 2)
+        {
+            QString parsed_chan = parts.at(0);
+            this->set_parsed_channel(parsed_chan);
+        }
+    }
+}
+
+void QAstCTICall::parse_dest_channel()
+{
+    // Channels are usually built like SIP/200-0899e2c8
+    // So we need to extract channel by split the string
+    if (this->dest_channel.contains('-'))
+    {
+        QStringList parts = this->dest_channel.split('-');
+        if (parts.count() == 2)
+        {
+            QString parsed_chan = parts.at(0);
+            this->set_parsed_dest_channel(parsed_chan);
+        }
+    }
+}
+
+QString QAstCTICall::to_xml()
+{
+    QDomDocument doc("AstCTICallXML");
+    QDomElement root = doc.createElement("call");
+    root.attribute("uniqueid", this->uniqueid);
+    doc.appendChild( root );
+
+    // DestUniqueId
+    if (this->dest_uniqueid.length() > 0)
+    {
+        QDomElement tag = doc.createElement("DestUniqueId");
+        root.appendChild(tag);
+        QDomText t = doc.createTextNode(this->dest_uniqueid);
+        tag.appendChild(t);
+    }
+
+    // Context
+    if (this->context.length() > 0)
+    {
+        QDomElement tag = doc.createElement("Context");
+        root.appendChild(tag);
+        QDomText t = doc.createTextNode(this->context);
+        tag.appendChild(t);
+    }
+
+    // Channel
+    if (this->channel.length() > 0)
+    {
+        QDomElement tag = doc.createElement("Channel");
+        root.appendChild(tag);
+        QDomText t = doc.createTextNode(this->channel);
+        tag.appendChild(t);
+    }
+
+    // ParsedChannel
+    if (this->parsed_channel.length() > 0)
+    {
+        QDomElement tag = doc.createElement("ParsedChannel");
+        root.appendChild(tag);
+        QDomText t = doc.createTextNode(this->parsed_channel);
+        tag.appendChild(t);
+    }
+
+    // DestChannel
+    if (this->dest_channel.length() > 0)
+    {
+        QDomElement tag = doc.createElement("DestChannel");
+        root.appendChild(tag);
+        QDomText t = doc.createTextNode(this->dest_channel);
+        tag.appendChild(t);
+    }
+
+    // ParsedChannelDest
+    if (this->parsed_dest_channel.length() > 0)
+    {
+        QDomElement tag = doc.createElement("ParsedDestChannel");
+        root.appendChild(tag);
+        QDomText t = doc.createTextNode(this->parsed_dest_channel);
+        tag.appendChild(t);
+    }
+
+    // Callerid Name
+    if (this->callerid_name.length() > 0)
+    {
+        QDomElement tag = doc.createElement("CallerIdName");
+        root.appendChild(tag);
+        QDomText t = doc.createTextNode(this->callerid_name);
+        tag.appendChild(t);
+    }
+
+    // Callerid Num
+    if (this->callerid_name.length() > 0)
+    {
+        QDomElement tag = doc.createElement("CallerIdNum");
+        root.appendChild(tag);
+        QDomText t = doc.createTextNode(this->callerid_num);
+        tag.appendChild(t);
+    }
+
+    if (this->variables->count() > 0)
+    {
+        QString var_count = QString(this->variables->count());
+        QDomElement xmlvars = doc.createElement("Variables");
+        xmlvars.attribute("count", var_count);
+        root.appendChild(xmlvars);
+
+        QHash<QString, QString>::const_iterator var_list = this->variables->constBegin();
+        while (var_list != this->variables->constEnd())
+        {
+            QDomElement tag = doc.createElement(var_list.key());
+            xmlvars.appendChild(tag);
+            QDomText t = doc.createTextNode(var_list.value() );
+            tag.appendChild(t);
+            ++var_list;
+        }
+
+    }
+    return doc.toString();
+
 }

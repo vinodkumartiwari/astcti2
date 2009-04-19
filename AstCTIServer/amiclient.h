@@ -47,7 +47,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QHash>
-
+#include <QStringList>
 
 #include "main.h"
 #include "qastctiservice.h"
@@ -71,7 +71,8 @@ enum AMIEvent {
     AMI_EVENT_HANGUP,
     AMI_EVENT_NEW_EXTEN,
     AMI_EVENT_VAR_SET,
-    AMI_EVENT_JOIN
+    AMI_EVENT_JOIN,
+    AMI_EVENT_BRIDGE
 };
 
 class AMIClient : public  QThread

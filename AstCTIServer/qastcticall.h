@@ -40,6 +40,9 @@
 #define QASTCTICALL_H
 
 #include <QObject>
+#include <QStringList>
+#include <QDomDocument>
+#include <QHash>
 
 class QAstCTICall : public QObject
 {
@@ -48,31 +51,51 @@ class QAstCTICall : public QObject
 
 public:
     QAstCTICall(QObject* parent);
+    ~QAstCTICall();
 
     QString&    get_channel();
     void        set_channel(QString channel);
     QString&    get_parsed_channel();
     void        set_parsed_channel(QString parsedchannel);
+
+    QString&    get_dest_channel();
+    void        set_dest_channel(QString channel);
+    QString&    get_parsed_dest_channel();
+    void        set_parsed_dest_channel(QString parsedchannel);
+
     QString&    get_callerid_num();
     void        set_callerid_num(QString calleridnum);
     QString&    get_callerid_name();
     void        set_callerid_name(QString calleridname);
     QString&    get_uniqueid();
     void        set_uniqueid(QString uniqueid);
+
+    QString&    get_dest_uniqueid();
+    void        set_dest_uniqueid(QString uniqueid);
+
     QString&    get_context();
     void        set_context(QString context);
     QString&    get_state();
     void        set_state(QString state);
-    
+    void        add_variable(QString key, QString value);
+
+    QString     to_xml();
     
 private:
-    QString channel;
-    QString parsed_channel;
-    QString callerid_num;
-    QString callerid_name;
-    QString uniqueid;
-    QString context;
-    QString state;
+    QString     channel;
+    QString     parsed_channel;
+    QString     dest_channel;
+    QString     parsed_dest_channel;
+    QString     callerid_num;
+    QString     callerid_name;
+    QString     uniqueid;
+    QString     dest_uniqueid;
+    QString     context;
+    QString     state;
+
+    QHash<QString, QString>* variables;
+    void        parse_channel();
+    void        parse_dest_channel();
     
 };
 

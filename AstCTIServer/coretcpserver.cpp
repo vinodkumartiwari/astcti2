@@ -188,9 +188,41 @@ void CoreTcpServer::stop_the_server(bool close_the_socket)
 void CoreTcpServer::receive_cti_event(const AMIEvent& eventid, QAstCTICall* the_call)
 {
     QString log_msg("");
+
     if (the_call != 0)
     {
+        QString call_channel = the_call->get_parsed_dest_channel();
+
         log_msg = "for call" + the_call->get_uniqueid();
+        if (call_channel.length() > 0)
+        {
+            QString identifier = QString("exten-%1").arg(call_channel);
+
+            if (eventid==AMI_EVENT_BRIDGE)
+            {
+                mutexClientList.lock();
+                if (clients->contains(identifier))
+                {
+
+                    ClientManager* client = clients->value(identifier);
+                    if (client != 0)
+                        client->send_data_to_client(the_call->to_xml());
+                    else
+                        qDebug() << ">> receive_cti_event << Client is null";
+                }
+                else
+                {
+                    qDebug() << ">> receive_cti_event << Identifier" << identifier << "not found in client list";
+                }
+                mutexClientList.unlock();
+            }
+        }
+        else
+        {
+            qDebug() << ">> receive_cti_event << Call Channel is empty";
+        }
+
+
     }
 
     qDebug() << "Received CTI Event" << eventid << log_msg;

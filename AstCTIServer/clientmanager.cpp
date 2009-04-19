@@ -415,6 +415,10 @@ void ClientManager::send_data_to_client(const QString& data)
     else
         this->local_socket->write(block);
 
+    // Write the internal buffer to the socket without blocking
+    // We need QAbstractSocket to start sending buffered data
+    // immediately
+    this->local_socket->flush();
 }
 
 

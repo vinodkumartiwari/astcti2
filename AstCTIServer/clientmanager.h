@@ -83,6 +83,9 @@ public:
     void run();
     bool is_in_pause();
 
+public slots:
+    void                    send_data_to_client(const QString& data);
+
 signals:
     void add_client(const QString& exten, ClientManager* cl);
     void change_client(const QString& oldexten, const QString& newexten);
@@ -100,8 +103,7 @@ private:
     QAstCTICommand          parse_command(const QString& command);
     QAstCTIOperator*        active_operator;
     bool                    in_pause;
-private slots:
-    void                    send_data_to_client(const QString& data);
+
 
 protected:
     QTcpSocket*             local_socket;
