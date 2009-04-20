@@ -54,7 +54,7 @@ ClientManager::ClientManager(QAstCTIConfiguration* config,
     // Lets copy our configuration struct
     this->config = config;
     this->active_operator = 0;
-
+    this->client_operating_system = "";
     connect(parent, SIGNAL(send_data_from_server(QString)), this, SLOT(send_data_to_client(QString)));
 
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
@@ -101,7 +101,6 @@ void ClientManager::run()
     const QString separator = "\n";
 
     QString cti_username;
-    QString os_type;
     int retries = 3;
     bool authenticated = false;
 
@@ -290,17 +289,19 @@ void ClientManager::run()
                         case CMD_OSTYPE:
                             if (!authenticated)
                             {
+                                this->client_operating_system = "";
                                 this->send_data_to_client("101 KO Not authenticated");
                                 break;
                             }
                             if (cmd.parameters.count() < 1)
                             {
-                                this->send_data_to_client("101 KO No mac given");
+                                this->client_operating_system = "";
+                                this->send_data_to_client("101 KO Operating system is not set");
                                 break;
                             }
                             else
                             {
-                                os_type = cmd.parameters.at(0).toLower();
+                                this->client_operating_system = cmd.parameters.at(0).toUpper();
                                 this->send_data_to_client("100 OK Operating System Is Set");
                             }
                             break;
@@ -372,6 +373,16 @@ void ClientManager::run()
     // TODO : emit only if user done a successfull authentication
     emit this->remove_client(this->local_identifier);
 
+}
+
+QAstCTIOperator* ClientManager::get_active_operator()
+{
+    return this->active_operator;
+}
+
+QString ClientManager::get_client_operating_system()
+{
+    return this->client_operating_system;
 }
 
 bool ClientManager::is_in_pause()

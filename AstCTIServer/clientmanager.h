@@ -80,8 +80,10 @@ class ClientManager : public  QThread
 public:
     ClientManager(QAstCTIConfiguration* config, int socketDescriptor, QObject* parent);
     ~ClientManager();
-    void run();
-    bool is_in_pause();
+    void                    run();
+    bool                    is_in_pause();
+    QAstCTIOperator*        get_active_operator();
+    QString                 get_client_operating_system();
 
 public slots:
     void                    send_data_to_client(const QString& data);
@@ -102,6 +104,7 @@ private:
     void                    init_parser_commands();
     QAstCTICommand          parse_command(const QString& command);
     QAstCTIOperator*        active_operator;
+    QString                 client_operating_system;
     bool                    in_pause;
 
 

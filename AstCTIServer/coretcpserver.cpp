@@ -206,7 +206,12 @@ void CoreTcpServer::receive_cti_event(const AMIEvent& eventid, QAstCTICall* the_
 
                     ClientManager* client = clients->value(identifier);
                     if (client != 0)
+                    {
+                        // Here we add informatsion about CTI application to start
+                        the_call->set_operating_system( client->get_client_operating_system() );
+
                         client->send_data_to_client(the_call->to_xml());
+                    }
                     else
                         qDebug() << ">> receive_cti_event << Client is null";
                 }
