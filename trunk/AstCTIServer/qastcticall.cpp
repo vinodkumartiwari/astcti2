@@ -44,11 +44,13 @@ QAstCTICall::QAstCTICall(QObject* parent)
         uniqueid(""), context(""), state("")
 {
     this->variables = new QHash <QString,QString>;
+    this->application = 0;
 }
 
 QAstCTICall::~QAstCTICall()
 {
     if (this->variables != 0) delete(this->variables);
+    if (this->application != 0) delete (this->application);
 
 }
 
@@ -179,6 +181,27 @@ void QAstCTICall::parse_dest_channel()
     }
 }
 
+void QAstCTICall::set_applications(QAstCTIServicesApplications* applications)
+{
+    this->applications = applications;
+}
+
+void QAstCTICall::set_operating_system(QString operating_system)
+{
+    this->client_operating_system = operating_system;
+    this->set_application();
+
+}
+
+void QAstCTICall::set_application()
+{
+    if (this->client_operating_system.length() > 0)
+    {
+        this->application = this->applications->operator []( this->client_operating_system );
+    }
+
+}
+
 QString QAstCTICall::to_xml()
 {
     QDomDocument doc("AstCTICallXML");
@@ -276,6 +299,23 @@ QString QAstCTICall::to_xml()
         }
 
     }
+
+    if (this->application != 0)
+    {
+        QDomElement xmlapplication = doc.createElement("Application");
+        root.appendChild(xmlapplication);
+
+        QDomElement xmlapppath = doc.createElement("Path");
+        xmlapplication.appendChild(xmlapppath);
+        QDomText xmlapppathval = doc.createTextNode(this->application->get_application_path());
+        xmlapppath.appendChild(xmlapppathval);
+
+        QDomElement xmlappparams = doc.createElement("Parameters");
+        xmlapplication.appendChild(xmlappparams);
+        QDomText xmlapppathparmval = doc.createTextNode(this->application->get_parameters());
+        xmlappparams.appendChild(xmlapppathparmval);
+    }
+
     return doc.toString();
 
 }

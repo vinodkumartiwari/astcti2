@@ -419,12 +419,16 @@ void AMIClient::evaluate_event(QHash<QString, QString>* event)
                     QAstCTIService* service = services->operator [](context);
                     if (service != 0)
                     {
-                        // TODO: here we should load cti application for the context
+                        // Here we add reference to service applications.
+                        // Before the call is passed to the clientmanager
+                        // will be selected the right application using client's
+                        // operating system.
+                        new_call->set_applications(service->get_applications());
 
-
+                        // Let's say where the call is directed. The destination
+                        // will let us know the client to signal.
                         new_call->set_dest_uniqueid(event->value("Uniqueid2"));
                         new_call->set_dest_channel(event->value("Channel2"));
-
 
                         emit this->cti_event(AMI_EVENT_BRIDGE,new_call);
                     }
