@@ -275,7 +275,7 @@ void ClientManager::run()
                                             this->active_operator = the_operator;
                                             authenticated = true;
                                             this->send_data_to_client("102 OK Authentication successful");
-
+                                            emit this->cti_login();
                                         }
                                     }
                                 }
@@ -339,6 +339,19 @@ void ClientManager::run()
                             }
                             else
                             {
+                                // TODO: Add better support to pause event
+                                // we need to connect some signals from coretcpserver
+                                // to get back a response for a pause request.
+                                if (this->in_pause)
+                                {
+                                    emit this->cti_pause_out();
+                                    this->in_pause = false;
+                                }
+                                else
+                                {
+                                    emit this->cti_pause_in();
+                                    this->in_pause = true;
+                                }
                                 this->send_data_to_client("100 OK");
 
                             }
@@ -368,6 +381,9 @@ void ClientManager::run()
         tcpSocket.close();
 
     if (config->qDebug) qDebug() << "Connection from" << remote_addr.toString() << ":" << remote_port << "closed";
+
+    // We should do a logoff right now..
+    emit this->cti_logoff();
 
     // Emit a signal when disconnection is in progress
     // TODO : emit only if user done a successfull authentication

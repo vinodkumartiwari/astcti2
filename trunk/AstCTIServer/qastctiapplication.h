@@ -53,6 +53,7 @@ public:
     QString get_application_os_type();
     QString get_application_path();
     QString get_parameters();
+    void set_parameters(QString new_parameters);
 
 public slots:
     bool load();

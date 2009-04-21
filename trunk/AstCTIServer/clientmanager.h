@@ -95,6 +95,12 @@ signals:
     void notify_server(const QString& data);
     void stop_request(const QString& exten, ClientManager* cl);
 
+    // CTI Status change request
+    void cti_pause_in();
+    void cti_pause_out();
+    void cti_login();
+    void cti_logoff();
+
 private:
     QAstCTIConfiguration*   config;
     int                     socketDescriptor;
