@@ -198,15 +198,41 @@ void QAstCTICall::set_application()
     if (this->client_operating_system.length() > 0)
     {
         this->application = this->applications->operator []( this->client_operating_system );
+        // here we can parse application parameters
+        this->parse_application_parameters();
     }
 
+}
+
+void QAstCTICall::parse_application_parameters()
+{
+    if (this->application != 0)
+    {
+        if (this->variables->count() > 0)
+        {
+            QString parameters = this->application->get_parameters();
+
+            QHash<QString, QString>::const_iterator var_list = this->variables->constBegin();
+            while (var_list != this->variables->constEnd())
+            {
+                QString the_key = QString("{%1}").arg( ((QString)var_list.key()).toUpper());
+                parameters = parameters.replace(the_key, var_list.value());
+
+                ++var_list;
+            }
+            this->application->set_parameters(parameters);
+
+        }
+
+
+    }
 }
 
 QString QAstCTICall::to_xml()
 {
     QDomDocument doc("AstCTICallXML");
     QDomElement root = doc.createElement("call");
-    root.attribute("uniqueid", this->uniqueid);
+    root.setAttribute("uniqueid", this->uniqueid);
     doc.appendChild( root );
 
     // DestUniqueId

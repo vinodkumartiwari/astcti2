@@ -91,6 +91,29 @@ void CoreTcpServer::incomingConnection(int socketDescriptor)
     connect(thread, SIGNAL(remove_client(const QString)), this, SLOT(remove_client(const QString)));
     connect(thread, SIGNAL(notify_server(const QString)), this, SLOT(notify_client(const QString)));
     connect(thread, SIGNAL(stop_request(QString,ClientManager*)), this, SLOT(stop_the_server()));
+
+    /*
+        Action: QueueAdd    -> cti_login();
+        Queue: astcti-queue
+        Interface: SIP/201
+        Penalty: 1
+        Paused: false
+
+        Action: QueueRemove -> cti_logoff();
+        Queue: astcti-queue
+        Interface: SIP/201
+
+
+        Action: QueuePause -> cti_pause_on();
+        Interface: SIP/201
+        Paused: true
+
+
+        Action: QueuePause -> cti_pause_off();
+        Interface: SIP/201
+        Paused: false
+    */
+
     thread->start();
 }
 

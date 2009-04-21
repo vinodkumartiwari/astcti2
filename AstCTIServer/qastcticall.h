@@ -108,6 +108,7 @@ private:
     void                            parse_channel();
     void                            parse_dest_channel();
     void                            set_application();
+    void                            parse_application_parameters();
 };
 
 #endif // QASTCTICALL_H

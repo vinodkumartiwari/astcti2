@@ -97,3 +97,8 @@ QString QAstCTIApplication::get_parameters()
 {
     return this->PARAMETERS;
 }
+
+void QAstCTIApplication::set_parameters(QString new_parameters)
+{
+    this->PARAMETERS = new_parameters;
+}
