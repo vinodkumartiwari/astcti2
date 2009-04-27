@@ -42,6 +42,7 @@
 
 
 #include <QtSql>
+#include <QVector>
 
 /*!
     Our CoreTcpServer derive from QTcpServer
@@ -63,13 +64,14 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
     connect(this->ct, SIGNAL(cti_event(const AMIEvent, QAstCTICall*)), this, SLOT(receive_cti_event(const AMIEvent, QAstCTICall*)));
     this->ct->start();
 
-    //e3928a3bc4be46516aa33a79bbdfdb08
+    //5f4dcc3b5aa765d61d8327deb882cf99
     /* CODE TESTING END*/
 }
 
 
 CoreTcpServer::~CoreTcpServer()
 {
+
     if (this->config->qDebug) qDebug() << "In CoreTcpServer::~CoreTcpServer()";
     if (this->clients != 0) delete(this->clients);
     if (this->ct != 0) delete(this->ct);
@@ -92,6 +94,11 @@ void CoreTcpServer::incomingConnection(int socketDescriptor)
     connect(thread, SIGNAL(notify_server(const QString)), this, SLOT(notify_client(const QString)));
     connect(thread, SIGNAL(stop_request(QString,ClientManager*)), this, SLOT(stop_the_server()));
 
+    // Connect signals to inform us about pause and login / logout
+    connect(thread, SIGNAL(cti_login(ClientManager*)), this, SLOT(cti_client_login(ClientManager*)));
+    connect(thread, SIGNAL(cti_logoff(ClientManager*)), this, SLOT(cti_client_logoff(ClientManager*)));
+    connect(thread, SIGNAL(cti_pause_in(ClientManager*)) , this, SLOT(cti_client_pause_in(ClientManager*)));
+    connect(thread, SIGNAL(cti_pause_out(ClientManager*)) , this, SLOT(cti_client_pause_out(ClientManager*)));
     /*
         Action: QueueAdd    -> cti_login();
         Queue: astcti-queue
@@ -252,6 +259,102 @@ void CoreTcpServer::receive_cti_event(const AMIEvent& eventid, QAstCTICall* the_
 
 
     }
-
     qDebug() << "Received CTI Event" << eventid << log_msg;
+}
+
+void CoreTcpServer::cti_client_login(ClientManager* cl)
+{
+    QAstCTIOperator* the_operator = cl->get_active_operator();
+    if (the_operator == 0) return;
+    QAstCTISeat* the_seat = the_operator->get_seat();
+    if (the_seat == 0) return;
+    QHash<QString,int>*  services_list = the_operator->get_list_of_services();
+    if (services_list == 0) return;
+
+    QHash<QString, int>::const_iterator i = services_list->constBegin();
+    while (i != services_list->constEnd()) {
+        QString service_name = i.key();
+
+        // Let's give the pointer a restricted range of life
+        {
+            // Here we get the service object from CtiServerApplication instance
+            QAstCTIService* the_service = 0;
+            the_service = CtiServerApplication::instance()->get_services()->operator [](service_name);
+
+            // Check if we got an existent service.. we should even!
+            if (the_service != 0)
+            {
+                QString begin_in_pause = (the_operator->get_begin_in_pause() ? "true" : "false");
+                // Get the right interface for the operator fromit's seat
+                QString interface = the_seat->get_seat_exten();
+                int penalty = i.value();
+                // We can send a login if AMIClient is connected
+                // and the service is a queue where we can login
+                if (this->ct->is_connected() & (the_service->get_service_is_queue()) )
+                {
+                    QString cmd = QString("Action: QueueAdd\r\nQueue: %1\r\nInterface: %2\r\nPenalty: %3\r\nPaused: %4\r\n\r\n")
+                                  .arg(the_service->get_service_queue_name() ).arg(interface).arg(penalty).arg(begin_in_pause);
+
+                    this->ct->send_command_to_asterisk(cmd, interface);
+
+                }
+            }
+        }
+        ++i;
+    }
+ }
+
+
+
+
+void CoreTcpServer::cti_client_logoff(ClientManager* cl)
+{
+    QAstCTIOperator* the_operator = cl->get_active_operator();
+    if (the_operator == 0) return;
+    QAstCTISeat* the_seat = the_operator->get_seat();
+    if (the_seat == 0) return;
+    QHash<QString,int>*  services_list = the_operator->get_list_of_services();
+    if (services_list == 0) return;
+
+    QHash<QString, int>::const_iterator i = services_list->constBegin();
+    while (i != services_list->constEnd()) {
+        QString service_name = i.key();
+
+        // Let's give the pointer a restricted range of life
+        {
+            // Here we get the service object from CtiServerApplication instance
+            QAstCTIService* the_service = 0;
+            the_service = CtiServerApplication::instance()->get_services()->operator [](service_name);
+
+            // Check if we got an existent service.. we should even!
+            if (the_service != 0)
+            {
+                QString begin_in_pause = (the_operator->get_begin_in_pause() ? "true" : "false");
+                // Get the right interface for the operator fromit's seat
+                QString interface = the_seat->get_seat_exten();
+
+                // We can send a login if AMIClient is connected
+                // and the service is a queue where we can login
+                if (this->ct->is_connected() & (the_service->get_service_is_queue()) )
+                {
+                    QString cmd = QString("Action: QueueRemove\r\nQueue: %1\r\nInterface: %2\r\n\r\n")
+                                  .arg(the_service->get_service_queue_name() ).arg(interface);
+
+                    this->ct->send_command_to_asterisk(cmd, interface);
+
+                }
+            }
+        }
+        ++i;
+    }
+}
+
+void CoreTcpServer::cti_client_pause_in(ClientManager* cl)
+{
+    Q_UNUSED(cl);
+}
+
+void CoreTcpServer::cti_client_pause_out(ClientManager* cl)
+{
+    Q_UNUSED(cl);
 }

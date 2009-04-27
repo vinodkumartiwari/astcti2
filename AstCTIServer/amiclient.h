@@ -47,12 +47,20 @@
 #include <QDebug>
 #include <QSettings>
 #include <QHash>
+#include <QStack>
+
 #include <QStringList>
 
 #include "main.h"
 #include "qastctiservice.h"
 #include "qastctiservices.h"
 #include "qastcticall.h"
+
+struct AsteriskCommand
+{
+    QString command;
+    QString channel;
+};
 
 enum AMIClientStatus {
     AMI_STATUS_NOT_DEFINED,
@@ -82,9 +90,13 @@ class AMIClient : public  QThread
 public:
     AMIClient(QAstCTIConfiguration* config, QObject* parent);
     ~AMIClient();
-    void run();
+    void    run();
+    bool    is_connected();
+
 public slots:
     void                            send_data_to_asterisk(const QString& data);
+    void                            send_command_to_asterisk(const QString& data, const QString& channel);
+
     void                            stop_ami_thread();
     void                            stop_ami_thread(bool emit_stopped_signal);
 
@@ -95,6 +107,7 @@ signals:
     void                            ami_client_noretries();
     // TODO: complete the signal declaration
     void                            cti_event(const AMIEvent& eventid, QAstCTICall* the_call);
+    void                            cti_response(const QString& response, const QString& message, const QString& channel);
 
 private:
     QAstCTIConfiguration*           config;
@@ -105,6 +118,9 @@ private:
     AMIClientStatus                 ami_client_status;
     int                             retries;
     QHash<QString, QAstCTICall*>*   active_calls;
+    QStack<AsteriskCommand*>*       commands_stack;
+
+
 private slots:
     void                            build_the_socket();
     void                            parse_data_received_from_asterisk(const QString& message);
@@ -115,6 +131,8 @@ private slots:
     void                            log_socket_error(int socketError, const QString& message);
     QHash<QString, QString>*        hash_from_message(QString data);
     void                            evaluate_event(QHash<QString, QString>* event);
+    void                            evaluate_response(QHash<QString, QString>* response);
+
 protected:
     QTcpSocket*                     local_socket;
 };

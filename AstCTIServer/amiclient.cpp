@@ -46,6 +46,7 @@ AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
 {
     this->config = config;
     this->active_calls  = new QHash<QString, QAstCTICall*>;
+    this->commands_stack = new QStack<AsteriskCommand*>;
     this->quit = false;
     this->local_socket = 0;
     this->ami_client_status = AMI_STATUS_NOT_DEFINED;
@@ -56,6 +57,7 @@ AMIClient::~AMIClient()
     if (config->qDebug) qDebug() << "In AMIClient::~AMIClient()";
     delete(this->local_socket);
     delete(this->active_calls);
+    delete(this->commands_stack);
 }
 
 void AMIClient::start_ami_thread()
@@ -152,6 +154,11 @@ void AMIClient::run()
     }
 }
 
+bool AMIClient::is_connected()
+{
+    return ( this->local_socket->state() == QAbstractSocket::ConnectedState);
+}
+
 void AMIClient::stop_ami_thread()
 {
     this->stop_ami_thread(true);
@@ -241,6 +248,10 @@ void AMIClient::execute_actions()
                         if (evt->contains("Event"))
                         {
                             this->evaluate_event(evt);
+                        }
+                        else if (evt->contains("Response"))
+                        {
+                            this->evaluate_response(evt);
                         }
                     }
                 }
@@ -439,6 +450,28 @@ void AMIClient::evaluate_event(QHash<QString, QString>* event)
     delete(event);
 }
 
+void AMIClient::evaluate_response(QHash<QString, QString>* response)
+{
+    QString response_str = response->value("Response");
+    QString response_msg = response->value("Message");
+
+    if (this->commands_stack->count() > 0)
+    {
+        AsteriskCommand* cmd = this->commands_stack->pop();
+        if (cmd != 0)
+        {
+            QString channel = cmd->channel;
+            qDebug() << "Evaluated response " << response_str << ". For channel:" << channel << ".Cause:"<< response_msg;
+            delete(cmd);
+            emit this->cti_response(response_str, response_msg, channel);
+
+        }
+    }
+
+
+
+}
+
 void AMIClient::send_data_to_asterisk(const QString& data)
 {
     if (config->qDebug) qDebug() << "In AMIClient::send_data_to_asterisk(" << data << ")";
@@ -455,4 +488,12 @@ void AMIClient::send_data_to_asterisk(const QString& data)
     this->local_socket->flush();
 }
 
+void AMIClient::send_command_to_asterisk(const QString& data, const QString& channel)
+{
+    AsteriskCommand* cmd = new AsteriskCommand();
+    cmd->command = data;
+    cmd->channel = channel;
+    this->commands_stack->push(cmd);
+    this->send_data_to_asterisk(data);
+}
 

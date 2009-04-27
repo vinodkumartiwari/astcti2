@@ -44,16 +44,19 @@
 QAstCTIOperator::QAstCTIOperator(const int &id, QObject* parent)
         : QObject(parent), ID_OPERATOR(id), FULL_NAME(""), USER_NAME(""),
         PASS_WORD(""), LAST_SEAT(0), BEGIN_IN_PAUSE(false),
-        ENABLED(false), lastSeat(0)
+        ENABLED(false), lastSeat(0), list_of_services(0)
 {
     // Let's connect our signals
     connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_seat(const bool&)));
+    connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_list_of_services()));
     connect(this, SIGNAL(update_complete(const bool&)), this, SLOT(load_seat(const bool&)));
 }
 
 QAstCTIOperator::~QAstCTIOperator()
 {
     qDebug() << "In QAstCTIOperator::~QAstCTIOperator()";
+    if (this->lastSeat != 0) delete(this->lastSeat);
+    if (this->list_of_services != 0) delete (this->list_of_services);
 }
 
 
@@ -93,6 +96,15 @@ void QAstCTIOperator::load_seat(const bool &bMayLoad)
         {
             qDebug() << "load_seat complete for operator" << this->USER_NAME;
         }
+    }
+}
+
+void QAstCTIOperator::load_list_of_services()
+{
+    if (this->ID_OPERATOR > 0)
+    {
+        this->list_of_services = new QAstCTIOperatorServices(this->ID_OPERATOR, this);
+        qDebug() << "load_list_of_services complete for operator" << this->USER_NAME;
     }
 }
 
@@ -161,7 +173,6 @@ QAstCTISeat* QAstCTIOperator::get_seat()
     return this->lastSeat;
 }
 
-
 void QAstCTIOperator::set_last_seat(const int &newSeat)
 {
     this->LAST_SEAT = newSeat;
@@ -177,3 +188,7 @@ bool QAstCTIOperator::get_enabled()
     return this->ENABLED;
 }
 
+QHash<QString,int>* QAstCTIOperator::get_list_of_services()
+{
+    return this->list_of_services->get_services_list();
+}

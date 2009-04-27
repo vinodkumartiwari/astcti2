@@ -36,62 +36,64 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTIOPERATOR_H
-#define QASTCTIOPERATOR_H
+#include <QtSql>
+#include <QDebug>
 
-#include <QObject>
-#include <QCryptographicHash>
-#include <QHash>
-
-#include "qastctiseat.h"
 #include "qastctioperatorservices.h"
 
-class QAstCTIOperator : public QObject
+QAstCTIOperatorServices::QAstCTIOperatorServices(QObject* parent)
+        : QObject(parent), ID_OPERATOR(0)
 {
+}
+QAstCTIOperatorServices::QAstCTIOperatorServices(const int& idoperator, QObject* parent)
+        : QObject(parent), ID_OPERATOR(idoperator)
+{
+    this->fill_list();
+}
+QAstCTIOperatorServices::~QAstCTIOperatorServices()
+{
+    this->services_list.clear();
+}
 
-    Q_OBJECT
+void QAstCTIOperatorServices::set_id_operator(const int &idoperator)
+{
+    this->ID_OPERATOR = idoperator;
+    this->fill_list();
+}
 
-public:
-    QAstCTIOperator(const int& id, QObject* parent);
-    ~QAstCTIOperator();
+int QAstCTIOperatorServices::count()
+{
+    return this->services_list.count();
+}
 
-    int                 get_id_operator();
-    QString             get_full_name();
-    QString             get_user_name();
-    QString             get_pass_word();
-    int                 get_last_seat();
-    void                set_last_seat(const int& newSeat);
-    bool                get_begin_in_pause();
-    bool                get_enabled();
-    bool                check_password(const QString& password);
-    QAstCTISeat*        get_seat();
-    QHash<QString,int>* get_list_of_services();
-    static bool         check_password_match(const QString& password, const QString& check_password_match);
+QHash<QString,int>* QAstCTIOperatorServices::get_services_list()
+{
+    return &this->services_list;
+}
 
-public slots:
-    bool load();
-    bool save();
-    void load_seat(const bool& bMayLoad);
+void QAstCTIOperatorServices::fill_list()
+{
+    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlQuery query(db);
 
-signals:
-    void load_complete(const bool& result);
-    void update_complete(const bool& result);
+    QString sql = "SELECT services.SERVICE_NAME, services.SERVICE_IS_QUEUE iq, services.SERVICE_QUEUE_NAME q,";
+            sql +="services_operators.PENALTY FROM services_operators ";
+            sql +="JOIN services ON services_operators.ID_SERVICE=services.ID_SERVICE ";
+            sql +="WHERE iq=1 AND ID_OPERATOR=:id";
+    query.prepare(sql);
+    query.bindValue(":id", this->ID_OPERATOR);
+    query.exec();
 
-
-private:    
-    int ID_OPERATOR;
-    QString FULL_NAME;
-    QString USER_NAME;
-    QString PASS_WORD;
-    int LAST_SEAT;
-    bool BEGIN_IN_PAUSE;
-    bool ENABLED;
-
-    QAstCTISeat *lastSeat;
-    QAstCTIOperatorServices *list_of_services;
-
-private slots:
-    void load_list_of_services();
-};
-
-#endif // QASTCTIOPERATOR_H
+    this->services_list.clear();
+    while(query.next())
+    {
+        QString service_name = query.value(0).toString();
+        int penalty = query.value(1).toInt(0);
+        if (!this->services_list.contains(service_name))
+        {
+            this->services_list.insert(service_name, penalty);
+        }
+    }
+    query.finish();
+    query.clear();
+}

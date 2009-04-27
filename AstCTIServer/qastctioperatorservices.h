@@ -36,62 +36,33 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTIOPERATOR_H
-#define QASTCTIOPERATOR_H
+#ifndef QASTCTIOPERATORSERVICES_H
+#define QASTCTIOPERATORSERVICES_H
 
 #include <QObject>
-#include <QCryptographicHash>
 #include <QHash>
 
-#include "qastctiseat.h"
-#include "qastctioperatorservices.h"
-
-class QAstCTIOperator : public QObject
+class QAstCTIOperatorServices : public QObject
 {
-
     Q_OBJECT
 
 public:
-    QAstCTIOperator(const int& id, QObject* parent);
-    ~QAstCTIOperator();
+    QAstCTIOperatorServices(QObject* parent);
+    QAstCTIOperatorServices(const int& idoperator, QObject* parent);
+    ~QAstCTIOperatorServices();
 
-    int                 get_id_operator();
-    QString             get_full_name();
-    QString             get_user_name();
-    QString             get_pass_word();
-    int                 get_last_seat();
-    void                set_last_seat(const int& newSeat);
-    bool                get_begin_in_pause();
-    bool                get_enabled();
-    bool                check_password(const QString& password);
-    QAstCTISeat*        get_seat();
-    QHash<QString,int>* get_list_of_services();
-    static bool         check_password_match(const QString& password, const QString& check_password_match);
+    int     count();
+    void    set_id_operator(const int& idoperator);
+    QHash<QString, int>* get_services_list();
 
-public slots:
-    bool load();
-    bool save();
-    void load_seat(const bool& bMayLoad);
+private:
+    QHash<QString, int> services_list;
 
-signals:
-    void load_complete(const bool& result);
-    void update_complete(const bool& result);
+    void fill_list();
+    void clear();
 
 
-private:    
     int ID_OPERATOR;
-    QString FULL_NAME;
-    QString USER_NAME;
-    QString PASS_WORD;
-    int LAST_SEAT;
-    bool BEGIN_IN_PAUSE;
-    bool ENABLED;
-
-    QAstCTISeat *lastSeat;
-    QAstCTIOperatorServices *list_of_services;
-
-private slots:
-    void load_list_of_services();
 };
 
-#endif // QASTCTIOPERATOR_H
+#endif // QASTCTIOPERATORSERVICES_H
