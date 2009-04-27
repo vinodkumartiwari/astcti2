@@ -96,10 +96,10 @@ signals:
     void stop_request(const QString& exten, ClientManager* cl);
 
     // CTI Status change request
-    void cti_pause_in();
-    void cti_pause_out();
-    void cti_login();
-    void cti_logoff();
+    void cti_pause_in(ClientManager* cl);
+    void cti_pause_out(ClientManager* cl);
+    void cti_login(ClientManager* cl);
+    void cti_logoff(ClientManager* cl);
 
 private:
     QAstCTIConfiguration*   config;

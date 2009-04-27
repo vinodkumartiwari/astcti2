@@ -232,6 +232,9 @@ void ClientManager::run()
                                         this->local_identifier = new_identifier;
 
                                         this->send_data_to_client("100 OK");
+                                        // We can do a successful cti login only after the seat
+                                        // is known
+                                        emit this->cti_login(this);
                                     }
                                 }
                             }
@@ -275,7 +278,7 @@ void ClientManager::run()
                                             this->active_operator = the_operator;
                                             authenticated = true;
                                             this->send_data_to_client("102 OK Authentication successful");
-                                            emit this->cti_login();
+
                                         }
                                     }
                                 }
@@ -344,12 +347,12 @@ void ClientManager::run()
                                 // to get back a response for a pause request.
                                 if (this->in_pause)
                                 {
-                                    emit this->cti_pause_out();
+                                    emit this->cti_pause_out(this);
                                     this->in_pause = false;
                                 }
                                 else
                                 {
-                                    emit this->cti_pause_in();
+                                    emit this->cti_pause_in(this);
                                     this->in_pause = true;
                                 }
                                 this->send_data_to_client("100 OK");
@@ -383,7 +386,7 @@ void ClientManager::run()
     if (config->qDebug) qDebug() << "Connection from" << remote_addr.toString() << ":" << remote_port << "closed";
 
     // We should do a logoff right now..
-    emit this->cti_logoff();
+    emit this->cti_logoff(this);
 
     // Emit a signal when disconnection is in progress
     // TODO : emit only if user done a successfull authentication

@@ -61,7 +61,10 @@ public:
 signals:
     void                            send_data_from_server(const QString &data);
     void                            server_is_closing();
-
+    void                            ami_client_pause_in(ClientManager* cl);
+    void                            ami_client_pause_out(ClientManager* cl);
+    void                            ami_client_login(ClientManager* cl);
+    void                            ami_client_logoff(ClientManager* cl);
 
 protected:
     QHash<QString, ClientManager*>* clients;
@@ -78,6 +81,11 @@ protected slots:
     void                            stop_the_server(bool close_the_socket);
     // TODO: Complete slot declaration
     void                            receive_cti_event(const AMIEvent& eventid, QAstCTICall* the_call);
+    // Slots to receive CTI Client events
+    void                            cti_client_pause_in(ClientManager* cl);
+    void                            cti_client_pause_out(ClientManager* cl);
+    void                            cti_client_login(ClientManager* cl);
+    void                            cti_client_logoff(ClientManager* cl);
 
 private:
     QSettings               settings;

@@ -27,7 +27,8 @@ SOURCES += main.cpp \
     configurationchecker.cpp \
     coretcpserver.cpp \
     qastctioperators.cpp \
-    qastcticall.cpp
+    qastcticall.cpp \
+    qastctioperatorservices.cpp
 HEADERS += clientmanager.h \
     cticonfig.h \
     logger.h \
@@ -47,4 +48,5 @@ HEADERS += clientmanager.h \
     configurationchecker.h \
     coretcpserver.h \
     qastctioperators.h \
-    qastcticall.h
+    qastcticall.h \
+    qastctioperatorservices.h
