@@ -97,9 +97,6 @@ public slots:
     void                            send_data_to_asterisk(const QString& data);
     void                            send_command_to_asterisk(const QString& data, const QString& channel);
 
-    void                            stop_ami_thread();
-    void                            stop_ami_thread(bool emit_stopped_signal);
-
 signals:
     void                            error(int socketError, const QString& message);
     void                            receive_data_from_asterisk(const QString& data);
@@ -108,6 +105,10 @@ signals:
     // TODO: complete the signal declaration
     void                            cti_event(const AMIEvent& eventid, QAstCTICall* the_call);
     void                            cti_response(const QString& response, const QString& message, const QString& channel);
+
+    void                            sg_send_data_to_asterisk(const QString& data);
+    void                            sg_send_command_to_asterisk(const QString& data, const QString& channel);
+
 
 private:
     QAstCTIConfiguration*           config;
@@ -124,14 +125,14 @@ private:
 private slots:
     void                            build_the_socket();
     void                            parse_data_received_from_asterisk(const QString& message);
-    void                            restart_ami_thread();
+
     void                            start_ami_thread();
     void                            perform_login();
     void                            execute_actions();
-    void                            log_socket_error(int socketError, const QString& message);
     QHash<QString, QString>*        hash_from_message(QString data);
     void                            evaluate_event(QHash<QString, QString>* event);
     void                            evaluate_response(QHash<QString, QString>* response);
+
 
 protected:
     QTcpSocket*                     local_socket;
