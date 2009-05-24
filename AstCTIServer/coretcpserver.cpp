@@ -62,6 +62,7 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
     this->ct = new AMIClient(this->config, 0 );
     connect(this->ct, SIGNAL(ami_client_noretries()), this, SLOT(stop_the_server()));
     connect(this->ct, SIGNAL(cti_event(const AMIEvent, QAstCTICall*)), this, SLOT(receive_cti_event(const AMIEvent, QAstCTICall*)));
+    connect(this->ct, SIGNAL(cti_response(QString,QString,QString,QString)), this, SLOT(receive_cti_response(QString,QString,QString,QString)));
     this->ct->start();
 
     //5f4dcc3b5aa765d61d8327deb882cf99
@@ -262,6 +263,30 @@ void CoreTcpServer::receive_cti_event(const AMIEvent& eventid, QAstCTICall* the_
     qDebug() << "Received CTI Event" << eventid << log_msg;
 }
 
+void CoreTcpServer::receive_cti_response(const QString& command_name, const QString& response, const QString& message, const QString& channel)
+{
+    QString identifier = QString("exten-%1").arg(channel);
+    mutexClientList.lock();
+    if (clients->contains(identifier))
+    {
+
+        ClientManager* client = clients->value(identifier);
+        if (client != 0)
+        {
+            QString str_message = QString("500 %1,%2,%3").arg(command_name).arg(response).arg(message);
+            client->send_data_to_client(str_message);
+
+        }
+        else
+            qDebug() << ">> receive_cti_response << Client is null";
+    }
+    else
+    {
+        qDebug() << ">> receive_cti_response << Identifier" << identifier << "not found in client list";
+    }
+    mutexClientList.unlock();
+}
+
 void CoreTcpServer::cti_client_login(ClientManager* cl)
 {
     QAstCTIOperator* the_operator = cl->get_active_operator();
@@ -295,7 +320,7 @@ void CoreTcpServer::cti_client_login(ClientManager* cl)
                     QString cmd = QString("Action: QueueAdd\r\nQueue: %1\r\nInterface: %2\r\nPenalty: %3\r\nPaused: %4\r\n\r\n")
                                   .arg(the_service->get_service_queue_name() ).arg(interface).arg(penalty).arg(begin_in_pause);
 
-                    this->ct->send_command_to_asterisk(cmd, interface);
+                    this->ct->send_command_to_asterisk("QueueAdd", cmd, interface);
 
                 }
             }
@@ -340,7 +365,7 @@ void CoreTcpServer::cti_client_logoff(ClientManager* cl)
                     QString cmd = QString("Action: QueueRemove\r\nQueue: %1\r\nInterface: %2\r\n\r\n")
                                   .arg(the_service->get_service_queue_name() ).arg(interface);
 
-                    this->ct->send_command_to_asterisk(cmd, interface);
+                    this->ct->send_command_to_asterisk("QueueRemove", cmd, interface);
 
                 }
             }

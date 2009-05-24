@@ -166,7 +166,6 @@ void ClientManager::run()
             else {
                 toSplit         = buffer;
                 remainingBuffer = "";
-
             }
             buffer = remainingBuffer;
 

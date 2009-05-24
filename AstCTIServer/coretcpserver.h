@@ -81,6 +81,7 @@ protected slots:
     void                            stop_the_server(bool close_the_socket);
     // TODO: Complete slot declaration
     void                            receive_cti_event(const AMIEvent& eventid, QAstCTICall* the_call);
+    void                            receive_cti_response(const QString& command_name, const QString& response, const QString& message, const QString& channel);
     // Slots to receive CTI Client events
     void                            cti_client_pause_in(ClientManager* cl);
     void                            cti_client_pause_out(ClientManager* cl);
