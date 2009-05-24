@@ -41,9 +41,10 @@
 
 
 AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
-        : QThread()
+        : QThread(parent)
 
 {
+
     this->config = config;
     this->active_calls  = new QHash<QString, QAstCTICall*>;
     this->commands_stack = new QStack<AsteriskCommand*>;
@@ -78,12 +79,7 @@ void AMIClient::build_the_socket()
     if (this->config->ami_reconnect_retries > 0)
     {
         this->retries = this->config->ami_reconnect_retries;
-    }
-
-    // Connect all the required signals.. just once!
-    // connect(this, SIGNAL(receive_data_from_asterisk(QString)), this, SLOT(parse_data_received_from_asterisk(QString)),Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(sg_send_data_to_asterisk(QString)), this, SLOT(send_data_to_asterisk(QString)));
-    connect(this, SIGNAL(sg_send_command_to_asterisk(QString,QString)),this,SLOT(send_command_to_asterisk(QString,QString)));
+    }    
 }
 
 void AMIClient::run()
@@ -282,7 +278,7 @@ void AMIClient::evaluate_event(QHash<QString, QString>* event)
     else if( event_name == "Newchannel" )
     {
         // Build here a new asterisk call object and add it to hashtable
-        QAstCTICall* new_call = new QAstCTICall(this);
+        QAstCTICall* new_call = new QAstCTICall(this->parent());
         QString unique_id = event->value("Uniqueid");
         new_call->set_channel(event->value("Channel"));
         new_call->set_callerid_num(event->value("CallerIDNum"));
@@ -436,9 +432,10 @@ void AMIClient::evaluate_response(QHash<QString, QString>* response)
         if (cmd != 0)
         {
             QString channel = cmd->channel;
+            QString command_name = cmd->command_name;
             qDebug() << "Evaluated response " << response_str << ". For channel:" << channel << ".Cause:"<< response_msg;
             delete(cmd);
-            emit this->cti_response(response_str, response_msg, channel);
+            emit this->cti_response(command_name, response_str, response_msg, channel);
 
         }
     }
@@ -460,9 +457,10 @@ void AMIClient::send_data_to_asterisk(const QString& data)
     this->local_socket->flush();
 }
 
-void AMIClient::send_command_to_asterisk(const QString& data, const QString& channel)
+void AMIClient::send_command_to_asterisk(const QString& command_name, const QString& data, const QString& channel)
 {
     AsteriskCommand* cmd = new AsteriskCommand();
+    cmd->command_name = command_name;
     cmd->command = data;
     cmd->channel = channel;
     this->commands_stack->push(cmd);

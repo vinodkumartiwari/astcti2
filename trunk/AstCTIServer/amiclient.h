@@ -58,6 +58,7 @@
 
 struct AsteriskCommand
 {
+    QString command_name;
     QString command;
     QString channel;
 };
@@ -83,9 +84,12 @@ enum AMIEvent {
     AMI_EVENT_BRIDGE
 };
 
+
 class AMIClient : public  QThread
 {
     Q_OBJECT
+    Q_ENUMS(AMIClientStatus);
+    Q_ENUMS(AMIEvent);
 
 public:
     AMIClient(QAstCTIConfiguration* config, QObject* parent);
@@ -95,7 +99,7 @@ public:
 
 public slots:
     void                            send_data_to_asterisk(const QString& data);
-    void                            send_command_to_asterisk(const QString& data, const QString& channel);
+    void                            send_command_to_asterisk(const QString& command_name, const QString& data, const QString& channel);
 
 signals:
     void                            error(int socketError, const QString& message);
@@ -104,10 +108,7 @@ signals:
     void                            ami_client_noretries();
     // TODO: complete the signal declaration
     void                            cti_event(const AMIEvent& eventid, QAstCTICall* the_call);
-    void                            cti_response(const QString& response, const QString& message, const QString& channel);
-
-    void                            sg_send_data_to_asterisk(const QString& data);
-    void                            sg_send_command_to_asterisk(const QString& data, const QString& channel);
+    void                            cti_response(const QString& command_name, const QString& response, const QString& message, const QString& channel);    
 
 
 private:
