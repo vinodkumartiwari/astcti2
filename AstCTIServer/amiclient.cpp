@@ -41,7 +41,7 @@
 
 
 AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
-        : QThread(parent)
+        : QThread()
 
 {
     this->config = config;
@@ -50,6 +50,8 @@ AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
     this->quit = false;
     this->local_socket = 0;
     this->ami_client_status = AMI_STATUS_NOT_DEFINED;
+
+
 }
 
 AMIClient::~AMIClient()
@@ -65,38 +67,7 @@ void AMIClient::start_ami_thread()
     this->start();
 }
 
-void AMIClient::restart_ami_thread()
-{
-    if (this->config->ami_reconnect_retries == 0)
-    {
-        qDebug() << "AMI Client will retry reconnect within " << this->config->ami_connect_timeout << " seconds";
-        this->sleep(this->config->ami_connect_timeout);
-        start_ami_thread();
-    }
-    else
-    {
-        // We need to retry "retries" time plus the first connect
-        if (this->retries == 0)
-        {
-            qDebug() << "AMI Client will now stop definitively";
-            emit ami_client_noretries();
-        }
-        else
-        {
-            qDebug() << "AMI Client will retry reconnect within " << this->config->ami_connect_timeout << " seconds";
-            this->sleep(this->config->ami_connect_timeout);
-            this->retries --;
-            start_ami_thread();
-        }
-    }
-}
 
-void AMIClient::log_socket_error(int socketError, const QString& message)
-{
-    qDebug() << "Received error" << socketError << "from socket:" << message;
-    restart_ami_thread();
-
-}
 
 void AMIClient::build_the_socket()
 {
@@ -110,10 +81,9 @@ void AMIClient::build_the_socket()
     }
 
     // Connect all the required signals.. just once!
-    connect(this, SIGNAL(thread_stopped()) , this, SLOT(restart_ami_thread()));
-    connect(this, SIGNAL(error(int,QString)), this, SLOT(log_socket_error(int,QString)));
-    connect(this, SIGNAL(receive_data_from_asterisk(QString)), this, SLOT(parse_data_received_from_asterisk(QString)));
-    connect(this->local_socket, SIGNAL(disconnected()), this, SLOT(stop_ami_thread()) );
+    // connect(this, SIGNAL(receive_data_from_asterisk(QString)), this, SLOT(parse_data_received_from_asterisk(QString)),Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(sg_send_data_to_asterisk(QString)), this, SLOT(send_data_to_asterisk(QString)));
+    connect(this, SIGNAL(sg_send_command_to_asterisk(QString,QString)),this,SLOT(send_command_to_asterisk(QString,QString)));
 }
 
 void AMIClient::run()
@@ -125,51 +95,56 @@ void AMIClient::run()
         // Build the socket only once
         build_the_socket();
     }
-
-    this->quit = false;
-    this->emit_stopped_signal_on_quit = true;
-    this->local_socket->connectToHost(config->ami_host , config->ami_port);
-
-    if (!this->local_socket->waitForConnected(config->ami_connect_timeout))
+    forever
     {
-        emit error(this->local_socket->error(), this->local_socket->errorString());
-        return;
-    }
-    while(!quit)
-    {
-        // TODO: main loop for receinving data..
-        while(this->local_socket->waitForReadyRead(500))
+        this->local_socket->connectToHost(config->ami_host , config->ami_port);
+
+        if (!this->local_socket->waitForConnected(config->ami_connect_timeout))
         {
+            this->retries --;
+            if (this->retries == 0)
+            {
+                qDebug() << "AMI Client will now stop definitively";
+                emit ami_client_noretries();
+                break;
+            }
+            this->ami_client_status = AMI_STATUS_NOT_DEFINED;
 
-            QByteArray sockData = local_socket->readAll();
-            QString data_received = QString(sockData);
-            emit this->receive_data_from_asterisk(data_received);
+            qDebug() << "AMI Client will retry reconnect within " << this->config->ami_connect_timeout << " seconds";
+            this->sleep(this->config->ami_connect_timeout);
+
         }
-    }
-    this->local_socket->close();
-    this->ami_client_status = AMI_STATUS_NOT_DEFINED;
-    if (this->emit_stopped_signal_on_quit)
-    {
-        emit this->thread_stopped();
+        else
+        {
+            // Reset retries
+            this->retries = config->ami_reconnect_retries;
+            forever
+            {
+                //http://qt.gitorious.org/qt/miniak/blobs/6a994abef70012e2c0aa3d70253ef4b9985b2f20/src/corelib/kernel/qeventdispatcher_win.cpp
+                while(this->local_socket->waitForReadyRead(500))
+                {
+
+                    QByteArray sockData = local_socket->readAll();
+                    QString data_received = QString(sockData);
+                    if (data_received.trimmed().length() > 0)
+                    {
+                        // emit this->receive_data_from_asterisk(data_received);
+                        parse_data_received_from_asterisk(data_received);
+                    }
+                }
+                if (this->local_socket->state() != QAbstractSocket::ConnectedState)
+                {
+                    break;
+                }
+            }
+        }
     }
 }
 
 bool AMIClient::is_connected()
 {
-    return ( this->local_socket->state() == QAbstractSocket::ConnectedState);
+    return (this->local_socket != 0) & ( this->local_socket->state() == QAbstractSocket::ConnectedState);
 }
-
-void AMIClient::stop_ami_thread()
-{
-    this->stop_ami_thread(true);
-}
-void AMIClient::stop_ami_thread(bool emit_stopped_signal)
-{
-    this->emit_stopped_signal_on_quit = emit_stopped_signal;
-    this->quit = true;
-}
-
-
 
 void AMIClient::perform_login()
 {
@@ -467,9 +442,6 @@ void AMIClient::evaluate_response(QHash<QString, QString>* response)
 
         }
     }
-
-
-
 }
 
 void AMIClient::send_data_to_asterisk(const QString& data)
