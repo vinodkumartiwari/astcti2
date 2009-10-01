@@ -43,32 +43,31 @@ QAsteriskCTILogger::QAsteriskCTILogger(QObject* parent) :
 {
 }
 
-void QAsteriskCTILogger::write_to_log(QtMsgType level, const QString& logdata)
+void QAsteriskCTILogger::write_to_log(QtMsgType level, const QString& logData)
 {
     this->build_log_directory_if_not_exists();
-    QDir base_directory = this->logging_directory;
+    QDir baseDirectory = this->logging_directory;
 
-    QString today_filename = QString("log_").append(QDate::currentDate().toString("yyyyMMdd").append(".log"));
+    QString todayFilename = QString("log_").append(QDate::currentDate().toString("yyyyMMdd").append(".log"));
 
-    QFile log_file(base_directory.absolutePath().append("/").append(today_filename));
-    if (!log_file.open(QIODevice::Append | QIODevice::Text ))
+    QFile logFile(baseDirectory.absolutePath().append("/").append(todayFilename));
+    if (!logFile.open(QIODevice::Append | QIODevice::Text ))
     {
-        qDebug() << "Cannot open log_file" << today_filename;
+        qDebug() << "Cannot open log_file" << todayFilename;
         return;
     }
-    QString log_string;
 
+    QString logString;
+    QByteArray dataArray;
+    QBuffer dataBuffer( &dataArray );
+    dataBuffer.open( QIODevice::WriteOnly );
+    QTextStream text_stream( &dataBuffer );
+    text_stream << QTime::currentTime().toString("hh:mm:ss")  << " (" << get_level_description_from_id(level) << "): " << logData << "\n\r";
+    dataBuffer.close();
 
-    QByteArray data_array;
-    QBuffer data_buffer( &data_array );
-    data_buffer.open( QIODevice::WriteOnly );
-    QTextStream text_stream( &data_buffer );
-    text_stream << QTime::currentTime().toString("hh:mm:ss")  << " (" << get_level_description_from_id(level) << "): " << logdata << "\n\r";
-    data_buffer.close();
+    logFile.write(dataArray);
 
-    log_file.write(data_array);
-
-    log_file.close();
+    logFile.close();
 }
 
 bool QAsteriskCTILogger::build_log_directory_if_not_exists()

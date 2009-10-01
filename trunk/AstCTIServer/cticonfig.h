@@ -49,15 +49,15 @@ struct QAstCTIConfiguration
     quint16         serverPort;
     int             readTimeout;
     int             compressionLevel;
-    QString         ami_host;
-    quint16         ami_port;
-    QString         ami_user;
-    QString         ami_secret;
-    quint16         ami_connect_timeout;
-    quint16         ami_reconnect_retries;
-    QString         sqlite_file;
-    QString         sqlite_user;
-    QString         sqlite_secret;
+    QString         amiHost;
+    quint16         amiPort;
+    QString         amiUser;
+    QString         amiSecret;
+    quint16         amiConnectTimeout;
+    quint16         amiReconnectRetries;
+    QString         sqliteFile;
+    QString         sqliteUser;
+    QString         sqliteSecret;
     // QSqlDatabase*   db;
 };
 #endif

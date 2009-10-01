@@ -58,7 +58,7 @@
 
 struct AsteriskCommand
 {
-    QString command_name;
+    QString commandName;
     QString command;
     QString channel;
 };
@@ -92,51 +92,51 @@ class AMIClient : public  QThread
     Q_ENUMS(AMIEvent);
 
 public:
-    AMIClient(QAstCTIConfiguration* config, QObject* parent);
+    AMIClient(QAstCTIConfiguration *config, QObject *parent);
     ~AMIClient();
-    void    run();
-    bool    is_connected();
+    void                            run();
+    bool                            isConnected();
 
 public slots:
-    void                            send_data_to_asterisk(const QString& data);
-    void                            send_command_to_asterisk(const QString& command_name, const QString& data, const QString& channel);
+    void                            sendDataToAsterisk(const QString &data);
+    void                            sendCommandToAsterisk(const QString &commandName, const QString &data, const QString &channel);
 
 signals:
-    void                            error(int socketError, const QString& message);
-    void                            receive_data_from_asterisk(const QString& data);
-    void                            thread_stopped();
-    void                            ami_client_noretries();
+    void                            error(int socketError, const QString &message);
+    void                            receiveDataFromAsterisk(const QString &data);
+    void                            threadStopped();
+    void                            amiClientNoRetries();
     // TODO: complete the signal declaration
-    void                            cti_event(const AMIEvent& eventid, QAstCTICall* the_call);
-    void                            cti_response(const QString& command_name, const QString& response, const QString& message, const QString& channel);    
+    void                            ctiEvent(const AMIEvent &eventId, QAstCTICall *theCall);
+    void                            ctiResponse(const QString &command_name, const QString& response, const QString &message, const QString &channel);
 
 
 private:
-    QAstCTIConfiguration*           config;
-    int                             socket_descriptor;
+    QAstCTIConfiguration            *config;
+    int                             socketDescriptor;
     bool                            quit;
-    bool                            emit_stopped_signal_on_quit;
-    QString                         data_buffer;
-    AMIClientStatus                 ami_client_status;
+    bool                            emitStoppedSignalOnQuit;
+    QString                         dataBuffer;
+    AMIClientStatus                 amiClientStatus;
     int                             retries;
-    QHash<QString, QAstCTICall*>*   active_calls;
-    QStack<AsteriskCommand*>*       commands_stack;
+    QHash<QString, QAstCTICall*>    *activeCalls;
+    QStack<AsteriskCommand*>        *commandsStack;
 
 
 private slots:
-    void                            build_the_socket();
-    void                            parse_data_received_from_asterisk(const QString& message);
+    void                            buildTheSocket();
+    void                            parseDataReceivedFromAsterisk(const QString& message);
 
-    void                            start_ami_thread();
-    void                            perform_login();
-    void                            execute_actions();
-    QHash<QString, QString>*        hash_from_message(QString data);
-    void                            evaluate_event(QHash<QString, QString>* event);
-    void                            evaluate_response(QHash<QString, QString>* response);
+    void                            startAMIThread();
+    void                            performLogin();
+    void                            executeActions();
+    QHash<QString, QString>*        hashFromMessage(QString data);
+    void                            evaluateEvent(QHash<QString, QString> *event);
+    void                            evaluateResponse(QHash<QString, QString> *response);
 
 
 protected:
-    QTcpSocket*                     local_socket;
+    QTcpSocket*                     localSocket;
 };
 
 #endif // AMICLIENT_H

@@ -60,9 +60,9 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
 
      /* CODE TESTING START */
     this->ct = new AMIClient(this->config, 0 );
-    connect(this->ct, SIGNAL(ami_client_noretries()), this, SLOT(stop_the_server()));
-    connect(this->ct, SIGNAL(cti_event(const AMIEvent, QAstCTICall*)), this, SLOT(receive_cti_event(const AMIEvent, QAstCTICall*)));
-    connect(this->ct, SIGNAL(cti_response(QString,QString,QString,QString)), this, SLOT(receive_cti_response(QString,QString,QString,QString)));
+    connect(this->ct, SIGNAL(amiClientNoRetries()), this, SLOT(stop_the_server()));
+    connect(this->ct, SIGNAL(ctiEvent(const AMIEvent, QAstCTICall*)), this, SLOT(receive_cti_event(const AMIEvent, QAstCTICall*)));
+    connect(this->ct, SIGNAL(ctiResponse(QString,QString,QString,QString)), this, SLOT(receive_cti_response(QString,QString,QString,QString)));
     this->ct->start();
 
     //5f4dcc3b5aa765d61d8327deb882cf99
@@ -315,12 +315,12 @@ void CoreTcpServer::cti_client_login(ClientManager* cl)
                 int penalty = i.value();
                 // We can send a login if AMIClient is connected
                 // and the service is a queue where we can login
-                if (this->ct->is_connected() & (the_service->get_service_is_queue()) )
+                if (this->ct->isConnected() & (the_service->get_service_is_queue()) )
                 {
                     QString cmd = QString("Action: QueueAdd\r\nQueue: %1\r\nInterface: %2\r\nPenalty: %3\r\nPaused: %4\r\n\r\n")
                                   .arg(the_service->get_service_queue_name() ).arg(interface).arg(penalty).arg(begin_in_pause);
 
-                    this->ct->send_command_to_asterisk("QueueAdd", cmd, interface);
+                    this->ct->sendCommandToAsterisk("QueueAdd", cmd, interface);
 
                 }
             }
@@ -360,12 +360,12 @@ void CoreTcpServer::cti_client_logoff(ClientManager* cl)
 
                 // We can send a login if AMIClient is connected
                 // and the service is a queue where we can login
-                if (this->ct->is_connected() & (the_service->get_service_is_queue()) )
+                if (this->ct->isConnected() & (the_service->get_service_is_queue()) )
                 {
                     QString cmd = QString("Action: QueueRemove\r\nQueue: %1\r\nInterface: %2\r\n\r\n")
                                   .arg(the_service->get_service_queue_name() ).arg(interface);
 
-                    this->ct->send_command_to_asterisk("QueueRemove", cmd, interface);
+                    this->ct->sendCommandToAsterisk("QueueRemove", cmd, interface);
 
                 }
             }

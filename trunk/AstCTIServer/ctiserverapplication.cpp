@@ -188,23 +188,23 @@ bool CtiServerApplication::build_sql_database(const QString & databaseFile)
     db = QSqlDatabase::addDatabase("QSQLITE", "sqlitedb");
     db.setDatabaseName(databaseFile);
 
-    if (config.sqlite_user.length() > 0)
-        db.setUserName(config.sqlite_user);
+    if (config.sqliteUser.length() > 0)
+        db.setUserName(config.sqliteUser);
 
-    if (config.sqlite_secret.length() > 0)
-        db.setPassword(config.sqlite_secret);
+    if (config.sqliteSecret.length() > 0)
+        db.setPassword(config.sqliteSecret);
 
     if(!db.open())
     {
-        qCritical() << "Unable to open SQLite database" << config.sqlite_file << "\n";
+        qCritical() << "Unable to open SQLite database" << config.sqliteFile  << "\n";
         return false;
     }
 
-    if (config.qDebug) qDebug() << "SQLite database successfully opened" << config.sqlite_file << "\n";
+    if (config.qDebug) qDebug() << "SQLite database successfully opened" << config.sqliteFile  << "\n";
 
     if (config.qDebug) qDebug() << "SQLite database version " << this->read_database_version() << "\n";
 
-    config.sqlite_file = databaseFile;
+    config.sqliteFile  = databaseFile;
     // config.db = &db;
     return true;
 
@@ -238,7 +238,7 @@ void CtiServerApplication::destroy_sql_database()
             QSqlDatabase::removeDatabase("sqlitedb");
         }
     }
-    config.sqlite_file.clear();
+    config.sqliteFile .clear();
 
     // config.db = 0;
 }
@@ -299,18 +299,18 @@ bool CtiServerApplication::read_settings_file(const QString configFile, QAstCTIC
     settings.endGroup();
 
     settings.beginGroup("AsteriskAMI");
-    config->ami_host             = settings.value("host").toString();
-    config->ami_port             = settings.value("port").toInt();
-    config->ami_user             = settings.value("user").toString();
-    config->ami_secret           = settings.value("secret").toString();
-    config->ami_connect_timeout  = settings.value("connect_timeout").toInt();
-    config->ami_reconnect_retries= settings.value("connect_retries").toInt();
+    config->amiHost                 = settings.value("host").toString();
+    config->amiPort                 = settings.value("port").toInt();
+    config->amiUser                 = settings.value("user").toString();
+    config->amiSecret               = settings.value("secret").toString();
+    config->amiConnectTimeout       = settings.value("connect_timeout").toInt();
+    config->amiReconnectRetries     = settings.value("connect_retries").toInt();
     settings.endGroup();
 
     settings.beginGroup("RuntimeDb");
     config->runtimeConfiguration = settings.value("runtimeConfiguration").toString();
-    config->sqlite_user          = settings.value("user").toString();
-    config->sqlite_secret        = settings.value("secret").toString();
+    config->sqliteUser          = settings.value("user").toString();
+    config->sqliteSecret        = settings.value("secret").toString();
     settings.endGroup();
     return true;
 }
