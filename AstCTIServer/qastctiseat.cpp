@@ -81,7 +81,7 @@ bool QAstCTISeat::load()
     return retVal;
 }
 
-bool QAstCTISeat::load_from_mac()
+bool QAstCTISeat::loadFromMac()
 {
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
@@ -104,7 +104,7 @@ bool QAstCTISeat::load_from_mac()
     return retVal;
 }
 
-int  QAstCTISeat::get_id_seat()
+int  QAstCTISeat::getIdSeat()
 {
     return this->ID_SEAT;
 }
@@ -114,7 +114,7 @@ QString  QAstCTISeat::get_seat_mac()
     return this->SEAT_MAC;
 }
 
-QString  QAstCTISeat::get_seat_exten()
+QString  QAstCTISeat::getSeatExten()
 {
     return this->SEAT_EXTEN;
 }

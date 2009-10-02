@@ -323,7 +323,7 @@ void CtiServerApplication::write_settings_file( QSettings *settings, const QStri
     }
 }
 
-QAstCTIOperator* CtiServerApplication::get_operator_by_username(const QString& username)
+QAstCTIOperator *CtiServerApplication::getOperatorByUsername(const QString& username)
 {
     if (this->cti_operators != 0)
     {

@@ -133,7 +133,7 @@ bool QAstCTIOperator::save()
     return retVal;
 }
 
-bool QAstCTIOperator::check_password(const QString& password)
+bool QAstCTIOperator::checkPassword(const QString& password)
 {
 
     /*QCryptographicHash md5(QCryptographicHash::Md5);
@@ -173,12 +173,12 @@ QAstCTISeat* QAstCTIOperator::get_seat()
     return this->lastSeat;
 }
 
-void QAstCTIOperator::set_last_seat(const int &newSeat)
+void QAstCTIOperator::setLastSeat(const int &newSeat)
 {
     this->LAST_SEAT = newSeat;
 }
 
-bool QAstCTIOperator::get_begin_in_pause()
+bool QAstCTIOperator::getBeginInPause()
 {
     return this->BEGIN_IN_PAUSE;
 }

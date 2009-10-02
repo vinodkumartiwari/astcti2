@@ -50,9 +50,7 @@ AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
     this->commandsStack = new QStack<AsteriskCommand*>;
     this->quit = false;
     this->localSocket = 0;
-    this->amiClientStatus = AMI_STATUS_NOT_DEFINED;
-
-
+    this->amiClientStatus = amiStatusNotDefined;
 }
 
 AMIClient::~AMIClient()
@@ -76,8 +74,7 @@ void AMIClient::buildTheSocket()
     this->localSocket = new QTcpSocket();
 
     // Initialize how many times we need to restart
-    if (this->config->amiReconnectRetries > 0)
-    {
+    if (this->config->amiReconnectRetries > 0) {
         this->retries = this->config->amiReconnectRetries;
     }    
 }
@@ -86,8 +83,7 @@ void AMIClient::run()
 {
     // We need to build here the socket to avoid warnings from QObject like
     // "Cannot create children for a parent that is in a different thread.
-    if (this->localSocket == 0)
-    {
+    if (this->localSocket == 0) {
         // Build the socket only once
         buildTheSocket();
     }
@@ -95,41 +91,33 @@ void AMIClient::run()
     {
         this->localSocket->connectToHost(config->amiHost , config->amiPort);
 
-        if (!this->localSocket->waitForConnected(config->amiConnectTimeout))
-        {
+        if (!this->localSocket->waitForConnected(config->amiConnectTimeout)) {
             this->retries --;
-            if (this->retries == 0)
-            {
+            if (this->retries == 0) {
                 qDebug() << "AMI Client will now stop definitively";
                 emit amiClientNoRetries();
                 break;
             }
-            this->amiClientStatus = AMI_STATUS_NOT_DEFINED;
+            this->amiClientStatus = amiStatusNotDefined;
 
             qDebug() << "AMI Client will retry reconnect within " << this->config->amiConnectTimeout << " seconds";
             this->sleep(this->config->amiConnectTimeout);
-
         }
-        else
-        {
+        else {
             // Reset retries
             this->retries = config->amiReconnectRetries;
-            forever
-            {
+            forever {
                 //http://qt.gitorious.org/qt/miniak/blobs/6a994abef70012e2c0aa3d70253ef4b9985b2f20/src/corelib/kernel/qeventdispatcher_win.cpp
-                while(this->localSocket->waitForReadyRead(500))
-                {
+                while(this->localSocket->waitForReadyRead(500)) {
 
                     QByteArray dataFromSocket = localSocket->readAll();
                     QString receivedData = QString(dataFromSocket);
-                    if (receivedData.trimmed().length() > 0)
-                    {
+                    if (receivedData.trimmed().length() > 0) {
                         // emit this->receiveDataFromAsterisk(data_received);
                         parseDataReceivedFromAsterisk(receivedData);
                     }
                 }
-                if (this->localSocket->state() != QAbstractSocket::ConnectedState)
-                {
+                if (this->localSocket->state() != QAbstractSocket::ConnectedState) {
                     break;
                 }
             }
@@ -144,32 +132,25 @@ bool AMIClient::isConnected()
 
 void AMIClient::performLogin()
 {
-    this->amiClientStatus = AMI_STATUS_LOGGING_IN;
+    this->amiClientStatus = amiStatusLoggingIn;
     QString loginData = QString("Action: Login\r\nUsername: %1\r\nSecret: %2\r\n\r\n")
                             .arg(this->config->amiUser)
                             .arg(this->config->amiSecret);
     if (config->qDebug) qDebug() << loginData;
     this->sendDataToAsterisk(loginData);
-
 }
 
 void AMIClient::parseDataReceivedFromAsterisk(const QString& message)
 {
-
-    // qDebug() << "pdrfm:" << message;
-    if (this->amiClientStatus != AMI_STATUS_NOT_DEFINED)
-    {
+    if (this->amiClientStatus != amiStatusNotDefined) {
         this->dataBuffer+=message;
-        if (this->dataBuffer.contains("\r\n\r\n"))
-        {
+        if (this->dataBuffer.contains("\r\n\r\n")) {
             // here we can execute actions on buffer
             this->executeActions();
         }
     }
-    else
-    {
-        if (message.contains( "Asterisk Call Manager", Qt::CaseInsensitive  ))
-        {
+    else {
+        if (message.contains( "Asterisk Call Manager", Qt::CaseInsensitive  )) {
             this->performLogin();
         }        
     }
@@ -185,52 +166,45 @@ void AMIClient::executeActions()
 
     // now check our state. The parser can be invoked only
     // after we're authenticated
-    switch(this->amiClientStatus)
-    {
-        case AMI_STATUS_LOGGING_IN:
-            if (localBuffer.contains("Message: Authentication accepted"))
-            {
-                qDebug() << "We're authenticated by AMI Server";
-                this->amiClientStatus = AMI_STATUS_LOGGED_IN;
-            }
-            else
-            {
-                this->amiClientStatus = AMI_STATUS_NOT_DEFINED;
-            }
-            break;
+    switch(this->amiClientStatus) {
+    case amiStatusLoggingIn:
+        if (localBuffer.contains("Message: Authentication accepted")) {
+            qDebug() << "We're authenticated by AMI Server";
+            this->amiClientStatus = amiStatusLoggedIn;
+        }
+        else {
+            this->amiClientStatus = amiStatusNotDefined;
+        }
+        break;
 
-        case AMI_STATUS_LOGGED_IN:
-            {
-                // here we can begin evaluate AMI events
-                QStringList events = localBuffer.split("\r\n\r\n");
+    case amiStatusLoggedIn:
+        {
+            // here we can begin evaluate AMI events
+            QStringList events = localBuffer.split("\r\n\r\n");
 
-                // we need to check if the buffer contains more than
-                // one event and parse them all in the right order
-                QStringList::const_iterator events_iterator;
-                for (events_iterator = events.constBegin();
-                    events_iterator != events.constEnd();
-                    ++events_iterator)
-                {
-                    QString eventBuffer  = (*events_iterator).toLocal8Bit().constData();
-                    if (eventBuffer.length() > 0)
-                    {
-                        QHash<QString, QString>* evt = this->hashFromMessage(eventBuffer);
-                        // we should have at least one Event key in the hash!
-                        if (evt->contains("Event"))
-                        {
-                            this->evaluateEvent(evt);
-                        }
-                        else if (evt->contains("Response"))
-                        {
-                            this->evaluateResponse(evt);
-                        }
+            // we need to check if the buffer contains more than
+            // one event and parse them all in the right order
+            QStringList::const_iterator events_iterator;
+            for (events_iterator = events.constBegin();
+                events_iterator != events.constEnd();
+                ++events_iterator) {
+                QString eventBuffer  = (*events_iterator).toLocal8Bit().constData();
+                if (eventBuffer.length() > 0) {
+                    QHash<QString, QString>* evt = this->hashFromMessage(eventBuffer);
+                    // we should have at least one Event key in the hash!
+                    if (evt->contains("Event")) {
+                        this->evaluateEvent(evt);
+                    }
+                    else if (evt->contains("Response")) {
+                        this->evaluateResponse(evt);
                     }
                 }
             }
-            break;
+        }
+        break;
 
-        default:
-            return;
+    default:
+        return;
 
     }
 }
@@ -243,14 +217,11 @@ QHash<QString, QString>* AMIClient::hashFromMessage(QString data)
     QStringList::const_iterator linesIterator;
     for(linesIterator = lines.constBegin();
         linesIterator != lines.constEnd();
-        ++linesIterator)
-    {
+        ++linesIterator) {
         QString line = (*linesIterator).toLocal8Bit().constData();
-        if (line.contains(':'))
-        {
+        if (line.contains(':')) {
             QStringList keyValue = line.split(':');
-            if (keyValue.length() == 2)
-            {
+            if (keyValue.length() == 2) {
                 QString key     = keyValue.at(0);
                 QString value   = keyValue.at(1);
                 hash->insert(key.trimmed() , value.trimmed());
@@ -265,18 +236,16 @@ void AMIClient::evaluateEvent(QHash<QString, QString>* event)
     QString eventName = event->value("Event");
     if (config->qDebug) qDebug() << "Received event " << eventName;
 
-    if (eventName == "Shutdown")
-    {
+    if (eventName == "Shutdown") {
         // for the moment we can ignore shutdown event
         // because the socket will be closed from the asterisk
         // server...
         this->activeCalls->clear();
 
         // TODO: Add destionation and call
-        emit this->ctiEvent(AMI_EVENT_SHUTDOWN, 0);
+        emit this->ctiEvent(amiEventShutdown, 0);
     }
-    else if( eventName == "Newchannel" )
-    {
+    else if( eventName == "Newchannel" ) {
         // Build here a new asterisk call object and add it to hashtable
         QAstCTICall* newCall = new QAstCTICall(this->parent());
         QString unique_id = event->value("Uniqueid");
@@ -289,73 +258,62 @@ void AMIClient::evaluateEvent(QHash<QString, QString>* event)
         this->activeCalls->insert(unique_id, newCall);
 
         // TODO: Add destionation and call
-        emit this->ctiEvent(AMI_EVENT_NEW_CHANNEL, newCall);
+        emit this->ctiEvent(amiEventNewChannel, newCall);
 
         // qDebug() << "Newchannel" << unique_id << "in state: " << event->value("ChannelStateDesc");
     }
-    else if( eventName == "Hangup" )
-    {
+    else if( eventName == "Hangup" ) {
         QString unique_id = event->value("Uniqueid");
         if (this->activeCalls->contains(unique_id) )
         {
-            QAstCTICall* newCall = this->activeCalls->operator [](unique_id);
-            if (newCall != 0)
-            {
+            QAstCTICall *newCall = this->activeCalls->operator [](unique_id);
+            if (newCall != 0) {
                 // TODO: Add destionation and call
-                emit this->ctiEvent(AMI_EVENT_HANGUP, newCall);
+                emit this->ctiEvent(amiEventHangup, newCall);
             }
             this->activeCalls->remove(unique_id);
         }
         // Delete here the call from the hashtable
         qDebug() << "Hangup: " << event->value("Uniqueid");
     }
-    else if (eventName == "Newexten")
-    {
+    else if (eventName == "Newexten") {
         QString context = event->value("Context");
         QString unique_id = event->value("Uniqueid");
         if (this->activeCalls->contains(unique_id) )
         {
-            QAstCTICall* newCall = this->activeCalls->operator [](unique_id);
-            if (newCall != 0)
-            {
+            QAstCTICall *newCall = this->activeCalls->operator [](unique_id);
+            if (newCall != 0) {
                 newCall->set_context(context);
                 qDebug() << "Call context for " << unique_id << "is now" << context;
 
                 // TODO: Add destionation and call
-                emit this->ctiEvent(AMI_EVENT_NEW_EXTEN, newCall);
+                emit this->ctiEvent(amiEventNewExten, newCall);
             }
         }
 
     }
-    else if (eventName == "VarSet")
-    {
+    else if (eventName == "VarSet") {
         QString unique_id = event->value("Uniqueid");
-        if (this->activeCalls->contains(unique_id) )
-        {
-            QAstCTICall* newCall = this->activeCalls->operator [](unique_id);
-            if (newCall != 0)
-            {
+        if (this->activeCalls->contains(unique_id) ) {
+            QAstCTICall *newCall = this->activeCalls->operator [](unique_id);
+            if (newCall != 0) {
                 // let's retrieve call context
                 QString context = newCall->get_context();
                 QString variable= event->value("Variable");
-                if (context != "")
-                {
-                    QAstCTIServices* services = CtiServerApplication::instance()->get_services();
-                    QAstCTIService* service = services->operator [](context);
-                    if (service != 0)
-                    {
+                if (context != "") {
+                    QAstCTIServices *services = CtiServerApplication::instance()->get_services();
+                    QAstCTIService *service = services->operator [](context);
+                    if (service != 0) {
                         // Check if the variable we're getting exists and is relevant in our configuration
-                        if (service->get_variables()->contains( variable ) )
-                        {
+                        if (service->get_variables()->contains( variable ) ) {
                             // Add the new variable to the current call
                             newCall->add_variable(variable, event->value("Value"));
                             qDebug() << "Reading variable " << variable << "with value" << event->value("Value");
                             // TODO: Add destionation and call
 
-                            emit this->ctiEvent(AMI_EVENT_VAR_SET, newCall);
+                            emit this->ctiEvent(amiEventVarSet, newCall);
                         }
-                        else
-                        {
+                        else {
                             qDebug() << "Variable " << variable << "doesn't exists in context" << context;
                         }
                     }
@@ -363,14 +321,12 @@ void AMIClient::evaluateEvent(QHash<QString, QString>* event)
             }
         }
     }
-    else if (eventName == "Join")
-    {
+    else if (eventName == "Join") {
         qDebug() << "Channel" << event->value("Channel") << "is joining queue" << event->value("Queue");
         // TODO: Add destionation and call
-        emit this->ctiEvent(AMI_EVENT_JOIN,0);
+        emit this->ctiEvent(amiEventJoin,0);
     }
-    else if (eventName == "Bridge")
-    {
+    else if (eventName == "Bridge") {
         // we come from a queue
         /*
         Event: Bridge
@@ -386,21 +342,17 @@ void AMIClient::evaluateEvent(QHash<QString, QString>* event)
         */
 
         QString unique_id = event->value("Uniqueid1");
-        if (this->activeCalls->contains(unique_id) )
-        {
+        if (this->activeCalls->contains(unique_id) ) {
             QAstCTICall *newCall = this->activeCalls->operator [](unique_id);
-            if (newCall != 0)
-            {
+            if (newCall != 0) {
 
                 // let's retrieve call context
                 QString context = newCall->get_context();
                 QString variable= event->value("Variable");
-                if (context != "")
-                {
+                if (context != "") {
                     QAstCTIServices *services = CtiServerApplication::instance()->get_services();
                     QAstCTIService *service = services->operator [](context);
-                    if (service != 0)
-                    {
+                    if (service != 0) {
                         // Here we add reference to service applications.
                         // Before the call is passed to the clientmanager
                         // will be selected the right application using client's
@@ -412,7 +364,7 @@ void AMIClient::evaluateEvent(QHash<QString, QString>* event)
                         newCall->set_dest_uniqueid(event->value("Uniqueid2"));
                         newCall->set_dest_channel(event->value("Channel2"));
 
-                        emit this->ctiEvent(AMI_EVENT_BRIDGE,newCall);
+                        emit this->ctiEvent(amiEventBridge,newCall);
                     }
                 }
             }
@@ -426,17 +378,14 @@ void AMIClient::evaluateResponse(QHash<QString, QString> *response)
     QString responseString  = response->value("Response");
     QString responseMessage = response->value("Message");
 
-    if (this->commandsStack->count() > 0)
-    {
+    if (this->commandsStack->count() > 0) {
         AsteriskCommand *cmd = this->commandsStack->pop();
-        if (cmd != 0)
-        {
+        if (cmd != 0) {
             QString channel = cmd->channel;
             QString commandName = cmd->commandName;
             qDebug() << "Evaluated response " << responseString << ". For channel:" << channel << ".Cause:"<< responseMessage;
             delete(cmd);
             emit this->ctiResponse(commandName, responseString, responseMessage, channel);
-
         }
     }
 }

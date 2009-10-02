@@ -188,16 +188,16 @@ void QAstCTICall::set_applications(QAstCTIServicesApplications* applications)
 
 void QAstCTICall::set_operating_system(QString operating_system)
 {
-    this->client_operating_system = operating_system;
+    this->clientOperatingSystem = operating_system;
     this->set_application();
 
 }
 
 void QAstCTICall::set_application()
 {
-    if (this->client_operating_system.length() > 0)
+    if (this->clientOperatingSystem.length() > 0)
     {
-        this->application = this->applications->operator []( this->client_operating_system );
+        this->application = this->applications->operator []( this->clientOperatingSystem );
         // here we can parse application parameters
         this->parse_application_parameters();
     }

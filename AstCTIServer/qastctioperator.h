@@ -60,12 +60,12 @@ public:
     QString             get_user_name();
     QString             get_pass_word();
     int                 get_last_seat();
-    void                set_last_seat(const int& newSeat);
-    bool                get_begin_in_pause();
+    void                setLastSeat(const int &newSeat);
+    bool                getBeginInPause();
     bool                get_enabled();
-    bool                check_password(const QString& password);
-    QAstCTISeat*        get_seat();
-    QHash<QString,int>* get_list_of_services();
+    bool                checkPassword(const QString& password);
+    QAstCTISeat         *get_seat();
+    QHash<QString,int>  *get_list_of_services();
     static bool         check_password_match(const QString& password, const QString& check_password_match);
 
 public slots:

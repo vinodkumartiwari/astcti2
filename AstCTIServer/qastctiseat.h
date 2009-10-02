@@ -49,14 +49,14 @@ public:
     QAstCTISeat(const int& id, QObject* parent);
     QAstCTISeat(const QString& mac, QObject* parent);
     ~QAstCTISeat();
-    int get_id_seat();
+    int getIdSeat();
     QString get_seat_mac();
-    QString get_seat_exten();
+    QString getSeatExten();
     QString get_description();
 
 public slots:
     bool load();
-    bool load_from_mac();
+    bool loadFromMac();
 
 signals:
     void load_complete(const bool& result);

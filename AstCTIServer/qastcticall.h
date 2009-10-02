@@ -99,7 +99,7 @@ private:
     QString                         dest_uniqueid;
     QString                         context;
     QString                         state;
-    QString                         client_operating_system;
+    QString                         clientOperatingSystem;
 
     QHash<QString, QString>*        variables;
     QAstCTIServicesApplications*    applications;
