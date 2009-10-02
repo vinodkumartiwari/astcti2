@@ -53,16 +53,16 @@ ClientManager::ClientManager(QAstCTIConfiguration* config,
 {
     // Lets copy our configuration struct
     this->config = config;
-    this->active_operator = 0;
-    this->client_operating_system = "";
-    connect(parent, SIGNAL(send_data_from_server(QString)), this, SLOT(send_data_to_client(QString)));
+    this->activeOperator = 0;
+    this->clientOperatingSystem = "";
+    connect(parent, SIGNAL(sendDataFromServer(QString)), this, SLOT(sendDataToClient(QString)));
 
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
 
     // We need to initialize our parser
-    this->init_parser_commands();
+    this->initParserCommands();
 
-    this->in_pause = false;
+    this->inPause = false;
 
 }
 
@@ -74,20 +74,20 @@ ClientManager::~ClientManager()
 /*!
     Initialize the commandList QHash
 */
-void ClientManager::init_parser_commands()
+void ClientManager::initParserCommands()
 {
-    if (config->qDebug) qDebug() << "In ClientManager::init_parser_commands()";
-    commands_list["QUIT"]       = CMD_QUIT;
-    commands_list["NOOP"]       = CMD_NOOP;
-    commands_list["USER"]       = CMD_USER;
-    commands_list["PASS"]       = CMD_PASS;
-    commands_list["OSTYPE"]     = CMD_OSTYPE;
-    commands_list["SERVICES"]   = CMD_SERVICES;
-    commands_list["QUEUES"]     = CMD_QUEUES;
-    commands_list["PAUSE"]      = CMD_PAUSE;
-    commands_list["ORIG"]       = CMD_ORIG;
-    commands_list["STOP"]       = CMD_STOP;
-    commands_list["MAC"]        = CMD_MAC;
+    if (config->qDebug) qDebug() << "In ClientManager::initParserCommands()";
+    commandsList["QUIT"]       = cmdQuit;
+    commandsList["NOOP"]       = cmdNoOp;
+    commandsList["USER"]       = cmdUser;
+    commandsList["PASS"]       = cmdPass;
+    commandsList["OSTYPE"]     = cmdOsType;
+    commandsList["SERVICES"]   = cmdServices;
+    commandsList["QUEUES"]     = cmdQueues;
+    commandsList["PAUSE"]      = cmdPause;
+    commandsList["ORIG"]       = cmdOrig;
+    commandsList["STOP"]       = cmdStop;
+    commandsList["MAC"]        = cmdMac;
 
 }
 
@@ -100,7 +100,7 @@ void ClientManager::run()
     // \n command.
     const QString separator = "\n";
 
-    QString cti_username;
+    QString ctiUserName;
     int retries = 3;
     bool authenticated = false;
 
@@ -113,51 +113,46 @@ void ClientManager::run()
         qDebug() << "Error in socket:" << tcpSocket.errorString();
         return;
     }
-    this->local_socket = &tcpSocket;
+    this->localSocket = &tcpSocket;
 
     // Let's grab some informations about remote endpoint
-    QHostAddress    remote_addr = tcpSocket.peerAddress();  // Remote ip addr
-    quint16         remote_port = tcpSocket.peerPort();     // Remote port
+    QHostAddress    remoteAddr = tcpSocket.peerAddress();  // Remote ip addr
+    quint16         remotePort = tcpSocket.peerPort();     // Remote port
 
-    this->local_identifier = QString("client-%1-%2").arg(remote_addr.toString()).arg(remote_port);
-    emit this->add_client(this->local_identifier, this);
+    this->localIdentifier = QString("client-%1-%2").arg(remoteAddr.toString()).arg(remotePort);
+    emit this->addClient(this->localIdentifier, this);
 
-    if (config->qDebug) qDebug() << "Incoming Connection from " << remote_addr.toString() << ":" << remote_port;
+    if (config->qDebug) qDebug() << "Incoming Connection from " << remoteAddr.toString() << ":" << remotePort;
 
     // Let's say Welcome to our client!
-    this->send_data_to_client("Welcome to AstCTIServer");
+    this->sendDataToClient("Welcome to AstCTIServer");
 
     if (config->qDebug) qDebug() << "Read Timeout is " << config->readTimeout;
 
     // Read timeout will let us wait for data for some time.
     // When the timeout elapse, the socket will be automatically
     // closed...
-    while(tcpSocket.waitForReadyRead(config->readTimeout))
-    {
+    while(tcpSocket.waitForReadyRead(config->readTimeout)) {
         QString strdata;
         QByteArray sockData = tcpSocket.readAll();
 
-        if (config->compressionLevel > 0)
-        {
+        if (config->compressionLevel > 0) {
             strdata = QString(qUncompress(sockData));
         }
-        else
-        {
+        else {
             // Read all data from the network
             strdata = QString(sockData);
         }
         // Append data to the buffer.
         buffer.append(strdata);
         // Now check if we've some separator in the buffered data.
-        if(buffer.contains(separator))
-        {
+        if(buffer.contains(separator)) {
             QString toSplit         = ""; // here we'll store data to be parsed
             QString remainingBuffer = ""; // here we'll store data that will remain in the buffer
             // If we have text after the last separator, then
             // we need to leave it in the buffer and parse all the rest
             int lastIndexOf = buffer.lastIndexOf(separator);
-            if (lastIndexOf < buffer.size()-separator.size())
-            {
+            if (lastIndexOf < buffer.size()-separator.size()) {
                 toSplit         = buffer.left(lastIndexOf);
                 remainingBuffer = buffer.mid(lastIndexOf+ separator.size());
 
@@ -174,245 +169,213 @@ void ClientManager::run()
             QString itm;
             QString parm;
             // Iterate the list
-            foreach(itm, list)
-            {
+            foreach(itm, list) {
                 itm = itm.trimmed();
-                if (itm.size() > 0)
-                {
+                if (itm.size() > 0) {
                     // TODO : command parser
                     if (config->qDebug) qDebug() << "ClientManager::run data received:" << itm;
-                    QAstCTICommand  cmd = this->parse_command(itm);
+                    QAstCTICommand  cmd = this->parseCommand(itm);
 
-                    switch(commands_list[cmd.command])
-                    {
-                        case CMD_QUIT:
-                            this->send_data_to_client("900 BYE");
-                            tcpSocket.close();
+                    switch(commandsList[cmd.command]) {
+                    case cmdQuit:
+                        this->sendDataToClient("900 BYE");
+                        tcpSocket.close();
+                        break;
+                    case cmdNoOp:
+                        this->sendDataToClient("100 OK");
+                        break;
+                    case cmdUser:
+                        if (cmd.parameters.count() < 1) {
+                            this->sendDataToClient("101 KO No username given");
                             break;
-                        case CMD_NOOP:
-                            this->send_data_to_client("100 OK");
+                        }
+                        else {
+                            ctiUserName = cmd.parameters.at(0);
+                            this->sendDataToClient("100 OK Send Password Now");
+                        }
+                        break;
+                    case cmdMac:
+                        if (!authenticated) {
+                            this->sendDataToClient("101 KO Not authenticated");
                             break;
-                        case CMD_USER:
-                            if (cmd.parameters.count() < 1)
-                            {
-                                this->send_data_to_client("101 KO No username given");
-                                break;
-                            }
-                            else
-                            {
-                                cti_username = cmd.parameters.at(0);
-                                this->send_data_to_client("100 OK Send Password Now");
-                            }
-                            break;
-                        case CMD_MAC:
-                            if (!authenticated)
-                            {
-                                this->send_data_to_client("101 KO Not authenticated");
-                                break;
-                            }
+                        }
 
-                            if (cmd.parameters.count() < 1)
-                            {
-                                this->send_data_to_client("101 KO No mac given");
-                                break;
-                            }
-                            else
-                            {
-                                QString mac = cmd.parameters.at(0).toLower();
-                                QAstCTISeat seat(mac, 0);
-                                if (seat.load_from_mac())
-                                {
-                                    if (this->active_operator != 0)
-                                    {
-                                        this->active_operator->set_last_seat(seat.get_id_seat());
-                                        this->active_operator->save();
-                                        QString new_identifier = QString("exten-%1").arg(seat.get_seat_exten());
-                                        emit this->change_client(this->local_identifier, new_identifier);
-                                        this->local_identifier = new_identifier;
+                        if (cmd.parameters.count() < 1) {
+                            this->sendDataToClient("101 KO No mac given");
+                            break;
+                        }
+                        else {
+                            QString mac = cmd.parameters.at(0).toLower();
+                            QAstCTISeat seat(mac, 0);
+                            if (seat.loadFromMac()) {
+                                if (this->activeOperator != 0) {
+                                    this->activeOperator->setLastSeat(seat.getIdSeat());
+                                    this->activeOperator->save();
+                                    QString newIdentifier = QString("exten-%1").arg(seat.getSeatExten());
+                                    emit this->changeClient(this->localIdentifier, newIdentifier);
+                                    this->localIdentifier = newIdentifier;
 
-                                        this->send_data_to_client("100 OK");
-                                        // We can do a successful cti login only after the seat
-                                        // is known
-                                        emit this->cti_login(this);
-                                    }
+                                    this->sendDataToClient("100 OK");
+                                    // We can do a successful cti login only after the seat
+                                    // is known
+                                    emit this->ctiLogin(this);
                                 }
                             }
-                            break;
-                        case CMD_PASS:
-                            // TODO : emit only if user done a successfull authentication
-                            // this->active_operator
+                        }
+                        break;
+                    case cmdPass:
+                        // TODO : emit only if user done a successfull authentication
+                        // this->activeOperator
 
-                            if (cti_username == "")
-                            {
-                                this->send_data_to_client("101 KO Send User First");
+                        if (ctiUserName == "")  {
+                            this->sendDataToClient("101 KO Send User First");
+                        }
+                        else {
+                            if (cmd.parameters.count() < 1) {
+                                this->sendDataToClient("101 KO No password given");
+                                break;
                             }
-                            else
-                            {
-                                if (cmd.parameters.count() < 1)
-                                {
-                                    this->send_data_to_client("101 KO No password given");
-                                    break;
-                                }
 
-                                {
-                                    QAstCTIOperator* the_operator = CtiServerApplication::instance()->get_operator_by_username(cti_username);
-                                    if (the_operator == 0)
-                                    {
-                                        this->send_data_to_client("101 KO Operator Not Found");
-                                        cti_username = "";
+                            {
+                                QAstCTIOperator *theOperator = CtiServerApplication::instance()->getOperatorByUsername(ctiUserName);
+                                if (theOperator == 0) {
+                                    this->sendDataToClient("101 KO Operator Not Found");
+                                    ctiUserName = "";
+                                    retries--;
+                                }
+                                else {
+                                    if (!theOperator->checkPassword(cmd.parameters.at(0))) {
+                                        this->sendDataToClient("101 KO Wrong password");
+                                        ctiUserName = "";
                                         retries--;
                                     }
-                                    else
-                                    {
-
-                                        if (!the_operator->check_password(cmd.parameters.at(0)))
-                                        {
-                                            this->send_data_to_client("101 KO Wrong password");
-                                            cti_username = "";
-                                            retries--;
-                                        }
-                                        else
-                                        {
-                                            this->in_pause = the_operator->get_begin_in_pause();
-                                            this->active_operator = the_operator;
-                                            authenticated = true;
-                                            this->send_data_to_client("102 OK Authentication successful");
-
-                                        }
+                                    else {
+                                        this->inPause = theOperator->getBeginInPause();
+                                        this->activeOperator = theOperator;
+                                        authenticated = true;
+                                        this->sendDataToClient("102 OK Authentication successful");
                                     }
                                 }
-
-                                if (retries == 0)
-                                {
-                                    tcpSocket.close();
-                                }
-                            }
-                            break;
-                        case CMD_OSTYPE:
-                            if (!authenticated)
-                            {
-                                this->client_operating_system = "";
-                                this->send_data_to_client("101 KO Not authenticated");
-                                break;
-                            }
-                            if (cmd.parameters.count() < 1)
-                            {
-                                this->client_operating_system = "";
-                                this->send_data_to_client("101 KO Operating system is not set");
-                                break;
-                            }
-                            else
-                            {
-                                this->client_operating_system = cmd.parameters.at(0).toUpper();
-                                this->send_data_to_client("100 OK Operating System Is Set");
-                            }
-                            break;
-
-                        case CMD_ORIG:
-                            if (!authenticated)
-                            {
-                                this->send_data_to_client("101 KO Not authenticated");
-                                break;
-                            }
-                            foreach(parm, cmd.parameters)
-                            {
-                                emit this->notify_server(parm);
-                            }
-                            this->send_data_to_client("100 OK");
-                            break;
-                        case CMD_SERVICES:
-                            if (!authenticated)
-                            {
-                                this->send_data_to_client("101 KO Not authenticated");
-                                break;
                             }
 
+                            if (retries == 0) {
+                                tcpSocket.close();
+                            }
+                        }
+                        break;
+                    case cmdOsType:
+                        if (!authenticated) {
+                            this->clientOperatingSystem = "";
+                            this->sendDataToClient("101 KO Not authenticated");
                             break;
-                        case CMD_PAUSE:
-                            if (!authenticated)
-                            {
-                                this->send_data_to_client("101 KO Not authenticated");
-                                break;
-                            }
-                            if (cmd.parameters.count() < 1)
-                            {
-                                this->send_data_to_client("101 KO No mac given");
-                                break;
-                            }
-                            else
-                            {
-                                // TODO: Add better support to pause event
-                                // we need to connect some signals from coretcpserver
-                                // to get back a response for a pause request.
-                                if (this->in_pause)
-                                {
-                                    emit this->cti_pause_out(this);
-                                    this->in_pause = false;
-                                }
-                                else
-                                {
-                                    emit this->cti_pause_in(this);
-                                    this->in_pause = true;
-                                }
-                                this->send_data_to_client("100 OK");
+                        }
+                        if (cmd.parameters.count() < 1) {
+                            this->clientOperatingSystem = "";
+                            this->sendDataToClient("101 KO Operating system is not set");
+                            break;
+                        }
+                        else {
+                            this->clientOperatingSystem = cmd.parameters.at(0).toUpper();
+                            this->sendDataToClient("100 OK Operating System Is Set");
+                        }
+                        break;
 
+                    case cmdOrig:
+                        if (!authenticated) {
+                            this->sendDataToClient("101 KO Not authenticated");
+                            break;
+                        }
+                        foreach(parm, cmd.parameters) {
+                            emit this->notifyServer(parm);
+                        }
+                        this->sendDataToClient("100 OK");
+                        break;
+                    case cmdServices:
+                        if (!authenticated) {
+                            this->sendDataToClient("101 KO Not authenticated");
+                            break;
+                        }
+
+                        break;
+                    case cmdPause:
+                        if (!authenticated) {
+                            this->sendDataToClient("101 KO Not authenticated");
+                            break;
+                        }
+                        if (cmd.parameters.count() < 1) {
+                            this->sendDataToClient("101 KO No mac given");
+                            break;
+                        }
+                        else {
+                            // TODO: Add better support to pause event
+                            // we need to connect some signals from coretcpserver
+                            // to get back a response for a pause request.
+                            if (this->inPause) {
+                                emit this->ctiPauseOut(this);
+                                this->inPause = false;
                             }
-                            break;
-                        case CMD_STOP:
-                            if (!authenticated)
-                            {
-                                this->send_data_to_client("101 KO Not authenticated");
-                                break;
+                            else {
+                                emit this->ctiPauseIn(this);
+                                this->inPause = true;
                             }
-                            emit this->stop_request(this->local_identifier, this);
-                            tcpSocket.close();
-                            qDebug() << "Emitted signal STOP";
+                            this->sendDataToClient("100 OK");
+                        }
+                        break;
+                    case cmdStop:
+                        if (!authenticated) {
+                            this->sendDataToClient("101 KO Not authenticated");
                             break;
-                        case CMD_NOT_DEFINED:
-                            this->send_data_to_client("101 KO Invalid Command");
-                            break;
-                    } // end switch
-                } // end if (itm.size())
-            } // foreach
-        } // end buffer.contains(separator)
+                        }
+                        emit this->stopRequest(this->localIdentifier, this);
+                        tcpSocket.close();
+                        qDebug() << "Emitted signal STOP";
+                        break;
+                    case cmdNotDefined:
+                        this->sendDataToClient("101 KO Invalid Command");
+                        break;
+                } // end switch
+            } // end if (itm.size())
+        } // foreach
+    } // end buffer.contains(separator)
     } // end while(tcpSocket.waitForReadyRead)
 
     // Timeout elapsed: close the socket
     if ( (tcpSocket.state() != QAbstractSocket::UnconnectedState)
-        | (tcpSocket.state() != QAbstractSocket::ClosingState) )
+        | (tcpSocket.state() != QAbstractSocket::ClosingState) ) {
         tcpSocket.close();
+    }
 
-    if (config->qDebug) qDebug() << "Connection from" << remote_addr.toString() << ":" << remote_port << "closed";
+    if (config->qDebug) qDebug() << "Connection from" << remoteAddr.toString() << ":" << remotePort << "closed";
 
     // We should do a logoff right now..
-    emit this->cti_logoff(this);
+    emit this->ctiLogoff(this);
 
     // Emit a signal when disconnection is in progress
     // TODO : emit only if user done a successfull authentication
-    emit this->remove_client(this->local_identifier);
+    emit this->removeClient(this->localIdentifier);
 
 }
 
-QAstCTIOperator* ClientManager::get_active_operator()
+QAstCTIOperator *ClientManager::getActiveOperator()
 {
-    return this->active_operator;
+    return this->activeOperator;
 }
 
-QString ClientManager::get_client_operating_system()
+QString ClientManager::getClientOperatingSystem()
 {
-    return this->client_operating_system;
+    return this->clientOperatingSystem;
 }
 
-bool ClientManager::is_in_pause()
+bool ClientManager::isInPause()
 {
-    return this->in_pause;
+    return this->inPause;
 }
 
 /*!
     Parse a string command and returns an QAstCTICommand struct with
     command and parameters as QStringList;
 */
-QAstCTICommand ClientManager::parse_command(const QString& command)
+QAstCTICommand ClientManager::parseCommand(const QString &command)
 {
     QStringList data = command.split(" ");
     QAstCTICommand newCommand;
@@ -425,9 +388,9 @@ QAstCTICommand ClientManager::parse_command(const QString& command)
 /*!
     Sends string data over the specified QTcpSocket
 */
-void ClientManager::send_data_to_client(const QString& data)
+void ClientManager::sendDataToClient(const QString &data)
 {
-    if (config->qDebug) qDebug() << "In ClientManager::send_data_to_client(" << data << ")";
+    if (config->qDebug) qDebug() << "In ClientManager::sendDataToClient(" << data << ")";
 
     QByteArray block;
 
@@ -436,18 +399,18 @@ void ClientManager::send_data_to_client(const QString& data)
 
     // We output simple ascii strings (no utf8)
     out << data.toAscii() << "\n";
-    if (config->compressionLevel > 0)
-    {
+    if (config->compressionLevel > 0) {
         QByteArray compressed = qCompress(block, config->compressionLevel);
-        this->local_socket->write(compressed);
+        this->localSocket->write(compressed);
     }
-    else
-        this->local_socket->write(block);
+    else {
+        this->localSocket->write(block);
+    }
 
     // Write the internal buffer to the socket without blocking
     // We need QAbstractSocket to start sending buffered data
     // immediately
-    this->local_socket->flush();
+    this->localSocket->flush();
 }
 
 

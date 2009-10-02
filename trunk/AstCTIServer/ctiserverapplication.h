@@ -82,21 +82,21 @@ class CtiServerApplication : public QCoreApplication
 public:
     CtiServerApplication(int &argc, char **argv);
     ~CtiServerApplication();
-    static CtiServerApplication* instance();
-    QAstCTIOperator*        get_operator_by_username(const QString& username);
+    static CtiServerApplication *instance();
+    QAstCTIOperator         *getOperatorByUsername(const QString& username);
 
-    QAstCTIServices*        get_services();
+    QAstCTIServices         *get_services();
 
     QAstCTIConfiguration    config; // Main configuration struct
 
 public slots:
-    CoreTcpServer*          build_new_core_tcpserver();
+    CoreTcpServer           *build_new_core_tcpserver();
     void                    reload_sql_database(QFileInfo * databaseFile);
 
 private:
     bool                    can_start;
-    CoreTcpServer*          core_tcp_server;
-    ConfigurationChecker*   config_checker;
+    CoreTcpServer           *core_tcp_server;
+    ConfigurationChecker    *config_checker;
     bool                    is_config_loading;
 
     bool                    build_sql_database(const QString& databaseFile);
@@ -107,8 +107,8 @@ private:
     void                    write_settings_file(QSettings* settings, const QString & key, const  QVariant & defvalue);
 
 protected:
-    QAstCTIServices*        services;
-    QAstCTIOperators*       cti_operators;
+    QAstCTIServices         *services;
+    QAstCTIOperators        *cti_operators;
 
 
 };

@@ -64,24 +64,24 @@ struct AsteriskCommand
 };
 
 enum AMIClientStatus {
-    AMI_STATUS_NOT_DEFINED,
-    AMI_STATUS_LOGGING_IN,
-    AMI_STATUS_LOGGED_IN,
-    AMI_STATUS_REQEUSTING_EXTENSIONS,
-    AMI_STATUS_REQUESTING_SIP,
-    AMI_STATUS_REQUESTING_QUEUES,
-    AMI_STATUS_ENDLIST
+    amiStatusNotDefined,
+    amiStatusLoggingIn,
+    amiStatusLoggedIn,
+    amiStatusRequestingExtensions,
+    amiStatusRequestingSip,
+    amiStatusRequestingQueues,
+    amiStatusEndList
 };
 
 enum AMIEvent {
-    AMI_EVENT_UNDEFINED,
-    AMI_EVENT_SHUTDOWN,
-    AMI_EVENT_NEW_CHANNEL,
-    AMI_EVENT_HANGUP,
-    AMI_EVENT_NEW_EXTEN,
-    AMI_EVENT_VAR_SET,
-    AMI_EVENT_JOIN,
-    AMI_EVENT_BRIDGE
+    amiEventUndefined,
+    amiEventShutdown,
+    amiEventNewChannel,
+    amiEventHangup,
+    amiEventNewExten,
+    amiEventVarSet,
+    amiEventJoin,
+    amiEventBridge
 };
 
 

@@ -57,19 +57,19 @@ struct QAstCTICommand
 };
 
 enum QAstCTICommands {
-    CMD_NOT_DEFINED,
-    CMD_NOOP,
-    CMD_QUIT,
-    CMD_USER,
-    CMD_PASS,
-    CMD_MAC,
-    CMD_OSTYPE,
-    CMD_SERVICES,
-    CMD_QUEUES,
-    CMD_PAUSE,
-    CMD_ORIG,
-    CMD_STOP,
-    CMD_ENDLIST
+    cmdNotDefined,
+    cmdNoOp,
+    cmdQuit,
+    cmdUser,
+    cmdPass,
+    cmdMac,
+    cmdOsType,
+    cmdServices,
+    cmdQueues,
+    cmdPause,
+    cmdOrig,
+    cmdStop,
+    cmdEndList
 };
 
 
@@ -81,41 +81,41 @@ public:
     ClientManager(QAstCTIConfiguration* config, int socketDescriptor, QObject* parent);
     ~ClientManager();
     void                    run();
-    bool                    is_in_pause();
-    QAstCTIOperator*        get_active_operator();
-    QString                 get_client_operating_system();
+    bool                    isInPause();
+    QAstCTIOperator*        getActiveOperator();
+    QString                 getClientOperatingSystem();
 
 public slots:
-    void                    send_data_to_client(const QString& data);
+    void                    sendDataToClient(const QString& data);
 
 signals:
-    void add_client(const QString& exten, ClientManager* cl);
-    void change_client(const QString& oldexten, const QString& newexten);
-    void remove_client(const QString& exten);
-    void notify_server(const QString& data);
-    void stop_request(const QString& exten, ClientManager* cl);
+    void addClient(const QString& exten, ClientManager* cl);
+    void changeClient(const QString& oldexten, const QString& newexten);
+    void removeClient(const QString& exten);
+    void notifyServer(const QString& data);
+    void stopRequest(const QString& exten, ClientManager *cl);
 
     // CTI Status change request
-    void cti_pause_in(ClientManager* cl);
-    void cti_pause_out(ClientManager* cl);
-    void cti_login(ClientManager* cl);
-    void cti_logoff(ClientManager* cl);
+    void ctiPauseIn(ClientManager *cl);
+    void ctiPauseOut(ClientManager *cl);
+    void ctiLogin(ClientManager *cl);
+    void ctiLogoff(ClientManager *cl);
 
 private:
-    QAstCTIConfiguration*   config;
+    QAstCTIConfiguration    *config;
     int                     socketDescriptor;
-    QString                 local_identifier;
+    QString                 localIdentifier;
     QString                 buffer;
-    QHash<QString, int>     commands_list;
-    void                    init_parser_commands();
-    QAstCTICommand          parse_command(const QString& command);
-    QAstCTIOperator*        active_operator;
-    QString                 client_operating_system;
-    bool                    in_pause;
+    QHash<QString, int>     commandsList;
+    void                    initParserCommands();
+    QAstCTICommand          parseCommand(const QString &command);
+    QAstCTIOperator         *activeOperator;
+    QString                 clientOperatingSystem;
+    bool                    inPause;
 
 
 protected:
-    QTcpSocket*             local_socket;
+    QTcpSocket              *localSocket;
 
 };
 

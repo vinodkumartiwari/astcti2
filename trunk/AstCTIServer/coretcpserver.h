@@ -59,7 +59,7 @@ public:
     ~CoreTcpServer();
 
 signals:
-    void                            send_data_from_server(const QString &data);
+    void                            sendDataFromServer(const QString &data);
     void                            server_is_closing();
     void                            ami_client_pause_in(ClientManager* cl);
     void                            ami_client_pause_out(ClientManager* cl);
@@ -73,9 +73,9 @@ protected:
 
 
 protected slots:
-    void                            add_client(const QString& exten, ClientManager* cl);
-    void                            change_client(const QString& oldexten, const QString& newexten);
-    void                            remove_client(const QString& exten);
+    void                            addClient(const QString& exten, ClientManager* cl);
+    void                            changeClient(const QString& oldexten, const QString& newexten);
+    void                            removeClient(const QString& exten);
     void                            notify_client(const QString& data);
     void                            stop_the_server();
     void                            stop_the_server(bool close_the_socket);
