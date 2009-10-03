@@ -60,33 +60,33 @@ public:
 
 signals:
     void                            sendDataFromServer(const QString &data);
-    void                            server_is_closing();
-    void                            ami_client_pause_in(ClientManager* cl);
-    void                            ami_client_pause_out(ClientManager* cl);
-    void                            ami_client_login(ClientManager* cl);
-    void                            ami_client_logoff(ClientManager* cl);
+    void                            serverIsClosing();
+    void                            amiClientPauseIn(ClientManager *cl);
+    void                            amiClientPauseOut(ClientManager *cl);
+    void                            amiClientLogin(ClientManager *cl);
+    void                            amiClientLogoff(ClientManager *cl);
 
 protected:
-    QHash<QString, ClientManager*>* clients;
+    QHash<QString, ClientManager*>  *clients;
     void                            incomingConnection(int socketDescriptor);
-    bool                            contain_client(const QString &exten);
+    bool                            containsClient(const QString &exten);
 
 
 protected slots:
-    void                            addClient(const QString& exten, ClientManager* cl);
-    void                            changeClient(const QString& oldexten, const QString& newexten);
-    void                            removeClient(const QString& exten);
-    void                            notify_client(const QString& data);
-    void                            stop_the_server();
-    void                            stop_the_server(bool close_the_socket);
+    void                            addClient(const QString &exten, ClientManager *cl);
+    void                            changeClient(const QString &oldexten, const QString &newexten);
+    void                            removeClient(const QString &exten);
+    void                            notifyClient(const QString &data);
+    void                            stopTheServer();
+    void                            stopTheServer(bool closeTheSocket);
     // TODO: Complete slot declaration
-    void                            receive_cti_event(const AMIEvent& eventid, QAstCTICall* the_call);
-    void                            receive_cti_response(const QString& command_name, const QString& response, const QString& message, const QString& channel);
+    void                            receiveCtiEvent(const AMIEvent &eventid, QAstCTICall *the_call);
+    void                            receiveCtiResponse(const QString &commandName, const QString &response, const QString &message, const QString &channel);
     // Slots to receive CTI Client events
-    void                            cti_client_pause_in(ClientManager* cl);
-    void                            cti_client_pause_out(ClientManager* cl);
-    void                            cti_client_login(ClientManager* cl);
-    void                            cti_client_logoff(ClientManager* cl);
+    void                            ctiClientPauseIn(ClientManager *cl);
+    void                            ctiClientPauseOut(ClientManager *cl);
+    void                            ctiClientLogin(ClientManager *cl);
+    void                            ctiClientLogoff(ClientManager *cl);
 
 private:
     QSettings               settings;

@@ -46,9 +46,9 @@
 
 QAsteriskCTILogger      logger; // Our logger object
 
-void log_handler(QtMsgType type, const char *msg)
+void logHandler(QtMsgType type, const char *msg)
 {
-    logger.write_to_log(type, msg);
+    logger.writeToLog(type, msg);
 }
 
 int main(int argc, char *argv[])
@@ -89,13 +89,13 @@ int main(int argc, char *argv[])
     qDebug() << "KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY";
     qDebug() << "AND FITNESS FOR A PARTICULAR PURPOSE.";
 
-    qInstallMsgHandler(log_handler);
+    qInstallMsgHandler(logHandler);
 
     // QCoreApplication needs to be initialized here
     CtiServerApplication app(argc, argv);
-    if (app.build_new_core_tcpserver() == 0)
+    if (app.buildNewCoreTcpServer() == 0) {
         return 1;
-
+    }
     return app.exec();
 }
 

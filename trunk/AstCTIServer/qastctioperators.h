@@ -49,17 +49,17 @@ class QAstCTIOperators : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIOperators(QObject* parent);
+    QAstCTIOperators(QObject *parent);
     ~QAstCTIOperators();
-    QAstCTIOperator* operator[](const QString& key);
+    QAstCTIOperator *operator[](const QString &key);
     int count();
 
 
 private:
-    QHash<QString, QAstCTIOperator*> operators;
-    void add_operator(QAstCTIOperator* oper);
-    void remove_operator(const QString& key);
-    void fill_operators();
+    QHash<QString, QAstCTIOperator *> operators;
+    void addOperator(QAstCTIOperator *oper);
+    void removeOperator(const QString &key);
+    void fillOperators();
     void clear();    
 };
 

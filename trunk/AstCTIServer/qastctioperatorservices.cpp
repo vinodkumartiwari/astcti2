@@ -41,37 +41,39 @@
 
 #include "qastctioperatorservices.h"
 
-QAstCTIOperatorServices::QAstCTIOperatorServices(QObject* parent)
-        : QObject(parent), ID_OPERATOR(0)
+QAstCTIOperatorServices::QAstCTIOperatorServices(QObject *parent)
+        : QObject(parent), idOperator(0)
 {
-}
-QAstCTIOperatorServices::QAstCTIOperatorServices(const int& idoperator, QObject* parent)
-        : QObject(parent), ID_OPERATOR(idoperator)
-{
-    this->fill_list();
-}
-QAstCTIOperatorServices::~QAstCTIOperatorServices()
-{
-    this->services_list.clear();
 }
 
-void QAstCTIOperatorServices::set_id_operator(const int &idoperator)
+QAstCTIOperatorServices::QAstCTIOperatorServices(const int &idOperator, QObject *parent)
+        : QObject(parent), idOperator(idOperator)
 {
-    this->ID_OPERATOR = idoperator;
-    this->fill_list();
+    this->fillList();
+}
+
+QAstCTIOperatorServices::~QAstCTIOperatorServices()
+{
+    this->servicesList.clear();
+}
+
+void QAstCTIOperatorServices::setIdOperator(const int &idOperator)
+{
+    this->idOperator = idOperator;
+    this->fillList();
 }
 
 int QAstCTIOperatorServices::count()
 {
-    return this->services_list.count();
+    return this->servicesList.count();
 }
 
-QHash<QString,int>* QAstCTIOperatorServices::get_services_list()
+QHash<QString,int> *QAstCTIOperatorServices::getServicesList()
 {
-    return &this->services_list;
+    return &this->servicesList;
 }
 
-void QAstCTIOperatorServices::fill_list()
+void QAstCTIOperatorServices::fillList()
 {
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
@@ -81,17 +83,15 @@ void QAstCTIOperatorServices::fill_list()
             sql +="JOIN services ON services_operators.ID_SERVICE=services.ID_SERVICE ";
             sql +="WHERE iq=1 AND ID_OPERATOR=:id";
     query.prepare(sql);
-    query.bindValue(":id", this->ID_OPERATOR);
+    query.bindValue(":id", this->idOperator);
     query.exec();
 
-    this->services_list.clear();
-    while(query.next())
-    {
-        QString service_name = query.value(0).toString();
+    this->servicesList.clear();
+    while(query.next()) {
+        QString serviceName = query.value(0).toString();
         int penalty = query.value(1).toInt(0);
-        if (!this->services_list.contains(service_name))
-        {
-            this->services_list.insert(service_name, penalty);
+        if (!this->servicesList.contains(serviceName)) {
+            this->servicesList.insert(serviceName, penalty);
         }
     }
     query.finish();

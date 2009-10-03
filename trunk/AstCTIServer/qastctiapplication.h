@@ -46,27 +46,27 @@ class QAstCTIApplication : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIApplication(const int& id, QObject* parent);
+    QAstCTIApplication(const int &id, QObject *parent);
     ~QAstCTIApplication();
-    int get_id_application();
-    int get_id_service();
-    QString get_application_os_type();
-    QString get_application_path();
-    QString get_parameters();
-    void set_parameters(QString new_parameters);
+    int getIdApplication();
+    int getIdService();
+    QString getApplicationOsType();
+    QString getApplicationPath();
+    QString getApplicationParameters();
+    void setApplicationParameters(QString newParameters);
 
 public slots:
     bool load();
 
 signals:
-    void load_complete(const bool& result);
+    void loadComplete(const bool &result);
 
 private:
-    int ID_APPLICATION;
-    int ID_SERVICE;
-    QString APPLICATION_OS_TYPE;
-    QString APPLICATION_PATH;
-    QString PARAMETERS;
+    int idApplication;
+    int idService;
+    QString applicationOsType;
+    QString applicationPath;
+    QString applicationParameters;
 
 };
 

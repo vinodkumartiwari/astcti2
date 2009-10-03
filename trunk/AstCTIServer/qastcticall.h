@@ -53,62 +53,62 @@ class QAstCTICall : public QObject
     Q_OBJECT
 
 public:
-    QAstCTICall(QObject* parent);
+    QAstCTICall(QObject *parent);
     ~QAstCTICall();
 
-    QString&                get_channel();
-    void                    set_channel(QString channel);
-    QString&                get_parsed_channel();
-    void                    set_parsed_channel(QString parsedchannel);
+    QString                 &getChannel();
+    void                    setChannel(QString channel);
+    QString                 &getParsedChannel();
+    void                    setParsedChannel(QString parsedChannel);
 
-    QString&                get_dest_channel();
-    void                    set_dest_channel(QString channel);
-    QString&                get_parsed_dest_channel();
-    void                    set_parsed_dest_channel(QString parsedchannel);
+    QString                 &getDestChannel();
+    void                    setDestChannel(QString channel);
+    QString                 &getParsedDestChannel();
+    void                    setParsedDestChannel(QString parsedChannel);
 
-    QString&                get_callerid_num();
-    void                    set_callerid_num(QString calleridnum);
-    QString&                get_callerid_name();
-    void                    set_callerid_name(QString calleridname);
-    QString&                get_uniqueid();
-    void                    set_uniqueid(QString uniqueid);
+    QString                 &getCalleridNum();
+    void                    setCalleridNum(QString callerIdNum);
+    QString                 &getCalleridName();
+    void                    setCalleridName(QString callerIdName);
+    QString                 &getUniqueId();
+    void                    setUniqueId(QString uniqueId);
 
-    QString&                get_dest_uniqueid();
-    void                    set_dest_uniqueid(QString uniqueid);
+    QString                 &getDestUniqueId();
+    void                    setDestUniqueId(QString uniqueId);
 
-    QString&                get_context();
-    void                    set_context(QString context);
-    QString&                get_state();
-    void                    set_state(QString state);
-    void                    add_variable(QString key, QString value);
+    QString                 &getContext();
+    void                    setContext(QString context);
+    QString                 &getState();
+    void                    setState(QString state);
+    void                    addVariable(QString key, QString value);
 
-    void                    set_applications(QAstCTIServicesApplications* applications);
-    void                    set_operating_system(QString operating_system);
+    void                    setApplications(QAstCTIServicesApplications *applications);
+    void                    setOperatingSystem(QString operatingSystem);
 
 
-    QString                 to_xml();
+    QString                 toXml();
     
 private:
     QString                         channel;
-    QString                         parsed_channel;
-    QString                         dest_channel;
-    QString                         parsed_dest_channel;
-    QString                         callerid_num;
-    QString                         callerid_name;
-    QString                         uniqueid;
-    QString                         dest_uniqueid;
+    QString                         parsedChannel;
+    QString                         destChannel;
+    QString                         parsedDestChannel;
+    QString                         callerIdNum;
+    QString                         callerIdName;
+    QString                         uniqueId;
+    QString                         destUniqueId;
     QString                         context;
     QString                         state;
     QString                         clientOperatingSystem;
 
-    QHash<QString, QString>*        variables;
-    QAstCTIServicesApplications*    applications;
-    QAstCTIApplication*             application;
+    QHash<QString, QString>         *variables;
+    QAstCTIServicesApplications     *applications;
+    QAstCTIApplication              *application;
 
-    void                            parse_channel();
-    void                            parse_dest_channel();
-    void                            set_application();
-    void                            parse_application_parameters();
+    void                            parseChannel();
+    void                            parseDestChannel();
+    void                            setApplication();
+    void                            parseApplicationParameters();
 };
 
 #endif // QASTCTICALL_H

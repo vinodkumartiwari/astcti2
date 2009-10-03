@@ -41,15 +41,15 @@
 #include "qastctiservicesvariables.h"
 #include "qastctivariable.h"
 
-QAstCTIServicesVariables::QAstCTIServicesVariables(QObject* parent) :
-        QObject(parent), ID_SERVICE(0)
+QAstCTIServicesVariables::QAstCTIServicesVariables(QObject *parent) :
+        QObject(parent), idService(0)
 {
 }
 
-QAstCTIServicesVariables::QAstCTIServicesVariables(const int& idservice, QObject* parent) :
-        QObject(parent), ID_SERVICE(idservice)
+QAstCTIServicesVariables::QAstCTIServicesVariables(const int &idService, QObject *parent) :
+        QObject(parent), idService(idService)
 {
-    this->fill_variables();
+    this->fillVariables();
 }
 
 QAstCTIServicesVariables::~QAstCTIServicesVariables()
@@ -58,34 +58,32 @@ QAstCTIServicesVariables::~QAstCTIServicesVariables()
     this->clear();
 }
 
-QAstCTIVariable* QAstCTIServicesVariables::operator[](const QString& key)
+QAstCTIVariable *QAstCTIServicesVariables::operator[](const QString &key)
 {
     return (this->variables.contains(key)) ? this->variables[key] : 0;
 
 }
 
-void QAstCTIServicesVariables::set_id_service(const int& idservice)
+void QAstCTIServicesVariables::setIdService(const int &idService)
 {
-    this->ID_SERVICE = idservice;
-    this->fill_variables();
+    this->idService = idService;
+    this->fillVariables();
 }
-void QAstCTIServicesVariables::add_variable(QAstCTIVariable* var)
+void QAstCTIServicesVariables::addVariable(QAstCTIVariable *var)
 {
-    this->variables.insert(var->get_var_name(), var);
+    this->variables.insert(var->getVarName(), var);
 }
 
-bool QAstCTIServicesVariables::contains(const QString& key)
+bool QAstCTIServicesVariables::contains(const QString &key)
 {
     return this->variables.contains(key);
 }
 
-void QAstCTIServicesVariables::remove_variable(const QString& key)
+void QAstCTIServicesVariables::removeVariable(const QString &key)
 {
-    if (this->variables.contains(key))
-    {
-        QAstCTIVariable* var = this->variables[key];
-        if (var != 0)
-        {
+    if (this->variables.contains(key)) {
+        QAstCTIVariable *var = this->variables[key];
+        if (var != 0) {
             delete(var);
         }
         this->variables.remove(key);
@@ -102,7 +100,7 @@ void QAstCTIServicesVariables::clear()
     // Do a clear only if really needed
     if (this->variables.count() > 0)
     {
-        QMutableHashIterator<QString, QAstCTIVariable*> i(this->variables);
+        QMutableHashIterator<QString, QAstCTIVariable *> i(this->variables);
         while (i.hasNext()) {
             i.next();
             delete(i.value());
@@ -111,23 +109,21 @@ void QAstCTIServicesVariables::clear()
     }
 }
 
-void QAstCTIServicesVariables::fill_variables()
+void QAstCTIServicesVariables::fillVariables()
 {
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
     query.prepare("SELECT ID_VARIABLE FROM services_variables WHERE ID_SERVICE=:id ORDER BY ID_VARIABLE ASC");
-    query.bindValue(":id", this->ID_SERVICE);
+    query.bindValue(":id", this->idService);
     query.exec();
-    while(query.next())
-    {
-        QAstCTIVariable* var = new QAstCTIVariable(query.value(0).toInt(0), this);
-        if (var->load())
-        {
-            QString varName = var->get_var_name();
+    while(query.next()) {
+        QAstCTIVariable *var = new QAstCTIVariable(query.value(0).toInt(0), this);
+        if (var->load()) {
+            QString varName = var->getVarName();
 
             // Remove service if exists before load
-            this->remove_variable(varName);
-            this->add_variable(var);
+            this->removeVariable(varName);
+            this->addVariable(var);
         }
     }
     query.finish();

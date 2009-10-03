@@ -46,26 +46,26 @@ class QAstCTISeat : public QObject
     Q_OBJECT
 
 public:
-    QAstCTISeat(const int& id, QObject* parent);
-    QAstCTISeat(const QString& mac, QObject* parent);
+    QAstCTISeat(const int &id, QObject *parent);
+    QAstCTISeat(const QString &mac, QObject *parent);
     ~QAstCTISeat();
     int getIdSeat();
-    QString get_seat_mac();
+    QString getSeatMac();
     QString getSeatExten();
-    QString get_description();
+    QString getDescription();
 
 public slots:
     bool load();
     bool loadFromMac();
 
 signals:
-    void load_complete(const bool& result);
+    void loadComplete(const bool &result);
 
 private:
-    int ID_SEAT;
-    QString SEAT_MAC;
-    QString SEAT_EXTEN;
-    QString DESCRIPTION;
+    int idSeat;
+    QString seatMac;
+    QString seatExten;
+    QString description;
 };
 
 #endif // QASTCTISEAT_H

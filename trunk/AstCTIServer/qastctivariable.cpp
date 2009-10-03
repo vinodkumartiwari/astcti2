@@ -40,8 +40,8 @@
 
 #include "qastctivariable.h"
 
-QAstCTIVariable::QAstCTIVariable(const int& id, QObject* parent) :
-        QObject(parent), ID_VARIABLE(id), ID_SERVICE(0), VARNAME("")
+QAstCTIVariable::QAstCTIVariable(const int &id, QObject *parent) :
+        QObject(parent), idVariable(id), idService(0), varName("")
 {
 
 }
@@ -57,31 +57,30 @@ bool QAstCTIVariable::load()
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
     query.prepare("SELECT * FROM services_variables WHERE ID_VARIABLE=:id");
-    query.bindValue(":id", this->ID_VARIABLE);
+    query.bindValue(":id", this->idVariable);
     retVal = query.exec();
-    if ( (retVal) &  (query.first()) )
-    {
-        this->ID_SERVICE = query.value(1).toInt(0);
-        this->VARNAME = query.value(2).toString();
+    if ( (retVal) &  (query.first()) ) {
+        this->idService = query.value(1).toInt(0);
+        this->varName = query.value(2).toString();
         query.finish();
     }
     query.clear();
 
-    emit this->load_complete(retVal);
+    emit this->loadComplete(retVal);
     return retVal;
 }
 
-int QAstCTIVariable::get_id_variable()
+int QAstCTIVariable::getIdVariable()
 {
-    return this->ID_VARIABLE;
+    return this->idVariable;
 }
 
-int QAstCTIVariable::get_id_service()
+int QAstCTIVariable::getIdService()
 {
-    return this->ID_SERVICE;
+    return this->idService;
 }
 
-QString QAstCTIVariable::get_var_name()
+QString QAstCTIVariable::getVarName()
 {
-    return this->VARNAME;
+    return this->varName;
 }

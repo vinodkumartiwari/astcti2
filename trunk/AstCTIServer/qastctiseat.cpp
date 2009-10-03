@@ -40,16 +40,16 @@
 
 #include "qastctiseat.h"
 
-QAstCTISeat::QAstCTISeat(const int& id, QObject* parent)
-        : QObject(parent),  ID_SEAT(id), SEAT_MAC("00:00:00:00:00:00"),
-        SEAT_EXTEN(""), DESCRIPTION("")
+QAstCTISeat::QAstCTISeat(const int &id, QObject *parent)
+        : QObject(parent),  idSeat(id), seatMac("00:00:00:00:00:00"),
+        seatExten(""), description("")
 {
 
 }
 
-QAstCTISeat::QAstCTISeat(const QString& mac, QObject* parent)
-        : QObject(parent),  ID_SEAT(0), SEAT_MAC(mac),
-        SEAT_EXTEN(""), DESCRIPTION("")
+QAstCTISeat::QAstCTISeat(const QString &mac, QObject *parent)
+        : QObject(parent),  idSeat(0), seatMac(mac),
+        seatExten(""), description("")
 {
 }
 
@@ -65,61 +65,56 @@ bool QAstCTISeat::load()
     QSqlQuery query(db);
 
     query.prepare("SELECT * FROM seats WHERE ID_SEAT=:id");
-    query.bindValue(":id", this->ID_SEAT);
+    query.bindValue(":id", this->idSeat);
     retVal = query.exec();
-    if ( (retVal) &  (query.first()) )
-    {
-        this->SEAT_MAC= query.value(1).toString();
-        this->SEAT_EXTEN  = query.value(2).toString();
-        this->DESCRIPTION = query.value(3).toString();
-
+    if ( (retVal) & (query.first()) ) {
+        this->seatMac = query.value(1).toString();
+        this->seatExten  = query.value(2).toString();
+        this->description = query.value(3).toString();
         query.finish();
     }
     query.clear();
 
-    emit this->load_complete(retVal);
+    emit this->loadComplete(retVal);
     return retVal;
 }
 
-bool QAstCTISeat::loadFromMac()
-{
+bool QAstCTISeat::loadFromMac() {
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
 
     query.prepare("SELECT * FROM seats WHERE SEAT_MAC=:mac");
-    query.bindValue(":mac", this->SEAT_MAC);
+    query.bindValue(":mac", this->seatMac);
     retVal = query.exec();
-    if ( (retVal) &  (query.first()) )
-    {
-        this->ID_SEAT = query.value(0).toInt();
-        this->SEAT_EXTEN  = query.value(2).toString();
-        this->DESCRIPTION = query.value(3).toString();
-
+    if ( (retVal) &  (query.first()) ) {
+        this->idSeat = query.value(0).toInt();
+        this->seatExten  = query.value(2).toString();
+        this->description = query.value(3).toString();
         query.finish();
     }
     query.clear();
 
-    emit this->load_complete(retVal);
+    emit this->loadComplete(retVal);
     return retVal;
 }
 
 int  QAstCTISeat::getIdSeat()
 {
-    return this->ID_SEAT;
+    return this->idSeat;
 }
 
-QString  QAstCTISeat::get_seat_mac()
+QString  QAstCTISeat::getSeatMac()
 {
-    return this->SEAT_MAC;
+    return this->seatMac;
 }
 
 QString  QAstCTISeat::getSeatExten()
 {
-    return this->SEAT_EXTEN;
+    return this->seatExten;
 }
 
-QString  QAstCTISeat::get_description()
+QString  QAstCTISeat::getDescription()
 {
-    return this->DESCRIPTION;
+    return this->description;
 }

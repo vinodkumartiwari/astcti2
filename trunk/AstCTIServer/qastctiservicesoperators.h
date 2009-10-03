@@ -49,21 +49,21 @@ class QAstCTIServicesOperators : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIServicesOperators(QObject* parent);
-    QAstCTIServicesOperators(const int& idservice, QObject* parent);
+    QAstCTIServicesOperators(QObject *parent);
+    QAstCTIServicesOperators(const int &idservice, QObject *parent);
     ~QAstCTIServicesOperators();
-    QAstCTIOperator* operator[](const QString& key);
+    QAstCTIOperator *operator[](const QString& key);
     int count();
-    void set_id_service(const int& idservice);
+    void setIdService(const int &idService);
 
 private:
-    QHash<QString, QAstCTIOperator*> operators;
-    void add_operator(QAstCTIOperator* oper);
-    void remove_operator(const QString& key);
-    void fill_operators();
+    QHash<QString, QAstCTIOperator *> operators;
+    void addOperator(QAstCTIOperator *oper);
+    void removeOperator(const QString &key);
+    void fillOperators();
     void clear();
 
-    int ID_SERVICE;
+    int idService;
 };
 
 #endif // QASTCTISERVICESOPERATORS_H

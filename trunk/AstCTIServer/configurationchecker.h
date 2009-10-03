@@ -52,21 +52,21 @@ class ConfigurationChecker : public QObject
     Q_OBJECT
 
 public:
-    ConfigurationChecker(const QString & path);
+    ConfigurationChecker(const QString &path);
     ~ConfigurationChecker();
-    QString load_first_configuration();
+    QString loadFirstConfiguration();
 
 
 public slots:
-    void check_configuration_dir(const QString & path);
+    void checkConfigurationDir(const QString &path);
 
 signals:
-    void new_configuration(QFileInfo* file);
+    void newConfiguration(QFileInfo *file);
 
 private:
-    QString             read_last_modified_configuration_file();
+    QString             readLastModifiedConfigurationFile();
     QString             configurationPath;
-    QString             last_configuration;
+    QString             lastConfiguration;
     QFileSystemWatcher* watcher;
 };
 

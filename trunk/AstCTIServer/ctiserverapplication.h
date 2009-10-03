@@ -59,21 +59,21 @@
 #include "qastctiservice.h"
 #include "qastctiservices.h"
 
-#define DEFAULT_SERVER_PORT         5000
-#define DEFAULT_READ_TIMEOUT        15000
-#define DEFAULT_COMPRESSION_LEVEL   0
-#define DEFAULT_RTCONFIG            "rtconfig/"
+#define DefaultServerPort           5000
+#define DefaultReadTimeout          15000
+#define DefaultCompressionLevel     0
+#define DefaultRtConfig            "rtconfig/"
 
-#define DEFAULT_AMI_HOSTIP          "localhost"
-#define DEFAULT_AMI_PORT            5038
-#define DEFAULT_AMI_USER            "manager"
-#define DEFAULT_AMI_SECRET          "password"
-#define DEFAULT_AMI_CONNECT_TIMEOUT 5
-#define DEFAULT_AMI_CONNECT_RETRIES 0
+#define DefaultAmiHost              "localhost"
+#define DefaultAmiPort              5038
+#define DefaultAmiUser              "manager"
+#define DefaultAmiSecret            "password"
+#define DefaultAmiConnectTimeout    5
+#define DefaultAmiConnectRetries    0
 
-#define EXIT_CODE_SUCCESS           0
-#define EXIT_CODE_NO_INI_CONFIG     1
-#define EXIT_CODE_NO_SQLITE_CONFIG  2
+#define ExitCodeSuccess             0
+#define ExitCodeNoIniConfig         1
+#define ExitCodeNoSqliteConifg      2
 
 class CtiServerApplication : public QCoreApplication
 {
@@ -83,32 +83,32 @@ public:
     CtiServerApplication(int &argc, char **argv);
     ~CtiServerApplication();
     static CtiServerApplication *instance();
-    QAstCTIOperator         *getOperatorByUsername(const QString& username);
+    QAstCTIOperator         *getOperatorByUsername(const QString &username);
 
-    QAstCTIServices         *get_services();
+    QAstCTIServices         *getServices();
 
     QAstCTIConfiguration    config; // Main configuration struct
 
 public slots:
-    CoreTcpServer           *build_new_core_tcpserver();
-    void                    reload_sql_database(QFileInfo * databaseFile);
+    CoreTcpServer           *buildNewCoreTcpServer();
+    void                    reloadSqlDatabase(QFileInfo *databaseFile);
 
 private:
-    bool                    can_start;
-    CoreTcpServer           *core_tcp_server;
-    ConfigurationChecker    *config_checker;
-    bool                    is_config_loading;
+    bool                    canStart;
+    CoreTcpServer           *coreTcpServer;
+    ConfigurationChecker    *configChecker;
+    bool                    isConfigLoading;
 
-    bool                    build_sql_database(const QString& databaseFile);
-    void                    destroy_sql_database();
-    QString                 read_database_version();
+    bool                    buildSqlDatabase(const QString &databaseFile);
+    void                    destroySqlDatabase();
+    QString                 readDatabaseVersion();
 
-    bool                    read_settings_file(const QString configFile, QAstCTIConfiguration* config);
-    void                    write_settings_file(QSettings* settings, const QString & key, const  QVariant & defvalue);
+    bool                    readSettingsFile(const QString configFile, QAstCTIConfiguration *config);
+    void                    writeSettingsFile(QSettings *settings, const QString &key, const  QVariant &defValue);
 
 protected:
     QAstCTIServices         *services;
-    QAstCTIOperators        *cti_operators;
+    QAstCTIOperators        *ctiOperators;
 
 
 };

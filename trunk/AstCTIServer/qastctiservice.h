@@ -52,38 +52,38 @@ public:
     QAstCTIService(const int& id, QObject* parent);
     ~QAstCTIService();
 
-    int                         get_id_service();
-    QString                     get_service_name();
-    QString                     get_service_context_type();
-    bool                        get_service_is_queue();
-    QString                     get_service_queue_name();
-    QString                     get_service_trigger_type();
-    bool                        get_enabled();
-    QAstCTIServicesOperators*   get_operators();
-    QAstCTIServicesVariables*   get_variables();
-    QAstCTIServicesApplications* get_applications();
+    int                         getIdService();
+    QString                     getServiceName();
+    QString                     getServiceContextType();
+    bool                        getServiceIsQueue();
+    QString                     getServiceQueueName();
+    QString                     getServiceTriggerType();
+    bool                        getEnabled();
+    QAstCTIServicesOperators    *getOperators();
+    QAstCTIServicesVariables    *getVariables();
+    QAstCTIServicesApplications *getApplications();
 
 public slots:
     bool        load();
-    void        load_operators(const bool& bMayLoad);
-    void        load_variables(const bool& bMayLoad);
-    void        load_applications(const bool& bMayLoad);
+    void        loadOperators(const bool &bMayLoad);
+    void        loadVariables(const bool &bMayLoad);
+    void        loadApplications(const bool &bMayLoad);
 
 signals:
-    void        load_complete(const bool& result);
+    void        loadComplete(const bool &result);
 
 private:
-    int         ID_SERVICE;
-    QString     SERVICE_NAME;
-    QString     SERVICE_CONTEXT_TYPE;
-    bool        SERVICE_IS_QUEUE;
-    QString     SERVICE_QUEUE_NAME;
-    QString     SERVICE_TRIGGER_TYPE;
-    bool        ENABLED;
+    int         idService;
+    QString     serviceName;
+    QString     serviceContextType;
+    bool        serviceIsQueue;
+    QString     serviceQueueName;
+    QString     serviceTriggerType;
+    bool        enabled;
 
-    QAstCTIServicesOperators*       operators;
-    QAstCTIServicesVariables*       variables;
-    QAstCTIServicesApplications*    applications;
+    QAstCTIServicesOperators        *operators;
+    QAstCTIServicesVariables        *variables;
+    QAstCTIServicesApplications     *applications;
 };
 
 #endif // QASTCTISERVICE_H

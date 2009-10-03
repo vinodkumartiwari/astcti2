@@ -38,10 +38,10 @@
 
 #include "qastcticall.h"
 
-QAstCTICall::QAstCTICall(QObject* parent)
-        : QObject(parent), channel(""), parsed_channel(""),
-        callerid_num(""), callerid_name(""),
-        uniqueid(""), context(""), state("")
+QAstCTICall::QAstCTICall(QObject *parent)
+        : QObject(parent), channel(""), parsedChannel(""),
+        callerIdNum(""), callerIdName(""),
+        uniqueId(""), context(""), state("")
 {
     this->variables = new QHash <QString,QString>;
     this->application = 0;
@@ -54,199 +54,191 @@ QAstCTICall::~QAstCTICall()
 
 }
 
-QString& QAstCTICall::get_channel()
+QString &QAstCTICall::getChannel()
 {
     return this->channel;
 }
-void QAstCTICall::set_channel(QString channel)
+void QAstCTICall::setChannel(QString channel)
 {
     this->channel = channel;
-    this->parse_channel();
-}
-QString& QAstCTICall::get_parsed_channel()
-{
-    return this->parsed_channel;
-}
-void QAstCTICall::set_parsed_channel(QString parsedchannel)
-{
-    this->parsed_channel = parsedchannel;
+    this->parseChannel();
 }
 
-QString& QAstCTICall::get_dest_channel()
+QString &QAstCTICall::getParsedChannel()
 {
-    return this->dest_channel;
-}
-void QAstCTICall::set_dest_channel(QString channel)
-{
-    this->dest_channel = channel;
-    this->parse_dest_channel();
-}
-QString& QAstCTICall::get_parsed_dest_channel()
-{
-    return this->parsed_dest_channel;
-}
-void QAstCTICall::set_parsed_dest_channel(QString parsedchannel)
-{
-    this->parsed_dest_channel = parsedchannel;
+    return this->parsedChannel;
 }
 
-QString& QAstCTICall::get_callerid_num()
+void QAstCTICall::setParsedChannel(QString parsedChannel)
 {
-    return this->callerid_num;
-}
-void QAstCTICall::set_callerid_num(QString calleridnum)
-{
-    this->callerid_num = calleridnum;
-}
-QString& QAstCTICall::get_callerid_name()
-{
-    return this->callerid_name;
-}
-void QAstCTICall::set_callerid_name(QString calleridname)
-{
-    this->callerid_name = calleridname;
-}
-QString& QAstCTICall::get_uniqueid()
-{
-    return this->uniqueid;
-}
-void QAstCTICall::set_uniqueid(QString uniqueid)
-{
-    this->uniqueid = uniqueid;
+    this->parsedChannel = parsedChannel;
 }
 
-QString& QAstCTICall::get_dest_uniqueid()
+QString &QAstCTICall::getDestChannel()
 {
-    return this->dest_uniqueid;
-}
-void QAstCTICall::set_dest_uniqueid(QString uniqueid)
-{
-    this->dest_uniqueid = uniqueid;
+    return this->destChannel;
 }
 
-QString& QAstCTICall::get_context()
+void QAstCTICall::setDestChannel(QString channel)
+{
+    this->destChannel = channel;
+    this->parseDestChannel();
+}
+
+QString &QAstCTICall::getParsedDestChannel()
+{
+    return this->parsedDestChannel;
+}
+
+void QAstCTICall::setParsedDestChannel(QString parsedChannel)
+{
+    this->parsedDestChannel = parsedChannel;
+}
+
+QString &QAstCTICall::getCalleridNum()
+{
+    return this->callerIdNum;
+}
+
+void QAstCTICall::setCalleridNum(QString callerIdNum)
+{
+    this->callerIdNum = callerIdNum;
+}
+QString &QAstCTICall::getCalleridName()
+{
+    return this->callerIdName;
+}
+void QAstCTICall::setCalleridName(QString callerIdName)
+{
+    this->callerIdName = callerIdName;
+}
+QString &QAstCTICall::getUniqueId()
+{
+    return this->uniqueId;
+}
+void QAstCTICall::setUniqueId(QString uniqueId)
+{
+    this->uniqueId = uniqueId;
+}
+
+QString &QAstCTICall::getDestUniqueId()
+{
+    return this->destUniqueId;
+}
+void QAstCTICall::setDestUniqueId(QString uniqueId)
+{
+    this->destUniqueId = uniqueId;
+}
+
+QString &QAstCTICall::getContext()
 {
     return this->context;
 }
-void QAstCTICall::set_context(QString context)
+void QAstCTICall::setContext(QString context)
 {
     this->context = context;
 }
-QString& QAstCTICall::get_state()
+QString &QAstCTICall::getState()
 {
     return this->state;
 }
-void QAstCTICall::set_state(QString state)
+void QAstCTICall::setState(QString state)
 {
     this->state = state;
 }
 
-void QAstCTICall::add_variable(QString key, QString value)
+void QAstCTICall::addVariable(QString key, QString value)
 {
     // We need only one variable with the same name..
-    if (this->variables->contains(key))
-    {
+    if (this->variables->contains(key)) {
         this->variables->remove(key);
     }
     this->variables->insert(key, value);
 }
 
-void QAstCTICall::parse_channel()
+void QAstCTICall::parseChannel()
 {
     // Channels are usually built like SIP/200-0899e2c8
     // So we need to extract channel by split the string
-    if (this->channel.contains('-'))
-    {
+    if (this->channel.contains('-')) {
         QStringList parts = this->channel.split('-');
-        if (parts.count() == 2)
-        {
-            QString parsed_chan = parts.at(0);
-            this->set_parsed_channel(parsed_chan);
+        if (parts.count() == 2) {
+            QString parsedChan = parts.at(0);
+            this->setParsedChannel(parsedChan);
         }
     }
 }
 
-void QAstCTICall::parse_dest_channel()
+void QAstCTICall::parseDestChannel()
 {
     // Channels are usually built like SIP/200-0899e2c8
     // So we need to extract channel by split the string
-    if (this->dest_channel.contains('-'))
-    {
-        QStringList parts = this->dest_channel.split('-');
-        if (parts.count() == 2)
-        {
-            QString parsed_chan = parts.at(0);
-            this->set_parsed_dest_channel(parsed_chan);
+    if (this->destChannel.contains('-')) {
+        QStringList parts = this->destChannel.split('-');
+        if (parts.count() == 2) {
+            QString parsedChan = parts.at(0);
+            this->setParsedDestChannel(parsedChan);
         }
     }
 }
 
-void QAstCTICall::set_applications(QAstCTIServicesApplications* applications)
+void QAstCTICall::setApplications(QAstCTIServicesApplications *applications)
 {
     this->applications = applications;
 }
 
-void QAstCTICall::set_operating_system(QString operating_system)
+void QAstCTICall::setOperatingSystem(QString operatingSystem)
 {
-    this->clientOperatingSystem = operating_system;
-    this->set_application();
+    this->clientOperatingSystem = operatingSystem;
+    this->setApplication();
 
 }
 
-void QAstCTICall::set_application()
+void QAstCTICall::setApplication()
 {
-    if (this->clientOperatingSystem.length() > 0)
-    {
+    if (this->clientOperatingSystem.length() > 0) {
         this->application = this->applications->operator []( this->clientOperatingSystem );
         // here we can parse application parameters
-        this->parse_application_parameters();
+        this->setApplication();
     }
 
 }
 
-void QAstCTICall::parse_application_parameters()
+void QAstCTICall::parseApplicationParameters()
 {
-    if (this->application != 0)
-    {
-        if (this->variables->count() > 0)
-        {
-            QString parameters = this->application->get_parameters();
+    if (this->application != 0) {
+        if (this->variables->count() > 0) {
+            QString parameters = this->application->getApplicationParameters();
 
-            QHash<QString, QString>::const_iterator var_list = this->variables->constBegin();
-            while (var_list != this->variables->constEnd())
-            {
-                QString the_key = QString("{%1}").arg( ((QString)var_list.key()).toUpper());
-                parameters = parameters.replace(the_key, var_list.value());
+            QHash<QString, QString>::const_iterator varList = this->variables->constBegin();
+            while (varList != this->variables->constEnd()) {
+                QString theKey = QString("{%1}").arg( ((QString)varList.key()).toUpper());
+                parameters = parameters.replace(theKey, varList.value());
 
-                ++var_list;
+                ++varList;
             }
-            this->application->set_parameters(parameters);
-
+            this->application->setApplicationParameters(parameters);
         }
-
-
     }
 }
 
-QString QAstCTICall::to_xml()
+QString QAstCTICall::toXml()
 {
     QDomDocument doc("AstCTICallXML");
     QDomElement root = doc.createElement("call");
-    root.setAttribute("uniqueid", this->uniqueid);
+    root.setAttribute("uniqueid", this->uniqueId);
     doc.appendChild( root );
 
     // DestUniqueId
-    if (this->dest_uniqueid.length() > 0)
-    {
+    if (this->destUniqueId.length() > 0) {
         QDomElement tag = doc.createElement("DestUniqueId");
         root.appendChild(tag);
-        QDomText t = doc.createTextNode(this->dest_uniqueid);
+        QDomText t = doc.createTextNode(this->destUniqueId);
         tag.appendChild(t);
     }
 
     // Context
-    if (this->context.length() > 0)
-    {
+    if (this->context.length() > 0) {
         QDomElement tag = doc.createElement("Context");
         root.appendChild(tag);
         QDomText t = doc.createTextNode(this->context);
@@ -254,8 +246,7 @@ QString QAstCTICall::to_xml()
     }
 
     // Channel
-    if (this->channel.length() > 0)
-    {
+    if (this->channel.length() > 0) {
         QDomElement tag = doc.createElement("Channel");
         root.appendChild(tag);
         QDomText t = doc.createTextNode(this->channel);
@@ -263,83 +254,74 @@ QString QAstCTICall::to_xml()
     }
 
     // ParsedChannel
-    if (this->parsed_channel.length() > 0)
-    {
+    if (this->parsedChannel.length() > 0) {
         QDomElement tag = doc.createElement("ParsedChannel");
         root.appendChild(tag);
-        QDomText t = doc.createTextNode(this->parsed_channel);
+        QDomText t = doc.createTextNode(this->parsedChannel);
         tag.appendChild(t);
     }
 
     // DestChannel
-    if (this->dest_channel.length() > 0)
-    {
+    if (this->destChannel.length() > 0) {
         QDomElement tag = doc.createElement("DestChannel");
         root.appendChild(tag);
-        QDomText t = doc.createTextNode(this->dest_channel);
+        QDomText t = doc.createTextNode(this->destChannel);
         tag.appendChild(t);
     }
 
     // ParsedChannelDest
-    if (this->parsed_dest_channel.length() > 0)
-    {
+    if (this->parsedDestChannel.length() > 0) {
         QDomElement tag = doc.createElement("ParsedDestChannel");
         root.appendChild(tag);
-        QDomText t = doc.createTextNode(this->parsed_dest_channel);
+        QDomText t = doc.createTextNode(this->parsedDestChannel);
         tag.appendChild(t);
     }
 
     // Callerid Name
-    if (this->callerid_name.length() > 0)
-    {
+    if (this->callerIdName.length() > 0) {
         QDomElement tag = doc.createElement("CallerIdName");
         root.appendChild(tag);
-        QDomText t = doc.createTextNode(this->callerid_name);
+        QDomText t = doc.createTextNode(this->callerIdName);
         tag.appendChild(t);
     }
 
     // Callerid Num
-    if (this->callerid_name.length() > 0)
-    {
+    if (this->callerIdNum.length() > 0) {
         QDomElement tag = doc.createElement("CallerIdNum");
         root.appendChild(tag);
-        QDomText t = doc.createTextNode(this->callerid_num);
+        QDomText t = doc.createTextNode(this->callerIdNum);
         tag.appendChild(t);
     }
 
-    if (this->variables->count() > 0)
-    {
-        QString var_count = QString(this->variables->count());
-        QDomElement xmlvars = doc.createElement("Variables");
-        xmlvars.attribute("count", var_count);
-        root.appendChild(xmlvars);
+    if (this->variables->count() > 0) {
+        QString varCount = QString(this->variables->count());
+        QDomElement xmlVars = doc.createElement("Variables");
+        xmlVars.attribute("count", varCount);
+        root.appendChild(xmlVars);
 
-        QHash<QString, QString>::const_iterator var_list = this->variables->constBegin();
-        while (var_list != this->variables->constEnd())
-        {
-            QDomElement tag = doc.createElement(var_list.key());
-            xmlvars.appendChild(tag);
-            QDomText t = doc.createTextNode(var_list.value() );
+        QHash<QString, QString>::const_iterator varList = this->variables->constBegin();
+        while (varList != this->variables->constEnd()) {
+            QDomElement tag = doc.createElement(varList.key());
+            xmlVars.appendChild(tag);
+            QDomText t = doc.createTextNode(varList.value() );
             tag.appendChild(t);
-            ++var_list;
+            ++varList;
         }
-
     }
 
-    if (this->application != 0)
-    {
-        QDomElement xmlapplication = doc.createElement("Application");
-        root.appendChild(xmlapplication);
+    if (this->application != 0) {
+        QDomElement xmlApplication = doc.createElement("Application");
+        root.appendChild(xmlApplication);
 
-        QDomElement xmlapppath = doc.createElement("Path");
-        xmlapplication.appendChild(xmlapppath);
-        QDomText xmlapppathval = doc.createTextNode(this->application->get_application_path());
-        xmlapppath.appendChild(xmlapppathval);
+        QDomElement xmlAppPath = doc.createElement("Path");
+        xmlApplication.appendChild(xmlAppPath);
+        QDomText xmlAppPathVal = doc.createTextNode(this->application->getApplicationPath());
+        xmlAppPath.appendChild(xmlAppPathVal);
 
-        QDomElement xmlappparams = doc.createElement("Parameters");
-        xmlapplication.appendChild(xmlappparams);
-        QDomText xmlapppathparmval = doc.createTextNode(this->application->get_parameters());
-        xmlappparams.appendChild(xmlapppathparmval);
+        QDomElement xmlAppParams = doc.createElement("Parameters");
+        xmlApplication.appendChild(xmlAppParams);
+        QDomText xmlAppPathParmVal = doc.createTextNode(this->application->getApplicationParameters());
+        xmlAppParams.appendChild(xmlAppPathParmVal);
     }
 
     return doc.toString();

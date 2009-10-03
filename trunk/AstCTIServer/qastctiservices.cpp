@@ -60,7 +60,7 @@ QAstCTIService *QAstCTIServices::operator[](const QString &key)
 
 void QAstCTIServices::add_service(QAstCTIService *service)
 {
-    this->services.insert(service->get_service_name(), service);
+    this->services.insert(service->getServiceName(), service);
 }
 
 void QAstCTIServices::remove_service(const QString &key)
@@ -102,7 +102,7 @@ void QAstCTIServices::fill_services()
         QAstCTIService *service = new QAstCTIService(query.value(0).toInt(0), this);
         if (service->load())
         {
-            QString serviceName = service->get_service_name();
+            QString serviceName = service->getServiceName();
 
             // Remove service if exists before load
             this->remove_service(serviceName);

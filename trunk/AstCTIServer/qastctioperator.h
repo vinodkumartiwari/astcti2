@@ -52,46 +52,46 @@ class QAstCTIOperator : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIOperator(const int& id, QObject* parent);
+    QAstCTIOperator(const int &id, QObject *parent);
     ~QAstCTIOperator();
 
-    int                 get_id_operator();
-    QString             get_full_name();
-    QString             get_user_name();
-    QString             get_pass_word();
-    int                 get_last_seat();
-    void                setLastSeat(const int &newSeat);
+    int                 getIdOperator();
+    QString             getFullName();
+    QString             getUserName();
+    QString             getPassWord();
+    int                 getLastSeatId();
+    void                setLastSeatId(const int &newSeat);
     bool                getBeginInPause();
-    bool                get_enabled();
-    bool                checkPassword(const QString& password);
-    QAstCTISeat         *get_seat();
-    QHash<QString,int>  *get_list_of_services();
-    static bool         check_password_match(const QString& password, const QString& check_password_match);
+    bool                getEnabled();
+    bool                checkPassword(const QString &password);
+    QAstCTISeat         *getLastSeat();
+    QHash<QString,int>  *getListOfServices();
+    static bool         checkPasswordMatch(const QString &password, const QString &checkPasswordMatch);
 
 public slots:
     bool load();
     bool save();
-    void load_seat(const bool& bMayLoad);
+    void loadSeat(const bool &bMayLoad);
 
 signals:
-    void load_complete(const bool& result);
-    void update_complete(const bool& result);
+    void loadComplete(const bool &result);
+    void updateComplete(const bool &result);
 
 
 private:    
-    int ID_OPERATOR;
-    QString FULL_NAME;
-    QString USER_NAME;
-    QString PASS_WORD;
-    int LAST_SEAT;
-    bool BEGIN_IN_PAUSE;
-    bool ENABLED;
+    int idOperator;
+    QString fullName;
+    QString userName;
+    QString passWord;
+    int lastSeatId;
+    bool beginInPause;
+    bool enabled;
 
     QAstCTISeat *lastSeat;
-    QAstCTIOperatorServices *list_of_services;
+    QAstCTIOperatorServices *listOfServices;
 
 private slots:
-    void load_list_of_services();
+    void loadListOfServices();
 };
 
 #endif // QASTCTIOPERATOR_H

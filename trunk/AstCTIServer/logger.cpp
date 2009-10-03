@@ -38,21 +38,20 @@
 
 #include "logger.h"
 
-QAsteriskCTILogger::QAsteriskCTILogger(QObject* parent) :
+QAsteriskCTILogger::QAsteriskCTILogger(QObject *parent) :
         QObject (parent)
 {
 }
 
-void QAsteriskCTILogger::write_to_log(QtMsgType level, const QString& logData)
+void QAsteriskCTILogger::writeToLog(QtMsgType level, const QString &logData)
 {
-    this->build_log_directory_if_not_exists();
-    QDir baseDirectory = this->logging_directory;
+    this->buildLogDirectoryIfNotExists();
+    QDir baseDirectory = this->loggingDirectory;
 
     QString todayFilename = QString("log_").append(QDate::currentDate().toString("yyyyMMdd").append(".log"));
 
     QFile logFile(baseDirectory.absolutePath().append("/").append(todayFilename));
-    if (!logFile.open(QIODevice::Append | QIODevice::Text ))
-    {
+    if (!logFile.open(QIODevice::Append | QIODevice::Text )) {
         qDebug() << "Cannot open log_file" << todayFilename;
         return;
     }
@@ -61,45 +60,42 @@ void QAsteriskCTILogger::write_to_log(QtMsgType level, const QString& logData)
     QByteArray dataArray;
     QBuffer dataBuffer( &dataArray );
     dataBuffer.open( QIODevice::WriteOnly );
-    QTextStream text_stream( &dataBuffer );
-    text_stream << QTime::currentTime().toString("hh:mm:ss")  << " (" << get_level_description_from_id(level) << "): " << logData << "\n\r";
+    QTextStream textStream( &dataBuffer );
+    textStream << QTime::currentTime().toString("hh:mm:ss")  << " (" << getLevelDescriptionFromId(level) << "): " << logData << "\n\r";
     dataBuffer.close();
-
     logFile.write(dataArray);
-
     logFile.close();
 }
 
-bool QAsteriskCTILogger::build_log_directory_if_not_exists()
+bool QAsteriskCTILogger::buildLogDirectoryIfNotExists()
 {
     bool bIsOk = true;
     QString appPath = QCoreApplication::applicationDirPath();
     appPath.append("/logs/");
-    QDir logdir(appPath);
-    if (!logdir.exists())
-    {
-        bIsOk = logdir.mkdir(appPath);
+    QDir logDir(appPath);
+    if (!logDir.exists()) {
+        bIsOk = logDir.mkdir(appPath);
     }
-    this->logging_directory = logdir;
+    this->loggingDirectory = logDir;
     return bIsOk;
 }
 
-QString QAsteriskCTILogger::get_level_description_from_id(const QtMsgType level)
+QString QAsteriskCTILogger::getLevelDescriptionFromId(const QtMsgType level)
 {
     QString retLevel = "NONE";
     switch (level)
     {
-        case QtDebugMsg:
-            retLevel = "DEBUG";
-            break;
-        case QtWarningMsg:
-            retLevel = "WARNING";
-            break;
-        case QtCriticalMsg:
-            retLevel = "CRITICAL";
-            break;
-        case QtFatalMsg:
-            retLevel = "FATAL";
+    case QtDebugMsg:
+        retLevel = "DEBUG";
+        break;
+    case QtWarningMsg:
+        retLevel = "WARNING";
+        break;
+    case QtCriticalMsg:
+        retLevel = "CRITICAL";
+        break;
+    case QtFatalMsg:
+        retLevel = "FATAL";
     }
     return retLevel;
 }
