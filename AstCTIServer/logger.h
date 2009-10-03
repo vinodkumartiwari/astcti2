@@ -50,16 +50,16 @@ class QAsteriskCTILogger : public QObject
     Q_OBJECT
 
 public:
-    QtMsgType minimum_log_level;
+    QtMsgType minimumLogLevel;
 
-    QAsteriskCTILogger(QObject* parent=0);
-    void write_to_log(const QtMsgType level, const QString &logdata="");
+    QAsteriskCTILogger(QObject *parent=0);
+    void writeToLog(const QtMsgType level, const QString &logdata="");
 
 private:
-    QDir logging_directory;
+    QDir loggingDirectory;
 
-    bool build_log_directory_if_not_exists();
-    QString get_level_description_from_id(const QtMsgType level);
+    bool buildLogDirectoryIfNotExists();
+    QString getLevelDescriptionFromId(const QtMsgType level);
 };
 
 #endif // LOGGER_H

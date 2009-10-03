@@ -49,21 +49,21 @@ class QAstCTIServicesApplications : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIServicesApplications(QObject* parent);
-    QAstCTIServicesApplications(const int& idservice, QObject* parent);
+    QAstCTIServicesApplications(QObject *parent);
+    QAstCTIServicesApplications(const int &idService, QObject *parent);
     ~QAstCTIServicesApplications();
-    QAstCTIApplication* operator[](const QString& key);
+    QAstCTIApplication *operator[](const QString &key);
     int count();
-    void set_id_service(const int &idservice);
+    void setIdService(const int &idService);
 
 private:
-    QHash<QString, QAstCTIApplication*> applications;
-    void add_application(QAstCTIApplication* app);
-    void remove_application(const QString& key);
-    void fill_applications();
+    QHash<QString, QAstCTIApplication *> applications;
+    void addApplication(QAstCTIApplication *app);
+    void removeApplication(const QString &key);
+    void fillApplications();
     void clear();
 
-    int ID_SERVICE;
+    int idService;
 };
 
 #endif // QASTCTISERVICESAPPLICATIONS_H

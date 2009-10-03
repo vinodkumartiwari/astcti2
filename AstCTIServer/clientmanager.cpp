@@ -44,9 +44,9 @@
 /*!
     ClientManager Constructor
 */
-ClientManager::ClientManager(QAstCTIConfiguration* config,
+ClientManager::ClientManager(QAstCTIConfiguration *config,
                              int socketDescriptor,
-                             QObject* parent) :
+                             QObject *parent) :
                              QThread(parent),
                              socketDescriptor(socketDescriptor)
 
@@ -77,17 +77,17 @@ ClientManager::~ClientManager()
 void ClientManager::initParserCommands()
 {
     if (config->qDebug) qDebug() << "In ClientManager::initParserCommands()";
-    commandsList["QUIT"]       = cmdQuit;
-    commandsList["NOOP"]       = cmdNoOp;
-    commandsList["USER"]       = cmdUser;
-    commandsList["PASS"]       = cmdPass;
-    commandsList["OSTYPE"]     = cmdOsType;
-    commandsList["SERVICES"]   = cmdServices;
-    commandsList["QUEUES"]     = cmdQueues;
-    commandsList["PAUSE"]      = cmdPause;
-    commandsList["ORIG"]       = cmdOrig;
-    commandsList["STOP"]       = cmdStop;
-    commandsList["MAC"]        = cmdMac;
+    commandsList["QUIT"]       = CmdQuit;
+    commandsList["NOOP"]       = CmdNoOp;
+    commandsList["USER"]       = CmdUser;
+    commandsList["PASS"]       = CmdPass;
+    commandsList["OSTYPE"]     = CmdOsType;
+    commandsList["SERVICES"]   = CmdServices;
+    commandsList["QUEUES"]     = CmdQueues;
+    commandsList["PAUSE"]      = CmdPause;
+    commandsList["ORIG"]       = CmdOrig;
+    commandsList["STOP"]       = CmdStop;
+    commandsList["MAC"]        = CmdMac;
 
 }
 
@@ -177,24 +177,23 @@ void ClientManager::run()
                     QAstCTICommand  cmd = this->parseCommand(itm);
 
                     switch(commandsList[cmd.command]) {
-                    case cmdQuit:
+                    case CmdQuit:
                         this->sendDataToClient("900 BYE");
                         tcpSocket.close();
                         break;
-                    case cmdNoOp:
+                    case CmdNoOp:
                         this->sendDataToClient("100 OK");
                         break;
-                    case cmdUser:
+                    case CmdUser:
                         if (cmd.parameters.count() < 1) {
                             this->sendDataToClient("101 KO No username given");
                             break;
-                        }
-                        else {
+                        } else {
                             ctiUserName = cmd.parameters.at(0);
                             this->sendDataToClient("100 OK Send Password Now");
                         }
                         break;
-                    case cmdMac:
+                    case CmdMac:
                         if (!authenticated) {
                             this->sendDataToClient("101 KO Not authenticated");
                             break;
@@ -203,13 +202,12 @@ void ClientManager::run()
                         if (cmd.parameters.count() < 1) {
                             this->sendDataToClient("101 KO No mac given");
                             break;
-                        }
-                        else {
+                        } else {
                             QString mac = cmd.parameters.at(0).toLower();
                             QAstCTISeat seat(mac, 0);
                             if (seat.loadFromMac()) {
                                 if (this->activeOperator != 0) {
-                                    this->activeOperator->setLastSeat(seat.getIdSeat());
+                                    this->activeOperator->setLastSeatId(seat.getIdSeat());
                                     this->activeOperator->save();
                                     QString newIdentifier = QString("exten-%1").arg(seat.getSeatExten());
                                     emit this->changeClient(this->localIdentifier, newIdentifier);
@@ -223,14 +221,13 @@ void ClientManager::run()
                             }
                         }
                         break;
-                    case cmdPass:
+                    case CmdPass:
                         // TODO : emit only if user done a successfull authentication
                         // this->activeOperator
 
                         if (ctiUserName == "")  {
                             this->sendDataToClient("101 KO Send User First");
-                        }
-                        else {
+                        } else {
                             if (cmd.parameters.count() < 1) {
                                 this->sendDataToClient("101 KO No password given");
                                 break;
@@ -242,14 +239,12 @@ void ClientManager::run()
                                     this->sendDataToClient("101 KO Operator Not Found");
                                     ctiUserName = "";
                                     retries--;
-                                }
-                                else {
+                                } else {
                                     if (!theOperator->checkPassword(cmd.parameters.at(0))) {
                                         this->sendDataToClient("101 KO Wrong password");
                                         ctiUserName = "";
                                         retries--;
-                                    }
-                                    else {
+                                    } else {
                                         this->inPause = theOperator->getBeginInPause();
                                         this->activeOperator = theOperator;
                                         authenticated = true;
@@ -263,7 +258,7 @@ void ClientManager::run()
                             }
                         }
                         break;
-                    case cmdOsType:
+                    case CmdOsType:
                         if (!authenticated) {
                             this->clientOperatingSystem = "";
                             this->sendDataToClient("101 KO Not authenticated");
@@ -273,14 +268,13 @@ void ClientManager::run()
                             this->clientOperatingSystem = "";
                             this->sendDataToClient("101 KO Operating system is not set");
                             break;
-                        }
-                        else {
+                        } else {
                             this->clientOperatingSystem = cmd.parameters.at(0).toUpper();
                             this->sendDataToClient("100 OK Operating System Is Set");
                         }
                         break;
 
-                    case cmdOrig:
+                    case CmdOrig:
                         if (!authenticated) {
                             this->sendDataToClient("101 KO Not authenticated");
                             break;
@@ -290,14 +284,14 @@ void ClientManager::run()
                         }
                         this->sendDataToClient("100 OK");
                         break;
-                    case cmdServices:
+                    case CmdServices:
                         if (!authenticated) {
                             this->sendDataToClient("101 KO Not authenticated");
                             break;
                         }
 
                         break;
-                    case cmdPause:
+                    case CmdPause:
                         if (!authenticated) {
                             this->sendDataToClient("101 KO Not authenticated");
                             break;
@@ -305,23 +299,21 @@ void ClientManager::run()
                         if (cmd.parameters.count() < 1) {
                             this->sendDataToClient("101 KO No mac given");
                             break;
-                        }
-                        else {
+                        } else {
                             // TODO: Add better support to pause event
                             // we need to connect some signals from coretcpserver
                             // to get back a response for a pause request.
                             if (this->inPause) {
                                 emit this->ctiPauseOut(this);
                                 this->inPause = false;
-                            }
-                            else {
+                            } else {
                                 emit this->ctiPauseIn(this);
                                 this->inPause = true;
                             }
                             this->sendDataToClient("100 OK");
                         }
                         break;
-                    case cmdStop:
+                    case CmdStop:
                         if (!authenticated) {
                             this->sendDataToClient("101 KO Not authenticated");
                             break;
@@ -330,13 +322,13 @@ void ClientManager::run()
                         tcpSocket.close();
                         qDebug() << "Emitted signal STOP";
                         break;
-                    case cmdNotDefined:
+                    case CmdNotDefined:
                         this->sendDataToClient("101 KO Invalid Command");
                         break;
-                } // end switch
-            } // end if (itm.size())
-        } // foreach
-    } // end buffer.contains(separator)
+                    } // end switch
+                } // end if (itm.size())
+            } // foreach
+        } // end buffer.contains(separator)
     } // end while(tcpSocket.waitForReadyRead)
 
     // Timeout elapsed: close the socket
@@ -402,8 +394,7 @@ void ClientManager::sendDataToClient(const QString &data)
     if (config->compressionLevel > 0) {
         QByteArray compressed = qCompress(block, config->compressionLevel);
         this->localSocket->write(compressed);
-    }
-    else {
+    } else {
         this->localSocket->write(block);
     }
 

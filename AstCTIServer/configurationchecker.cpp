@@ -37,13 +37,13 @@
  */
 #include "configurationchecker.h"
 
-ConfigurationChecker::ConfigurationChecker(const QString& path) :
-       last_configuration("")
+ConfigurationChecker::ConfigurationChecker(const QString &path) :
+       lastConfiguration("")
 {
     this->configurationPath = path;
     this->watcher = new QFileSystemWatcher();
 
-    connect(this->watcher, SIGNAL(directoryChanged(QString)), this, SLOT(check_configuration_dir(QString)));
+    connect(this->watcher, SIGNAL(directoryChanged(QString)), this, SLOT(checkConfigurationDir(QString)));
     this->watcher->addPath(path);
 }
 
@@ -53,44 +53,41 @@ ConfigurationChecker::~ConfigurationChecker()
 
 }
 
-QString ConfigurationChecker::load_first_configuration()
+QString ConfigurationChecker::loadFirstConfiguration()
 {
-    QString last_config_filename = read_last_modified_configuration_file();
-    if ( (last_config_filename != "") &
-        (this->last_configuration == "") )
-    {
-        this->last_configuration = last_config_filename;
+    QString lastConfigFilename = readLastModifiedConfigurationFile();
+    if ( (lastConfigFilename != "") & (this->lastConfiguration == "") ) {
+        this->lastConfiguration = lastConfigFilename;
     }
-    return last_config_filename;
+    return lastConfigFilename;
 }
 
 
-void ConfigurationChecker::check_configuration_dir(const QString& path)
+void ConfigurationChecker::checkConfigurationDir(const QString &path)
 {
     Q_UNUSED(path);
-    QString last_config_filename = this->read_last_modified_configuration_file();
+    QString lastConfigFilename = this->readLastModifiedConfigurationFile();
 
-    if (last_config_filename == "") return;
-    if (this->last_configuration != 0)
-    {
-        if (this->last_configuration != last_config_filename)
-        {            
-            this->last_configuration = last_config_filename;
-            QFileInfo* info = new QFileInfo(last_config_filename);
-            emit this->new_configuration(info);
+    if (lastConfigFilename == "") {
+        return;
+    }
+    if (this->lastConfiguration != 0) {
+        if (this->lastConfiguration != lastConfigFilename) {
+            this->lastConfiguration = lastConfigFilename;
+            QFileInfo *info = new QFileInfo(lastConfigFilename);
+            emit this->newConfiguration(info);
         }
     }
 }
 
-QString ConfigurationChecker::read_last_modified_configuration_file()
+QString ConfigurationChecker::readLastModifiedConfigurationFile()
 {
     QDir dir(this->configurationPath);
     if (!dir.exists()) return 0;
     QStringList fileFilter;
     fileFilter << "*.db3";
     QFileInfoList list = dir.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot, QDir::Time);
-    if (list.size() > 0)
-    {
+    if (list.size() > 0) {
         QFileInfo fi = list[0];
         return fi.absoluteFilePath();
     }

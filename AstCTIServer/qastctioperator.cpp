@@ -41,22 +41,26 @@
 #include "qastctioperator.h"
 
 
-QAstCTIOperator::QAstCTIOperator(const int &id, QObject* parent)
-        : QObject(parent), ID_OPERATOR(id), FULL_NAME(""), USER_NAME(""),
-        PASS_WORD(""), LAST_SEAT(0), BEGIN_IN_PAUSE(false),
-        ENABLED(false), lastSeat(0), list_of_services(0)
+QAstCTIOperator::QAstCTIOperator(const int &id, QObject *parent)
+        : QObject(parent), idOperator(id), fullName(""), userName(""),
+        passWord(""), lastSeatId(0), beginInPause(false),
+        enabled(false), lastSeat(0), listOfServices(0)
 {
     // Let's connect our signals
-    connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_seat(const bool&)));
-    connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_list_of_services()));
-    connect(this, SIGNAL(update_complete(const bool&)), this, SLOT(load_seat(const bool&)));
+    connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadSeat(const bool&)));
+    connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadListOfServices()));
+    connect(this, SIGNAL(updateComplete(const bool&)), this, SLOT(loadSeat(const bool&)));
 }
 
 QAstCTIOperator::~QAstCTIOperator()
 {
     qDebug() << "In QAstCTIOperator::~QAstCTIOperator()";
-    if (this->lastSeat != 0) delete(this->lastSeat);
-    if (this->list_of_services != 0) delete (this->list_of_services);
+    if (this->lastSeat != 0) {
+        delete(this->lastSeat);
+    }
+    if (this->listOfServices != 0) {
+        delete (this->listOfServices);
+    }
 }
 
 
@@ -66,45 +70,41 @@ bool QAstCTIOperator::load()
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
     query.prepare("SELECT * FROM operators WHERE ID_OPERATOR=:id");
-    query.bindValue(":id", this->ID_OPERATOR);
+    query.bindValue(":id", this->idOperator);
     retVal = query.exec();
-    if ( (retVal) &  (query.first()) )
-    {
-        this->FULL_NAME = query.value(1).toString();
-        this->USER_NAME = query.value(2).toString();
-        this->PASS_WORD = query.value(3).toString();
-        this->LAST_SEAT = query.value(4).toInt(0);
-        this->BEGIN_IN_PAUSE = query.value(5).toBool();
-        this->ENABLED = query.value(6).toBool();
+    if ( (retVal) &  (query.first()) ) {
+        this->fullName = query.value(1).toString();
+        this->userName = query.value(2).toString();
+        this->passWord = query.value(3).toString();
+        this->lastSeatId = query.value(4).toInt(0);
+        this->beginInPause = query.value(5).toBool();
+        this->enabled = query.value(6).toBool();
 
         query.finish();
     }
     query.clear();
 
-    emit this->load_complete(retVal);
+    emit this->loadComplete(retVal);
     return retVal;
 }
 
-void QAstCTIOperator::load_seat(const bool &bMayLoad)
+void QAstCTIOperator::loadSeat(const bool &bMayLoad)
 {
     if (!bMayLoad) return;
 
-    if (this->LAST_SEAT > 0)
-    {
-        this->lastSeat = new QAstCTISeat(this->LAST_SEAT, this);
-        if (this->lastSeat->load())
-        {
-            qDebug() << "load_seat complete for operator" << this->USER_NAME;
+    if (this->lastSeatId > 0) {
+        this->lastSeat = new QAstCTISeat(this->lastSeatId, this);
+        if (this->lastSeat->load()) {
+            qDebug() << "loadSeat complete for operator" << this->userName;
         }
     }
 }
 
-void QAstCTIOperator::load_list_of_services()
+void QAstCTIOperator::loadListOfServices()
 {
-    if (this->ID_OPERATOR > 0)
-    {
-        this->list_of_services = new QAstCTIOperatorServices(this->ID_OPERATOR, this);
-        qDebug() << "load_list_of_services complete for operator" << this->USER_NAME;
+    if (this->idOperator > 0) {
+        this->listOfServices = new QAstCTIOperatorServices(this->idOperator, this);
+        qDebug() << "loadListOfServices complete for operator" << this->userName;
     }
 }
 
@@ -113,23 +113,23 @@ bool QAstCTIOperator::save()
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
 
-    if (db.driver()->hasFeature(QSqlDriver::Transactions))
+    if (db.driver()->hasFeature(QSqlDriver::Transactions)) {
         db.transaction();
-
+    }
     QSqlQuery query(db);
 
     // For now we need to update just only the field last_seat in the operators table
     query.prepare("UPDATE operators SET LAST_SEAT=:seat WHERE ID_OPERATOR=:id");
-    query.bindValue(":seat", this->LAST_SEAT);
-    query.bindValue(":id", this->ID_OPERATOR);
+    query.bindValue(":seat", this->lastSeatId);
+    query.bindValue(":id", this->idOperator);
     retVal = query.exec();
 
-    if (db.driver()->hasFeature(QSqlDriver::Transactions))
+    if (db.driver()->hasFeature(QSqlDriver::Transactions)) {
         retVal ? db.commit() :  db.rollback();
-
+    }
     query.clear();
 
-    emit this->update_complete(retVal);
+    emit this->updateComplete(retVal);
     return retVal;
 }
 
@@ -140,55 +140,55 @@ bool QAstCTIOperator::checkPassword(const QString& password)
     md5.addData(QByteArray(password.toUtf8()));
     QByteArray result = md5.result();*/
 
-    return (password.compare(this->PASS_WORD) == 0);
+    return (password.compare(this->passWord) == 0);
 }
 
-int  QAstCTIOperator::get_id_operator()
+int  QAstCTIOperator::getIdOperator()
 {
-    return this->ID_OPERATOR;
+    return this->idOperator;
 }
 
-QString  QAstCTIOperator::get_user_name()
+QString  QAstCTIOperator::getUserName()
 {
-    return this->USER_NAME;
+    return this->userName;
 }
 
-QString  QAstCTIOperator::get_full_name()
+QString  QAstCTIOperator::getFullName()
 {
-    return this->FULL_NAME;
+    return this->fullName;
 }
 
-QString  QAstCTIOperator::get_pass_word()
+QString  QAstCTIOperator::getPassWord()
 {
-    return this->PASS_WORD;
+    return this->passWord;
 }
 
-int QAstCTIOperator::get_last_seat()
+int QAstCTIOperator::getLastSeatId()
 {
-    return this->LAST_SEAT;
+    return this->lastSeatId;
 }
 
-QAstCTISeat* QAstCTIOperator::get_seat()
+QAstCTISeat* QAstCTIOperator::getLastSeat()
 {
     return this->lastSeat;
 }
 
-void QAstCTIOperator::setLastSeat(const int &newSeat)
+void QAstCTIOperator::setLastSeatId(const int &newSeat)
 {
-    this->LAST_SEAT = newSeat;
+    this->lastSeatId = newSeat;
 }
 
 bool QAstCTIOperator::getBeginInPause()
 {
-    return this->BEGIN_IN_PAUSE;
+    return this->beginInPause;
 }
 
-bool QAstCTIOperator::get_enabled()
+bool QAstCTIOperator::getEnabled()
 {
-    return this->ENABLED;
+    return this->enabled;
 }
 
-QHash<QString,int>* QAstCTIOperator::get_list_of_services()
+QHash<QString,int> *QAstCTIOperator::getListOfServices()
 {
-    return this->list_of_services->get_services_list();
+    return this->listOfServices->getServicesList();
 }

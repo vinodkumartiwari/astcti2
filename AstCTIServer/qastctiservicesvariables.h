@@ -48,22 +48,22 @@ class QAstCTIServicesVariables : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIServicesVariables(QObject* parent);
-    QAstCTIServicesVariables(const int& idservice, QObject* parent);
+    QAstCTIServicesVariables(QObject *parent);
+    QAstCTIServicesVariables(const int &idService, QObject *parent);
     ~QAstCTIServicesVariables();
-    QAstCTIVariable* operator[](const QString& key);
+    QAstCTIVariable *operator[](const QString &key);
     int count();
-    void set_id_service(const int& idservice);
-    bool contains(const QString& key);
+    void setIdService(const int &idService);
+    bool contains(const QString &key);
 
 private:
-    QHash<QString, QAstCTIVariable*> variables;
-    void add_variable(QAstCTIVariable* var);
-    void remove_variable(const QString& key);
-    void fill_variables();
+    QHash<QString, QAstCTIVariable *> variables;
+    void addVariable(QAstCTIVariable *var);
+    void removeVariable(const QString &key);
+    void fillVariables();
     void clear();
 
-    int ID_SERVICE;
+    int idService;
 };
 
 #endif // QASTCTISERVICESVARIABLES_H

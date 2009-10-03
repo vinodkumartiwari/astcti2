@@ -57,19 +57,19 @@ struct QAstCTICommand
 };
 
 enum QAstCTICommands {
-    cmdNotDefined,
-    cmdNoOp,
-    cmdQuit,
-    cmdUser,
-    cmdPass,
-    cmdMac,
-    cmdOsType,
-    cmdServices,
-    cmdQueues,
-    cmdPause,
-    cmdOrig,
-    cmdStop,
-    cmdEndList
+    CmdNotDefined,
+    CmdNoOp,
+    CmdQuit,
+    CmdUser,
+    CmdPass,
+    CmdMac,
+    CmdOsType,
+    CmdServices,
+    CmdQueues,
+    CmdPause,
+    CmdOrig,
+    CmdStop,
+    CmdEndList
 };
 
 
@@ -78,22 +78,22 @@ class ClientManager : public  QThread
     Q_OBJECT
 
 public:
-    ClientManager(QAstCTIConfiguration* config, int socketDescriptor, QObject* parent);
+    ClientManager(QAstCTIConfiguration *config, int socketDescriptor, QObject *parent);
     ~ClientManager();
     void                    run();
     bool                    isInPause();
-    QAstCTIOperator*        getActiveOperator();
+    QAstCTIOperator         *getActiveOperator();
     QString                 getClientOperatingSystem();
 
 public slots:
     void                    sendDataToClient(const QString& data);
 
 signals:
-    void addClient(const QString& exten, ClientManager* cl);
-    void changeClient(const QString& oldexten, const QString& newexten);
-    void removeClient(const QString& exten);
-    void notifyServer(const QString& data);
-    void stopRequest(const QString& exten, ClientManager *cl);
+    void addClient(const QString &exten, ClientManager *cl);
+    void changeClient(const QString &oldexten, const QString &newexten);
+    void removeClient(const QString &exten);
+    void notifyServer(const QString &data);
+    void stopRequest(const QString &exten, ClientManager *cl);
 
     // CTI Status change request
     void ctiPauseIn(ClientManager *cl);

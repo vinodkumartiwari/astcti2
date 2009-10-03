@@ -47,22 +47,22 @@ class QAstCTIOperatorServices : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIOperatorServices(QObject* parent);
-    QAstCTIOperatorServices(const int& idoperator, QObject* parent);
+    QAstCTIOperatorServices(QObject *parent);
+    QAstCTIOperatorServices(const int &idOperator, QObject *parent);
     ~QAstCTIOperatorServices();
 
     int     count();
-    void    set_id_operator(const int& idoperator);
-    QHash<QString, int>* get_services_list();
+    void    setIdOperator(const int &idOperator);
+    QHash<QString, int> *getServicesList();
 
 private:
-    QHash<QString, int> services_list;
+    QHash<QString, int> servicesList;
 
-    void fill_list();
+    void fillList();
     void clear();
 
 
-    int ID_OPERATOR;
+    int idOperator;
 };
 
 #endif // QASTCTIOPERATORSERVICES_H

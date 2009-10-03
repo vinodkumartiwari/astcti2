@@ -41,8 +41,8 @@
 #include "qastctiapplication.h"
 
 QAstCTIApplication::QAstCTIApplication(const int& id, QObject* parent) :
-        QObject(parent), ID_APPLICATION(id), ID_SERVICE(0), APPLICATION_OS_TYPE(""),
-        APPLICATION_PATH(""), PARAMETERS("")
+        QObject(parent), idApplication(id), idService(0), applicationOsType(""),
+        applicationPath(""), applicationParameters("")
 {
 }
 
@@ -57,48 +57,47 @@ bool QAstCTIApplication::load()
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
     query.prepare("SELECT * FROM applications WHERE ID_APPLICATION=:id");
-    query.bindValue(":id", this->ID_APPLICATION);
+    query.bindValue(":id", this->idApplication);
     retVal = query.exec();
-    if ( (retVal) &  (query.first()) )
-    {
-        this->ID_SERVICE = query.value(1).toInt(0);
-        this->APPLICATION_OS_TYPE = query.value(2).toString();
-        this->APPLICATION_PATH = query.value(3).toString();
-        this->PARAMETERS = query.value(4).toString();
+    if ( (retVal) & (query.first()) ) {
+        this->idService = query.value(1).toInt(0);
+        this->applicationOsType = query.value(2).toString();
+        this->applicationPath = query.value(3).toString();
+        this->applicationParameters = query.value(4).toString();
         query.finish();
     }
     query.clear();
 
-    emit this->load_complete(retVal);
+    emit this->loadComplete(retVal);
     return retVal;
 }
 
-int QAstCTIApplication::get_id_application()
+int QAstCTIApplication::getIdApplication()
 {
-    return this->ID_APPLICATION;
+    return this->idApplication;
 }
 
-int QAstCTIApplication::get_id_service()
+int QAstCTIApplication::getIdService()
 {
-    return this->ID_SERVICE;
+    return this->idService;
 }
 
-QString QAstCTIApplication::get_application_os_type()
+QString QAstCTIApplication::getApplicationOsType()
 {
-    return this->APPLICATION_OS_TYPE;
+    return this->applicationOsType;
 }
 
-QString QAstCTIApplication::get_application_path()
+QString QAstCTIApplication::getApplicationPath()
 {
-    return this->APPLICATION_PATH;
+    return this->applicationPath;
 }
 
-QString QAstCTIApplication::get_parameters()
+QString QAstCTIApplication::getApplicationParameters()
 {
-    return this->PARAMETERS;
+    return this->applicationParameters;
 }
 
-void QAstCTIApplication::set_parameters(QString new_parameters)
+void QAstCTIApplication::setApplicationParameters(QString newParameters)
 {
-    this->PARAMETERS = new_parameters;
+    this->applicationParameters = newParameters;
 }

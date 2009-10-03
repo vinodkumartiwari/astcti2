@@ -41,17 +41,17 @@
 #include "qastctiservice.h"
 
 
-QAstCTIService::QAstCTIService(const int& id, QObject* parent)
-        : QObject(parent), ID_SERVICE(id), SERVICE_NAME(""), SERVICE_CONTEXT_TYPE(""),
-        SERVICE_IS_QUEUE(false), SERVICE_QUEUE_NAME(""),
-        SERVICE_TRIGGER_TYPE(""), ENABLED(false)
+QAstCTIService::QAstCTIService(const int &id, QObject *parent)
+        : QObject(parent), idService(id), serviceName(""), serviceContextType(""),
+        serviceIsQueue(false), serviceQueueName(""),
+        serviceTriggerType(""), enabled(false)
 {
     this->operators = new QAstCTIServicesOperators(this);
     this->applications = new QAstCTIServicesApplications(this);
     this->variables = new QAstCTIServicesVariables(this);
-    connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_operators(const bool&)));
-    connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_variables(const bool&)));
-    connect(this, SIGNAL(load_complete(const bool&)), this, SLOT(load_applications(const bool&)));
+    connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadOperators(const bool&)));
+    connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadVariables(const bool&)));
+    connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadApplications(const bool&)));
 }
 
 QAstCTIService::~QAstCTIService()
@@ -66,95 +66,90 @@ bool QAstCTIService::load()
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
     query.prepare("SELECT * FROM services WHERE ID_SERVICE=:id");
-    query.bindValue(":id", this->ID_SERVICE);
+    query.bindValue(":id", this->idService);
     retVal = query.exec();
-    if ( (retVal) &  (query.first()) )
-    {
-        this->SERVICE_NAME = query.value(1).toString();
-        this->SERVICE_CONTEXT_TYPE = query.value(2).toString();
-        this->SERVICE_IS_QUEUE = query.value(3).toBool();
-        this->SERVICE_QUEUE_NAME = query.value(4).toString();
-        this->SERVICE_TRIGGER_TYPE = query.value(5).toString();
-        this->ENABLED = query.value(6).toBool();
-
+    if ( (retVal) &  (query.first()) ) {
+        this->serviceName = query.value(1).toString();
+        this->serviceContextType= query.value(2).toString();
+        this->serviceIsQueue = query.value(3).toBool();
+        this->serviceQueueName = query.value(4).toString();
+        this->serviceTriggerType = query.value(5).toString();
+        this->enabled = query.value(6).toBool();
         query.finish();
     }
     query.clear();
 
-    emit this->load_complete(retVal);
+    emit this->loadComplete(retVal);
     return retVal;
 }
 
-void QAstCTIService::load_operators(const bool& bMayLoad)
+void QAstCTIService::loadOperators(const bool &bMayLoad)
 {
-    if (bMayLoad)
-    {
-        this->operators->set_id_service(this->ID_SERVICE);
+    if (bMayLoad) {
+        this->operators->setIdService(this->idService);
     }
 }
 
-void QAstCTIService::load_variables(const bool& bMayLoad)
+void QAstCTIService::loadVariables(const bool &bMayLoad)
 {
-    if (bMayLoad)
-    {
-        this->variables->set_id_service(this->ID_SERVICE);
+    if (bMayLoad) {
+        this->variables->setIdService(this->idService);
     }
 }
 
-void QAstCTIService::load_applications(const bool& bMayLoad)
+void QAstCTIService::loadApplications(const bool &bMayLoad)
 {
-    if (bMayLoad)
-    {
-        this->applications->set_id_service(this->ID_SERVICE);
+    if (bMayLoad) {
+        this->applications->setIdService(this->idService);
     }
 }
 
-int QAstCTIService::get_id_service()
+int QAstCTIService::getIdService()
 {
-    return this->ID_SERVICE;
+    return this->idService;
 }
 
-QString QAstCTIService::get_service_name()
+QString QAstCTIService::getServiceName()
 {
-    return this->SERVICE_NAME;
+    return this->serviceName;
 }
 
-QString QAstCTIService::get_service_context_type()
+QString QAstCTIService::getServiceContextType()
 {
-    return this->SERVICE_CONTEXT_TYPE;
+    return this->serviceContextType;
 }
 
-bool QAstCTIService::get_service_is_queue()
+bool QAstCTIService::getServiceIsQueue()
 {
-    return this->SERVICE_IS_QUEUE;
+    return this->serviceIsQueue;
 }
 
-QString QAstCTIService::get_service_queue_name()
+QString QAstCTIService::getServiceQueueName()
 {
-    return this->SERVICE_QUEUE_NAME;
+    return this->serviceQueueName;
 }
 
-QString QAstCTIService::get_service_trigger_type()
+QString QAstCTIService::getServiceTriggerType()
 {
-    return this->SERVICE_TRIGGER_TYPE;
+    return this->serviceTriggerType;
 }
 
-bool QAstCTIService::get_enabled()
+bool QAstCTIService::getEnabled()
 {
-    return this->ENABLED;
+    return this->enabled;
 }
 
-QAstCTIServicesOperators* QAstCTIService::get_operators()
+QAstCTIServicesOperators *QAstCTIService::getOperators()
 {
     return this->operators;
 }
 
-QAstCTIServicesVariables* QAstCTIService::get_variables()
+QAstCTIServicesVariables *QAstCTIService::getVariables()
 {
     return this->variables;
 }
 
-QAstCTIServicesApplications* QAstCTIService::get_applications()
+QAstCTIServicesApplications *QAstCTIService::getApplications()
 {
     return this->applications;
 }

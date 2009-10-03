@@ -42,15 +42,15 @@
 #include "qastctiservicesoperators.h"
 #include "qastctioperator.h"
 
-QAstCTIServicesOperators::QAstCTIServicesOperators(QObject* parent)
-        : QObject(parent), ID_SERVICE(0)
+QAstCTIServicesOperators::QAstCTIServicesOperators(QObject *parent)
+        : QObject(parent), idService(0)
 {
 }
 
-QAstCTIServicesOperators::QAstCTIServicesOperators(const int& idservice, QObject* parent)
-        : QObject(parent), ID_SERVICE(idservice)
+QAstCTIServicesOperators::QAstCTIServicesOperators(const int &idService, QObject *parent)
+        : QObject(parent), idService(idService)
 {
-    this->fill_operators();
+    this->fillOperators();
 }
 
 QAstCTIServicesOperators::~QAstCTIServicesOperators()
@@ -60,29 +60,27 @@ QAstCTIServicesOperators::~QAstCTIServicesOperators()
 }
 
 
-QAstCTIOperator* QAstCTIServicesOperators::operator[](const QString& key)
+QAstCTIOperator *QAstCTIServicesOperators::operator[](const QString &key)
 {
     return (this->operators.contains(key)) ? this->operators[key] : 0;
 
 }
 
-void QAstCTIServicesOperators::set_id_service(const int &idservice)
+void QAstCTIServicesOperators::setIdService(const int &idService)
 {
-    this->ID_SERVICE = idservice;
-    this->fill_operators();
+    this->idService = idService;
+    this->fillOperators();
 }
-void QAstCTIServicesOperators::add_operator(QAstCTIOperator* oper)
+void QAstCTIServicesOperators::addOperator(QAstCTIOperator *oper)
 {
-    this->operators.insert(oper->get_user_name(), oper);
+    this->operators.insert(oper->getUserName(), oper);
 }
 
-void QAstCTIServicesOperators::remove_operator(const QString& key)
+void QAstCTIServicesOperators::removeOperator(const QString &key)
 {
-    if (this->operators.contains(key))
-    {
+    if (this->operators.contains(key)) {
         QAstCTIOperator* oper = this->operators[key];
-        if (oper != 0)
-        {
+        if (oper != 0) {
             delete(oper);
         }
         this->operators.remove(key);
@@ -108,23 +106,21 @@ void QAstCTIServicesOperators::clear()
     }
 }
 
-void QAstCTIServicesOperators::fill_operators()
+void QAstCTIServicesOperators::fillOperators()
 {
     QSqlDatabase db = QSqlDatabase::database("sqlitedb");
     QSqlQuery query(db);
     query.prepare("SELECT ID_OPERATOR FROM services_operators WHERE ID_SERVICE=:id ORDER BY ID_OPERATOR ASC");
-    query.bindValue(":id", this->ID_SERVICE);
+    query.bindValue(":id", this->idService);
     query.exec();
-    while(query.next())
-    {
-        QAstCTIOperator* oper = new QAstCTIOperator(query.value(0).toInt(0), this);
-        if (oper->load())
-        {
-            QString operName = oper->get_user_name();
+    while(query.next()) {
+        QAstCTIOperator *oper = new QAstCTIOperator(query.value(0).toInt(0), this);
+        if (oper->load()) {
+            QString operName = oper->getUserName();
 
             // Remove service if exists before load
-            this->remove_operator(operName);
-            this->add_operator(oper);
+            this->removeOperator(operName);
+            this->addOperator(oper);
         }
     }
     query.finish();

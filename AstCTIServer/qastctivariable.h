@@ -47,22 +47,22 @@ class QAstCTIVariable : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIVariable(const int& id, QObject* parent);
+    QAstCTIVariable(const int &id, QObject *parent);
     ~QAstCTIVariable();
-    int get_id_variable();
-    int get_id_service();
-    QString get_var_name();
+    int getIdVariable();
+    int getIdService();
+    QString getVarName();
 
 public slots:
     bool load();
 
 signals:
-    void load_complete(const bool& result);
+    void loadComplete(const bool &result);
 
 private:
-    int ID_VARIABLE;
-    int ID_SERVICE;
-    QString VARNAME;
+    int idVariable;
+    int idService;
+    QString varName;
 };
 
 #endif // QASTCTIVARIABLE_H
