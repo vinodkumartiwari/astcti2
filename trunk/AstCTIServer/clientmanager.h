@@ -84,6 +84,7 @@ public:
     bool                    isInPause();
     QAstCTIOperator         *getActiveOperator();
     QString                 getClientOperatingSystem();
+    QString                 getLocalIdentifier();
 
 public slots:
     void                    sendDataToClient(const QString& data);

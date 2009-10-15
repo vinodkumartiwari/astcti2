@@ -41,6 +41,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QAbstractSocket>
 #include <QTcpSocket>
 #include <QHostAddress>
 #include <QStringList>
@@ -61,6 +62,7 @@ struct AsteriskCommand
     QString commandName;
     QString command;
     QString channel;
+    int actionId;
 };
 
 enum AMIClientStatus {
@@ -99,7 +101,7 @@ public:
 
 public slots:
     void                            sendDataToAsterisk(const QString &data);
-    void                            sendCommandToAsterisk(const QString &commandName, const QString &data, const QString &channel);
+    void                            sendCommandToAsterisk(const int &actionId, const QString &commandName, const QString &data, const QString &channel);
 
 signals:
     void                            error(int socketError, const QString &message);
@@ -108,7 +110,7 @@ signals:
     void                            amiClientNoRetries();
     // TODO: complete the signal declaration
     void                            ctiEvent(const AMIEvent &eventId, QAstCTICall *theCall);
-    void                            ctiResponse(const QString &command_name, const QString& response, const QString &message, const QString &channel);
+    void                            ctiResponse(const int &actionId, const QString &command_name, const QString &response, const QString &message, const QString &channel);
 
 
 private:
@@ -121,6 +123,8 @@ private:
     int                             retries;
     QHash<QString, QAstCTICall*>    *activeCalls;
     QStack<AsteriskCommand*>        *commandsStack;
+    QHash<int, AsteriskCommand*>    *commandsHashtable;
+
 
 
 private slots:
@@ -133,8 +137,8 @@ private slots:
     QHash<QString, QString>*        hashFromMessage(QString data);
     void                            evaluateEvent(QHash<QString, QString> *event);
     void                            evaluateResponse(QHash<QString, QString> *response);
-
-
+    void                            socketStateChanged(QAbstractSocket::SocketState socketState);
+    void                            socketError(QAbstractSocket::SocketError socketError);
 protected:
     QTcpSocket*                     localSocket;
 };

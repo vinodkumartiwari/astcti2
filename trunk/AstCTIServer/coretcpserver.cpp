@@ -48,7 +48,7 @@
     Our CoreTcpServer derive from QTcpServer
 */
 CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
-    : QTcpServer(parent)
+    : QTcpServer(parent), actionId(0)
 {
     this->clients = new QHash <QString,ClientManager*>;
 
@@ -60,9 +60,10 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
 
      /* CODE TESTING START */
     this->ct = new AMIClient(this->config, 0 );
+    qRegisterMetaType<AMIEvent>("AMIEvent" );
     connect(this->ct, SIGNAL(amiClientNoRetries()), this, SLOT(stopTheServer()));
     connect(this->ct, SIGNAL(ctiEvent(const AMIEvent, QAstCTICall*)), this, SLOT(receiveCtiEvent(const AMIEvent, QAstCTICall*)));
-    connect(this->ct, SIGNAL(ctiResponse(QString,QString,QString,QString)), this, SLOT(receiveCtiResponse(QString,QString,QString,QString)));
+    connect(this->ct, SIGNAL(ctiResponse(int,QString,QString,QString,QString)), this, SLOT(receiveCtiResponse(int,QString,QString,QString,QString)));
     this->ct->start();
 
     //5f4dcc3b5aa765d61d8327deb882cf99
@@ -207,8 +208,7 @@ void CoreTcpServer::receiveCtiEvent(const AMIEvent &eventId, QAstCTICall *theCal
 {
     QString logMsg("");
 
-    if (theCall != 0)
-    {
+    if (theCall != 0) {
         QString callChannel = theCall->getParsedDestChannel();
 
         logMsg = "for call" + theCall->getUniqueId();
@@ -218,7 +218,6 @@ void CoreTcpServer::receiveCtiEvent(const AMIEvent &eventId, QAstCTICall *theCal
             if (eventId==AmiEventBridge) {
                 mutexClientList.lock();
                 if (clients->contains(identifier)) {
-
                     ClientManager* client = clients->value(identifier);
                     if (client != 0) {
                         // Here we add informatsion about CTI application to start
@@ -236,31 +235,25 @@ void CoreTcpServer::receiveCtiEvent(const AMIEvent &eventId, QAstCTICall *theCal
         } else {
             qDebug() << ">> receiveCtiEvent << Call Channel is empty";
         }
-
-
     }
     qDebug() << "Received CTI Event" << eventId << logMsg;
 }
 
-void CoreTcpServer::receiveCtiResponse(const QString& commandName, const QString& response, const QString& message, const QString& channel)
+void CoreTcpServer::receiveCtiResponse(const int &actionId, const QString &commandName, const QString &response, const QString &message, const QString& channel)
 {
     QString identifier = QString("exten-%1").arg(channel);
     mutexClientList.lock();
-    if (clients->contains(identifier))
-    {
+    if (clients->contains(identifier)) {
 
         ClientManager* client = clients->value(identifier);
-        if (client != 0)
-        {
-            QString strMessage = QString("500 %1,%2,%3").arg(commandName).arg(response).arg(message);
+        if (client != 0) {
+            QString strMessage = QString("500 %1,%2,%3,%4").arg(actionId).arg(commandName).arg(response).arg(message);
             client->sendDataToClient(strMessage);
 
-        }
-        else
+        } else {
             qDebug() << ">> receiveCtiResponse << Client is null";
-    }
-    else
-    {
+        }
+    } else {
         qDebug() << ">> receiveCtiResponse << Identifier" << identifier << "not found in client list";
     }
     mutexClientList.unlock();
@@ -269,11 +262,17 @@ void CoreTcpServer::receiveCtiResponse(const QString& commandName, const QString
 void CoreTcpServer::ctiClientLogin(ClientManager *cl)
 {
     QAstCTIOperator *theOperator = cl->getActiveOperator();
-    if (theOperator == 0) return;
+    if (theOperator == 0) {
+        return;
+    }
     QAstCTISeat *theSeat = theOperator->getLastSeat();
-    if (theSeat == 0) return;
+    if (theSeat == 0) {
+        return;
+    }
     QHash<QString,int> *servicesList = theOperator->getListOfServices();
-    if (servicesList == 0) return;
+    if (servicesList == 0) {
+        return;
+    }
 
     QHash<QString, int>::const_iterator i = servicesList->constBegin();
     while (i != servicesList->constEnd()) {
@@ -286,30 +285,36 @@ void CoreTcpServer::ctiClientLogin(ClientManager *cl)
             theService = CtiServerApplication::instance()->getServices()->operator [](serviceName);
 
             // Check if we got an existent service.. we should even!
-            if (theService != 0)
-            {
+            if (theService != 0) {
                 QString beginInPause = (theOperator->getBeginInPause() ? "true" : "false");
                 // Get the right interface for the operator fromit's seat
                 QString interface = theSeat->getSeatExten();
                 int penalty = i.value();
+
                 // We can send a login if AMIClient is connected
                 // and the service is a queue where we can login
-                if (this->ct->isConnected() & (theService->getServiceIsQueue()) )
-                {
-                    QString cmd = QString("Action: QueueAdd\r\nQueue: %1\r\nInterface: %2\r\nPenalty: %3\r\nPaused: %4\r\n\r\n")
-                                  .arg(theService->getServiceQueueName() ).arg(interface).arg(penalty).arg(beginInPause);
+                if (this->ct->isConnected() & (theService->getServiceIsQueue()) ) {
+                    QString cmd = QString("")
+                                  .append("Action: QueueAdd\r\n")
+                                  .append("ActionID: %1\r\n")
+                                  .append("Queue: %2\r\n")
+                                  .append("Interface: %3\r\n")
+                                  .append("Penalty: %4\r\n")
+                                  .append("Paused: %5\r\n\r\n")
+                                  .arg(this->incrementAndGetActionId())
+                                  .arg(theService->getServiceQueueName())
+                                  .arg(interface)
+                                  .arg(penalty)
+                                  .arg(beginInPause);
 
-                    this->ct->sendCommandToAsterisk("QueueAdd", cmd, interface);
+                    this->ct->sendCommandToAsterisk(actionId,"QueueAdd", cmd, interface);
 
                 }
             }
         }
         ++i;
     }
- }
-
-
-
+}
 
 void CoreTcpServer::ctiClientLogoff(ClientManager *cl)
 {
@@ -331,21 +336,24 @@ void CoreTcpServer::ctiClientLogoff(ClientManager *cl)
             theService = CtiServerApplication::instance()->getServices()->operator [](serviceName);
 
             // Check if we got an existent service.. we should even!
-            if (theService != 0)
-            {
+            if (theService != 0) {
                 QString begin_in_pause = (theOperator->getBeginInPause() ? "true" : "false");
                 // Get the right interface for the operator fromit's seat
                 QString interface = theSeat->getSeatExten();
 
                 // We can send a login if AMIClient is connected
                 // and the service is a queue where we can login
-                if (this->ct->isConnected() & (theService->getServiceIsQueue()) )
-                {
-                    QString cmd = QString("Action: QueueRemove\r\nQueue: %1\r\nInterface: %2\r\n\r\n")
-                                  .arg(theService->getServiceQueueName() ).arg(interface);
+                if (this->ct->isConnected() & (theService->getServiceIsQueue()) ) {
+                    QString cmd = QString("")
+                                  .append("Action: QueueRemove\r\n")
+                                  .append("ActionID: %1\r\n")
+                                  .append("Queue: %2\r\n")
+                                  .append("Interface: %3\r\n\r\n")
+                                  .arg(this->incrementAndGetActionId())
+                                  .arg(theService->getServiceQueueName())
+                                  .arg(interface);
 
-                    this->ct->sendCommandToAsterisk("QueueRemove", cmd, interface);
-
+                    this->ct->sendCommandToAsterisk(actionId,"QueueRemove", cmd, interface);
                 }
             }
         }
@@ -361,4 +369,9 @@ void CoreTcpServer::ctiClientPauseIn(ClientManager* cl)
 void CoreTcpServer::ctiClientPauseOut(ClientManager* cl)
 {
     Q_UNUSED(cl);
+}
+
+int CoreTcpServer::incrementAndGetActionId() {
+    this->actionId++;
+    return this->actionId;
 }

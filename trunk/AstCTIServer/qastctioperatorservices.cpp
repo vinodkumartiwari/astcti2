@@ -75,23 +75,33 @@ QHash<QString,int> *QAstCTIOperatorServices::getServicesList()
 
 void QAstCTIOperatorServices::fillList()
 {
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
 
-    QString sql = "SELECT services.SERVICE_NAME, services.SERVICE_IS_QUEUE iq, services.SERVICE_QUEUE_NAME q,";
-            sql +="services_operators.PENALTY FROM services_operators ";
-            sql +="JOIN services ON services_operators.ID_SERVICE=services.ID_SERVICE ";
-            sql +="WHERE iq=1 AND ID_OPERATOR=:id";
-    query.prepare(sql);
-    query.bindValue(":id", this->idOperator);
-    query.exec();
+    QString sql = "SELECT s.SERVICE_NAME, s.SERVICE_IS_QUEUE, s.SERVICE_QUEUE_NAME,";
+            sql +="so.PENALTY FROM services_operators so ";
+            sql +="JOIN services s ON so.ID_SERVICE=s.ID_SERVICE ";
+            sql +="WHERE s.SERVICE_IS_QUEUE=1 AND so.ID_OPERATOR=:id";
 
-    this->servicesList.clear();
-    while(query.next()) {
-        QString serviceName = query.value(0).toString();
-        int penalty = query.value(1).toInt(0);
-        if (!this->servicesList.contains(serviceName)) {
-            this->servicesList.insert(serviceName, penalty);
+    if (!query.prepare(sql)) {
+        QString lastError = db.lastError().text();
+        qCritical("Prepare failed in QAstCTIOperatorServices::fillList() %s:%d: %s",  __FILE__ , __LINE__,
+                  qPrintable(lastError)
+                  );
+    } else {
+        query.bindValue(":id", this->idOperator);
+        query.exec();
+
+        this->servicesList.clear();
+        while(query.next()) {
+            QString serviceName = query.value(0).toString();
+            int penalty = query.value(1).toInt(0);
+            if (!this->servicesList.contains(serviceName)) {
+                this->servicesList.insert(serviceName, penalty);
+            }
         }
     }
     query.finish();

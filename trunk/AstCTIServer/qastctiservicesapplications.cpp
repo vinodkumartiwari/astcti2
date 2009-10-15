@@ -105,9 +105,15 @@ void QAstCTIServicesApplications::clear()
 
 void QAstCTIServicesApplications::fillApplications()
 {
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
-    query.prepare("SELECT ID_APPLICATION FROM applications WHERE ID_SERVICE=:id ORDER BY ID_APPLICATION ASC");
+    QString sql = "SELECT ID_APPLICATION FROM applications WHERE ID_SERVICE=:id ORDER BY ID_APPLICATION ASC";
+    if (!query.prepare(sql)) {
+        qCritical("Prepare failed in QAstCTIServicesApplications::fillApplications() %s:%d",  __FILE__ , __LINE__);
+    }
     query.bindValue(":id", this->idService);
     query.exec();
     while(query.next()) {

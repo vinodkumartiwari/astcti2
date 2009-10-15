@@ -81,8 +81,7 @@ int QAstCTIServices::count()
 void QAstCTIServices::clear()
 {
     // Do a clear only if really needed
-    if (this->services.count() > 0)
-    {
+    if (this->services.count() > 0) {
         QMutableHashIterator<QString, QAstCTIService*> i(this->services);
         while (i.hasNext()) {
             i.next();
@@ -94,11 +93,13 @@ void QAstCTIServices::clear()
 
 void QAstCTIServices::fill_services()
 {
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
     query.exec("SELECT ID_SERVICE FROM services ORDER BY ID_SERVICE ASC");
-    while(query.next())
-    {
+    while(query.next()) {
         QAstCTIService *service = new QAstCTIService(query.value(0).toInt(0), this);
         if (service->load())
         {

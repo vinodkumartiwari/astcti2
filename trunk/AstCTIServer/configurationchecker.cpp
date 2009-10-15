@@ -37,14 +37,10 @@
  */
 #include "configurationchecker.h"
 
-ConfigurationChecker::ConfigurationChecker(const QString &path) :
-       lastConfiguration("")
+ConfigurationChecker::ConfigurationChecker(QObject *parent) :
+        QThread(parent), lastTimeStamp(0)
 {
-    this->configurationPath = path;
-    this->watcher = new QFileSystemWatcher();
 
-    connect(this->watcher, SIGNAL(directoryChanged(QString)), this, SLOT(checkConfigurationDir(QString)));
-    this->watcher->addPath(path);
 }
 
 ConfigurationChecker::~ConfigurationChecker()
@@ -53,43 +49,50 @@ ConfigurationChecker::~ConfigurationChecker()
 
 }
 
-QString ConfigurationChecker::loadFirstConfiguration()
+void ConfigurationChecker::startConfigurationCheckerThread()
 {
-    QString lastConfigFilename = readLastModifiedConfigurationFile();
-    if ( (lastConfigFilename != "") & (this->lastConfiguration == "") ) {
-        this->lastConfiguration = lastConfigFilename;
-    }
-    return lastConfigFilename;
+    this->running = true;
+    this->start();
 }
 
-
-void ConfigurationChecker::checkConfigurationDir(const QString &path)
+void ConfigurationChecker::stopConfigurationCheckerThread()
 {
-    Q_UNUSED(path);
-    QString lastConfigFilename = this->readLastModifiedConfigurationFile();
+    this->running = false;
 
-    if (lastConfigFilename == "") {
-        return;
-    }
-    if (this->lastConfiguration != 0) {
-        if (this->lastConfiguration != lastConfigFilename) {
-            this->lastConfiguration = lastConfigFilename;
-            QFileInfo *info = new QFileInfo(lastConfigFilename);
-            emit this->newConfiguration(info);
+}
+
+int ConfigurationChecker::getLastModified()
+{
+    return this->lastTimeStamp;
+}
+
+void ConfigurationChecker::run()
+{
+    long modified = 0;
+    while(this->running) {
+        modified = readLastModified();
+        if (modified > this->lastTimeStamp) {
+            this->lastTimeStamp = modified;
+            emit this->newConfiguration();
         }
+        this->sleep(30);
     }
 }
 
-QString ConfigurationChecker::readLastModifiedConfigurationFile()
+
+int ConfigurationChecker::readLastModified()
 {
-    QDir dir(this->configurationPath);
-    if (!dir.exists()) return 0;
-    QStringList fileFilter;
-    fileFilter << "*.db3";
-    QFileInfoList list = dir.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot, QDir::Time);
-    if (list.size() > 0) {
-        QFileInfo fi = list[0];
-        return fi.absoluteFilePath();
+    int result = 0;
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
     }
-    return "";
+    QSqlQuery query(db);
+    if (query.exec("SELECT LAST_UPDATE FROM dbversion LIMIT 1")) {
+        query.first();
+        result = query.value(0).toInt();
+        query.finish();
+    }
+    query.clear();
+    return result;
 }

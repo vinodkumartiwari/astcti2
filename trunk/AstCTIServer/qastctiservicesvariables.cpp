@@ -111,9 +111,16 @@ void QAstCTIServicesVariables::clear()
 
 void QAstCTIServicesVariables::fillVariables()
 {
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
-    query.prepare("SELECT ID_VARIABLE FROM services_variables WHERE ID_SERVICE=:id ORDER BY ID_VARIABLE ASC");
+
+    QString sql = "SELECT ID_VARIABLE FROM services_variables WHERE ID_SERVICE=:id ORDER BY ID_VARIABLE ASC";
+    if (!query.prepare(sql)) {
+        qCritical("Prepare failed in QAstCTIServicesVariables::fillVariables() %s:%d",  __FILE__ , __LINE__);
+    }
     query.bindValue(":id", this->idService);
     query.exec();
     while(query.next()) {

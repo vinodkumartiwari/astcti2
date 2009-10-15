@@ -213,10 +213,10 @@ void ClientManager::run()
                                     emit this->changeClient(this->localIdentifier, newIdentifier);
                                     this->localIdentifier = newIdentifier;
 
-                                    this->sendDataToClient("100 OK");
                                     // We can do a successful cti login only after the seat
                                     // is known
                                     emit this->ctiLogin(this);
+                                    this->sendDataToClient("100 OK");
                                 }
                             }
                         }
@@ -356,6 +356,11 @@ QAstCTIOperator *ClientManager::getActiveOperator()
 QString ClientManager::getClientOperatingSystem()
 {
     return this->clientOperatingSystem;
+}
+
+QString ClientManager::getLocalIdentifier()
+{
+    return this->localIdentifier;
 }
 
 bool ClientManager::isInPause()
