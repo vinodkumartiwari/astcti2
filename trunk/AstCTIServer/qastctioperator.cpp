@@ -69,18 +69,23 @@ bool QAstCTIOperator::load()
     bool retVal = false;
     QSqlDatabase db = QSqlDatabase::database("mysqldb");
     QSqlQuery query(db);
-    query.prepare("SELECT * FROM operators WHERE ID_OPERATOR=:id");
-    query.bindValue(":id", this->idOperator);
-    retVal = query.exec();
-    if ( (retVal) &  (query.first()) ) {
-        this->fullName = query.value(1).toString();
-        this->userName = query.value(2).toString();
-        this->passWord = query.value(3).toString();
-        this->lastSeatId = query.value(4).toInt(0);
-        this->beginInPause = query.value(5).toBool();
-        this->enabled = query.value(6).toBool();
+    if (!query.prepare("SELECT * FROM operators WHERE ID_OPERATOR=:id")) {
+        qCritical("Query prepare failed in QAstCTIOperator::load() %s:%d",  __FILE__ , __LINE__);
+    } else {
+        query.bindValue(":id", this->idOperator);
+        if (!query.exec()) {
+            qCritical("Query execution failed in QAstCTIOperator::load() %s:%d",  __FILE__ , __LINE__);
+        } else {
+            query.first();
+            this->fullName = query.value(1).toString();
+            this->userName = query.value(2).toString();
+            this->passWord = query.value(3).toString();
+            this->lastSeatId = query.value(4).toInt(0);
+            this->beginInPause = query.value(5).toBool();
+            this->enabled = query.value(6).toBool();
 
-        query.finish();
+            query.finish();
+        }
     }
     query.clear();
 

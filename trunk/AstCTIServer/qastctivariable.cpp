@@ -63,13 +63,16 @@ bool QAstCTIVariable::load()
     QString sql = "SELECT * FROM services_variables WHERE ID_VARIABLE=:id";
     if (!query.prepare(sql)) {
         qCritical("Prepare failed in QAstCTIVariable::load() %s:%d",  __FILE__ , __LINE__);
-    }
-    query.bindValue(":id", this->idVariable);
-    retVal = query.exec();
-    if ( (retVal) &  (query.first()) ) {
-        this->idService = query.value(1).toInt(0);
-        this->varName = query.value(2).toString();
-        query.finish();
+    } else {
+        query.bindValue(":id", this->idVariable);
+        if (!query.exec()) {
+            qCritical("Query execution failed in QAstCTIVariable::load() %s:%d",  __FILE__ , __LINE__);
+        } else {
+            query.first();
+            this->idService = query.value(1).toInt(0);
+            this->varName = query.value(2).toString();
+            query.finish();
+        }
     }
     query.clear();
 

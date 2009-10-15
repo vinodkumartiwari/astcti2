@@ -98,18 +98,22 @@ void QAstCTIServices::fill_services()
         db.open();
     }
     QSqlQuery query(db);
-    query.exec("SELECT ID_SERVICE FROM services ORDER BY ID_SERVICE ASC");
-    while(query.next()) {
-        QAstCTIService *service = new QAstCTIService(query.value(0).toInt(0), this);
-        if (service->load())
-        {
-            QString serviceName = service->getServiceName();
+    if (!query.exec("SELECT ID_SERVICE FROM services ORDER BY ID_SERVICE ASC")) {
+        qCritical("Query failed in QAstCTIServices::fill_services() %s:%d",  __FILE__ , __LINE__);
+    } else {
+        while(query.next()) {
+            QAstCTIService *service = new QAstCTIService(query.value(0).toInt(0), this);
+            if (service->load())
+            {
+                QString serviceName = service->getServiceName();
 
-            // Remove service if exists before load
-            this->remove_service(serviceName);
-            this->add_service(service);
+                // Remove service if exists before load
+                this->remove_service(serviceName);
+                this->add_service(service);
+
+            }
         }
+        query.finish();
     }
-    query.finish();
     query.clear();
 }

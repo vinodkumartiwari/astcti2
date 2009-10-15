@@ -116,20 +116,25 @@ void QAstCTIServicesOperators::fillOperators()
 
     QString sql = "SELECT ID_OPERATOR FROM services_operators WHERE ID_SERVICE=:id ORDER BY ID_OPERATOR ASC";
     if (!query.prepare(sql)) {
-        qCritical("Prepare failed in QAstCTIServicesApplications::fillApplications() %s:%d",  __FILE__ , __LINE__);
-    }
-    query.bindValue(":id", this->idService);
-    query.exec();
-    while(query.next()) {
-        QAstCTIOperator *oper = new QAstCTIOperator(query.value(0).toInt(0), this);
-        if (oper->load()) {
-            QString operName = oper->getUserName();
+        qCritical("Prepare failed in QAstCTIServicesOperators::fillOperators() %s:%d",  __FILE__ , __LINE__);
+    } else {
+        query.bindValue(":id", this->idService);
+        if (!query.exec()) {
+            qCritical("Query execution failed in QAstCTIServicesOperators::fillOperators() %s:%d",  __FILE__ , __LINE__);
+        } else {
+            while(query.next()) {
+                QAstCTIOperator *oper = new QAstCTIOperator(query.value(0).toInt(0), this);
+                if (oper->load()) {
+                    QString operName = oper->getUserName();
 
-            // Remove service if exists before load
-            this->removeOperator(operName);
-            this->addOperator(oper);
+                    // Remove service if exists before load
+                    this->removeOperator(operName);
+                    this->addOperator(oper);
+                    query.finish();
+                }
+            }
         }
     }
-    query.finish();
+
     query.clear();
 }

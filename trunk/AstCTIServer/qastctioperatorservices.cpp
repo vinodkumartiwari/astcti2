@@ -87,23 +87,23 @@ void QAstCTIOperatorServices::fillList()
             sql +="WHERE s.SERVICE_IS_QUEUE=1 AND so.ID_OPERATOR=:id";
 
     if (!query.prepare(sql)) {
-        QString lastError = db.lastError().text();
-        qCritical("Prepare failed in QAstCTIOperatorServices::fillList() %s:%d: %s",  __FILE__ , __LINE__,
-                  qPrintable(lastError)
-                  );
+        qCritical("Prepare failed in QAstCTIOperatorServices::fillList() %s:%d",  __FILE__ , __LINE__);
     } else {
         query.bindValue(":id", this->idOperator);
-        query.exec();
-
-        this->servicesList.clear();
-        while(query.next()) {
-            QString serviceName = query.value(0).toString();
-            int penalty = query.value(1).toInt(0);
-            if (!this->servicesList.contains(serviceName)) {
-                this->servicesList.insert(serviceName, penalty);
+        if (!query.exec()) {
+            qCritical("Query execution failed in QAstCTIOperatorServices::fillList() %s:%d",  __FILE__ , __LINE__);
+        } else {
+            this->servicesList.clear();
+            while(query.next()) {
+                QString serviceName = query.value(0).toString();
+                int penalty = query.value(1).toInt(0);
+                if (!this->servicesList.contains(serviceName)) {
+                    this->servicesList.insert(serviceName, penalty);
+                }
             }
+            query.finish();
         }
     }
-    query.finish();
+
     query.clear();
 }
