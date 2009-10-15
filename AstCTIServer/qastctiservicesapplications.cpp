@@ -113,19 +113,24 @@ void QAstCTIServicesApplications::fillApplications()
     QString sql = "SELECT ID_APPLICATION FROM applications WHERE ID_SERVICE=:id ORDER BY ID_APPLICATION ASC";
     if (!query.prepare(sql)) {
         qCritical("Prepare failed in QAstCTIServicesApplications::fillApplications() %s:%d",  __FILE__ , __LINE__);
-    }
-    query.bindValue(":id", this->idService);
-    query.exec();
-    while(query.next()) {
-        QAstCTIApplication *app = new QAstCTIApplication(query.value(0).toInt(0), this);
-        if (app->load()) {
-            QString appType = app->getApplicationOsType();
+    } else {
+        query.bindValue(":id", this->idService);
+        if (!query.exec()) {
+            qCritical("Query execution failed in QAstCTIServicesApplications::fillApplications() %s:%d",  __FILE__ , __LINE__);
+        } else {
+            while(query.next()) {
+                QAstCTIApplication *app = new QAstCTIApplication(query.value(0).toInt(0), this);
+                if (app->load()) {
+                    QString appType = app->getApplicationOsType();
 
-            // Remove service if exists before load
-            this->removeApplication(appType);
-            this->addApplication(app);
+                    // Remove service if exists before load
+                    this->removeApplication(appType);
+                    this->addApplication(app);
+                }
+            }
+            query.finish();
         }
     }
-    query.finish();
+
     query.clear();
 }

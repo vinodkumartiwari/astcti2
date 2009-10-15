@@ -120,19 +120,24 @@ void QAstCTIServicesVariables::fillVariables()
     QString sql = "SELECT ID_VARIABLE FROM services_variables WHERE ID_SERVICE=:id ORDER BY ID_VARIABLE ASC";
     if (!query.prepare(sql)) {
         qCritical("Prepare failed in QAstCTIServicesVariables::fillVariables() %s:%d",  __FILE__ , __LINE__);
-    }
-    query.bindValue(":id", this->idService);
-    query.exec();
-    while(query.next()) {
-        QAstCTIVariable *var = new QAstCTIVariable(query.value(0).toInt(0), this);
-        if (var->load()) {
-            QString varName = var->getVarName();
+    } else {
+        query.bindValue(":id", this->idService);
+        if (!query.exec()) {
+            qCritical("Query execution failed in QAstCTIServicesVariables::fillVariables() %s:%d",  __FILE__ , __LINE__);
+        } else {
+            while(query.next()) {
+                QAstCTIVariable *var = new QAstCTIVariable(query.value(0).toInt(0), this);
+                if (var->load()) {
+                    QString varName = var->getVarName();
 
-            // Remove service if exists before load
-            this->removeVariable(varName);
-            this->addVariable(var);
+                    // Remove service if exists before load
+                    this->removeVariable(varName);
+                    this->addVariable(var);
+
+                }
+            }
+            query.finish();
         }
     }
-    query.finish();
     query.clear();
 }

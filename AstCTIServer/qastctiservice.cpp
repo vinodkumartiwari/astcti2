@@ -71,17 +71,20 @@ bool QAstCTIService::load()
     QString sql = "SELECT * FROM services WHERE ID_SERVICE=:id";
     if (!query.prepare(sql)) {
         qCritical("Prepare failed in QAstCTIService::load() %s:%d",  __FILE__ , __LINE__);
-    }
-    query.bindValue(":id", this->idService);
-    retVal = query.exec();
-    if ( (retVal) &  (query.first()) ) {
-        this->serviceName = query.value(1).toString();
-        this->serviceContextType= query.value(2).toString();
-        this->serviceIsQueue = query.value(3).toBool();
-        this->serviceQueueName = query.value(4).toString();
-        this->serviceTriggerType = query.value(5).toString();
-        this->enabled = query.value(6).toBool();
-        query.finish();
+    } else {
+        query.bindValue(":id", this->idService);
+        if (!query.exec()) {
+            qCritical("Query execution failed in QAstCTIService::load() %s:%d",  __FILE__ , __LINE__);
+        } else {
+            query.first();
+            this->serviceName = query.value(1).toString();
+            this->serviceContextType= query.value(2).toString();
+            this->serviceIsQueue = query.value(3).toBool();
+            this->serviceQueueName = query.value(4).toString();
+            this->serviceTriggerType = query.value(5).toString();
+            this->enabled = query.value(6).toBool();
+            query.finish();
+        }
     }
     query.clear();
 
