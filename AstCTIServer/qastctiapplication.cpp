@@ -54,7 +54,10 @@ QAstCTIApplication::~QAstCTIApplication()
 bool QAstCTIApplication::load()
 {
     bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
     query.prepare("SELECT * FROM applications WHERE ID_APPLICATION=:id");
     query.bindValue(":id", this->idApplication);

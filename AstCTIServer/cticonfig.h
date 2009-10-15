@@ -55,9 +55,11 @@ struct QAstCTIConfiguration
     QString         amiSecret;
     quint16         amiConnectTimeout;
     quint16         amiReconnectRetries;
-    QString         sqliteFile;
-    QString         sqliteUser;
-    QString         sqliteSecret;
-    // QSqlDatabase*   db;
+    QString         sqlHost;
+    QString         sqlUserName;
+    QString         sqlPassWord;
+    quint16         sqlPort;
+    QString         sqlDatabase;
+
 };
 #endif

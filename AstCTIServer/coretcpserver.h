@@ -81,7 +81,7 @@ protected slots:
     void                            stopTheServer(bool closeTheSocket);
     // TODO: Complete slot declaration
     void                            receiveCtiEvent(const AMIEvent &eventid, QAstCTICall *the_call);
-    void                            receiveCtiResponse(const QString &commandName, const QString &response, const QString &message, const QString &channel);
+    void                            receiveCtiResponse(const int &actionId, const QString &commandName, const QString &response, const QString &message, const QString& channel);
     // Slots to receive CTI Client events
     void                            ctiClientPauseIn(ClientManager *cl);
     void                            ctiClientPauseOut(ClientManager *cl);
@@ -94,7 +94,9 @@ private:
     QMutex                  mutexClientList;
     bool                    isClosing;
     AMIClient*              ct;
+    int                     actionId;
 
+    int                     incrementAndGetActionId();
 };
 
 

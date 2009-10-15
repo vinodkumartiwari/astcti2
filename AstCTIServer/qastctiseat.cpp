@@ -61,10 +61,15 @@ QAstCTISeat::~QAstCTISeat()
 bool QAstCTISeat::load()
 {
     bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
-
-    query.prepare("SELECT * FROM seats WHERE ID_SEAT=:id");
+    QString sql = "SELECT * FROM seats WHERE ID_SEAT=:id";
+    if (!query.prepare(sql)) {
+        qCritical("Prepare failed in QAstCTISeat::load() %s:%d",  __FILE__ , __LINE__);
+    }
     query.bindValue(":id", this->idSeat);
     retVal = query.exec();
     if ( (retVal) & (query.first()) ) {
@@ -81,7 +86,10 @@ bool QAstCTISeat::load()
 
 bool QAstCTISeat::loadFromMac() {
     bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
 
     query.prepare("SELECT * FROM seats WHERE SEAT_MAC=:mac");

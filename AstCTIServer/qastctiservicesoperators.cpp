@@ -108,9 +108,16 @@ void QAstCTIServicesOperators::clear()
 
 void QAstCTIServicesOperators::fillOperators()
 {
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
-    query.prepare("SELECT ID_OPERATOR FROM services_operators WHERE ID_SERVICE=:id ORDER BY ID_OPERATOR ASC");
+
+    QString sql = "SELECT ID_OPERATOR FROM services_operators WHERE ID_SERVICE=:id ORDER BY ID_OPERATOR ASC";
+    if (!query.prepare(sql)) {
+        qCritical("Prepare failed in QAstCTIServicesApplications::fillApplications() %s:%d",  __FILE__ , __LINE__);
+    }
     query.bindValue(":id", this->idService);
     query.exec();
     while(query.next()) {

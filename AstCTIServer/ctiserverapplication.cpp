@@ -57,16 +57,12 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
         return;
     }
 
-    // Here we get from our configuration checker object the name
-    // of the sqlite database containing the runtime configuration
-    this->configChecker = new ConfigurationChecker(config.runtimeConfiguration);
-    QString lastConfigFilename = this->configChecker->loadFirstConfiguration();
-    if (lastConfigFilename == "") {
-        qCritical() << "Cannot read runtime configuration file";
-        return;
-    }
-    qDebug() << "Reading first runtime configuration from file " << lastConfigFilename;
-    if (!buildSqlDatabase(lastConfigFilename)) {
+    // ConfigurationChecker will check if database configuration
+    // will change
+    this->configChecker = new ConfigurationChecker(this);
+
+    qDebug() << "Reading first runtime configuration from database";
+    if (!buildSqlDatabase()) {
         return;
     }
 
@@ -77,8 +73,12 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
 
     // here we connect an event that will be triggered everytime
     // there's a newer runtime configuration database to read
-    connect(this->configChecker, SIGNAL(newConfiguration(QFileInfo*)), this, SLOT(reloadSqlDatabase(QFileInfo*)));
+    connect(this->configChecker, SIGNAL(newConfiguration()), this, SLOT(reloadSqlDatabase()));
+
+    this->configChecker->startConfigurationCheckerThread();
+
     canStart = true;
+
 }
 
 CtiServerApplication::~CtiServerApplication()
@@ -88,18 +88,18 @@ CtiServerApplication::~CtiServerApplication()
     if (this->coreTcpServer != 0) delete(this->coreTcpServer);
     if (config.qDebug) qDebug() << "CtiServerApplication closing";
     this->destroySqlDatabase();
-    if (config.qDebug) qDebug() << "SQLite database connection closed";
+    if (config.qDebug) qDebug() << "MySQL database connection closed";
     if (config.qDebug) qDebug() << "Stopped";
 
     // Remove msg handler to avoid access to this QApplication
     qInstallMsgHandler(0);
 }
 
-void  CtiServerApplication::reloadSqlDatabase(QFileInfo *databaseFile)
+void  CtiServerApplication::reloadSqlDatabase()
 {
-    qDebug() << "Configuration changes" << databaseFile->absoluteFilePath();
+    qDebug() << "Configuration has changed on " << this->configChecker->getLastModified();
 
-    buildSqlDatabase(databaseFile->absoluteFilePath());
+    buildSqlDatabase();
 
     /* CODE TESTING START: used for testing purpose only */
     qDebug("CODE TESTING START AT %s:%d",  __FILE__ , __LINE__);
@@ -167,35 +167,31 @@ CoreTcpServer *CtiServerApplication::buildNewCoreTcpServer()
     return this->coreTcpServer;
 }
 
-bool CtiServerApplication::buildSqlDatabase(const QString &databaseFile)
+bool CtiServerApplication::buildSqlDatabase()
 {
-    QSqlDatabase db  = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db  = QSqlDatabase::database("mysqldb");
     if (db.isValid()) {
         this->destroySqlDatabase();
     }
 
-    db = QSqlDatabase::addDatabase("QSQLITE", "sqlitedb");
-    db.setDatabaseName(databaseFile);
+    db = QSqlDatabase::addDatabase("QMYSQL", "mysqldb");
+    db.setHostName(config.sqlHost);
+    db.setPort(config.sqlPort);
+    db.setUserName(config.sqlUserName);
+    db.setPassword(config.sqlPassWord);
+    db.setDatabaseName(config.sqlDatabase);
 
-    if (config.sqliteUser.length() > 0) {
-        db.setUserName(config.sqliteUser);
-    }
-
-    if (config.sqliteSecret.length() > 0) {
-        db.setPassword(config.sqliteSecret);
-    }
 
     if(!db.open()) {
-        qCritical() << "Unable to open SQLite database" << config.sqliteFile  << "\n";
+        qCritical() << "Unable to open MySQL database: " << db.lastError() << "\n";
+
         return false;
     }
 
-    if (config.qDebug) qDebug() << "SQLite database successfully opened" << config.sqliteFile  << "\n";
+    if (config.qDebug) qDebug() << "MySQL database successfully opened\n";
 
-    if (config.qDebug) qDebug() << "SQLite database version " << this->readDatabaseVersion() << "\n";
+    if (config.qDebug) qDebug() << "MySQL database version " << this->readDatabaseVersion() << "\n";
 
-    config.sqliteFile  = databaseFile;
-    // config.db = &db;
     return true;
 
 }
@@ -203,7 +199,10 @@ bool CtiServerApplication::buildSqlDatabase(const QString &databaseFile)
 QString CtiServerApplication::readDatabaseVersion()
 {
     QString result = "";
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
     if (query.exec("SELECT VERSION FROM dbversion LIMIT 1")) {
         query.first();
@@ -217,16 +216,14 @@ QString CtiServerApplication::readDatabaseVersion()
 void CtiServerApplication::destroySqlDatabase()
 {
 
-    if (QSqlDatabase::contains("sqlitedb")) {
-        QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    if (QSqlDatabase::contains("mysqldb")) {
+        QSqlDatabase db = QSqlDatabase::database("mysqldb");
 
         if (db.isValid()) {
             if (db.isOpen()) db.close();
-            QSqlDatabase::removeDatabase("sqlitedb");
+            QSqlDatabase::removeDatabase("mysqldb");
         }
     }
-    config.sqliteFile .clear();
-
     // config.db = 0;
 }
 
@@ -271,9 +268,12 @@ bool CtiServerApplication::readSettingsFile(const QString configFile, QAstCTICon
     settings.endGroup();
 
     settings.beginGroup("RuntimeDb");
-    writeSettingsFile(&settings, "runtimeConfiguration", DefaultRtConfig);
-    writeSettingsFile(&settings, "user",            "");
-    writeSettingsFile(&settings, "secret",          "");
+    writeSettingsFile(&settings, "host",            DefaultSqlHost);
+    writeSettingsFile(&settings, "user",            DefaultSqlUser);
+    writeSettingsFile(&settings, "password",        DefaultSqlPassWord);
+    writeSettingsFile(&settings, "port",            DefaultSqlPort);
+    writeSettingsFile(&settings, "database",        DefaultSqlDatabase);
+
     settings.endGroup();
 
     // read values from the keys and store them in a config object
@@ -293,9 +293,13 @@ bool CtiServerApplication::readSettingsFile(const QString configFile, QAstCTICon
     settings.endGroup();
 
     settings.beginGroup("RuntimeDb");
-    config->runtimeConfiguration = settings.value("runtimeConfiguration").toString();
-    config->sqliteUser          = settings.value("user").toString();
-    config->sqliteSecret        = settings.value("secret").toString();
+    config->sqlHost             = settings.value("host").toString();
+    config->sqlUserName         = settings.value("user").toString();
+    config->sqlPassWord         = settings.value("password").toString();
+    config->sqlPort             = settings.value("port").toInt();
+    config->sqlDatabase         = settings.value("database").toString();
+
+
     settings.endGroup();
     return true;
 }

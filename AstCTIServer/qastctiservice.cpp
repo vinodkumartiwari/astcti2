@@ -63,9 +63,15 @@ QAstCTIService::~QAstCTIService()
 bool QAstCTIService::load()
 {
     bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
-    query.prepare("SELECT * FROM services WHERE ID_SERVICE=:id");
+    QString sql = "SELECT * FROM services WHERE ID_SERVICE=:id";
+    if (!query.prepare(sql)) {
+        qCritical("Prepare failed in QAstCTIService::load() %s:%d",  __FILE__ , __LINE__);
+    }
     query.bindValue(":id", this->idService);
     retVal = query.exec();
     if ( (retVal) &  (query.first()) ) {

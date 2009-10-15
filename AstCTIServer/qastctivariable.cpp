@@ -54,9 +54,16 @@ QAstCTIVariable::~QAstCTIVariable()
 bool QAstCTIVariable::load()
 {
     bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
-    query.prepare("SELECT * FROM services_variables WHERE ID_VARIABLE=:id");
+
+    QString sql = "SELECT * FROM services_variables WHERE ID_VARIABLE=:id";
+    if (!query.prepare(sql)) {
+        qCritical("Prepare failed in QAstCTIVariable::load() %s:%d",  __FILE__ , __LINE__);
+    }
     query.bindValue(":id", this->idVariable);
     retVal = query.exec();
     if ( (retVal) &  (query.first()) ) {

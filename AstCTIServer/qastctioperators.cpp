@@ -99,9 +99,15 @@ void QAstCTIOperators::clear()
 
 void QAstCTIOperators::fillOperators()
 {
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");    
+    if (!db.isOpen()) {
+        db.open();
+    }
     QSqlQuery query(db);
-    query.prepare("SELECT ID_OPERATOR FROM operators ORDER BY ID_OPERATOR ASC");
+    QString sql = "SELECT ID_OPERATOR FROM operators ORDER BY ID_OPERATOR ASC";
+    if (!query.prepare(sql)) {
+        qCritical("Prepare failed in QAstCTIOperators::fillOperators() %s:%d",  __FILE__ , __LINE__);
+    }
     query.exec();
     while(query.next()) {
         QAstCTIOperator *oper = new QAstCTIOperator(query.value(0).toInt(0), this);

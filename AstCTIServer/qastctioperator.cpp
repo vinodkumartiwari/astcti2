@@ -67,7 +67,7 @@ QAstCTIOperator::~QAstCTIOperator()
 bool QAstCTIOperator::load()
 {
     bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
     QSqlQuery query(db);
     query.prepare("SELECT * FROM operators WHERE ID_OPERATOR=:id");
     query.bindValue(":id", this->idOperator);
@@ -111,8 +111,10 @@ void QAstCTIOperator::loadListOfServices()
 bool QAstCTIOperator::save()
 {
     bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("sqlitedb");
-
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
     if (db.driver()->hasFeature(QSqlDriver::Transactions)) {
         db.transaction();
     }

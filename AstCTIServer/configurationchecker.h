@@ -40,34 +40,30 @@
 
 
 #include <QObject>
-#include <QtCore/QFileSystemWatcher>
-#include <QtCore/QDir>
-#include <QtCore/QDateTime>
-#include <QtCore/QFileInfo>
-#include <QtCore/QFileInfoList>
+#include <QThread>
+#include <QtSql>
 #include <QDebug>
 
-class ConfigurationChecker : public QObject
+class ConfigurationChecker : public  QThread
 {
     Q_OBJECT
 
 public:
-    ConfigurationChecker(const QString &path);
+    ConfigurationChecker(QObject *parent);
     ~ConfigurationChecker();
-    QString loadFirstConfiguration();
-
-
-public slots:
-    void checkConfigurationDir(const QString &path);
+    void                run();
+    int                 getLastModified();
+    void                startConfigurationCheckerThread();
+    void                stopConfigurationCheckerThread();
 
 signals:
-    void newConfiguration(QFileInfo *file);
+    void newConfiguration();
 
 private:
-    QString             readLastModifiedConfigurationFile();
-    QString             configurationPath;
-    QString             lastConfiguration;
-    QFileSystemWatcher* watcher;
+    QString             readIfConfigurationIsModified();    
+    int                 readLastModified();
+    int                 lastTimeStamp;
+    bool                running;
 };
 
 #endif // CONFIGURATIONCHECKER_H

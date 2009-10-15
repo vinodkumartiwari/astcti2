@@ -62,7 +62,11 @@
 #define DefaultServerPort           5000
 #define DefaultReadTimeout          15000
 #define DefaultCompressionLevel     0
-#define DefaultRtConfig            "rtconfig/"
+#define DefaultSqlHost              "localhost"
+#define DefaultSqlUser              "ctiuser"
+#define DefaultSqlPassWord          "ctipassword"
+#define DefaultSqlPort              3306
+#define DefaultSqlDatabase          "asteriskcti"
 
 #define DefaultAmiHost              "localhost"
 #define DefaultAmiPort              5038
@@ -91,7 +95,7 @@ public:
 
 public slots:
     CoreTcpServer           *buildNewCoreTcpServer();
-    void                    reloadSqlDatabase(QFileInfo *databaseFile);
+    void                    reloadSqlDatabase();
 
 private:
     bool                    canStart;
@@ -99,7 +103,7 @@ private:
     ConfigurationChecker    *configChecker;
     bool                    isConfigLoading;
 
-    bool                    buildSqlDatabase(const QString &databaseFile);
+    bool                    buildSqlDatabase();
     void                    destroySqlDatabase();
     QString                 readDatabaseVersion();
 
