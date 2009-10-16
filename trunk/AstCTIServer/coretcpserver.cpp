@@ -51,7 +51,6 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
     : QTcpServer(parent), actionId(0)
 {
     this->clients = new QHash <QString,ClientManager*>;
-
     this->isClosing = false;
     // Lets set local configuration struct
     this->config = config;
@@ -73,7 +72,6 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
 
 CoreTcpServer::~CoreTcpServer()
 {
-
     if (this->config->qDebug) qDebug() << "In CoreTcpServer::~CoreTcpServer()";
     if (this->clients != 0) delete(this->clients);
     if (this->ct != 0) delete(this->ct);
@@ -101,6 +99,8 @@ void CoreTcpServer::incomingConnection(int socketDescriptor)
     connect(thread, SIGNAL(ctiLogoff(ClientManager *)), this, SLOT(ctiClientLogoff(ClientManager *)));
     connect(thread, SIGNAL(ctiPauseIn(ClientManager *)) , this, SLOT(ctiClientPauseIn(ClientManager *)));
     connect(thread, SIGNAL(ctiPauseOut(ClientManager *)) , this, SLOT(ctiClientPauseOut(ClientManager *)));
+
+    connect(this, SIGNAL(ctiClientLogoffSent()), thread, SLOT(unlockAfterSuccessfullLogoff()));
     /*
         Action: QueueAdd    -> ctiLogin();
         Queue: astcti-queue
@@ -354,6 +354,8 @@ void CoreTcpServer::ctiClientLogoff(ClientManager *cl)
                                   .arg(interface);
 
                     this->ct->sendCommandToAsterisk(actionId,"QueueRemove", cmd, interface);
+
+                    emit this->ctiClientLogoffSent();
                 }
             }
         }

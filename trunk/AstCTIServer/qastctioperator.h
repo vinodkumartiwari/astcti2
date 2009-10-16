@@ -66,12 +66,15 @@ public:
     bool                checkPassword(const QString &password);
     QAstCTISeat         *getLastSeat();
     QHash<QString,int>  *getListOfServices();
+    bool                getIsLoggedIn();
+
     static bool         checkPasswordMatch(const QString &password, const QString &checkPasswordMatch);
 
 public slots:
     bool load();
     bool save();
     void loadSeat(const bool &bMayLoad);
+    void setLoggedIn(const bool &bLoggedIn);
 
 signals:
     void loadComplete(const bool &result);
@@ -89,6 +92,7 @@ private:
 
     QAstCTISeat *lastSeat;
     QAstCTIOperatorServices *listOfServices;
+    bool bLoggedIn;
 
 private slots:
     void loadListOfServices();

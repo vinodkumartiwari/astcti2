@@ -44,7 +44,7 @@
 #include <QtNetwork>
 #include <QSettings>
 #include <QHash>
-
+#include <QList>
 
 #include "clientmanager.h"
 #include "cticonfig.h"
@@ -65,6 +65,7 @@ signals:
     void                            amiClientPauseOut(ClientManager *cl);
     void                            amiClientLogin(ClientManager *cl);
     void                            amiClientLogoff(ClientManager *cl);
+    void                            ctiClientLogoffSent();
 
 protected:
     QHash<QString, ClientManager*>  *clients;
@@ -97,6 +98,8 @@ private:
     int                     actionId;
 
     int                     incrementAndGetActionId();
+
+
 };
 
 

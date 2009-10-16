@@ -48,7 +48,9 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
                              int socketDescriptor,
                              QObject *parent) :
                              QThread(parent),
-                             socketDescriptor(socketDescriptor)
+                             socketDescriptor(socketDescriptor),
+                             compressionLevel(-1),
+                             waitBeforeQuit()
 
 {
     // Lets copy our configuration struct
@@ -78,6 +80,7 @@ void ClientManager::initParserCommands()
 {
     if (config->qDebug) qDebug() << "In ClientManager::initParserCommands()";
     commandsList["QUIT"]       = CmdQuit;
+    commandsList["CMPR"]       = CmdCompression;
     commandsList["NOOP"]       = CmdNoOp;
     commandsList["USER"]       = CmdUser;
     commandsList["PASS"]       = CmdPass;
@@ -136,8 +139,14 @@ void ClientManager::run()
         QString strdata;
         QByteArray sockData = tcpSocket.readAll();
 
-        if (config->compressionLevel > 0) {
-            strdata = QString(qUncompress(sockData));
+        if (this->compressionLevel > 0) {
+            QByteArray toUncompress = qUncompress(sockData);
+            if (toUncompress.isEmpty()) {
+                qCritical() << "Unable to uncompress data in ClientManager::run() for client " << this->localIdentifier << "Try to use uncompressed data.";
+                strdata = QString(sockData);
+            } else {
+                strdata = QString(toUncompress);
+            }
         }
         else {
             // Read all data from the network
@@ -190,7 +199,20 @@ void ClientManager::run()
                             break;
                         } else {
                             ctiUserName = cmd.parameters.at(0);
-                            this->sendDataToClient("100 OK Send Password Now");
+
+                            // Avoid duplicate logins
+                            QAstCTIOperator *theOperator = CtiServerApplication::instance()->getOperatorByUsername(ctiUserName);
+                            if (theOperator != 0) {
+                                if (!theOperator->getIsLoggedIn()) {
+                                    this->sendDataToClient("100 OK Send Password Now");
+                                } else {
+                                    ctiUserName = "";
+                                    this->sendDataToClient("101 KO User is still logged in");
+                                }
+                            } else {
+                                ctiUserName = "";
+                                this->sendDataToClient("101 KO User doesn't exists");
+                            }
                         }
                         break;
                     case CmdMac:
@@ -246,6 +268,7 @@ void ClientManager::run()
                                         retries--;
                                     } else {
                                         this->inPause = theOperator->getBeginInPause();
+                                        theOperator->setLoggedIn(true);
                                         this->activeOperator = theOperator;
                                         authenticated = true;
                                         this->sendDataToClient("102 OK Authentication successful");
@@ -257,6 +280,10 @@ void ClientManager::run()
                                 tcpSocket.close();
                             }
                         }
+                        break;
+                    case CmdCompression:
+                        this->sendDataToClient( QString("103 %1").arg(this->config->compressionLevel) );
+                        this->compressionLevel = this->config->compressionLevel;
                         break;
                     case CmdOsType:
                         if (!authenticated) {
@@ -339,13 +366,29 @@ void ClientManager::run()
 
     if (config->qDebug) qDebug() << "Connection from" << remoteAddr.toString() << ":" << remotePort << "closed";
 
-    // We should do a logoff right now..
-    emit this->ctiLogoff(this);
+    if (this->localIdentifier.startsWith("exten-")) {
+        // We should do a logoff right now..
+        emit this->ctiLogoff(this);
 
+        waitBeforeQuit.acquire();
+       /* while(!exitFromSleep) {
+            // We'll wait for a successfull logout before quit
+            msleep(500);
+        }*/
+    }
+
+
+    if (this->activeOperator != 0) {
+        this->activeOperator->setLoggedIn(false);
+    }
     // Emit a signal when disconnection is in progress
-    // TODO : emit only if user done a successfull authentication
     emit this->removeClient(this->localIdentifier);
 
+}
+
+void ClientManager::unlockAfterSuccessfullLogoff() {
+    // this->exitFromSleep = true;
+    waitBeforeQuit.release();
 }
 
 QAstCTIOperator *ClientManager::getActiveOperator()
@@ -387,6 +430,8 @@ QAstCTICommand ClientManager::parseCommand(const QString &command)
 */
 void ClientManager::sendDataToClient(const QString &data)
 {
+    if (!this->localSocket->state() == QAbstractSocket::ConnectedState ) return;
+
     if (config->qDebug) qDebug() << "In ClientManager::sendDataToClient(" << data << ")";
 
     QByteArray block;
@@ -396,8 +441,8 @@ void ClientManager::sendDataToClient(const QString &data)
 
     // We output simple ascii strings (no utf8)
     out << data.toAscii() << "\n";
-    if (config->compressionLevel > 0) {
-        QByteArray compressed = qCompress(block, config->compressionLevel);
+    if (this->compressionLevel > 0) {
+        QByteArray compressed = qCompress(block, this->compressionLevel);
         this->localSocket->write(compressed);
     } else {
         this->localSocket->write(block);

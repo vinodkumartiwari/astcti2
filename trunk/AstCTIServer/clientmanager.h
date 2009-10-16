@@ -40,6 +40,7 @@
 #define CLIENTMANAGER_H
 
 #include <QThread>
+#include <QSemaphore>
 #include <QTcpSocket>
 #include <QHostAddress>
 #include <QStringList>
@@ -60,6 +61,7 @@ enum QAstCTICommands {
     CmdNotDefined,
     CmdNoOp,
     CmdQuit,
+    CmdCompression,
     CmdUser,
     CmdPass,
     CmdMac,
@@ -88,6 +90,7 @@ public:
 
 public slots:
     void                    sendDataToClient(const QString& data);
+    void                    unlockAfterSuccessfullLogoff();
 
 signals:
     void addClient(const QString &exten, ClientManager *cl);
@@ -105,6 +108,7 @@ signals:
 private:
     QAstCTIConfiguration    *config;
     int                     socketDescriptor;
+    int                     compressionLevel;
     QString                 localIdentifier;
     QString                 buffer;
     QHash<QString, int>     commandsList;
@@ -113,7 +117,7 @@ private:
     QAstCTIOperator         *activeOperator;
     QString                 clientOperatingSystem;
     bool                    inPause;
-
+    QSemaphore              waitBeforeQuit;
 
 protected:
     QTcpSocket              *localSocket;
