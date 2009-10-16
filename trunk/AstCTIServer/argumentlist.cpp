@@ -83,9 +83,9 @@ QString QArgumentList::getSwitchArg(QString option, QString defaultValue)
         if (option == itr.next()) {
             itr.remove();
             if (itr.hasNext()) {
-                QString retval = itr.next();
+                QString retVal = itr.next();
                 itr.remove();
-                return retval;
+                return retVal;
             }
             else {
                 qDebug() << "Missing Argument for " << option;

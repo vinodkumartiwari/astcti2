@@ -75,7 +75,7 @@ bool QAstCTISeat::load()
     if (!query.exec()) {
         qCritical("Query failed in QAstCTISeat::load() %s:%d",  __FILE__ , __LINE__);
     } else {
-        query.first();
+        retVal = query.first();
         this->seatMac = query.value(1).toString();
         this->seatExten  = query.value(2).toString();
         this->description = query.value(3).toString();

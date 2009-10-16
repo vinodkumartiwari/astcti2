@@ -76,7 +76,7 @@ bool QAstCTIOperator::load()
         if (!query.exec()) {
             qCritical("Query execution failed in QAstCTIOperator::load() %s:%d",  __FILE__ , __LINE__);
         } else {
-            query.first();
+            retVal = query.first();
             this->fullName = query.value(1).toString();
             this->userName = query.value(2).toString();
             this->passWord = query.value(3).toString();

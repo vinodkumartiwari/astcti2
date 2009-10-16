@@ -76,7 +76,7 @@ bool QAstCTIService::load()
         if (!query.exec()) {
             qCritical("Query execution failed in QAstCTIService::load() %s:%d",  __FILE__ , __LINE__);
         } else {
-            query.first();
+            retVal = query.first();
             this->serviceName = query.value(1).toString();
             this->serviceContextType= query.value(2).toString();
             this->serviceIsQueue = query.value(3).toBool();

@@ -39,7 +39,7 @@
 
 
 CtiServerApplication::CtiServerApplication(int &argc, char **argv)
-        : QCoreApplication(argc, argv)
+        : QCoreApplication(argc, argv), coreTcpServer(0)
 {
     this->services = 0;
     this->ctiOperators = 0;
@@ -155,7 +155,7 @@ CoreTcpServer *CtiServerApplication::buildNewCoreTcpServer()
     if (!canStart) return 0;
 
     // Let's build our main window
-    this->coreTcpServer = new CoreTcpServer(&this->config);
+    this->coreTcpServer = new CoreTcpServer(&this->config, this);
 
     // Say we're listening on port..
     if (config.qDebug) qDebug() << "CoreTcpServer listening on port " <<  config.serverPort;
