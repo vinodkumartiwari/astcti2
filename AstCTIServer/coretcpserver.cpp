@@ -59,7 +59,7 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
     // Basic init here
 
      /* CODE TESTING START */
-    this->ct = new AMIClient(this->config, 0 );
+    this->ct = new AMIClient(this->config, this );
     qRegisterMetaType<AMIEvent>("AMIEvent" );
     connect(this->ct, SIGNAL(amiClientNoRetries()), this, SLOT(stopTheServer()));
     connect(this->ct, SIGNAL(ctiEvent(const AMIEvent, QAstCTICall*)), this, SLOT(receiveCtiEvent(const AMIEvent, QAstCTICall*)));
@@ -176,9 +176,9 @@ bool CoreTcpServer::containsClient(const QString &exten)
 {
 
     mutexClientList.lock();
-    bool retval = clients->contains(exten);
+    bool retVal = clients->contains(exten);
     mutexClientList.unlock();
-    return retval;
+    return retVal;
 }
 
 void CoreTcpServer::notifyClient(const QString &data)

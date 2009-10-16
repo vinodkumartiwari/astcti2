@@ -68,7 +68,7 @@ bool QAstCTIVariable::load()
         if (!query.exec()) {
             qCritical("Query execution failed in QAstCTIVariable::load() %s:%d",  __FILE__ , __LINE__);
         } else {
-            query.first();
+            retVal = query.first();
             this->idService = query.value(1).toInt(0);
             this->varName = query.value(2).toString();
             query.finish();
