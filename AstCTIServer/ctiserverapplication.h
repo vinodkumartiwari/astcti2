@@ -103,11 +103,9 @@ private:
     CoreTcpServer           *coreTcpServer;
     ConfigurationChecker    *configChecker;
     bool                    isConfigLoading;
-
     bool                    buildSqlDatabase();
     void                    destroySqlDatabase();
     QString                 readDatabaseVersion();
-
     bool                    readSettingsFile(const QString configFile, QAstCTIConfiguration *config);
     void                    writeSettingsFile(QSettings *settings, const QString &key, const  QVariant &defValue);
 

@@ -110,10 +110,8 @@ signals:
     void                            receiveDataFromAsterisk(const QString &data);
     void                            threadStopped();
     void                            amiClientNoRetries();
-    // TODO: complete the signal declaration
     void                            ctiEvent(const AMIEvent &eventId, QAstCTICall *theCall);
     void                            ctiResponse(const int &actionId, AsteriskCommand *theCommand);
-
 
 private:
     QAstCTIConfiguration            *config;
@@ -124,16 +122,11 @@ private:
     AMIClientStatus                 amiClientStatus;
     int                             retries;
     QHash<QString, QAstCTICall*>    *activeCalls;
-    QStack<AsteriskCommand*>        *commandsStack;
     QHash<int, AsteriskCommand*>    *commandsHashtable;
-
-
 
 private slots:
     void                            buildTheSocket();
     void                            parseDataReceivedFromAsterisk(const QString& message);
-
-    void                            startAMIThread();
     void                            performLogin();
     void                            executeActions();
     QHash<QString, QString>*        hashFromMessage(QString data);

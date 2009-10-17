@@ -94,7 +94,6 @@ public:
     void                    run();
     QAstCTIClientState      getState();
     QAstCTIOperator         *getActiveOperator();
-
     QString                 getClientOperatingSystem();
     QString                 getLocalIdentifier();
 
@@ -111,7 +110,6 @@ signals:
     void removeClient(const QString &exten);
     void notifyServer(const QString &data);
     void stopRequest(const QString &exten, ClientManager *cl);
-
     // CTI Status change request
     void ctiPauseIn(ClientManager *cl);
     void ctiPauseOut(ClientManager *cl);
@@ -132,9 +130,6 @@ private:
     QString                 clientOperatingSystem;
     QSemaphore              waitBeforeQuit;
     QAstCTIClientState      state;
-
-
-
 protected:
     QTcpSocket              *localSocket;
 

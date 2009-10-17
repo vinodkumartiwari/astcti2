@@ -51,7 +51,6 @@ AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
 
     this->config = config;
     this->activeCalls  = new QHash<QString, QAstCTICall*>;
-    this->commandsStack = new QStack<AsteriskCommand*>;
     this->commandsHashtable = new QHash<int, AsteriskCommand*>;
     this->quit = false;
     this->localSocket = 0;
@@ -63,16 +62,8 @@ AMIClient::~AMIClient()
     if (config->qDebug) qDebug() << "In AMIClient::~AMIClient()";
     delete(this->localSocket);
     delete(this->activeCalls);
-    delete(this->commandsStack);
     delete(this->commandsHashtable);
 }
-
-void AMIClient::startAMIThread()
-{
-    this->start();
-}
-
-
 
 void AMIClient::buildTheSocket()
 {
@@ -388,8 +379,6 @@ void AMIClient::evaluateResponse(QHash<QString, QString> *response)
         qWarning() << "ActionId is set to 0 in AMIClient::evaluateResponse()";
     }
     if (this->commandsHashtable->contains(actionId)) {
-    // if (this->commandsStack->count() > 0) {
-        // AsteriskCommand *cmd = this->commandsStack->pop();
         AsteriskCommand *cmd = this->commandsHashtable->value(actionId);
         if (cmd != 0) {
             QString channel = cmd->channel;

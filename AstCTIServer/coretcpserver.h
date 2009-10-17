@@ -88,7 +88,6 @@ protected slots:
     void                            notifyClient(const QString &data);
     void                            stopTheServer();
     void                            stopTheServer(bool closeTheSocket);
-    // TODO: Complete slot declaration
     void                            receiveCtiEvent(const AMIEvent &eventid, QAstCTICall *the_call);
     void                            receiveCtiResponse(const int &actionId, AsteriskCommand *the_command);
     // Slots to receive CTI Client events
@@ -105,7 +104,6 @@ private:
     bool                    isClosing;
     AMIClient*              ct;
     int                     actionId;
-
     int                     incrementAndGetActionId();
 
 
