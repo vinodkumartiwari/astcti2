@@ -71,8 +71,9 @@ signals:
     void                            amiClientLogin(ClientManager *cl);
     void                            amiClientLogoff(ClientManager *cl);
     void                            ctiClientLogoffSent();
-    void                            ctiClientPauseInResult(const bool &result, const QString &reason);
-    void                            ctiClientPauseOutResult(const bool &result, const QString &reason);
+    void                            ctiClientPauseInResult(const QString &identifier, const bool &result, const QString &reason);
+    void                            ctiClientPauseOutResult(const QString &identifier, const bool &result, const QString &reason);
+    void                            ctiResponse(const QString &identifier, const int actionId, const QString &commandName, const QString &responseString, const QString &responseMessage);
 
 protected:
     QHash<QString, ClientManager*>  *clients;

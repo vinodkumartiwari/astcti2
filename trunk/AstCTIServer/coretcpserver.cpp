@@ -103,8 +103,9 @@ void CoreTcpServer::incomingConnection(int socketDescriptor)
     connect(thread, SIGNAL(ctiPauseOut(ClientManager *)) , this, SLOT(ctiClientPauseOut(ClientManager *)));
 
     // Connect signals to inform back the client of pause request results
-    connect(this, SIGNAL(ctiClientPauseInResult(bool,QString)), thread, SLOT(pauseInResult(bool,QString)));
-    connect(this, SIGNAL(ctiClientPauseOutResult(bool,QString)), thread, SLOT(pauseOutResult(bool,QString)));
+    connect(this, SIGNAL(ctiClientPauseInResult(QString,bool,QString)), thread, SLOT(pauseInResult(QString,bool,QString)));
+    connect(this, SIGNAL(ctiClientPauseOutResult(QString,bool,QString)), thread, SLOT(pauseOutResult(QString,bool,QString)));
+    connect(this, SIGNAL(ctiResponse(QString,int,QString,QString,QString)), thread, SLOT(ctiResponse(QString,int,QString,QString,QString)));
 
     // This signal will notify client manager the wait condition on cti logoff before thread exit
     connect(this, SIGNAL(ctiClientLogoffSent()), thread, SLOT(unlockAfterSuccessfullLogoff()));
@@ -250,36 +251,28 @@ void CoreTcpServer::receiveCtiResponse(const int &actionId, AsteriskCommand *cmd
 {
     QString identifier = QString("exten-%1").arg(cmd->channel);
 
-    mutexClientList.lock();
-    if (clients->contains(identifier)) {
-
-        ClientManager* client = clients->value(identifier);
-        if (client != 0) {
-            if (cmd->commandName == "QueuePause") {
-                bool result = (cmd->responseString.toLower() == "success");
-                QString message = cmd->responseMessage;
+    if (clients->contains(identifier)) {        
+        QString commandName = cmd->commandName;
+        QString responseString = cmd->responseString;
+        QString responseMessage = cmd->responseMessage;
+        if (commandName == "QueuePause") {
+            bool result = (responseString.toLower() == "success");
+            mutexClientList.lock();
+            ClientManager* client = clients->value(identifier);
+            mutexClientList.unlock();
+            if (client != 0) {
                 if (client->getState() == StatePauseInRequested) {
-                    emit this->ctiClientPauseInResult(result, message);
+                    emit this->ctiClientPauseInResult(identifier, result, responseMessage);
                 } else if (client->getState() == StatePauseOutReuqested) {
-                    emit this->ctiClientPauseOutResult(result, message);
+                    emit this->ctiClientPauseOutResult(identifier, result, responseMessage);
                 }
             } else {
-                QString strMessage = QString("500 %1,%2,%3,%4")
-                                       .arg(actionId)
-                                       .arg(cmd->commandName)
-                                       .arg(cmd->responseString)
-                                       .arg(cmd->responseMessage);
-                client->sendDataToClient(strMessage);
+                qDebug() << ">> receiveCtiResponse << Identifier" << identifier << "not found in client list";
             }
-
         } else {
-            qDebug() << ">> receiveCtiResponse << Client is null";
+            emit this->ctiResponse(identifier, actionId, commandName, responseString, responseMessage);
         }
-    } else {
-        qDebug() << ">> receiveCtiResponse << Identifier" << identifier << "not found in client list";
     }
-    mutexClientList.unlock();
-
     // Free resources
     delete(cmd);
 }

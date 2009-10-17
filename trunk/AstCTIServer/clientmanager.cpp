@@ -380,25 +380,43 @@ void ClientManager::run()
 
 }
 
-void ClientManager::pauseInResult(const bool &result, const QString &reason)
+void ClientManager::pauseInResult(const QString &identifier, const bool &result, const QString &reason)
 {
-    if (result) {
-        this->state = StatePaused;
-        this->sendDataToClient("300 OK");
-    } else {
-        this->state = StateLoggedIn;
-        this->sendDataToClient(QString("302 KO ").append(reason));
+    if (identifier == this->localIdentifier) {
+        if (result) {
+            this->state = StatePaused;
+            this->sendDataToClient("300 OK");
+        } else {
+            this->state = StateLoggedIn;
+            this->sendDataToClient(QString("302 KO ").append(reason));
+        }
     }
 }
 
-void ClientManager::pauseOutResult(const bool &result, const QString &reason)
+void ClientManager::pauseOutResult(const QString &identifier, const bool &result, const QString &reason)
 {
-    if (result) {
-        this->state = StateLoggedIn;
-        this->sendDataToClient("300 OK");
-    } else {
-        this->state = StatePaused;
-        this->sendDataToClient(QString("302 KO ").append(reason));
+    if (identifier == this->localIdentifier) {
+        if (result) {
+            this->state = StateLoggedIn;
+            this->sendDataToClient("300 OK");
+        } else {
+            this->state = StatePaused;
+            this->sendDataToClient(QString("302 KO ").append(reason));
+        }
+    }
+}
+
+void ClientManager::ctiResponse(const QString &identifier, const int actionId,
+                                const QString &commandName, const QString &responseString,
+                                const QString &responseMessage)
+{
+    if (identifier == this->localIdentifier) {
+        QString strMessage = QString("500 %1,%2,%3,%4")
+                                       .arg(actionId)
+                                       .arg(commandName)
+                                       .arg(responseString)
+                                       .arg(responseMessage);
+        this->sendDataToClient(strMessage);
     }
 }
 
