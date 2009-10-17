@@ -57,6 +57,11 @@ class CoreTcpServer : public QTcpServer
 public:
     CoreTcpServer(QAstCTIConfiguration *config, QObject *parent=0);
     ~CoreTcpServer();
+    bool                            containsUser(const QString &username);
+
+public slots:
+    void                            addUser(const QString &username);
+    void                            removeUser(const QString &username);
 
 signals:
     void                            sendDataFromServer(const QString &data);
@@ -66,12 +71,14 @@ signals:
     void                            amiClientLogin(ClientManager *cl);
     void                            amiClientLogoff(ClientManager *cl);
     void                            ctiClientLogoffSent();
+    void                            ctiClientPauseInResult(const bool &result, const QString &reason);
+    void                            ctiClientPauseOutResult(const bool &result, const QString &reason);
 
 protected:
     QHash<QString, ClientManager*>  *clients;
-    void                            incomingConnection(int socketDescriptor);
+    QList<QString>                  *users;
+    void                            incomingConnection(int socketDescriptor);    
     bool                            containsClient(const QString &exten);
-
 
 protected slots:
     void                            addClient(const QString &exten, ClientManager *cl);
@@ -82,7 +89,7 @@ protected slots:
     void                            stopTheServer(bool closeTheSocket);
     // TODO: Complete slot declaration
     void                            receiveCtiEvent(const AMIEvent &eventid, QAstCTICall *the_call);
-    void                            receiveCtiResponse(const int &actionId, const QString &commandName, const QString &response, const QString &message, const QString& channel);
+    void                            receiveCtiResponse(const int &actionId, AsteriskCommand *the_command);
     // Slots to receive CTI Client events
     void                            ctiClientPauseIn(ClientManager *cl);
     void                            ctiClientPauseOut(ClientManager *cl);
@@ -93,6 +100,7 @@ private:
     QSettings               settings;
     QAstCTIConfiguration*   config;
     QMutex                  mutexClientList;
+    QMutex                  mutexUsersList;
     bool                    isClosing;
     AMIClient*              ct;
     int                     actionId;

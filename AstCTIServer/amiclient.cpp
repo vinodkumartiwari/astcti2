@@ -396,8 +396,9 @@ void AMIClient::evaluateResponse(QHash<QString, QString> *response)
             QString commandName = cmd->commandName;
 
             qDebug() << "Evaluated response " << responseString << ". For channel:" << channel << ".ActionId:"<< actionId << ".Cause:"<< responseMessage;;
-            delete(cmd);
-            emit this->ctiResponse(actionId, commandName, responseString, responseMessage, channel);
+            cmd->responseString = responseString;
+            cmd->responseMessage = responseMessage;
+            emit this->ctiResponse(actionId, cmd);
         }
     }
 }

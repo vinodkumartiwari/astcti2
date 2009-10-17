@@ -74,6 +74,14 @@ enum QAstCTICommands {
     CmdEndList
 };
 
+enum QAstCTIClientState {
+    StateNotLoggedIn,
+    StateLoggedIn,
+    StatePaused,
+    StatePauseInRequested,
+    StatePauseOutReuqested,
+    StateEndList
+};
 
 class ClientManager : public  QThread
 {
@@ -83,7 +91,7 @@ public:
     ClientManager(QAstCTIConfiguration *config, int socketDescriptor, QObject *parent);
     ~ClientManager();
     void                    run();
-    bool                    isInPause();
+    QAstCTIClientState      getState();
     QAstCTIOperator         *getActiveOperator();
     QString                 getClientOperatingSystem();
     QString                 getLocalIdentifier();
@@ -91,6 +99,8 @@ public:
 public slots:
     void                    sendDataToClient(const QString& data);
     void                    unlockAfterSuccessfullLogoff();
+    void                    pauseInResult(const bool &result, const QString& reason);
+    void                    pauseOutResult(const bool &result, const QString& reason);
 
 signals:
     void addClient(const QString &exten, ClientManager *cl);
@@ -116,8 +126,9 @@ private:
     QAstCTICommand          parseCommand(const QString &command);
     QAstCTIOperator         *activeOperator;
     QString                 clientOperatingSystem;
-    bool                    inPause;
     QSemaphore              waitBeforeQuit;
+    QAstCTIClientState      state;
+
 
 protected:
     QTcpSocket              *localSocket;

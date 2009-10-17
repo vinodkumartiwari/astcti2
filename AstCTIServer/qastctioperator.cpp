@@ -44,8 +44,7 @@
 QAstCTIOperator::QAstCTIOperator(const int &id, QObject *parent)
         : QObject(parent), idOperator(id), fullName(""), userName(""),
         passWord(""), lastSeatId(0), beginInPause(false),
-        enabled(false), lastSeat(0), listOfServices(0),
-        bLoggedIn(false)
+        enabled(false), lastSeat(0), listOfServices(0)
 {
     // Let's connect our signals
     connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadSeat(const bool&)));
@@ -139,16 +138,6 @@ bool QAstCTIOperator::save()
 
     emit this->updateComplete(retVal);
     return retVal;
-}
-
-bool QAstCTIOperator::getIsLoggedIn()
-{
-    return this->bLoggedIn;
-}
-
-void QAstCTIOperator::setLoggedIn(const bool &bLoggedIn)
-{
-    this->bLoggedIn = bLoggedIn;
 }
 
 bool QAstCTIOperator::checkPassword(const QString& password)

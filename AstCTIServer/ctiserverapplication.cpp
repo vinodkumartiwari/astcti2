@@ -319,3 +319,15 @@ QAstCTIOperator *CtiServerApplication::getOperatorByUsername(const QString& user
     }
     return 0;
 }
+bool CtiServerApplication::containsUser(const QString &username)
+{
+    return this->coreTcpServer->containsUser(username);
+}
+void CtiServerApplication::addUser(const QString &username)
+{
+    this->coreTcpServer->addUser(username);
+}
+void CtiServerApplication::removeUser(const QString &username)
+{
+    this->coreTcpServer->removeUser(username);
+}

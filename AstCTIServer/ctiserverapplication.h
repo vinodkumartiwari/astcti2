@@ -88,14 +88,15 @@ public:
     ~CtiServerApplication();
     static CtiServerApplication *instance();
     QAstCTIOperator         *getOperatorByUsername(const QString &username);
-
     QAstCTIServices         *getServices();
-
+    bool                    containsUser(const QString &username);
     QAstCTIConfiguration    config; // Main configuration struct
 
 public slots:
     CoreTcpServer           *buildNewCoreTcpServer();
     void                    reloadSqlDatabase();
+    void                    addUser(const QString &username);
+    void                    removeUser(const QString &username);
 
 private:
     bool                    canStart;

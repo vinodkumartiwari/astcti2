@@ -51,6 +51,7 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
     : QTcpServer(parent), actionId(0)
 {
     this->clients = new QHash <QString,ClientManager*>;
+    this->users = new QList<QString>;
     this->isClosing = false;
     // Lets set local configuration struct
     this->config = config;
@@ -62,7 +63,7 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
     qRegisterMetaType<AMIEvent>("AMIEvent" );
     connect(this->ct, SIGNAL(amiClientNoRetries()), this, SLOT(stopTheServer()));
     connect(this->ct, SIGNAL(ctiEvent(const AMIEvent, QAstCTICall*)), this, SLOT(receiveCtiEvent(const AMIEvent, QAstCTICall*)));
-    connect(this->ct, SIGNAL(ctiResponse(int,QString,QString,QString,QString)), this, SLOT(receiveCtiResponse(int,QString,QString,QString,QString)));
+    connect(this->ct, SIGNAL(ctiResponse(int, AsteriskCommand*)), this, SLOT(receiveCtiResponse(int, AsteriskCommand*)));
     this->ct->start();
 
     //5f4dcc3b5aa765d61d8327deb882cf99
@@ -74,6 +75,7 @@ CoreTcpServer::~CoreTcpServer()
 {
     if (this->config->qDebug) qDebug() << "In CoreTcpServer::~CoreTcpServer()";
     if (this->clients != 0) delete(this->clients);
+    if (this->users != 0) delete(this->users);
     if (this->ct != 0) delete(this->ct);
 }
 
@@ -100,30 +102,35 @@ void CoreTcpServer::incomingConnection(int socketDescriptor)
     connect(thread, SIGNAL(ctiPauseIn(ClientManager *)) , this, SLOT(ctiClientPauseIn(ClientManager *)));
     connect(thread, SIGNAL(ctiPauseOut(ClientManager *)) , this, SLOT(ctiClientPauseOut(ClientManager *)));
 
+    // Connect signals to inform back the client of pause request results
+    connect(this, SIGNAL(ctiClientPauseInResult(bool,QString)), thread, SLOT(pauseInResult(bool,QString)));
+    connect(this, SIGNAL(ctiClientPauseOutResult(bool,QString)), thread, SLOT(pauseOutResult(bool,QString)));
+
+    // This signal will notify client manager the wait condition on cti logoff before thread exit
     connect(this, SIGNAL(ctiClientLogoffSent()), thread, SLOT(unlockAfterSuccessfullLogoff()));
-    /*
-        Action: QueueAdd    -> ctiLogin();
-        Queue: astcti-queue
-        Interface: SIP/201
-        Penalty: 1
-        Paused: false
-
-        Action: QueueRemove -> ctiLogoff();
-        Queue: astcti-queue
-        Interface: SIP/201
-
-
-        Action: QueuePause -> ctiPauseIn();
-        Interface: SIP/201
-        Paused: true
-
-
-        Action: QueuePause -> ctiPauseOut();
-        Interface: SIP/201
-        Paused: false
-    */
-
     thread->start();
+}
+
+bool CoreTcpServer::containsUser(const QString &username)
+{
+    return this->users->contains(username);
+
+}
+void CoreTcpServer::addUser(const QString &username)
+{
+    mutexUsersList.lock();
+    if (!containsUser(username)) {        
+        this->users->append(username);        
+    }
+    mutexUsersList.unlock();
+}
+void CoreTcpServer::removeUser(const QString &username)
+{
+    mutexUsersList.lock();
+    if (containsUser(username)) {
+        this->users->removeAll(username);
+    }
+    mutexUsersList.unlock();
 }
 
 void CoreTcpServer::addClient(const QString &exten, ClientManager *cl)
@@ -239,16 +246,31 @@ void CoreTcpServer::receiveCtiEvent(const AMIEvent &eventId, QAstCTICall *theCal
     qDebug() << "Received CTI Event" << eventId << logMsg;
 }
 
-void CoreTcpServer::receiveCtiResponse(const int &actionId, const QString &commandName, const QString &response, const QString &message, const QString& channel)
+void CoreTcpServer::receiveCtiResponse(const int &actionId, AsteriskCommand *cmd)
 {
-    QString identifier = QString("exten-%1").arg(channel);
+    QString identifier = QString("exten-%1").arg(cmd->channel);
+
     mutexClientList.lock();
     if (clients->contains(identifier)) {
 
         ClientManager* client = clients->value(identifier);
         if (client != 0) {
-            QString strMessage = QString("500 %1,%2,%3,%4").arg(actionId).arg(commandName).arg(response).arg(message);
-            client->sendDataToClient(strMessage);
+            if (cmd->commandName == "QueuePause") {
+                bool result = (cmd->responseString.toLower() == "success");
+                QString message = cmd->responseMessage;
+                if (client->getState() == StatePauseInRequested) {
+                    emit this->ctiClientPauseInResult(result, message);
+                } else if (client->getState() == StatePauseOutReuqested) {
+                    emit this->ctiClientPauseOutResult(result, message);
+                }
+            } else {
+                QString strMessage = QString("500 %1,%2,%3,%4")
+                                       .arg(actionId)
+                                       .arg(cmd->commandName)
+                                       .arg(cmd->responseString)
+                                       .arg(cmd->responseMessage);
+                client->sendDataToClient(strMessage);
+            }
 
         } else {
             qDebug() << ">> receiveCtiResponse << Client is null";
@@ -257,6 +279,9 @@ void CoreTcpServer::receiveCtiResponse(const int &actionId, const QString &comma
         qDebug() << ">> receiveCtiResponse << Identifier" << identifier << "not found in client list";
     }
     mutexClientList.unlock();
+
+    // Free resources
+    delete(cmd);
 }
 
 void CoreTcpServer::ctiClientLogin(ClientManager *cl)
@@ -365,12 +390,55 @@ void CoreTcpServer::ctiClientLogoff(ClientManager *cl)
 
 void CoreTcpServer::ctiClientPauseIn(ClientManager* cl)
 {
-    Q_UNUSED(cl);
+    QAstCTIOperator *theOperator = cl->getActiveOperator();
+    if (theOperator == 0) return;
+    QAstCTISeat *theSeat = theOperator->getLastSeat();
+    if (theSeat == 0) return;
+
+    // Get the right interface for the operator fromit's seat
+    QString interface = theSeat->getSeatExten();
+
+    // We can send a login if AMIClient is connected
+    // and the service is a queue where we can login
+    if (this->ct->isConnected() ) {
+        QString cmd = QString("")
+                      .append("Action: QueuePause\r\n")
+                      .append("ActionID: %1\r\n")
+                      .append("Interface: %2\r\n")
+                      .append("Paused: %3\r\n\r\n")
+                      .arg(this->incrementAndGetActionId())
+                      .arg(interface)
+                      .arg("true");
+
+        this->ct->sendCommandToAsterisk(actionId,"QueuePause", cmd, interface);
+    }
+
 }
 
 void CoreTcpServer::ctiClientPauseOut(ClientManager* cl)
 {
-    Q_UNUSED(cl);
+    QAstCTIOperator *theOperator = cl->getActiveOperator();
+    if (theOperator == 0) return;
+    QAstCTISeat *theSeat = theOperator->getLastSeat();
+    if (theSeat == 0) return;
+
+    // Get the right interface for the operator fromit's seat
+    QString interface = theSeat->getSeatExten();
+
+    // We can send a login if AMIClient is connected
+    // and the service is a queue where we can login
+    if (this->ct->isConnected() ) {
+        QString cmd = QString("")
+                      .append("Action: QueuePause\r\n")
+                      .append("ActionID: %1\r\n")
+                      .append("Interface: %2\r\n")
+                      .append("Paused: %3\r\n\r\n")
+                      .arg(this->incrementAndGetActionId())
+                      .arg(interface)
+                      .arg("false");
+
+        this->ct->sendCommandToAsterisk(actionId,"QueuePause", cmd, interface);
+    }
 }
 
 int CoreTcpServer::incrementAndGetActionId() {
