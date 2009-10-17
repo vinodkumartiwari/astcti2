@@ -63,6 +63,8 @@ struct AsteriskCommand
     QString command;
     QString channel;
     int actionId;
+    QString responseString;
+    QString responseMessage;
 };
 
 enum AMIClientStatus {
@@ -110,7 +112,7 @@ signals:
     void                            amiClientNoRetries();
     // TODO: complete the signal declaration
     void                            ctiEvent(const AMIEvent &eventId, QAstCTICall *theCall);
-    void                            ctiResponse(const int &actionId, const QString &command_name, const QString &response, const QString &message, const QString &channel);
+    void                            ctiResponse(const int &actionId, AsteriskCommand *theCommand);
 
 
 private:

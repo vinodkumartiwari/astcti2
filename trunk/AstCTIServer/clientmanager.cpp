@@ -50,7 +50,8 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
                              QThread(parent),
                              socketDescriptor(socketDescriptor),
                              compressionLevel(-1),
-                             waitBeforeQuit()
+                             waitBeforeQuit(),
+                             state(StateNotLoggedIn)
 
 {
     // Lets copy our configuration struct
@@ -63,8 +64,6 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
 
     // We need to initialize our parser
     this->initParserCommands();
-
-    this->inPause = false;
 
 }
 
@@ -203,7 +202,7 @@ void ClientManager::run()
                             // Avoid duplicate logins
                             QAstCTIOperator *theOperator = CtiServerApplication::instance()->getOperatorByUsername(ctiUserName);
                             if (theOperator != 0) {
-                                if (!theOperator->getIsLoggedIn()) {
+                                if (!CtiServerApplication::instance()->containsUser(ctiUserName) ) {
                                     this->sendDataToClient("100 OK Send Password Now");
                                 } else {
                                     ctiUserName = "";
@@ -267,8 +266,8 @@ void ClientManager::run()
                                         ctiUserName = "";
                                         retries--;
                                     } else {
-                                        this->inPause = theOperator->getBeginInPause();
-                                        theOperator->setLoggedIn(true);
+                                        this->state = theOperator->getBeginInPause() ? StatePaused : StateLoggedIn;
+                                        CtiServerApplication::instance()->addUser(ctiUserName);
                                         this->activeOperator = theOperator;
                                         authenticated = true;
                                         this->sendDataToClient("102 OK Authentication successful");
@@ -324,20 +323,17 @@ void ClientManager::run()
                             break;
                         }
                         if (cmd.parameters.count() < 1) {
-                            this->sendDataToClient("101 KO No mac given");
+                            this->sendDataToClient("101 KO No action requested");
                             break;
                         } else {
-                            // TODO: Add better support to pause event
-                            // we need to connect some signals from coretcpserver
-                            // to get back a response for a pause request.
-                            if (this->inPause) {
+                            this->sendDataToClient("301 PAUSE PENDING");
+                            if (this->state == StatePaused) {
+                                this->state = StatePauseOutReuqested;
                                 emit this->ctiPauseOut(this);
-                                this->inPause = false;
                             } else {
+                                this->state = StatePauseInRequested;
                                 emit this->ctiPauseIn(this);
-                                this->inPause = true;
                             }
-                            this->sendDataToClient("100 OK");
                         }
                         break;
                     case CmdStop:
@@ -378,12 +374,32 @@ void ClientManager::run()
     }
 
 
-    if (this->activeOperator != 0) {
-        this->activeOperator->setLoggedIn(false);
-    }
+    CtiServerApplication::instance()->removeUser(ctiUserName);
     // Emit a signal when disconnection is in progress
     emit this->removeClient(this->localIdentifier);
 
+}
+
+void ClientManager::pauseInResult(const bool &result, const QString &reason)
+{
+    if (result) {
+        this->state = StatePaused;
+        this->sendDataToClient("300 OK");
+    } else {
+        this->state = StateLoggedIn;
+        this->sendDataToClient(QString("302 KO ").append(reason));
+    }
+}
+
+void ClientManager::pauseOutResult(const bool &result, const QString &reason)
+{
+    if (result) {
+        this->state = StateLoggedIn;
+        this->sendDataToClient("300 OK");
+    } else {
+        this->state = StatePaused;
+        this->sendDataToClient(QString("302 KO ").append(reason));
+    }
 }
 
 void ClientManager::unlockAfterSuccessfullLogoff() {
@@ -406,9 +422,9 @@ QString ClientManager::getLocalIdentifier()
     return this->localIdentifier;
 }
 
-bool ClientManager::isInPause()
+QAstCTIClientState ClientManager::getState()
 {
-    return this->inPause;
+    return this->state;
 }
 
 /*!
