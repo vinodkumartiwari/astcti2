@@ -51,13 +51,11 @@ class QAsteriskCTILogger : public QObject
 
 public:
     QtMsgType minimumLogLevel;
-
     QAsteriskCTILogger(QObject *parent=0);
     void writeToLog(const QtMsgType level, const QString &logdata="");
 
 private:
     QDir loggingDirectory;
-
     bool buildLogDirectoryIfNotExists();
     QString getLevelDescriptionFromId(const QtMsgType level);
 };
