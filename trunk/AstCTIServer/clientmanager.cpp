@@ -57,6 +57,7 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
     // Lets copy our configuration struct
     this->config = config;
     this->activeOperator = 0;
+    this->activeSeat = 0;
     this->clientOperatingSystem = "";
     connect(parent, SIGNAL(sendDataFromServer(QString)), this, SLOT(sendDataToClient(QString)));
 
@@ -70,6 +71,8 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
 ClientManager::~ClientManager()
 {
     if (config->qDebug) qDebug() << "ClientManager terminated";
+    // if (this->activeOperator != 0) delete(this->activeOperator);
+    // if (this->activeSeat != 0) delete(this->activeSeat);
 }
 
 /*!
@@ -84,6 +87,7 @@ void ClientManager::initParserCommands()
     commandsList["USER"]       = CmdUser;
     commandsList["PASS"]       = CmdPass;
     commandsList["OSTYPE"]     = CmdOsType;
+    commandsList["IDEN"]       = CmdIden;
     commandsList["SERVICES"]   = CmdServices;
     commandsList["QUEUES"]     = CmdQueues;
     commandsList["PAUSE"]      = CmdPause;
@@ -227,6 +231,7 @@ void ClientManager::run()
                             QString mac = cmd.parameters.at(0).toLower();
                             QAstCTISeat seat(mac, 0);
                             if (seat.loadFromMac()) {
+                                this->activeSeat = &seat;
                                 if (this->activeOperator != 0) {
                                     this->activeOperator->setLastSeatId(seat.getIdSeat());
                                     this->activeOperator->save();
@@ -240,6 +245,17 @@ void ClientManager::run()
                                     this->sendDataToClient("100 OK");
                                 }
                             }
+                        }
+                        break;
+                    case CmdIden:
+                        if (!authenticated) {
+                            this->sendDataToClient("101 KO Not authenticated");
+                            break;
+                        }
+                        if (this->activeSeat != 0) {
+                            this->sendDataToClient(QString("100 OK %1").arg(this->localIdentifier));
+                        } else {
+                            this->sendDataToClient("101 KO Seat not yet set");                         
                         }
                         break;
                     case CmdPass:
