@@ -99,8 +99,9 @@ public:
 public slots:
     void                    sendDataToClient(const QString& data);
     void                    unlockAfterSuccessfullLogoff();
-    void                    pauseInResult(const bool &result, const QString& reason);
-    void                    pauseOutResult(const bool &result, const QString& reason);
+    void                    pauseInResult(const QString &identifier, const bool &result, const QString& reason);
+    void                    pauseOutResult(const QString &identifier, const bool &result, const QString& reason);
+    void                    ctiResponse(const QString &identifier, const int actionId, const QString &commandName, const QString &responseString, const QString &responseMessage);
 
 signals:
     void addClient(const QString &exten, ClientManager *cl);
