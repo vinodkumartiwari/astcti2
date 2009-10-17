@@ -66,6 +66,7 @@ enum QAstCTICommands {
     CmdPass,
     CmdMac,
     CmdOsType,
+    CmdIden,
     CmdServices,
     CmdQueues,
     CmdPause,
@@ -93,6 +94,7 @@ public:
     void                    run();
     QAstCTIClientState      getState();
     QAstCTIOperator         *getActiveOperator();
+
     QString                 getClientOperatingSystem();
     QString                 getLocalIdentifier();
 
@@ -126,9 +128,11 @@ private:
     void                    initParserCommands();
     QAstCTICommand          parseCommand(const QString &command);
     QAstCTIOperator         *activeOperator;
+    QAstCTISeat             *activeSeat;
     QString                 clientOperatingSystem;
     QSemaphore              waitBeforeQuit;
     QAstCTIClientState      state;
+
 
 
 protected:
