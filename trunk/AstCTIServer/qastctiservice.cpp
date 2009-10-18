@@ -69,12 +69,14 @@ bool QAstCTIService::load()
     }
     QSqlQuery query(db);
     QString sql = "SELECT * FROM services WHERE ID_SERVICE=:id";
+
     if (!query.prepare(sql)) {
         qCritical("Prepare failed in QAstCTIService::load() %s:%d",  __FILE__ , __LINE__);
     } else {
         query.bindValue(":id", this->idService);
         if (!query.exec()) {
             qCritical("Query execution failed in QAstCTIService::load() %s:%d",  __FILE__ , __LINE__);
+            return false;
         } else {
             retVal = query.first();
             this->serviceName = query.value(1).toString();

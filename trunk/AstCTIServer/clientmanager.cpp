@@ -86,6 +86,7 @@ void ClientManager::initParserCommands()
     commandsList["NOOP"]       = CmdNoOp;
     commandsList["USER"]       = CmdUser;
     commandsList["PASS"]       = CmdPass;
+    commandsList["KEEP"]       = CmdKeep;
     commandsList["OSTYPE"]     = CmdOsType;
     commandsList["IDEN"]       = CmdIden;
     commandsList["SERVICES"]   = CmdServices;
@@ -246,6 +247,9 @@ void ClientManager::run()
                                 }
                             }
                         }
+                        break;
+                    case CmdKeep:
+                        this->sendDataToClient(QString("104 OK %1").arg(config->readTimeout));
                         break;
                     case CmdIden:
                         if (!authenticated) {

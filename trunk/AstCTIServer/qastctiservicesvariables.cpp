@@ -127,6 +127,7 @@ void QAstCTIServicesVariables::fillVariables()
         } else {
             while(query.next()) {
                 QAstCTIVariable *var = new QAstCTIVariable(query.value(0).toInt(0), this);
+
                 if (var->load()) {
                     QString varName = var->getVarName();
 
