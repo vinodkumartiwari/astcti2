@@ -160,7 +160,6 @@ void AMIClient::parseDataReceivedFromAsterisk(const QString& message)
             this->performLogin();
         }        
     }
-
 }
 
 void AMIClient::executeActions()
@@ -225,9 +224,13 @@ QHash<QString, QString>* AMIClient::hashFromMessage(QString data)
         QString line = (*linesIterator).toLocal8Bit().constData();
         if (line.contains(':')) {
             QStringList keyValue = line.split(':');
-            if (keyValue.length() == 2) {
+            if (keyValue.length() > 1) {
                 QString key     = keyValue.at(0);
-                QString value   = keyValue.at(1);
+                QString value   = "";
+                for(int i=1; i<keyValue.length(); i++) {
+                    value.append(QString(keyValue.at(i)).trimmed());
+                    if (i < keyValue.length()-1) value.append(": ");
+                }
                 hash->insert(key.trimmed() , value.trimmed());
             }
         }

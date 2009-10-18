@@ -65,6 +65,7 @@ enum QAstCTICommands {
     CmdUser,
     CmdPass,
     CmdMac,
+    CmdKeep,
     CmdOsType,
     CmdIden,
     CmdServices,
