@@ -59,20 +59,26 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
     this->activeOperator = 0;
     this->activeSeat = 0;
     this->clientOperatingSystem = "";
-    connect(parent, SIGNAL(sendDataFromServer(QString)), this, SLOT(sendDataToClient(QString)));
+    this->running = false;
+    this->blockSize = 0;
+    authenticated = false;
 
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
 
     // We need to initialize our parser
     this->initParserCommands();
 
+    connect(parent, SIGNAL(sendDataFromServer(QString)), this, SLOT(sendDataToClient(QString)));
+    connect(this, SIGNAL(dataReceived(QString)), this, SLOT(parseDataReceived(QString)));
 }
 
 ClientManager::~ClientManager()
 {
+    this->running = false;
     if (config->qDebug) qDebug() << "ClientManager terminated";
     // if (this->activeOperator != 0) delete(this->activeOperator);
     // if (this->activeSeat != 0) delete(this->activeSeat);
+    exit(0);
 }
 
 /*!
@@ -98,30 +104,39 @@ void ClientManager::initParserCommands()
 
 }
 
+void ClientManager::socketDisconnected() {
+    this->running = false;
+    if (this->localIdentifier.startsWith("exten-")) {
+        // We should do a logoff right now..
+        emit this->ctiLogoff(this);
+
+        waitBeforeQuit.acquire();
+    }
+    CtiServerApplication::instance()->removeUser(ctiUserName);
+    // Emit a signal when disconnection is in progress
+    emit this->removeClient(this->localIdentifier);
+
+}
+
 void ClientManager::run()
 {
-    // Our separator
-    // We'll parse incoming data each time we receive an \n. By This way,
-    // when we receive from the network incomplete data, we can append them
-    // in receive buffer and parse them when they're completed by a successive
-    // \n command.
-    const QString separator = "\n";
+    ctiUserName = QString("");
+    retries = 3;
 
-    QString ctiUserName;
-    int retries = 3;
-    bool authenticated = false;
 
     if (config->qDebug) qDebug() << "In ClientManager::run";
 
     // We need to build the socket to manage client connection
     QTcpSocket              tcpSocket;
-
-    if (!tcpSocket.setSocketDescriptor(socketDescriptor)) {
-        qDebug() << "Error in socket:" << tcpSocket.errorString();
-        return;
-    }
     this->localSocket = &tcpSocket;
 
+    if (!this->localSocket->setSocketDescriptor(socketDescriptor)) {
+        qDebug() << "Error in socket:" << this->localSocket->errorString();
+        return;
+    }
+
+    connect(this->localSocket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+    connect(this->localSocket, SIGNAL(readyRead()), this, SLOT(sockedDataReceived()));
     // Let's grab some informations about remote endpoint
     QHostAddress    remoteAddr = tcpSocket.peerAddress();  // Remote ip addr
     quint16         remotePort = tcpSocket.peerPort();     // Remote port
@@ -132,272 +147,235 @@ void ClientManager::run()
     if (config->qDebug) qDebug() << "Incoming Connection from " << remoteAddr.toString() << ":" << remotePort;
 
     // Let's say Welcome to our client!
-    this->sendDataToClient("Welcome to AstCTIServer");
+    this->sendDataToClient("100 OK Welcome to AstCTIServer");
 
     if (config->qDebug) qDebug() << "Read Timeout is " << config->readTimeout;
+    running = true;
 
-    // Read timeout will let us wait for data for some time.
-    // When the timeout elapse, the socket will be automatically
-    // closed...
-    while(tcpSocket.waitForReadyRead(config->readTimeout)) {
-        QString strdata;
-        QByteArray sockData = tcpSocket.readAll();
+    exec();
+}
+
+void ClientManager::sockedDataReceived()
+{
+    quint16 blockSize;
+    QDataStream in ( this->localSocket );
+    in.setVersion ( QDataStream::Qt_4_5 );
+    while ( !in.atEnd() )
+    {
+        if ( this->localSocket->bytesAvailable() < ( int ) sizeof ( quint16 ) ) {
+            return;
+        }
+        if (this->blockSize == 0) {
+            in >> blockSize;
+        }
+        if ( this->localSocket->bytesAvailable() < blockSize ) {
+            return;
+        }
+
+        QByteArray receivedData;
+        QString receivedString;
 
         if (this->compressionLevel > 0) {
-            QByteArray toUncompress = qUncompress(sockData);
-            if (toUncompress.isEmpty()) {
-                qCritical() << "Unable to uncompress data in ClientManager::run() for client " << this->localIdentifier << "Try to use uncompressed data.";
-                strdata = QString(sockData);
+            in >> receivedData;
+            QByteArray uncompressed = qUncompress(receivedData);
+            if (!uncompressed.isEmpty()) {
+                receivedString = QString::fromUtf8(uncompressed);
+            }
+        } else {
+            in >> receivedString;
+        }
+        this->blockSize = 0;
+        emit this->dataReceived(receivedString);
+    }
+}
+
+void ClientManager::parseDataReceived(const QString &data)
+{
+    if (config->qDebug) qDebug() << "Received signal dataReceived in parseDataReceived: " << data;
+
+    QString parm;
+    QAstCTICommand  cmd = this->parseCommand(data);
+
+    switch(commandsList[cmd.command]) {
+    case CmdQuit:
+        this->sendDataToClient("900 BYE");
+        this->localSocket->close();
+        break;
+    case CmdNoOp:
+        this->sendDataToClient("100 OK");
+        break;
+    case CmdUser:
+        if (cmd.parameters.count() < 1) {
+            this->sendDataToClient("101 KO No username given");
+            break;
+        } else {
+            this->ctiUserName = cmd.parameters.at(0);
+
+            // Avoid duplicate logins
+            QAstCTIOperator *theOperator = CtiServerApplication::instance()->getOperatorByUsername(ctiUserName);
+            if (theOperator != 0) {
+                if (!CtiServerApplication::instance()->containsUser(ctiUserName) ) {
+                    this->sendDataToClient("100 OK Send Password Now");
+                } else {
+                    ctiUserName = "";
+                    this->sendDataToClient("101 KO User is still logged in");
+                }
             } else {
-                strdata = QString(toUncompress);
+                ctiUserName = "";
+                this->sendDataToClient("101 KO User doesn't exists");
             }
         }
-        else {
-            // Read all data from the network
-            strdata = QString(sockData);
+        break;
+    case CmdMac:
+        if (!authenticated) {
+            this->sendDataToClient("101 KO Not authenticated");
+            break;
         }
-        // Append data to the buffer.
-        buffer.append(strdata);
-        // Now check if we've some separator in the buffered data.
-        if(buffer.contains(separator)) {
-            QString toSplit         = ""; // here we'll store data to be parsed
-            QString remainingBuffer = ""; // here we'll store data that will remain in the buffer
-            // If we have text after the last separator, then
-            // we need to leave it in the buffer and parse all the rest
-            int lastIndexOf = buffer.lastIndexOf(separator);
-            if (lastIndexOf < buffer.size()-separator.size()) {
-                toSplit         = buffer.left(lastIndexOf);
-                remainingBuffer = buffer.mid(lastIndexOf+ separator.size());
 
+        if (cmd.parameters.count() < 1) {
+            this->sendDataToClient("101 KO No mac given");
+            break;
+        } else {
+            QString mac = cmd.parameters.at(0).toLower();
+            QAstCTISeat seat(mac, 0);
+            if (seat.loadFromMac()) {
+                this->activeSeat = &seat;
+                if (this->activeOperator != 0) {
+                    this->activeOperator->setLastSeatId(seat.getIdSeat());
+                    this->activeOperator->save();
+                    QString newIdentifier = QString("exten-%1").arg(seat.getSeatExten());
+                    emit this->changeClient(this->localIdentifier, newIdentifier);
+                    this->localIdentifier = newIdentifier;
+
+                    // We can do a successful cti login only after the seat
+                    // is known
+                    emit this->ctiLogin(this);
+                    this->sendDataToClient("100 OK");
+                }
             }
-            // otherwise we parse the full buffer
-            else {
-                toSplit         = buffer;
-                remainingBuffer = "";
+        }
+        break;
+    case CmdKeep:
+        this->sendDataToClient(QString("104 OK %1").arg(config->readTimeout));
+        break;
+    case CmdIden:
+        if (!authenticated) {
+            this->sendDataToClient("101 KO Not authenticated");
+            break;
+        }
+        if (this->activeSeat != 0) {
+            this->sendDataToClient(QString("100 OK %1").arg(this->localIdentifier));
+        } else {
+            this->sendDataToClient("101 KO Seat not yet set");
+        }
+        break;
+    case CmdPass:
+        // TODO : emit only if user done a successfull authentication
+        // this->activeOperator
+
+        if (ctiUserName == "")  {
+            this->sendDataToClient("101 KO Send User First");
+        } else {
+            if (cmd.parameters.count() < 1) {
+                this->sendDataToClient("101 KO No password given");
+                break;
             }
-            buffer = remainingBuffer;
 
-            // Let's split our string by separator
-            QStringList list = toSplit.split(separator);
-            QString itm;
-            QString parm;
-            // Iterate the list
-            foreach(itm, list) {
-                itm = itm.trimmed();
-                if (itm.size() > 0) {
-                    // TODO : command parser
-                    if (config->qDebug) qDebug() << "ClientManager::run data received:" << itm;
-                    QAstCTICommand  cmd = this->parseCommand(itm);
+            {
+                QAstCTIOperator *theOperator = CtiServerApplication::instance()->getOperatorByUsername(ctiUserName);
+                if (theOperator == 0) {
+                    this->sendDataToClient("101 KO Operator Not Found");
+                    ctiUserName = "";
+                    retries--;
+                } else {
+                    if (!theOperator->checkPassword(cmd.parameters.at(0))) {
+                        this->sendDataToClient("101 KO Wrong password");
+                        ctiUserName = "";
+                        retries--;
+                    } else {
+                        this->state = theOperator->getBeginInPause() ? StatePaused : StateLoggedIn;
+                        CtiServerApplication::instance()->addUser(ctiUserName);
+                        this->activeOperator = theOperator;
+                        authenticated = true;
+                        this->sendDataToClient("102 OK Authentication successful");
+                    }
+                }
+            }
 
-                    switch(commandsList[cmd.command]) {
-                    case CmdQuit:
-                        this->sendDataToClient("900 BYE");
-                        tcpSocket.close();
-                        break;
-                    case CmdNoOp:
-                        this->sendDataToClient("100 OK");
-                        break;
-                    case CmdUser:
-                        if (cmd.parameters.count() < 1) {
-                            this->sendDataToClient("101 KO No username given");
-                            break;
-                        } else {
-                            ctiUserName = cmd.parameters.at(0);
+            if (retries == 0) {
+                this->localSocket->close();
+            }
+        }
+        break;
+    case CmdCompression:
+        this->sendDataToClient( QString("103 %1").arg(this->config->compressionLevel) );
+        this->compressionLevel = this->config->compressionLevel;
+        break;
+    case CmdOsType:
+        if (!authenticated) {
+            this->clientOperatingSystem = "";
+            this->sendDataToClient("101 KO Not authenticated");
+            break;
+        }
+        if (cmd.parameters.count() < 1) {
+            this->clientOperatingSystem = "";
+            this->sendDataToClient("101 KO Operating system is not set");
+            break;
+        } else {
+            this->clientOperatingSystem = cmd.parameters.at(0).toUpper();
+            this->sendDataToClient("100 OK Operating System Is Set");
+        }
+        break;
 
-                            // Avoid duplicate logins
-                            QAstCTIOperator *theOperator = CtiServerApplication::instance()->getOperatorByUsername(ctiUserName);
-                            if (theOperator != 0) {
-                                if (!CtiServerApplication::instance()->containsUser(ctiUserName) ) {
-                                    this->sendDataToClient("100 OK Send Password Now");
-                                } else {
-                                    ctiUserName = "";
-                                    this->sendDataToClient("101 KO User is still logged in");
-                                }
-                            } else {
-                                ctiUserName = "";
-                                this->sendDataToClient("101 KO User doesn't exists");
-                            }
-                        }
-                        break;
-                    case CmdMac:
-                        if (!authenticated) {
-                            this->sendDataToClient("101 KO Not authenticated");
-                            break;
-                        }
+    case CmdOrig:
+        if (!authenticated) {
+            this->sendDataToClient("101 KO Not authenticated");
+            break;
+        }
+        foreach(parm, cmd.parameters) {
+            emit this->notifyServer(parm);
+        }
+        this->sendDataToClient("100 OK");
+        break;
+    case CmdServices:
+        if (!authenticated) {
+            this->sendDataToClient("101 KO Not authenticated");
+            break;
+        }
 
-                        if (cmd.parameters.count() < 1) {
-                            this->sendDataToClient("101 KO No mac given");
-                            break;
-                        } else {
-                            QString mac = cmd.parameters.at(0).toLower();
-                            QAstCTISeat seat(mac, 0);
-                            if (seat.loadFromMac()) {
-                                this->activeSeat = &seat;
-                                if (this->activeOperator != 0) {
-                                    this->activeOperator->setLastSeatId(seat.getIdSeat());
-                                    this->activeOperator->save();
-                                    QString newIdentifier = QString("exten-%1").arg(seat.getSeatExten());
-                                    emit this->changeClient(this->localIdentifier, newIdentifier);
-                                    this->localIdentifier = newIdentifier;
-
-                                    // We can do a successful cti login only after the seat
-                                    // is known
-                                    emit this->ctiLogin(this);
-                                    this->sendDataToClient("100 OK");
-                                }
-                            }
-                        }
-                        break;
-                    case CmdKeep:
-                        this->sendDataToClient(QString("104 OK %1").arg(config->readTimeout));
-                        break;
-                    case CmdIden:
-                        if (!authenticated) {
-                            this->sendDataToClient("101 KO Not authenticated");
-                            break;
-                        }
-                        if (this->activeSeat != 0) {
-                            this->sendDataToClient(QString("100 OK %1").arg(this->localIdentifier));
-                        } else {
-                            this->sendDataToClient("101 KO Seat not yet set");                         
-                        }
-                        break;
-                    case CmdPass:
-                        // TODO : emit only if user done a successfull authentication
-                        // this->activeOperator
-
-                        if (ctiUserName == "")  {
-                            this->sendDataToClient("101 KO Send User First");
-                        } else {
-                            if (cmd.parameters.count() < 1) {
-                                this->sendDataToClient("101 KO No password given");
-                                break;
-                            }
-
-                            {
-                                QAstCTIOperator *theOperator = CtiServerApplication::instance()->getOperatorByUsername(ctiUserName);
-                                if (theOperator == 0) {
-                                    this->sendDataToClient("101 KO Operator Not Found");
-                                    ctiUserName = "";
-                                    retries--;
-                                } else {
-                                    if (!theOperator->checkPassword(cmd.parameters.at(0))) {
-                                        this->sendDataToClient("101 KO Wrong password");
-                                        ctiUserName = "";
-                                        retries--;
-                                    } else {
-                                        this->state = theOperator->getBeginInPause() ? StatePaused : StateLoggedIn;
-                                        CtiServerApplication::instance()->addUser(ctiUserName);
-                                        this->activeOperator = theOperator;
-                                        authenticated = true;
-                                        this->sendDataToClient("102 OK Authentication successful");
-                                    }
-                                }
-                            }
-
-                            if (retries == 0) {
-                                tcpSocket.close();
-                            }
-                        }
-                        break;
-                    case CmdCompression:
-                        this->sendDataToClient( QString("103 %1").arg(this->config->compressionLevel) );
-                        this->compressionLevel = this->config->compressionLevel;
-                        break;
-                    case CmdOsType:
-                        if (!authenticated) {
-                            this->clientOperatingSystem = "";
-                            this->sendDataToClient("101 KO Not authenticated");
-                            break;
-                        }
-                        if (cmd.parameters.count() < 1) {
-                            this->clientOperatingSystem = "";
-                            this->sendDataToClient("101 KO Operating system is not set");
-                            break;
-                        } else {
-                            this->clientOperatingSystem = cmd.parameters.at(0).toUpper();
-                            this->sendDataToClient("100 OK Operating System Is Set");
-                        }
-                        break;
-
-                    case CmdOrig:
-                        if (!authenticated) {
-                            this->sendDataToClient("101 KO Not authenticated");
-                            break;
-                        }
-                        foreach(parm, cmd.parameters) {
-                            emit this->notifyServer(parm);
-                        }
-                        this->sendDataToClient("100 OK");
-                        break;
-                    case CmdServices:
-                        if (!authenticated) {
-                            this->sendDataToClient("101 KO Not authenticated");
-                            break;
-                        }
-
-                        break;
-                    case CmdPause:
-                        if (!authenticated) {
-                            this->sendDataToClient("101 KO Not authenticated");
-                            break;
-                        }
-                        if (cmd.parameters.count() < 1) {
-                            this->sendDataToClient("101 KO No action requested");
-                            break;
-                        } else {
-                            this->sendDataToClient("301 PAUSE PENDING");
-                            if (this->state == StatePaused) {
-                                this->state = StatePauseOutReuqested;
-                                emit this->ctiPauseOut(this);
-                            } else {
-                                this->state = StatePauseInRequested;
-                                emit this->ctiPauseIn(this);
-                            }
-                        }
-                        break;
-                    case CmdStop:
-                        if (!authenticated) {
-                            this->sendDataToClient("101 KO Not authenticated");
-                            break;
-                        }
-                        emit this->stopRequest(this->localIdentifier, this);
-                        tcpSocket.close();
-                        qDebug() << "Emitted signal STOP";
-                        break;
-                    case CmdNotDefined:
-                        this->sendDataToClient("101 KO Invalid Command");
-                        break;
-                    } // end switch
-                } // end if (itm.size())
-            } // foreach
-        } // end buffer.contains(separator)
-    } // end while(tcpSocket.waitForReadyRead)
-
-    // Timeout elapsed: close the socket
-    if ( (tcpSocket.state() != QAbstractSocket::UnconnectedState)
-        | (tcpSocket.state() != QAbstractSocket::ClosingState) ) {
-        tcpSocket.close();
-    }
-
-    if (config->qDebug) qDebug() << "Connection from" << remoteAddr.toString() << ":" << remotePort << "closed";
-
-    if (this->localIdentifier.startsWith("exten-")) {
-        // We should do a logoff right now..
-        emit this->ctiLogoff(this);
-
-        waitBeforeQuit.acquire();
-       /* while(!exitFromSleep) {
-            // We'll wait for a successfull logout before quit
-            msleep(500);
-        }*/
-    }
-
-
-    CtiServerApplication::instance()->removeUser(ctiUserName);
-    // Emit a signal when disconnection is in progress
-    emit this->removeClient(this->localIdentifier);
-
+        break;
+    case CmdPause:
+        if (!authenticated) {
+            this->sendDataToClient("101 KO Not authenticated");
+            break;
+        }
+        if (cmd.parameters.count() < 1) {
+            this->sendDataToClient("101 KO No action requested");
+            break;
+        } else {
+            this->sendDataToClient("301 PAUSE PENDING");
+            if (this->state == StatePaused) {
+                this->state = StatePauseOutReuqested;
+                emit this->ctiPauseOut(this);
+            } else {
+                this->state = StatePauseInRequested;
+                emit this->ctiPauseIn(this);
+            }
+        }
+        break;
+    case CmdStop:
+        if (!authenticated) {
+            this->sendDataToClient("101 KO Not authenticated");
+            break;
+        }
+        emit this->stopRequest(this->localIdentifier, this);
+        this->localSocket->close();
+        qDebug() << "Emitted signal STOP";
+        break;
+    case CmdNotDefined:
+        this->sendDataToClient("101 KO Invalid Command");
+        break;
+    } // end switch
 }
 
 void ClientManager::pauseInResult(const QString &identifier, const bool &result, const QString &reason)
@@ -484,28 +462,26 @@ QAstCTICommand ClientManager::parseCommand(const QString &command)
 */
 void ClientManager::sendDataToClient(const QString &data)
 {
+    if (this->localSocket == 0) return;
     if (!this->localSocket->state() == QAbstractSocket::ConnectedState ) return;
 
     if (config->qDebug) qDebug() << "In ClientManager::sendDataToClient(" << data << ")";
 
     QByteArray block;
-
-    // TODO : We can use a qCompress/qUncompress function to compress data over the network
     QDataStream out(&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_4_0);
 
-    // We output simple ascii strings (no utf8)
-    out << data.toAscii() << "\n";
+    out << (quint16)0;
     if (this->compressionLevel > 0) {
-        QByteArray compressed = qCompress(block, this->compressionLevel);
-        this->localSocket->write(compressed);
+        out << qCompress(data.toUtf8(), this->compressionLevel);
     } else {
-        this->localSocket->write(block);
+        out << data;
     }
+    out.device()->seek(0);
+    out << (quint16)(block.size() - sizeof(quint16));
 
-    // Write the internal buffer to the socket without blocking
-    // We need QAbstractSocket to start sending buffered data
-    // immediately
-    this->localSocket->flush();
+    this->localSocket->write(block);
+
 }
 
 
