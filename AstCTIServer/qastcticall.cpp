@@ -199,7 +199,7 @@ void QAstCTICall::setApplication()
     if (this->clientOperatingSystem.length() > 0) {
         this->application = this->applications->operator []( this->clientOperatingSystem );
         // here we can parse application parameters
-        this->setApplication();
+
     }
 
 }

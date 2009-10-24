@@ -41,6 +41,7 @@
 
 #include <QThread>
 #include <QSemaphore>
+#include <QMutex>
 #include <QTcpSocket>
 #include <QHostAddress>
 #include <QStringList>
@@ -99,23 +100,40 @@ public:
     QString                 getLocalIdentifier();
 
 public slots:
-    void                    sendDataToClient(const QString& data);
+    ///////////////////////////////////////////////////////////////////////////
+    // Socket
+    void                    sockedDataReceived();
+    void                    socketDisconnected();
+    void                    sendDataToClient(const QString &data);
+    void                    parseDataReceived(const QString &data);
+    ///////////////////////////////////////////////////////////////////////////
+    // CTI Server
     void                    unlockAfterSuccessfullLogoff();
     void                    pauseInResult(const QString &identifier, const bool &result, const QString& reason);
     void                    pauseOutResult(const QString &identifier, const bool &result, const QString& reason);
-    void                    ctiResponse(const QString &identifier, const int actionId, const QString &commandName, const QString &responseString, const QString &responseMessage);
+    void                    ctiResponse(const QString &identifier, const int actionId, const QString &commandName,
+                                        const QString &responseString, const QString &responseMessage);
 
 signals:
-    void addClient(const QString &exten, ClientManager *cl);
-    void changeClient(const QString &oldexten, const QString &newexten);
-    void removeClient(const QString &exten);
-    void notifyServer(const QString &data);
-    void stopRequest(const QString &exten, ClientManager *cl);
+    ///////////////////////////////////////////////////////////////////////////
+    // Socket
+    void                    dataReceived(const QString &data);
+
+    ///////////////////////////////////////////////////////////////////////////
+    // CTI Server
+    void                    addClient(const QString &exten, ClientManager *cl);
+    void                    changeClient(const QString &oldexten, const QString &newexten);
+    void                    removeClient(const QString &exten);
+    void                    notifyServer(const QString &data);
+    void                    stopRequest(const QString &exten, ClientManager *cl);
+
+    ///////////////////////////////////////////////////////////////////////////
     // CTI Status change request
-    void ctiPauseIn(ClientManager *cl);
-    void ctiPauseOut(ClientManager *cl);
-    void ctiLogin(ClientManager *cl);
-    void ctiLogoff(ClientManager *cl);
+    void                    ctiPauseIn(ClientManager *cl);
+    void                    ctiPauseOut(ClientManager *cl);
+    void                    ctiLogin(ClientManager *cl);
+    void                    ctiLogoff(ClientManager *cl);
+
 
 private:
     QAstCTIConfiguration    *config;
@@ -130,7 +148,14 @@ private:
     QAstCTISeat             *activeSeat;
     QString                 clientOperatingSystem;
     QSemaphore              waitBeforeQuit;
+    QMutex                  mutex;
     QAstCTIClientState      state;
+    QString                 ctiUserName;
+    bool                    authenticated;
+    int                     retries;
+    bool                    running;
+    quint16                 blockSize;
+
 protected:
     QTcpSocket              *localSocket;
 
