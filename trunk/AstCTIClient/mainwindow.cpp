@@ -47,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createTrayIcon();
 
-
     // Append links to the link label
     links.append("<a href=\"http://code.google.com/p/astcti2\">Asterisk CTI</a>");
     links.append("<a href=\"http://www.advert.it\">Advert SRL</a>");
@@ -149,19 +148,17 @@ void MainWindow::createActions()
 
  void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
  {
-     switch (reason)
-     {
-         case QSystemTrayIcon::Trigger:
-            this->isVisible() ? this->hide() :  this->show();
-            break;
-
-         case QSystemTrayIcon::DoubleClick:
-             break;
-         case QSystemTrayIcon::MiddleClick:
-             showMessage();
-             break;
-         default:
-            ;
+     switch (reason) {
+     case QSystemTrayIcon::Trigger:
+        this->isVisible() ? this->hide() : this->show();
+        break;
+     case QSystemTrayIcon::DoubleClick:
+         break;
+     case QSystemTrayIcon::MiddleClick:
+         showMessage();
+         break;
+     default:
+         ;
      }
  }
 
@@ -189,18 +186,15 @@ void MainWindow::createActions()
      QPushButton *noBtn = msgBox.addButton( trUtf8("&No"),QMessageBox::NoRole);
      noBtn->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
 
-
      msgBox.setDefaultButton( noBtn );
      msgBox.setIcon(QMessageBox::Question);
 
      msgBox.exec();
-     if (msgBox.clickedButton() == yesBtn)
-     {
-             event->accept();
-             return;
+     if (msgBox.clickedButton() == yesBtn) {
+         event->accept();
+         return;
      }
      event->ignore();
-
  }
 
 
@@ -213,8 +207,7 @@ void MainWindow::UpdateTimer()
         this->lblCurrentTime->setText(stime);
 
     labelTime--;
-    if (labelTime==0)
-    {
+    if (labelTime==0) {
         QString link = links.at(labelPos);
         linkLabel->setText(link);
         labelPos++;

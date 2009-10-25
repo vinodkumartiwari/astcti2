@@ -36,73 +36,55 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef CTICLIENTAPPLICATION_H
-#define CTICLIENTAPPLICATION_H
+#include <QAbstractButton>
 
-#include <QtGui/QApplication>
-#include <QtGui/QIcon>
-#include <QtCore/QUrl>
-#include <QtCore/QPointer>
-
-#include "argumentlist.h"
-#include "cticonfig.h"
+#include "loginwindow.h"
 #include "compactwindow.h"
-#include "serverconnection.h"
+#include "ui_loginwindow.h"
 
-const QString defaultServerHost = "localhost";
-const QString defaultServerPort = "5000";
-const QString defaultConnectTimeout = "1500";
-const QString defaultConnectRetryInterval = "2";
-const int defaultKeepAliveInterval = 5000;
-
-class BrowserWindow;
-class CompactWindow;
-//class MainWindow;
-class LoginWindow;
-
-class CtiClientApplication : public QApplication
+LoginWindow::LoginWindow(QWidget *parent) :
+    QDialog(parent),
+    m_ui(new Ui::LoginWindow)
 {
-    Q_OBJECT
+    m_ui->setupUi(this);
 
-public:
-    CtiClientApplication(int &argc, char **argv);
-    ~CtiClientApplication();
-    static CtiClientApplication *instance();
+    m_ui->dialogButtonBox->buttons().at(0)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
+    m_ui->dialogButtonBox->buttons().at(1)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
 
-    bool showLoginWindow();
-    void createServerConnection();
+    connect(this->m_ui->dialogButtonBox, SIGNAL(accepted()), this, SLOT(accepting()));
+    connect(this->m_ui->dialogButtonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));
+}
 
-    AstCTIConfiguration config; // Main configuration struct
+LoginWindow::~LoginWindow()
+{
+    delete m_ui;
+}
 
-    //MainWindow *newMainWindow();
-    BrowserWindow *newBrowserWindow();
+void LoginWindow::changeEvent(QEvent *e)
+{
+    QDialog::changeEvent(e);
+    switch (e->type()) {
+    case QEvent::LanguageChange:
+        m_ui->retranslateUi(this);
+        break;
+    default:
+        break;
+    }
+}
 
-signals:
-    void newMessage(const QString &message, QSystemTrayIcon::MessageIcon severity);
-    void closeWindow(bool skipCheck);
+void LoginWindow::showMessage(const QString message, bool connectionLost)
+{
+    this->m_ui->dialogButtonBox->buttons().at(0)->setEnabled(!connectionLost);
+    this->m_ui->messageLabel->setText(message);
+}
 
-public slots:
-    void loginAccept(const QString &username, const QString &password);
-    void loginReject();
-
-    void logOff();
-
-    void eventReceived(AstCTICall *astCTICall);
-    void servicesReceived(QHash<QString, QString> *servicesList);
-    void queuesReceived(QStringList *queuesList);
-    void loggedIn(const QString &extension);
-    void pauseAccepted();
-    void pauseError(const QString &message);
-    void connectionLost();
-    void threadStopped(StopReason stopReason, const QString &message);
-
-private:
-    bool canStart;
-
-    ServerConnection *servConn;
-    QList< QPointer<BrowserWindow> > m_mainWindows;
-    LoginWindow *m_loginWnd;
-    QWidget *m_mainWnd;
-};
-
-#endif // CTICLIENTAPPLICATION_H
+void LoginWindow::accepting()
+{
+    if (this->m_ui->usernameLineEdit->text().isEmpty()) {
+        this->showMessage("Username is required to continue. Please enter your username.", false);
+        this->m_ui->usernameLineEdit->setFocus();
+    } else {
+        this->hide();
+        emit this->accepted(this->m_ui->usernameLineEdit->text(), this->m_ui->passwordLineEdit->text());
+    }
+}

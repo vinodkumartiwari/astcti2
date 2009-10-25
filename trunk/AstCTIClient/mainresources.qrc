@@ -19,5 +19,8 @@
         <file>res/asteriskcti128x128.png</file>
         <file>res/ok.png</file>
         <file>res/notfound.html</file>
+        <file>res/call-start.png</file>
+        <file>res/call-stop.png</file>
+        <file>res/arrow-down.png</file>
     </qresource>
 </RCC>
