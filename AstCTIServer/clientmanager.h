@@ -136,25 +136,26 @@ signals:
 
 
 private:
+    QAstCTIClientState      state;
     QAstCTIConfiguration    *config;
-    int                     socketDescriptor;
-    int                     compressionLevel;
-    QString                 localIdentifier;
-    QString                 buffer;
-    QHash<QString, int>     commandsList;
-    void                    initParserCommands();
-    QAstCTICommand          parseCommand(const QString &command);
     QAstCTIOperator         *activeOperator;
     QAstCTISeat             *activeSeat;
-    QString                 clientOperatingSystem;
+    QHash<QString, int>     commandsList;
     QSemaphore              waitBeforeQuit;
     QMutex                  mutex;
-    QAstCTIClientState      state;
+    QString                 clientOperatingSystem;
     QString                 ctiUserName;
+    QString                 localIdentifier;
     bool                    authenticated;
+    int                     socketDescriptor;
+    int                     compressionLevel;
     int                     retries;
-    bool                    running;
     quint16                 blockSize;
+
+    QAstCTICommand          parseCommand(const QString &command);
+    void                    initParserCommands();
+
+
 
 protected:
     QTcpSocket              *localSocket;
