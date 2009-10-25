@@ -36,73 +36,64 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef CTICLIENTAPPLICATION_H
-#define CTICLIENTAPPLICATION_H
+#include "astcticallxmlparser.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QIcon>
-#include <QtCore/QUrl>
-#include <QtCore/QPointer>
-
-#include "argumentlist.h"
-#include "cticonfig.h"
-#include "compactwindow.h"
-#include "serverconnection.h"
-
-const QString defaultServerHost = "localhost";
-const QString defaultServerPort = "5000";
-const QString defaultConnectTimeout = "1500";
-const QString defaultConnectRetryInterval = "2";
-const int defaultKeepAliveInterval = 5000;
-
-class BrowserWindow;
-class CompactWindow;
-//class MainWindow;
-class LoginWindow;
-
-class CtiClientApplication : public QApplication
+AstCTICallXMLParser::AstCTICallXMLParser(AstCTICall *call)
+        : QXmlDefaultHandler()
 {
-    Q_OBJECT
+    this->call = call;
+    this->call->application = 0;
 
-public:
-    CtiClientApplication(int &argc, char **argv);
-    ~CtiClientApplication();
-    static CtiClientApplication *instance();
+    this->inVariables = false;
+}
 
-    bool showLoginWindow();
-    void createServerConnection();
+bool AstCTICallXMLParser::startElement(const QString &, const QString &, const QString &name, const QXmlAttributes &)
+{
+    if (name == "Variables") {
+        this->inVariables = true;
+    }
 
-    AstCTIConfiguration config; // Main configuration struct
+    return true;
+}
 
-    //MainWindow *newMainWindow();
-    BrowserWindow *newBrowserWindow();
+bool AstCTICallXMLParser::characters(const QString &ch)
+{
+    this->currentText = ch;
 
-signals:
-    void newMessage(const QString &message, QSystemTrayIcon::MessageIcon severity);
-    void closeWindow(bool skipCheck);
+    return true;
+}
 
-public slots:
-    void loginAccept(const QString &username, const QString &password);
-    void loginReject();
+bool AstCTICallXMLParser::endElement(const QString &, const QString &, const QString &name)
+{
+    if (inVariables) {
+        this->call->variables[name] = this->currentText;
+    } else if (name == "Variables") {
+        this->inVariables = false;
+    } else if (name == "Path") {
+        this->call->application->path = this->currentText;
+    } else if (name == "Parameters") {
+        this->call->application->parameters = this->currentText;
+    } else if (name == "Channel") {
+        this->call->channel = this->currentText;
+    } else if (name == "ParsedChannel") {
+        this->call->parsedChannel = this->currentText;
+    } else if (name == "DestChannel") {
+        this->call->destChannel = this->currentText;
+    } else if (name == "ParsedDestChannel") {
+        this->call->parsedDestChannel = this->currentText;
+    } else if (name == "CallerIdNum") {
+        this->call->callerIdNum = this->currentText;
+    } else if (name == "CallerIdName") {
+        this->call->callerIdName = this->currentText;
+    } else if (name == "UniqueId") {
+        this->call->uniqueId = this->currentText;
+    } else if (name == "DestUniqueId") {
+        this->call->destUniqueId = this->currentText;
+    } else if (name == "Context") {
+        this->call->context = this->currentText;
+    } else if (name == "State") {
+        this->call->state = this->currentText;
+    }
 
-    void logOff();
-
-    void eventReceived(AstCTICall *astCTICall);
-    void servicesReceived(QHash<QString, QString> *servicesList);
-    void queuesReceived(QStringList *queuesList);
-    void loggedIn(const QString &extension);
-    void pauseAccepted();
-    void pauseError(const QString &message);
-    void connectionLost();
-    void threadStopped(StopReason stopReason, const QString &message);
-
-private:
-    bool canStart;
-
-    ServerConnection *servConn;
-    QList< QPointer<BrowserWindow> > m_mainWindows;
-    LoginWindow *m_loginWnd;
-    QWidget *m_mainWnd;
-};
-
-#endif // CTICLIENTAPPLICATION_H
+    return true;
+}

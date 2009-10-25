@@ -36,73 +36,36 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef CTICLIENTAPPLICATION_H
-#define CTICLIENTAPPLICATION_H
+#ifndef LOGINWINDOW_H
+#define LOGINWINDOW_H
 
-#include <QtGui/QApplication>
-#include <QtGui/QIcon>
-#include <QtCore/QUrl>
-#include <QtCore/QPointer>
+#include <QtGui/QDialog>
 
-#include "argumentlist.h"
-#include "cticonfig.h"
-#include "compactwindow.h"
-#include "serverconnection.h"
+namespace Ui {
+    class LoginWindow;
+}
 
-const QString defaultServerHost = "localhost";
-const QString defaultServerPort = "5000";
-const QString defaultConnectTimeout = "1500";
-const QString defaultConnectRetryInterval = "2";
-const int defaultKeepAliveInterval = 5000;
-
-class BrowserWindow;
 class CompactWindow;
-//class MainWindow;
-class LoginWindow;
 
-class CtiClientApplication : public QApplication
-{
+class LoginWindow : public QDialog {
     Q_OBJECT
-
 public:
-    CtiClientApplication(int &argc, char **argv);
-    ~CtiClientApplication();
-    static CtiClientApplication *instance();
+    LoginWindow(QWidget *parent = 0);
+    ~LoginWindow();
 
-    bool showLoginWindow();
-    void createServerConnection();
-
-    AstCTIConfiguration config; // Main configuration struct
-
-    //MainWindow *newMainWindow();
-    BrowserWindow *newBrowserWindow();
+    void showMessage(const QString message, bool connectionLost);
 
 signals:
-    void newMessage(const QString &message, QSystemTrayIcon::MessageIcon severity);
-    void closeWindow(bool skipCheck);
+    void accepted(const QString &username, const QString &password);
 
-public slots:
-    void loginAccept(const QString &username, const QString &password);
-    void loginReject();
-
-    void logOff();
-
-    void eventReceived(AstCTICall *astCTICall);
-    void servicesReceived(QHash<QString, QString> *servicesList);
-    void queuesReceived(QStringList *queuesList);
-    void loggedIn(const QString &extension);
-    void pauseAccepted();
-    void pauseError(const QString &message);
-    void connectionLost();
-    void threadStopped(StopReason stopReason, const QString &message);
+protected:
+    void changeEvent(QEvent *e);
 
 private:
-    bool canStart;
+    Ui::LoginWindow *m_ui;
 
-    ServerConnection *servConn;
-    QList< QPointer<BrowserWindow> > m_mainWindows;
-    LoginWindow *m_loginWnd;
-    QWidget *m_mainWnd;
+private slots:
+    void accepting();
 };
 
-#endif // CTICLIENTAPPLICATION_H
+#endif // LOGINWINDOW_H

@@ -25,26 +25,30 @@
  * the GNU General Public License.
  *
  * This exception applies only to the code released under the name GNU
- * AstCTIClient.  If you copy code from other releases into a copy of GNU
- * AstCTIClient, as the General Public License permits, the exception does
+ * AstCTIServer.  If you copy code from other releases into a copy of GNU
+ * AstCTIServer, as the General Public License permits, the exception does
  * not apply to the code that you add in this way.  To avoid misleading
  * anyone as to the status of such modified files, you must delete
  * this exception notice from them.
  *
- * If you write modifications of your own for AstCTIClient, it is your choice
+ * If you write modifications of your own for AstCTIServer, it is your choice
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
 
-#include "cticlientapplication.h"
+#ifndef CTICONFIG_H
+#define CTICONFIG_H
 
-int main(int argc, char *argv[])
+struct AstCTIConfiguration
 {
-    CtiClientApplication application(argc, argv);
-
-    if (!application.showLoginWindow()) {
-        return 1;
-    }
-
-    return application.exec();
-}
+    bool            qDebug;
+    int             keepAliveInterval;
+    int             compressionLevel;
+    QString         serverHost;
+    quint16         serverPort;
+    int             connectTimeout;
+    quint32         connectRetryInterval;
+    QString         user;
+    QString         pass;
+};
+#endif

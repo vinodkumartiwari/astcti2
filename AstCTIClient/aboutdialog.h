@@ -35,6 +35,7 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H
 
@@ -48,6 +49,7 @@ namespace Ui {
 class AboutDialog : public QDialog {
     Q_OBJECT
     Q_DISABLE_COPY(AboutDialog)
+
 public:
     explicit AboutDialog(QWidget *parent = 0);
     virtual ~AboutDialog();
@@ -55,9 +57,9 @@ public:
 protected:
     virtual void changeEvent(QEvent *e);
 
-
 private:
     Ui::AboutDialog *m_ui;
+
     void setUpInfoLabel();
 
 private slots:

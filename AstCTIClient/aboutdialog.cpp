@@ -35,6 +35,7 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 
@@ -44,7 +45,6 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {
     m_ui->setupUi(this);
     this->setUpInfoLabel();
-
 }
 
 AboutDialog::~AboutDialog()
@@ -80,8 +80,6 @@ void AboutDialog::setUpInfoLabel()
     this->m_ui->lblCopyright->setWordWrap(true);
     this->m_ui->lblCopyright->setOpenExternalLinks(true);
     this->m_ui->lblCopyright->setTextInteractionFlags(Qt::TextBrowserInteraction);
-
-
 }
 
 void AboutDialog::changeEvent(QEvent *e)
