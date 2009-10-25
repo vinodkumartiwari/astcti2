@@ -40,6 +40,7 @@
 #define QASTCTICALL_H
 
 #include <QObject>
+#include <QDebug>
 #include <QStringList>
 #include <QDomDocument>
 #include <QHash>
@@ -53,7 +54,7 @@ class QAstCTICall : public QObject
     Q_OBJECT
 
 public:
-    QAstCTICall(QObject *parent);
+    QAstCTICall(QObject *parent=0);
     ~QAstCTICall();
 
     QString                 &getChannel();

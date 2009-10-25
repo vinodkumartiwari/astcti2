@@ -59,12 +59,12 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
     // Basic init here
 
      /* CODE TESTING START */
-    this->ct = new AMIClient(this->config, this );
+    this->amiClient = new AMIClient(this->config, this );
     qRegisterMetaType<AMIEvent>("AMIEvent" );
-    connect(this->ct, SIGNAL(amiClientNoRetries()), this, SLOT(stopTheServer()));
-    connect(this->ct, SIGNAL(ctiEvent(const AMIEvent, QAstCTICall*)), this, SLOT(receiveCtiEvent(const AMIEvent, QAstCTICall*)));
-    connect(this->ct, SIGNAL(ctiResponse(int, AsteriskCommand*)), this, SLOT(receiveCtiResponse(int, AsteriskCommand*)));
-    this->ct->start();
+    connect(this->amiClient, SIGNAL(amiClientNoRetries()), this, SLOT(stopTheServer()));
+    connect(this->amiClient, SIGNAL(ctiEvent(const AMIEvent, QAstCTICall*)), this, SLOT(receiveCtiEvent(const AMIEvent, QAstCTICall*)));
+    connect(this->amiClient, SIGNAL(ctiResponse(int, AsteriskCommand*)), this, SLOT(receiveCtiResponse(int, AsteriskCommand*)));
+    this->amiClient->start();
 
     //5f4dcc3b5aa765d61d8327deb882cf99
     /* CODE TESTING END*/
@@ -76,7 +76,7 @@ CoreTcpServer::~CoreTcpServer()
     if (this->config->qDebug) qDebug() << "In CoreTcpServer::~CoreTcpServer()";
     if (this->clients != 0) delete(this->clients);
     if (this->users != 0) delete(this->users);
-    if (this->ct != 0) delete(this->ct);
+    if (this->amiClient != 0) delete(this->amiClient);
 }
 
 /*!
@@ -228,10 +228,13 @@ void CoreTcpServer::receiveCtiEvent(const AMIEvent &eventId, QAstCTICall *theCal
                 if (clients->contains(identifier)) {
                     ClientManager* client = clients->value(identifier);
                     if (client != 0) {
-                        // Here we add informatsion about CTI application to start
-                        theCall->setOperatingSystem( client->getClientOperatingSystem() );
-
-                        client->sendDataToClient(theCall->toXml());
+                        QString clientOperatingSystem = client->getClientOperatingSystem();
+                        if (clientOperatingSystem != "") {
+                            // Here we add information about CTI application to start
+                            theCall->setOperatingSystem( clientOperatingSystem );
+                            QString xmlData = theCall->toXml();
+                            client->sendDataToClient(xmlData);
+                        }
                     } else {
                         qDebug() << ">> receiveCtiEvent << Client is null";
                     }
@@ -311,7 +314,7 @@ void CoreTcpServer::ctiClientLogin(ClientManager *cl)
 
                 // We can send a login if AMIClient is connected
                 // and the service is a queue where we can login
-                if (this->ct->isConnected() & (theService->getServiceIsQueue()) ) {
+                if (this->amiClient->isConnected() & (theService->getServiceIsQueue()) ) {
                     QString cmd = QString("")
                                   .append("Action: QueueAdd\r\n")
                                   .append("ActionID: %1\r\n")
@@ -325,7 +328,7 @@ void CoreTcpServer::ctiClientLogin(ClientManager *cl)
                                   .arg(penalty)
                                   .arg(beginInPause);
 
-                    this->ct->sendCommandToAsterisk(actionId,"QueueAdd", cmd, interface);
+                    this->amiClient->sendCommandToAsterisk(actionId,"QueueAdd", cmd, interface);
 
                 }
             }
@@ -361,7 +364,7 @@ void CoreTcpServer::ctiClientLogoff(ClientManager *cl)
 
                 // We can send a login if AMIClient is connected
                 // and the service is a queue where we can login
-                if (this->ct->isConnected() & (theService->getServiceIsQueue()) ) {
+                if (this->amiClient->isConnected() & (theService->getServiceIsQueue()) ) {
                     QString cmd = QString("")
                                   .append("Action: QueueRemove\r\n")
                                   .append("ActionID: %1\r\n")
@@ -371,7 +374,7 @@ void CoreTcpServer::ctiClientLogoff(ClientManager *cl)
                                   .arg(theService->getServiceQueueName())
                                   .arg(interface);
 
-                    this->ct->sendCommandToAsterisk(actionId,"QueueRemove", cmd, interface);
+                    this->amiClient->sendCommandToAsterisk(actionId,"QueueRemove", cmd, interface);
 
                     emit this->ctiClientLogoffSent();
                 }
@@ -393,7 +396,7 @@ void CoreTcpServer::ctiClientPauseIn(ClientManager* cl)
 
     // We can send a login if AMIClient is connected
     // and the service is a queue where we can login
-    if (this->ct->isConnected() ) {
+    if (this->amiClient->isConnected() ) {
         QString cmd = QString("")
                       .append("Action: QueuePause\r\n")
                       .append("ActionID: %1\r\n")
@@ -403,7 +406,7 @@ void CoreTcpServer::ctiClientPauseIn(ClientManager* cl)
                       .arg(interface)
                       .arg("true");
 
-        this->ct->sendCommandToAsterisk(actionId,"QueuePause", cmd, interface);
+        this->amiClient->sendCommandToAsterisk(actionId,"QueuePause", cmd, interface);
     }
 
 }
@@ -420,7 +423,7 @@ void CoreTcpServer::ctiClientPauseOut(ClientManager* cl)
 
     // We can send a login if AMIClient is connected
     // and the service is a queue where we can login
-    if (this->ct->isConnected() ) {
+    if (this->amiClient->isConnected() ) {
         QString cmd = QString("")
                       .append("Action: QueuePause\r\n")
                       .append("ActionID: %1\r\n")
@@ -430,7 +433,7 @@ void CoreTcpServer::ctiClientPauseOut(ClientManager* cl)
                       .arg(interface)
                       .arg("false");
 
-        this->ct->sendCommandToAsterisk(actionId,"QueuePause", cmd, interface);
+        this->amiClient->sendCommandToAsterisk(actionId,"QueuePause", cmd, interface);
     }
 }
 

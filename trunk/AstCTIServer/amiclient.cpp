@@ -253,7 +253,8 @@ void AMIClient::evaluateEvent(QHash<QString, QString>* event)
         emit this->ctiEvent(AmiEventShutdown, 0);
     } else if( eventName == "Newchannel" ) {
         // Build here a new asterisk call object and add it to hashtable
-        QAstCTICall *newCall = new QAstCTICall(this->parent());
+        qDebug() << "Building new QAstCTICall object";
+        QAstCTICall *newCall = new QAstCTICall();
         QString uniqueId = event->value("Uniqueid");
         newCall->setChannel(event->value("Channel"));
         newCall->setCalleridNum(event->value("CallerIDNum"));
@@ -277,6 +278,7 @@ void AMIClient::evaluateEvent(QHash<QString, QString>* event)
                 emit this->ctiEvent(AmiEventHangup, newCall);
             }
             this->activeCalls->remove(unique_id);
+
         }
         // Delete here the call from the hashtable
         qDebug() << "Hangup: " << event->value("Uniqueid");

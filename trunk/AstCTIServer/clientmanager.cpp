@@ -114,6 +114,7 @@ void ClientManager::socketDisconnected() {
     CtiServerApplication::instance()->removeUser(ctiUserName);
     // Emit a signal when disconnection is in progress
     emit this->removeClient(this->localIdentifier);
+    exit(0);
 
 }
 
