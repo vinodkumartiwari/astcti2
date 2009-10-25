@@ -102,7 +102,7 @@ private:
     QMutex                  mutexClientList;
     QMutex                  mutexUsersList;
     bool                    isClosing;
-    AMIClient*              ct;
+    AMIClient*              amiClient;
     int                     actionId;
     int                     incrementAndGetActionId();
 

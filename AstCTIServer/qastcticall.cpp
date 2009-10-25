@@ -49,6 +49,7 @@ QAstCTICall::QAstCTICall(QObject *parent)
 
 QAstCTICall::~QAstCTICall()
 {
+    qDebug() << "In QAstCTICall::~QAstCTICall()";
     if (this->variables != 0) delete(this->variables);
     if (this->application != 0) delete (this->application);
 
