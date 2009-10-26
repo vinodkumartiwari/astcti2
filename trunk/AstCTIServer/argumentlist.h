@@ -131,5 +131,11 @@ class QArgumentList : public QStringList
     client code.
     */
     void argsToStringlist(int argc,  char* argv[]);
+    /**
+      Checks whether a given argument is a switch
+      @param argument to check
+      @return true if the argument is a switch
+    */
+    bool isSwitch(QString arg);
 };
 #endif
