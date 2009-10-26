@@ -147,12 +147,17 @@ void ServerConnection::connectSocket()
             //Get MAC Address
             this->macAddress = "";
             QHostAddress localAddress = this->localSocket->localAddress();
-            QList<QNetworkInterface> ifaceList = QNetworkInterface::allInterfaces();
-            foreach (QNetworkInterface iface, ifaceList) {
-                if (iface.allAddresses().contains(localAddress)) {
-                    this->macAddress = iface.hardwareAddress();
-                    break;
+            foreach(QNetworkInterface iface, QNetworkInterface::allInterfaces()) {
+                if (iface.flags().testFlag(QNetworkInterface::IsRunning)) {
+                    foreach (QNetworkAddressEntry entry, iface.addressEntries()) {
+                        if (entry.ip() == localAddress) {
+                            this->macAddress = iface.hardwareAddress();
+                            break;
+                        }
+                    }
                 }
+                if (!this->macAddress.isEmpty())
+                    break;
             }
             if (this->macAddress.isEmpty()) {
                 qCritical() << "Unable to determine local MAC address. Aborting.";
@@ -170,6 +175,9 @@ void ServerConnection::socketDisconnected()
         if (config->qDebug) qDebug() << "Conection to server lost. I will keep trying to reconnect at " << this->config->connectRetryInterval << " second intervals.";
 
         emit this->connectionLost();
+
+        this->config->compressionLevel = 0;
+
         connectSocket();
     }
 }

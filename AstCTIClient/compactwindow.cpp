@@ -113,6 +113,8 @@ void CompactWindow::showMessage(const QString &message, QSystemTrayIcon::Message
         break;
     }
 
+    this->m_ui->messageLabel->style()->polish(this->m_ui->messageLabel);
+
     if (!this->isVisible())
         trayIcon->showMessage("AsteriskCTI", message, severity, 5000);
 }

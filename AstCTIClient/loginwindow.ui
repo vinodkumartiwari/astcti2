@@ -134,7 +134,11 @@ Please enter your username and password to continue.</string>
              <widget class="QLineEdit" name="usernameLineEdit"/>
             </item>
             <item>
-             <widget class="QLineEdit" name="passwordLineEdit"/>
+             <widget class="QLineEdit" name="passwordLineEdit">
+              <property name="echoMode">
+               <enum>QLineEdit::Password</enum>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
