@@ -103,6 +103,7 @@ QString &QAstCTICall::getCalleridNum()
 
 void QAstCTICall::setCalleridNum(QString callerIdNum)
 {
+    this->addVariable("CALLERID", callerIdNum);
     this->callerIdNum = callerIdNum;
 }
 QString &QAstCTICall::getCalleridName()
@@ -111,6 +112,7 @@ QString &QAstCTICall::getCalleridName()
 }
 void QAstCTICall::setCalleridName(QString callerIdName)
 {
+    this->addVariable("CALLERIDNAME", callerIdName);
     this->callerIdName = callerIdName;
 }
 QString &QAstCTICall::getUniqueId()
@@ -200,7 +202,7 @@ void QAstCTICall::setApplication()
     if (this->clientOperatingSystem.length() > 0) {
         this->application = this->applications->operator []( this->clientOperatingSystem );
         // here we can parse application parameters
-
+        this->parseApplicationParameters();
     }
 
 }

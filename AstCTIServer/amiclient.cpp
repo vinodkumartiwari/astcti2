@@ -241,7 +241,7 @@ QHash<QString, QString>* AMIClient::hashFromMessage(QString data)
 void AMIClient::evaluateEvent(QHash<QString, QString>* event)
 {
     QString eventName = event->value("Event");
-    if (config->qDebug) qDebug() << "Received event " << eventName;
+    if (config->qDebug) qDebug() << "Received event " << eventName << "In context: " << event->value("Context");
 
     if (eventName == "Shutdown") {
         // for the moment we can ignore shutdown event
@@ -315,7 +315,7 @@ void AMIClient::evaluateEvent(QHash<QString, QString>* event)
                             // Add the new variable to the current call
                             newCall->addVariable(variable, event->value("Value"));
                             qDebug() << "Reading variable " << variable << "with value" << event->value("Value");
-                            // TODO: Add destionation and call
+                            // TODO: Add destination and call
 
                             emit this->ctiEvent(AmiEventVarSet, newCall);
                         } else {

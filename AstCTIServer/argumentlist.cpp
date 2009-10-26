@@ -61,6 +61,11 @@ void QArgumentList::argsToStringlist(int argc, char * argv [])
     }
 }
 
+bool QArgumentList::isSwitch(QString arg)
+{
+    return arg.startsWith('-');
+}
+
 bool QArgumentList::getSwitch (QString option)
 {
     QMutableStringListIterator itr(*this);
@@ -83,11 +88,15 @@ QString QArgumentList::getSwitchArg(QString option, QString defaultValue)
         if (option == itr.next()) {
             itr.remove();
             if (itr.hasNext()) {
-                QString retVal = itr.next();
-                itr.remove();
-                return retVal;
-            }
-            else {
+                QString retval = itr.next();
+                if (isSwitch(retval)) {
+                    qDebug() << "Missing Argument for " << option;
+                    return QString();
+                } else {
+                    itr.remove();
+                    return retval;
+                }
+            } else {
                 qDebug() << "Missing Argument for " << option;
                 return QString();
             }
@@ -95,4 +104,5 @@ QString QArgumentList::getSwitchArg(QString option, QString defaultValue)
     }
     return defaultValue;
 }
+
 
