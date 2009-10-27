@@ -35,6 +35,7 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+
 #include "webview.h"
 #include "browserwindow.h"
 #include "ui_browserwindow.h"
@@ -90,6 +91,11 @@ void BrowserWindow::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void BrowserWindow::closeEvent(QCloseEvent *event)
+{
+    emit windowClosing(this);
 }
 
 void BrowserWindow::webView_loadStarted()

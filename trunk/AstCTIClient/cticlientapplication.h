@@ -43,22 +43,60 @@
 #include <QtGui/QIcon>
 #include <QtCore/QUrl>
 #include <QtCore/QPointer>
+#include <QTcpSocket>
+#include <QHostAddress>
+#include <QStringList>
+#include <QHash>
+#include <QTimer>
+#include <QDebug>
 
 #include "argumentlist.h"
 #include "cticonfig.h"
+#include "astcticommand.h"
+#include "astcticallxmlparser.h"
+#include "loginwindow.h"
 #include "compactwindow.h"
-#include "serverconnection.h"
+#include "browserwindow.h"
+
+#ifdef Q_WS_WIN
+const QString osType = "WIN";
+#endif
+#ifdef Q_WS_MAC
+const QString osType = "MAC";
+#endif
+#ifdef Q_WS_X11
+const QString osType = "LIN";
+#endif
+#ifdef Q_WS_QWS
+const QString osType = "QWS";
+#endif
 
 const QString defaultServerHost = "localhost";
 const QString defaultServerPort = "5000";
-const QString defaultConnectTimeout = "1500";
+const QString defaultConnectTimeout = "2000";
 const QString defaultConnectRetryInterval = "2";
 const int defaultKeepAliveInterval = 5000;
 
-class BrowserWindow;
-class CompactWindow;
-//class MainWindow;
-class LoginWindow;
+enum AstCTIResponseCodes {
+    RspOK = 100,
+    RspError = 101,
+    RspAuthOK = 102,
+    RspCompressLevel = 103,
+    RspKeepAlive = 104,
+    RspServiceData = 200,
+    RspServiceListEnd = 201,
+    RspQueueData = 202,
+    RspQueueListEnd = 203,
+    RspPauseOK = 300,
+    RspPausePending = 301,
+    RspPauseError = 302,
+    RspDisconnectOK = 900
+};
+
+struct AstCTIResponse {
+    AstCTIResponseCodes code;
+    QStringList data;
+};
 
 class CtiClientApplication : public QApplication
 {
@@ -67,42 +105,83 @@ class CtiClientApplication : public QApplication
 public:
     CtiClientApplication(int &argc, char **argv);
     ~CtiClientApplication();
-    static CtiClientApplication *instance();
 
-    bool showLoginWindow();
-    void createServerConnection();
-
-    AstCTIConfiguration config; // Main configuration struct
-
-    //MainWindow *newMainWindow();
-    BrowserWindow *newBrowserWindow();
-
-signals:
-    void newMessage(const QString &message, QSystemTrayIcon::MessageIcon severity);
-    void closeWindow(bool skipCheck);
+    bool                    showLoginWindow();
 
 public slots:
-    void loginAccept(const QString &username, const QString &password);
-    void loginReject();
+    //Signals from login window
+    void                    loginAccept(const QString &username, const QString &password);
+    void                    loginReject();
 
-    void logOff();
+    //Signals from main window
+    void                    logOff();
 
-    void eventReceived(AstCTICall *astCTICall);
-    void servicesReceived(QHash<QString, QString> *servicesList);
-    void queuesReceived(QStringList *queuesList);
-    void loggedIn(const QString &extension);
-    void pauseAccepted();
-    void pauseError(const QString &message);
-    void connectionLost();
-    void threadStopped(StopReason stopReason, const QString &message);
+    //Signals from browser
+    void                    browserWindowClosed(BrowserWindow *window);
+
+signals:
+    void                    eventReceived(AstCTICall *astCTICall);
+    void                    servicesReceived(QHash<QString, QString> *servicesList);
+    void                    queuesReceived(QStringList *queuesList);
+    void                    pauseAccepted();
+    void                    pauseError(const QString &message);
+    void                    newMessage(const QString &message, QSystemTrayIcon::MessageIcon severity);
+    void                    closeWindow(bool skipCheck);
 
 private:
-    bool canStart;
+    enum ServerConnectionStatus {
+        ConnStatusDisconnected,
+        ConnStatusConnecting,
+        ConnStatusLoggingIn,
+        ConnStatusLoggedIn
+    };
+    enum StopReason {
+        StopUserDisconnect,
+        StopInvalidCredentials,
+        StopInternalError,
+        StopServerError
+    };
 
-    ServerConnection *servConn;
-    QList< QPointer<BrowserWindow> > m_mainWindows;
-    LoginWindow *m_loginWnd;
-    QWidget *m_mainWnd;
+    bool                    canStart;
+    ServerConnectionStatus  connectionStatus;
+    quint16                 blockSize;
+    QString                 macAddress;
+    bool                    reconnectNotify;
+    AstCTIConfiguration     *config;
+    AstCTICommand           *lastCTICommand;
+    QHash<int, QString>     *commandsList;
+    QHash<QString, QString> *servicesList;
+    QStringList             *queuesList;
+    QTimer                  *idleTimer;
+    QTimer                  *connectTimer;
+    QTcpSocket              *localSocket;
+    LoginWindow             *loginWindow;
+    QWidget                 *mainWindow;
+    QList<BrowserWindow*>   browserWindows;
+
+    void                    connectSocket();
+    void                    abortConnection(StopReason stopReason, const QString &message);
+    void                    connectionLost();
+    void                    resetLastCTICommand();
+    AstCTIResponse          parseResponse(const QString &response);
+    void                    parseDataReceivedFromServer(const QString &message);
+    void                    processResponse(AstCTIResponse &response);
+    void                    processEvent(const QString &eventData);
+    QByteArray              convertDataForSending(const QString &data);
+    void                    sendDataToServer(const QString &data);
+    void                    sendCommandToServer(const AstCTICommands command);
+    void                    sendCommandToServer(const AstCTICommands command, const QString &parameters);
+    void                    showMainWindow(const QString &extension);
+    void                    newBrowserWindow();
+
+private slots:
+    void                    socketConnected();
+    void                    socketDisconnected();
+    void                    socketStateChanged(QAbstractSocket::SocketState socketState);
+    void                    socketError(QAbstractSocket::SocketError socketError);
+    void                    receiveData();
+    void                    idleTimerElapsed();
+    void                    connectTimerElapsed();
 };
 
 #endif // CTICLIENTAPPLICATION_H

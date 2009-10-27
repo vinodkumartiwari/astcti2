@@ -37,9 +37,9 @@
  */
 
 #include <QAbstractButton>
+#include <QCryptographicHash>
 
 #include "loginwindow.h"
-#include "compactwindow.h"
 #include "ui_loginwindow.h"
 
 LoginWindow::LoginWindow(QWidget *parent) :
@@ -85,6 +85,14 @@ void LoginWindow::accepting()
         this->m_ui->usernameLineEdit->setFocus();
     } else {
         this->hide();
-        emit this->accepted(this->m_ui->usernameLineEdit->text(), this->m_ui->passwordLineEdit->text());
+
+        QString pass = this->m_ui->passwordLineEdit->text();
+        if (!pass.isEmpty()) {
+            QCryptographicHash md5(QCryptographicHash::Md5);
+            md5.addData(QByteArray(pass.toAscii()));
+            pass = QString(md5.result().toHex());
+        }
+
+        emit accepted(this->m_ui->usernameLineEdit->text(), pass);
     }
 }

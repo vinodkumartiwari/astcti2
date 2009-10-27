@@ -36,8 +36,10 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include "cticlientapplication.h"
+#include <QNetworkInterface>
+#include <QXmlSimpleReader>
 
+#include "cticlientapplication.h"
 #include "mainwindow.h"
 #include "browserwindow.h"
 #include "loginwindow.h"
@@ -45,8 +47,11 @@
 CtiClientApplication::CtiClientApplication(int &argc, char **argv)
              : QApplication(argc, argv)
 {
+    //If fatal error is encountered, we will exit the constructor without setting canStart to true
+    //showLoginWindow() will then return false, which will tell main function to abort
     canStart = false;
 
+    //Designer-generated code
     QString locale = QLocale::system().name();
 
     QTranslator translator;
@@ -59,157 +64,190 @@ CtiClientApplication::CtiClientApplication(int &argc, char **argv)
     QApplication::setQuitOnLastWindowClosed(true);
 #endif
 
-    QArgumentList args(argc, argv);
-    config.qDebug = args.getSwitch("--debug") | args.getSwitch("-d");
+    //Create configuration object
+    this->config = new AstCTIConfiguration();
 
-    config.serverHost = args.getSwitchArg("-h", defaultServerHost);
-    if (config.serverHost.isEmpty()) {
+    //Process command-line arguments
+    QArgumentList args(argc, argv);
+    this->config->qDebug = args.getSwitch("--debug") | args.getSwitch("-d");
+
+    this->config->serverHost = args.getSwitchArg("-h", defaultServerHost);
+    if (config->serverHost.isEmpty()) {
         qFatal("No value given for Server Host (-h). If you want to use default host, don't include the command line switch.");
         return;
     }
     bool ok;
-    config.serverPort = args.getSwitchArg("-p", defaultServerPort).toUShort(&ok);
+    this->config->serverPort = args.getSwitchArg("-p", defaultServerPort).toUShort(&ok);
     if (!ok) {
         qFatal("Wrong value given for Server Port (-p). Expected number from 0 to 65535.");
         return;
     }
-    config.connectTimeout = args.getSwitchArg("-t", defaultConnectTimeout).toInt(&ok);
-    if (!ok || config.connectTimeout < -1) {
+    this->config->connectTimeout = args.getSwitchArg("-t", defaultConnectTimeout).toInt(&ok);
+    if (!ok || this->config->connectTimeout < -1) {
         qFatal("Wrong value given for Connect Timeout (-t). Expected number from -1 to 2147483647.");
         return;
     }
-    config.connectRetryInterval = args.getSwitchArg("-r", defaultConnectRetryInterval).toUInt(&ok);
+    this->config->connectRetryInterval = args.getSwitchArg("-r", defaultConnectRetryInterval).toUInt(&ok);
     if (!ok) {
         qFatal("Wrong value given for Connect Retry Interval (-r). Expected number from 0 to 4294967295.");
         return;
     }
 
-    config.compressionLevel = 0; //No compression initially. Compression level will be received from server.
-    config.keepAliveInterval = defaultKeepAliveInterval; //Set to default initially. Interval will be received from server.
+    //Set defaults
+    this->config->compressionLevel = 0; //No compression initially. Compression level will be received from server.
+    this->config->keepAliveInterval = defaultKeepAliveInterval; //Set to default initially. Interval will be received from server.
+    this->loginWindow = 0;
+    this->mainWindow = 0;
+    this->connectionStatus = ConnStatusDisconnected;
+    this->lastCTICommand = 0;
+    this->localSocket = 0;
+    this->blockSize = 0;
+    this->reconnectNotify = true;
 
-    this->m_loginWnd = 0;
-    this->m_mainWnd = 0;
-    this->servConn = 0;
+    //Initialize timers
+    this->idleTimer = new QTimer(this);
+    this->connectTimer = new QTimer(this);
+    this->connectTimer->setSingleShot(true);
+    connect(this->idleTimer, SIGNAL(timeout()), this, SLOT(idleTimerElapsed()));
+    connect(this->connectTimer, SIGNAL(timeout()), this, SLOT(connectTimerElapsed()));
 
+    //Initialize lists
+    this->servicesList = new QHash<QString, QString>;
+    this->queuesList = new QStringList();
+    this->commandsList = new QHash<int, QString>;
+
+    //Commands that can be sent to CTI server
+    this->commandsList->insert(CmdQuit,         "QUIT");
+    this->commandsList->insert(CmdCompression,  "CMPR");
+    this->commandsList->insert(CmdKeepAlive,    "KEEP");
+    this->commandsList->insert(CmdNoOp,         "NOOP");
+    this->commandsList->insert(CmdUser,         "USER");
+    this->commandsList->insert(CmdPass,         "PASS");
+    this->commandsList->insert(CmdOsType,       "OSTYPE");
+    this->commandsList->insert(CmdServices,     "SERVICES");
+    this->commandsList->insert(CmdQueues,       "QUEUES");
+    this->commandsList->insert(CmdPause,        "PAUSE");
+    this->commandsList->insert(CmdOrig,         "ORIG");
+    this->commandsList->insert(CmdStop,         "STOP");
+    this->commandsList->insert(CmdMac,          "MAC");
+
+    //Create socket for communication with server
+    this->localSocket = new QTcpSocket();
+    qRegisterMetaType<QAbstractSocket::SocketState>("QAbstractSocket::SocketState" );
+    qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError" );
+    connect(this->localSocket, SIGNAL(connected()), this, SLOT (socketConnected()));
+    connect(this->localSocket, SIGNAL(readyRead()), this, SLOT(receiveData()));
+    connect(this->localSocket, SIGNAL(disconnected()), this, SLOT (socketDisconnected()));
+    connect(this->localSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socketStateChanged(QAbstractSocket::SocketState) ), Qt::QueuedConnection);
+    connect(this->localSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError) ), Qt::QueuedConnection);
+
+    //All checks passed, we are good to go
     canStart = true;
 }
 
 CtiClientApplication::~CtiClientApplication()
 {
-    // delete all browser windows
-    qDeleteAll(m_mainWindows);
+    //Cleanup
+    this->idleTimer->stop();
+    this->connectTimer->stop();
+
+    delete(this->idleTimer);
+    delete(this->connectTimer);
+    delete(this->config);
+    delete(this->lastCTICommand);
+    delete(this->localSocket);
+    delete(this->commandsList);
+    delete(this->servicesList);
+    delete(this->queuesList);
+
+    qDeleteAll(browserWindows);
 }
 
-CtiClientApplication *CtiClientApplication::instance()
+//Called by main() and basically kicks of the application
+//Later it is called when the user logs off
+bool CtiClientApplication::showLoginWindow()
 {
-    return (static_cast<CtiClientApplication *>(QCoreApplication::instance()));
+    //If error is encountered in constructor, we tell main() to abort
+    if (!canStart) return false;
+
+    //Create only if it doesn't exist
+    if (this->loginWindow == 0) {
+        this->loginWindow = new LoginWindow();
+
+        connect(this->loginWindow, SIGNAL(accepted(QString, QString)), this, SLOT(loginAccept(QString, QString)));
+        connect(this->loginWindow, SIGNAL(rejected()), this, SLOT(loginReject()));
+    }
+
+    this->loginWindow->show();
+
+    return true;
 }
 
-void CtiClientApplication::createServerConnection()
-{
-    this->servConn = new ServerConnection(&this->config);
-
-    qRegisterMetaType<AstCTICall>("AstCTICall");
-    qRegisterMetaType< QHash<QString,QString> >("QHash<QString,QString>");
-    qRegisterMetaType<StopReason>("StopReason");
-
-    connect(this->servConn, SIGNAL(eventReceived(AstCTICall*)), this, SLOT(eventReceived(AstCTICall*)), Qt::QueuedConnection);
-    connect(this->servConn, SIGNAL(servicesReceived(QHash<QString,QString>*)), this, SLOT(servicesReceived(QHash<QString,QString>*)), Qt::QueuedConnection);
-    connect(this->servConn, SIGNAL(queuesReceived(QStringList*)), this, SLOT(queuesReceived(QStringList*)), Qt::QueuedConnection);
-    connect(this->servConn, SIGNAL(loggedIn(QString)), this, SLOT(loggedIn(QString)), Qt::QueuedConnection);
-    connect(this->servConn, SIGNAL(pauseAccepted()), this, SLOT(pauseAccepted()), Qt::QueuedConnection);
-    connect(this->servConn, SIGNAL(pauseError(QString)), this, SLOT(pauseError(QString)), Qt::QueuedConnection);
-    connect(this->servConn, SIGNAL(connectionLost()), this, SLOT(connectionLost()), Qt::QueuedConnection);
-    connect(this->servConn, SIGNAL(threadStopped(StopReason,QString)), this, SLOT(threadStopped(StopReason,QString)), Qt::QueuedConnection);
-
-    this->servConn->start();
-}
-
+//Called when the user clicks OK in the login window
 void CtiClientApplication::loginAccept(const QString &username, const QString &password)
 {
-    this->config.user = username;
-    this->config.pass = password;
+    this->config->user = username;
+    this->config->pass = password;
 
-    if (this->servConn == 0) {
-        createServerConnection();
-    }
+    //Initiate connection with server
+    connectSocket();
 }
 
+//Called when the user clicks Cancel in the login window
 void CtiClientApplication::loginReject()
 {
+    //Close the application
     this->exit(0);
 }
 
+//Called when the user logs off in the main window
 void CtiClientApplication::logOff()
 {
-    this->servConn->sendCommandToServer(CmdQuit);
+    //Let the server know that the user has logged off
+    sendCommandToServer(CmdQuit);
+
+    //We don't wait for server to acknowledge user logoff
+    //If connection is dropped before that, the server will log user off automatically
+    abortConnection(StopUserDisconnect, QString());
 }
 
-void CtiClientApplication::eventReceived(AstCTICall *astCTICall)
+//Called when one of internal browsers closes
+void  CtiClientApplication::browserWindowClosed(BrowserWindow *window)
 {
-   //TODO
-   delete(astCTICall);
+    //Remove browser from the list
+    this->browserWindows.removeOne(window);
 }
 
-void CtiClientApplication::servicesReceived(QHash<QString, QString> *servicesList)
+//Initiates TCP connection
+void CtiClientApplication::connectSocket()
 {
+    this->connectionStatus = ConnStatusConnecting;
+
+    //Start connection with server. The connection will continue asynchronously, using signals and slots
+    this->localSocket->connectToHost(config->serverHost, config->serverPort);
+
+    //If connection times out, socket will emit error signal with SocketTimeoutError
+    //Unfortunately, currently (Qt 4.5) it is not possible to change timeout value (hardcoded to 30 sec)
+    //So we start our own timer set to configured timeout value
+    //Connection attempt will be aborted either by socket timeout or by timer, whichever comes first
+    //Then this timer will be started again, now with the value of connectRetryInterval (see socketDisconnected())
+    //So the timer will either drop or start the conection, based on conectionState
+    this->connectTimer->start(this->config->connectTimeout);
 }
 
-void CtiClientApplication::queuesReceived(QStringList *queuesList)
-{
-}
+//Called when connection attempt is definitively aborted due to error or user disconnect
+void CtiClientApplication::abortConnection(StopReason stopReason, const QString &message) {
+    this->connectionStatus = ConnStatusDisconnected;
 
-void CtiClientApplication::loggedIn(const QString &extension)
-{
-    if (this->m_mainWnd == 0) {
-        CompactWindow *w = new CompactWindow();
+    this->localSocket->abort();
 
-        connect(this, SIGNAL(newMessage(QString,QSystemTrayIcon::MessageIcon)), w, SLOT(showMessage(QString,QSystemTrayIcon::MessageIcon)));
-        connect(this, SIGNAL(closeWindow(bool)), w, SLOT(quit(bool)));
-
-        connect(w, SIGNAL(logOff()), this, SLOT(logOff()));
-
-        this->m_mainWnd = dynamic_cast<QWidget*>(w);
-        w->show();
-    }
-
-    if (this->m_loginWnd->isVisible()) {
-        this->m_loginWnd->hide();
-    }
-
-    emit this->newMessage("Connection to server OK.", QSystemTrayIcon::Information);
-    //TODO: Extension
-}
-
-void CtiClientApplication::pauseAccepted()
-{
-}
-
-void CtiClientApplication::pauseError(const QString &message)
-{
-}
-
-void CtiClientApplication::connectionLost()
-{
-    if (this->m_mainWnd != 0) {
-        emit this->newMessage("Connection to server lost. Trying to reconnect...", QSystemTrayIcon::Critical);
-    } else {
-        this->m_loginWnd->showMessage("AsteriskCTI client is unable to connect to AsteriskCTI server. "
-                                      "Please check that the correct parameter is passed from the command line.\n\n"
-                                      "AsteriskCTI client will keep trying to connect.", true);
-        this->m_loginWnd->show();
-    }
-}
-
-void CtiClientApplication::threadStopped(StopReason stopReason, const QString &message)
-{
-    delete this->servConn;
-    this->servConn = 0;
+    if (config->qDebug) qDebug() << "Connection to server closed. Reason: " << stopReason << " " << message;
 
     QString msg;
 
     switch (stopReason) {
     case StopUserDisconnect:
+        //User disconnected manually by rejecting login, application will be closed
         return;
     case StopInternalError:
         msg = "Internal error occured:\n" + message;
@@ -222,48 +260,472 @@ void CtiClientApplication::threadStopped(StopReason stopReason, const QString &m
         break;
     }
 
-    if (this->m_mainWnd != 0) {
-        QMessageBox msgBox;
-        msgBox.setText(msg);
-        msgBox.exec();
-        emit this->closeWindow(true);
-        this->m_mainWnd = 0;
-    } else {
-        this->m_loginWnd->showMessage(msg, false);
-        this->m_loginWnd->show();
+    if (this->mainWindow != 0) {
+        //Tell main window to close
+        emit closeWindow(true);
+        this->mainWindow = 0;
     }
+
+    //Redisplay login window with the error message
+    this->loginWindow->showMessage(msg, false);
+    this->loginWindow->show();
 }
 
-bool CtiClientApplication::showLoginWindow()
+//Called when the client can't start the connection or when connection is broken
+void CtiClientApplication::connectionLost()
 {
-    if (!canStart) return false;
-
-    if (this->m_loginWnd == 0) {
-        this->m_loginWnd = new LoginWindow();
-
-        connect(this->m_loginWnd, SIGNAL(accepted(QString, QString)), this, SLOT(loginAccept(QString, QString)));
-        connect(this->m_loginWnd, SIGNAL(rejected()), this, SLOT(loginReject()));
+    //If the main window is displayed, the connection has been broken, otherwise it couldn't be started
+    //We keep trying to connect either way
+    if (this->mainWindow != 0) {
+        emit newMessage("Connection to server lost. Trying to reconnect...", QSystemTrayIcon::Critical);
+    } else {
+        //User won't be able to click OK button again until connection is established
+        this->loginWindow->showMessage("AsteriskCTI client is unable to connect to AsteriskCTI server. "
+                                      "Please check that the correct parameter is passed from the command line.\n\n"
+                                      "AsteriskCTI client will keep trying to connect.", true);
+        this->loginWindow->show();
     }
-
-    this->m_loginWnd->show();
-
-    return true;
 }
 
-//MainWindow *CtiClientApplication::newMainWindow()
-//{
-//    // Let's build our main window
-//    this->m_mainWnd = new MainWindow();
-//    this->m_mainWnd->show();
-//    return this->m_mainWnd;
-//}
+void CtiClientApplication::resetLastCTICommand()
+{
+    delete(this->lastCTICommand);
+    this->lastCTICommand = 0;
+}
 
-BrowserWindow *CtiClientApplication::newBrowserWindow()
+//Creates AstCTIResponse object from string
+AstCTIResponse CtiClientApplication::parseResponse(const QString &response)
+{
+    QStringList data = response.split(" ");
+    AstCTIResponse newResponse;
+    newResponse.code = (AstCTIResponseCodes)(QString(data.at(0)).toInt());
+    data.removeFirst();
+    newResponse.data = data;
+    return newResponse;
+}
+
+//Analyzes block of data received from server and sends it for further processing
+void CtiClientApplication::parseDataReceivedFromServer(const QString &message)
+{
+    if (message.isEmpty()) {
+        if (config->qDebug) qDebug() << "Received empty string from server.";
+        return;
+    }
+
+    QChar firstChar = message.at(0);
+    if (firstChar.isNumber()) {
+        //First character of received data is a number, which means it is a response from server
+        AstCTIResponse response = parseResponse(message);
+        processResponse(response);
+    } else {
+        //Otherwise it is an XML object containing call event
+        processEvent(message);
+    }
+}
+
+//Analyzes server response and takes appropriate action
+//The handshake protocol is followed until authentication is complete or error occurs
+//If authentication is succesful, main window is displayed
+void CtiClientApplication::processResponse(AstCTIResponse &response) {
+    if (config->qDebug) qDebug() << "Processing server response: " << response.code << response.data.join(" ");
+
+    switch (response.code) {
+    case RspAuthOK:
+        sendCommandToServer(CmdKeepAlive);
+        break;
+    case RspCompressLevel:
+        this->config->compressionLevel = response.data.last().toInt();
+        sendCommandToServer(CmdUser, this->config->user);
+        break;
+    case RspDisconnectOK:
+        //Nothing to do
+        break;
+    case RspError:
+        if (this->lastCTICommand != 0) {
+            switch (this->lastCTICommand->command) {
+            case CmdUser:
+            case CmdPass:
+                abortConnection(StopInvalidCredentials, response.data.join(" "));
+                break;
+            case CmdMac:
+            case CmdOsType:
+                abortConnection(StopServerError, response.data.join(" "));
+                break;
+            case CmdOrig:
+                //TODO
+                break;
+            default:
+                if (config->qDebug) qDebug() << "Received unexpected response from server: \'" << response.code << " " << response.data.join(" ") << "\' to command " << this->lastCTICommand->command;
+                break;
+            }
+        } else {
+            if (config->qDebug) qDebug() << "Received unexpected response from server: \'" << response.code << " " << response.data.join(" ") << "\' to unknown command";
+        }
+        break;
+    case RspKeepAlive:
+        this->config->keepAliveInterval = response.data.last().toInt();
+        //We reduce the interval to allow for network latency
+        if (this->config->keepAliveInterval > 1000)
+            this->config->keepAliveInterval -= 1000;
+        sendCommandToServer(CmdMac, this->macAddress);
+        break;
+    case RspOK:
+        if (this->lastCTICommand != 0) {
+            switch (this->lastCTICommand->command) {
+            case CmdUser:
+                sendCommandToServer(CmdPass, this->config->pass);
+                break;
+            case CmdPass:
+                sendCommandToServer(CmdKeepAlive);
+                break;
+            case CmdMac:
+                sendCommandToServer(CmdOsType, osType);
+                break;
+            case CmdOsType:
+                resetLastCTICommand();
+                this->connectionStatus = ConnStatusLoggedIn;
+                showMainWindow(response.data.last().split("-").last());
+                break;
+            case CmdNoOp:
+                resetLastCTICommand();
+                break;
+            case CmdOrig:
+                //TODO
+                break;
+            default:
+                if (config->qDebug) qDebug() << "Received unexpected response from server: \'" << response.code << " " << response.data.join(" ") << "\' to command " << this->lastCTICommand->command;
+                break;
+            }
+        } else {
+            if (response.data.length() > 1) {
+                if (response.data.at(1) == "Welcome")
+                    sendCommandToServer(CmdCompression);
+            } else {
+                if (config->qDebug) qDebug() << "Received unexpected response from server: \'" << response.code << " " << response.data.join(" ") << "\' to unknown command";
+            }
+        }
+        break;
+    case RspPauseError:
+        resetLastCTICommand();
+        emit pauseError(response.data.join(" "));
+        break;
+    case RspPauseOK:
+        resetLastCTICommand();
+        emit pauseAccepted();
+        break;
+    case RspPausePending:
+        //TODO: Not sure what to do here. Is this necessary?
+        break;
+    case RspQueueData:
+        this->queuesList->append(response.data.last());
+        break;
+    case RspQueueListEnd:
+        emit queuesReceived(this->queuesList);
+        break;
+    case RspServiceData:
+        this->servicesList->insert(response.data.first(), response.data.last());
+        break;
+    case RspServiceListEnd:
+        emit servicesReceived(this->servicesList);
+        break;
+    }
+}
+
+//Creates AstCTICall object from XML using custom parser
+void CtiClientApplication::processEvent(const QString &eventData) {
+    if (config->qDebug) qDebug() << "Processing event: \n" << eventData;
+
+    AstCTICall call;
+
+    AstCTICallXMLParser handler(&call);
+
+    QXmlInputSource source;
+    source.setData(eventData);
+
+    QXmlSimpleReader reader;
+    reader.setContentHandler(&handler);
+
+    reader.parse(&source);
+
+    //Let main window know about the event
+    //TODO: Perhaps process event (or some events) here?
+    emit eventReceived(&call);
+}
+
+//Prepares data for sending to server, using compression if so indicated
+QByteArray CtiClientApplication::convertDataForSending(const QString &data)
+{
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_4_5);
+
+    //First two bytes are used for framing
+    out << (quint16)0;
+    if (this->config->compressionLevel > 0) {
+        //Convert to UTF8 before compressing
+        out << qCompress(data.toUtf8(), this->config->compressionLevel);
+    } else {
+        //Uncompressed data is sent as-is
+        out << data;
+    }
+    //Write data size in frame descriptor
+    out.device()->seek(0);
+    out << (quint16)(block.size() - sizeof(quint16));
+
+    return block;
+}
+
+//Sends a block of data to server
+void CtiClientApplication::sendDataToServer(const QString &data)
+{
+    if (config->qDebug) qDebug() << "Sending data to server: " << data;
+
+    this->localSocket->write(convertDataForSending(data));
+    this->localSocket->flush();
+
+    //Restart the idle timer
+    this->idleTimer->start(this->config->keepAliveInterval);
+}
+
+//Sends a parameterless command to server (overloaded)
+void CtiClientApplication::sendCommandToServer(const AstCTICommands command)
+{
+    sendCommandToServer(command, QString());
+}
+
+//Sends a command to server
+void CtiClientApplication::sendCommandToServer(const AstCTICommands command, const QString &parameters)
+{
+    //Delete last command if exists
+    resetLastCTICommand();
+
+    //Create and remember command object
+    AstCTICommand *cmd = new AstCTICommand();
+    cmd->command = command;
+    cmd->parameters = parameters;
+    this->lastCTICommand = cmd;
+
+    if (cmd->command == CmdServices)
+        //Prepare for receiving services
+        this->servicesList->clear();
+
+    if (cmd->command == CmdQueues)
+        //Prepare for receiving queues
+        this->queuesList->clear();
+
+    //Convert command to string and send to server
+    QString data = this->commandsList->value(cmd->command);
+    if (!parameters.isEmpty())
+        data.append(" " + parameters);
+
+    sendDataToServer(data);
+}
+
+//Displays the main window
+void CtiClientApplication::showMainWindow(const QString &extension)
+{
+    if (this->mainWindow == 0) {
+        CompactWindow *w = new CompactWindow();
+
+        connect(this, SIGNAL(newMessage(QString,QSystemTrayIcon::MessageIcon)), w, SLOT(showMessage(QString,QSystemTrayIcon::MessageIcon)));
+        connect(this, SIGNAL(closeWindow(bool)), w, SLOT(quit(bool)));
+
+        connect(w, SIGNAL(logOff()), this, SLOT(logOff()));
+
+        this->mainWindow = dynamic_cast<QWidget*>(w);
+        w->show();
+    }
+
+    if (this->loginWindow->isVisible()) {
+        this->loginWindow->hide();
+    }
+
+    emit this->newMessage("Connection to server OK.", QSystemTrayIcon::Information);
+    //TODO: Extension
+}
+
+//Displays the internal browser
+void CtiClientApplication::newBrowserWindow()
 {
     // All browsers will be child of our main window
     // if we close main window all browser' windows will close too
-    BrowserWindow *browser = new BrowserWindow(this->m_mainWnd);
-    m_mainWindows.prepend(browser);
+    BrowserWindow *browser = new BrowserWindow(this->mainWindow);
+    this->browserWindows.append(browser);
     browser->show();
-    return browser;
+}
+
+//Slot which receives socket's connected signal
+void CtiClientApplication::socketConnected()
+{
+    //We are connected. so connect timer is no longer necessary
+    this->connectTimer->stop();
+
+    //Get MAC Address (necessary for authentication with server)
+    this->macAddress = "";
+    QHostAddress localAddress = this->localSocket->localAddress();
+    foreach(QNetworkInterface iface, QNetworkInterface::allInterfaces()) {
+        if (iface.flags().testFlag(QNetworkInterface::IsRunning)) {
+            foreach (QNetworkAddressEntry entry, iface.addressEntries()) {
+                if (entry.ip() == localAddress) {
+                    this->macAddress = iface.hardwareAddress();
+                    break;
+                }
+            }
+        }
+        if (!this->macAddress.isEmpty())
+            break;
+    }
+    if (this->macAddress.isEmpty()) {
+        qCritical() << "Unable to determine local MAC address. Aborting.";
+        abortConnection(StopInternalError, "Unable to determine local MAC address.");
+        return;
+    }
+
+    this->connectionStatus = ConnStatusLoggingIn;
+}
+
+//Slot which receives socket's disconnected signal
+void CtiClientApplication::socketDisconnected()
+{
+    //Reset compression level to zero (initial communication with server is always uncompressed)
+    this->config->compressionLevel = 0;
+
+    //Delete last command if it exists
+    resetLastCTICommand();
+
+    if (this->connectionStatus != ConnStatusDisconnected) {
+        if (config->qDebug) qDebug() << "Conection to server lost. I will keep trying to reconnect at " << this->config->connectRetryInterval << " second intervals.";
+
+        //Inform user
+        connectionLost();
+
+        //Retry connection
+        connectSocket();
+    }
+}
+
+//Slot which receives socket's stateChanged signal
+void CtiClientApplication::socketStateChanged(QAbstractSocket::SocketState socketState)
+{
+    if (config->qDebug) {
+        QString newState;
+        switch(socketState) {
+        case QAbstractSocket::UnconnectedState:
+            newState = "UnconnectedState";
+            break;
+        case QAbstractSocket::HostLookupState:
+            newState = "HostLookupState";
+            break;
+        case QAbstractSocket::ConnectingState:
+            newState = "ConnectingState";
+            break;
+        case QAbstractSocket::ConnectedState:
+            newState = "ConnectedState";
+            break;
+        case QAbstractSocket::BoundState:
+            newState = "BoundState";
+            break;
+        case QAbstractSocket::ClosingState:
+            newState = "ClosingState";
+            break;
+        case QAbstractSocket::ListeningState:
+            newState = "ListeningState";
+            break;
+        }
+        qDebug() << "Socket state changed: " << newState;
+    }
+}
+
+//Slot which receives socket's error signal
+void CtiClientApplication::socketError(QAbstractSocket::SocketError socketError)
+{
+    if (socketError == QAbstractSocket::SocketTimeoutError) {
+        if (this->connectionStatus == ConnStatusConnecting) {
+            //Notify user only about first reconnect attempt
+            if (this->reconnectNotify) {
+                if (config->qDebug) qDebug() << "Unable to connect to server. I will keep trying to connect at " << this->config->connectRetryInterval << " second intervals.";
+
+                connectionLost();
+
+                this->reconnectNotify = false;
+            }
+        }
+
+        this->connectionStatus = ConnStatusDisconnected;
+
+        this->localSocket->abort();
+
+        //Restart connect timer so it reinitiates connection after a specified interval
+        this->connectTimer->start(this->config->connectTimeout);
+    } else {
+        if (config->qDebug) qDebug() << "Socket Error: " << socketError << " " << this->localSocket->errorString();
+    }
+}
+
+//Slot which receives socket's readyRead signal
+void CtiClientApplication::receiveData()
+{
+    QDataStream in(this->localSocket);
+    in.setVersion(QDataStream::Qt_4_5);
+
+    while (!in.atEnd()) {
+        if (this->blockSize == 0) {
+            //Read data block size from frame descriptor (if enough data available)
+            if (this->localSocket->bytesAvailable() >= (int)sizeof(quint16))
+                in >> this->blockSize;
+        }
+
+        //Wait for entire data block to be received
+        //If not, readyRead will be emitted again when more data is available
+        if (this->localSocket->bytesAvailable() >= this->blockSize) {
+            QByteArray dataFromSocket;
+            QString receivedData;
+            if (this->config->compressionLevel > 0) {
+                //Compressed data will be UTF8 encoded
+                in >> dataFromSocket;
+                QByteArray uncompressedData = qUncompress(dataFromSocket);
+                if (uncompressedData.isEmpty()) {
+                    qCritical() << "Unable to uncompress data received from server. Try to use uncompressed data.";
+                    receivedData = QString::fromUtf8(dataFromSocket);
+                } else {
+                    receivedData = QString::fromUtf8(uncompressedData);
+                }
+            } else {
+                //Uncompressed data will be sent as-is
+                in >> receivedData;
+            }
+
+            //Reset block size
+            this->blockSize = 0;
+
+            //Analyze received data
+            parseDataReceivedFromServer(receivedData);
+        }
+    }
+
+    //Restart the idle timer
+    this->idleTimer->start(this->config->keepAliveInterval);
+}
+
+//Called when connection has been idle for a specified period
+void CtiClientApplication::idleTimerElapsed()
+{
+    //Send NoOp command to server to keep connection alive
+    if (this->localSocket->state() == QAbstractSocket::ConnectedState) {
+        if (this->connectionStatus == ConnStatusLoggedIn)
+            sendCommandToServer(CmdNoOp);
+    }
+}
+
+//Called when given connection timeout or connection retry interval has elapsed
+//Appropriate action will be taken depending on connection state (see connectSocket() and socketError())
+void CtiClientApplication::connectTimerElapsed()
+{
+    if (this->connectionStatus == ConnStatusConnecting) {
+        //Simulate socket timeout error
+        socketError(QAbstractSocket::SocketTimeoutError);
+    } else {
+        //Retry connection
+        connectSocket();
+    }
 }
