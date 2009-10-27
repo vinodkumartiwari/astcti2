@@ -217,8 +217,7 @@ void CompactWindow::quit(bool skipCheck)
     if (!skipCheck) {
         QMessageBox msgBox(this);
 
-        msgBox.setText( trUtf8("Confirm application close"));
-        msgBox.setInformativeText( trUtf8("Are you sure you want to exit?"));
+        msgBox.setText(trUtf8("Are you sure you want to quit?"));
         QPushButton *yesBtn = msgBox.addButton(trUtf8("&Yes"),QMessageBox::YesRole);
         yesBtn->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
         QPushButton *noBtn = msgBox.addButton(trUtf8("&No"),QMessageBox::NoRole);
@@ -236,7 +235,7 @@ void CompactWindow::quit(bool skipCheck)
     }
 
     if (this->canClose) {
-        emit this->logOff();
+        emit logOff();
 
         this->close();
     }

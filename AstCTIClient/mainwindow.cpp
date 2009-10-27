@@ -230,7 +230,7 @@ void MainWindow::aboutQt()
 
 void MainWindow::configure()
 {
-    CtiClientApplication::instance()->newBrowserWindow();
+    //CtiClientApplication::instance()->newBrowserWindow();
 }
 
 void MainWindow::login()

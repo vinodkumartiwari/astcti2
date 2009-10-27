@@ -56,9 +56,13 @@ public:
     void setUrl(QUrl url);
     WebView *currentView() const;
 
+signals:
+    void windowClosing(BrowserWindow*);
+
 protected:
     QLabel *lblCurrentStatus;
-    virtual void changeEvent(QEvent *e);
+    void changeEvent(QEvent *e);
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::BrowserWindowClass *m_ui;
@@ -73,6 +77,7 @@ private slots:
     void webView_statusBarMessage(QString text);
     void webView_loadFinished(bool );
     void webView_loadStarted();
+
 };
 
 #endif // BROWSERWINDOW_H

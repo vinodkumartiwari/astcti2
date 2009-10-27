@@ -45,8 +45,6 @@ namespace Ui {
     class LoginWindow;
 }
 
-class CompactWindow;
-
 class LoginWindow : public QDialog {
     Q_OBJECT
 public:
