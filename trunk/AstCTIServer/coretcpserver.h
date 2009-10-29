@@ -66,6 +66,7 @@ public slots:
 signals:
     void                            sendDataFromServer(const QString &data);
     void                            serverIsClosing();
+    void                            amiClientDisconnected();
     void                            amiClientPauseIn(ClientManager *cl);
     void                            amiClientPauseOut(ClientManager *cl);
     void                            amiClientLogin(ClientManager *cl);
@@ -86,8 +87,8 @@ protected slots:
     void                            changeClient(const QString &oldexten, const QString &newexten);
     void                            removeClient(const QString &exten);
     void                            notifyClient(const QString &data);
-    void                            stopTheServer();
     void                            stopTheServer(bool closeTheSocket);
+    void                            amiConnectionStatusChange(AMIConnectionStatus status);
     void                            receiveCtiEvent(const AMIEvent &eventid, QAstCTICall *the_call);
     void                            receiveCtiResponse(const int &actionId, AsteriskCommand *the_command);
     // Slots to receive CTI Client events

@@ -65,6 +65,7 @@ enum QAstCTICommands {
     CmdCompression,
     CmdUser,
     CmdPass,
+    CmdChangePassword,
     CmdMac,
     CmdKeep,
     CmdOsType,
@@ -108,6 +109,7 @@ public slots:
     void                    parseDataReceived(const QString &data);
     ///////////////////////////////////////////////////////////////////////////
     // CTI Server
+    void                    disconnectRequest();
     void                    unlockAfterSuccessfullLogoff();
     void                    pauseInResult(const QString &identifier, const bool &result, const QString& reason);
     void                    pauseOutResult(const QString &identifier, const bool &result, const QString& reason);
@@ -125,7 +127,6 @@ signals:
     void                    changeClient(const QString &oldexten, const QString &newexten);
     void                    removeClient(const QString &exten);
     void                    notifyServer(const QString &data);
-    void                    stopRequest(const QString &exten, ClientManager *cl);
 
     ///////////////////////////////////////////////////////////////////////////
     // CTI Status change request
@@ -147,6 +148,7 @@ private:
     QString                 ctiUserName;
     QString                 localIdentifier;
     bool                    authenticated;
+    bool                    ctiLogoffOnClose;
     int                     socketDescriptor;
     int                     compressionLevel;
     int                     retries;

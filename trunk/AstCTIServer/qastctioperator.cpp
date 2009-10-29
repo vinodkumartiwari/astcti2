@@ -140,6 +140,33 @@ bool QAstCTIOperator::save()
     return retVal;
 }
 
+bool QAstCTIOperator::changePassword(QString &newPassword)
+{
+    bool retVal = false;
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
+    }
+    if (db.driver()->hasFeature(QSqlDriver::Transactions)) {
+        db.transaction();
+    }
+    QSqlQuery query(db);
+
+    // For now we need to update just only the field last_seat in the operators table
+    query.prepare("UPDATE operators SET PASS_WORD=:newpass WHERE ID_OPERATOR=:id");
+    query.bindValue(":newpass", newPassword);
+    query.bindValue(":id", this->idOperator);
+    retVal = query.exec();
+
+    if (db.driver()->hasFeature(QSqlDriver::Transactions)) {
+        retVal ? db.commit() :  db.rollback();
+    }
+    query.clear();
+
+    emit this->updateComplete(retVal);
+    return retVal;
+}
+
 bool QAstCTIOperator::checkPassword(const QString& password)
 {
 

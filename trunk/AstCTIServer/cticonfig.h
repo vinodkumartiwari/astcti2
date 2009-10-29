@@ -46,15 +46,17 @@ struct QAstCTIConfiguration
 {
     bool            qDebug;
     QString         runtimeConfiguration;
-    quint16         serverPort;
-    int             readTimeout;
-    int             compressionLevel;
+    quint16         ctiServerPort;
+    quint16         ctiConnectTimeout;
+    quint16         ctiReadTimeout;
+    quint16         ctiSocketCompressionLevel;
     QString         amiHost;
     quint16         amiPort;
     QString         amiUser;
     QString         amiSecret;
     quint16         amiConnectTimeout;
-    quint16         amiReconnectRetries;
+    quint16         amiReadTimeout;
+    quint16         amiConnectRetryAfter;
     QString         sqlHost;
     QString         sqlUserName;
     QString         sqlPassWord;

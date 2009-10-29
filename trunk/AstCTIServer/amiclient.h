@@ -85,15 +85,22 @@ enum AMIEvent {
     AmiEventNewExten,
     AmiEventVarSet,
     AmiEventJoin,
-    AmiEventBridge
+    AmiEventBridge,
+    AmiEventEndList
 };
 
+enum AMIConnectionStatus {
+    AmiConnectionStatusDisconnected,
+    AmiConnectionStatusConnected,
+    AmiConnectionStatusEndList
+};
 
 class AMIClient : public  QThread
 {
     Q_OBJECT
     Q_ENUMS(AMIClientStatus);
     Q_ENUMS(AMIEvent);
+    Q_ENUMS(AMIConnectionStatus);
 
 public:
     AMIClient(QAstCTIConfiguration *config, QObject *parent);
@@ -108,10 +115,10 @@ public slots:
 signals:
     void                            error(int socketError, const QString &message);
     void                            receiveDataFromAsterisk(const QString &data);
-    void                            threadStopped();
-    void                            amiClientNoRetries();
+    void                            threadStopped();    
     void                            ctiEvent(const AMIEvent &eventId, QAstCTICall *theCall);
     void                            ctiResponse(const int &actionId, AsteriskCommand *theCommand);
+    void                            amiConnectionStatusChange(AMIConnectionStatus status);
 
 private:
     QAstCTIConfiguration            *config;
@@ -134,6 +141,7 @@ private slots:
     void                            evaluateResponse(QHash<QString, QString> *response);
     void                            socketStateChanged(QAbstractSocket::SocketState socketState);
     void                            socketError(QAbstractSocket::SocketError socketError);
+    void                            socketDisconnected();
 protected:
     QTcpSocket*                     localSocket;
 };

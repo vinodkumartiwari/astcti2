@@ -63,6 +63,7 @@ public:
     void                setLastSeatId(const int &newSeat);
     bool                getBeginInPause();
     bool                getEnabled();
+    bool                changePassword(QString &newPassword);
     bool                checkPassword(const QString &password);
     QAstCTISeat         *getLastSeat();
     QHash<QString,int>  *getListOfServices();
