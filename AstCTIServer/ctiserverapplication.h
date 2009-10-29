@@ -59,25 +59,26 @@
 #include "qastctiservice.h"
 #include "qastctiservices.h"
 
-#define DefaultServerPort           5000
-#define DefaultReadTimeout          15000
-#define DefaultCompressionLevel     0
-#define DefaultSqlHost              "localhost"
-#define DefaultSqlUser              "ctiuser"
-#define DefaultSqlPassWord          "ctipassword"
-#define DefaultSqlPort              3306
-#define DefaultSqlDatabase          "asteriskcti"
+#define defaultCtiServerPort                5000
+#define defaultCtiConnectTimeout            1500
+#define defaultCtiReadTimeout               15000
+#define defaultCtiSocketCompressionLevel    7
 
-#define DefaultAmiHost              "localhost"
-#define DefaultAmiPort              5038
-#define DefaultAmiUser              "manager"
-#define DefaultAmiSecret            "password"
-#define DefaultAmiConnectTimeout    5
-#define DefaultAmiConnectRetries    0
+#define defaultSqlHost                      "localhost"
+#define defaultSqlUser                      "asteriskcti"
+#define defaultSqlPassWord                  "asteriskcti"
+#define defaultSqlPort                      3306
+#define defaultSqlDatabase                  "asteriskcti"
 
-#define ExitCodeSuccess             0
-#define ExitCodeNoIniConfig         1
-#define ExitCodeNoSqliteConifg      2
+#define defaultAmiHost                      "localhost"
+#define defaultAmiPort                      5038
+#define defaultAmiUser                      "manager"
+#define defaultAmiSecret                    "password"
+#define defaultAmiConnectTimeout            1500
+#define defaultAmiReadTimeout               1500
+#define defaultAmiConnectRetryAfter         30
+
+#define exitCodeSuccess                     0
 
 class CtiServerApplication : public QCoreApplication
 {
@@ -106,8 +107,10 @@ private:
     bool                    buildSqlDatabase();
     void                    destroySqlDatabase();
     QString                 readDatabaseVersion();
-    bool                    readSettingsFile(const QString configFile, QAstCTIConfiguration *config);
-    void                    writeSettingsFile(QSettings *settings, const QString &key, const  QVariant &defValue);
+    void                    readSettingsFromFile(const QString configFile, QAstCTIConfiguration *config);
+    void                    readSettingsFromDatabase(QAstCTIConfiguration *config);
+    QVariant                readSettingFromDatabase(const QString &name, const QVariant &defaultValue);
+
 
 protected:
     QAstCTIServices         *services;

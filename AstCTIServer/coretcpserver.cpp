@@ -61,13 +61,14 @@ CoreTcpServer::CoreTcpServer(QAstCTIConfiguration *config, QObject *parent)
      /* CODE TESTING START */
     this->amiClient = new AMIClient(this->config, this );
     qRegisterMetaType<AMIEvent>("AMIEvent" );
-    connect(this->amiClient, SIGNAL(amiClientNoRetries()), this, SLOT(stopTheServer()));
+    connect(this->amiClient, SIGNAL(amiConnectionStatusChange(AMIConnectionStatus)), this, SLOT(amiConnectionStatusChange(AMIConnectionStatus)),Qt::QueuedConnection);
     connect(this->amiClient, SIGNAL(ctiEvent(const AMIEvent, QAstCTICall*)), this, SLOT(receiveCtiEvent(const AMIEvent, QAstCTICall*)));
     connect(this->amiClient, SIGNAL(ctiResponse(int, AsteriskCommand*)), this, SLOT(receiveCtiResponse(int, AsteriskCommand*)));
     this->amiClient->start();
 
     //5f4dcc3b5aa765d61d8327deb882cf99
     /* CODE TESTING END*/
+
 }
 
 
@@ -78,6 +79,8 @@ CoreTcpServer::~CoreTcpServer()
     if (this->users != 0) delete(this->users);
     if (this->amiClient != 0) delete(this->amiClient);
 }
+
+
 
 /*!
     Called by QTcpServer when a new connection is avaiable.
@@ -90,11 +93,13 @@ void CoreTcpServer::incomingConnection(int socketDescriptor)
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
     // Inform us about client authentications / disconnections
+    connect(this, SIGNAL(amiClientDisconnected()), thread, SLOT(disconnectRequest()));
+
     connect(thread, SIGNAL(addClient(const QString,ClientManager *)) , this, SLOT(addClient(const QString,ClientManager *)));
     connect(thread, SIGNAL(changeClient(const QString,const QString)), this, SLOT(changeClient(const QString,const QString)));
     connect(thread, SIGNAL(removeClient(const QString)), this, SLOT(removeClient(const QString)));
     connect(thread, SIGNAL(notifyServer(const QString)), this, SLOT(notifyClient(const QString)));
-    connect(thread, SIGNAL(stopRequest(QString,ClientManager *)), this, SLOT(stopTheServer()));
+
 
     // Connect signals to inform us about pause and login / logout
     connect(thread, SIGNAL(ctiLogin(ClientManager *)), this, SLOT(ctiClientLogin(ClientManager *)));
@@ -110,6 +115,30 @@ void CoreTcpServer::incomingConnection(int socketDescriptor)
     // This signal will notify client manager the wait condition on cti logoff before thread exit
     connect(this, SIGNAL(ctiClientLogoffSent()), thread, SLOT(unlockAfterSuccessfullLogoff()));
     thread->start();
+}
+
+void CoreTcpServer::amiConnectionStatusChange(AMIConnectionStatus status)
+{
+    switch(status) {
+    case AmiConnectionStatusConnected:
+        // Say we're listening on port..
+        if (!this->isListening()) {
+            if (config->qDebug) qDebug() << "CoreTcpServer listening on port " <<  this->config->ctiServerPort;
+            this->listen(QHostAddress::Any, this->config->ctiServerPort );
+        } else {
+            if (config->qDebug) qDebug() << "CoreTcpServer is already listening...";
+        }
+        break;
+    case AmiConnectionStatusDisconnected:        
+        if (this->isListening()) {
+            if (config->qDebug) qDebug() << "CoreTcpServer stop listening..";
+            this->close();
+            emit this->amiClientDisconnected();
+        }
+        break;
+    case AmiConnectionStatusEndList:
+        break;
+    }
 }
 
 bool CoreTcpServer::containsUser(const QString &username)
@@ -194,10 +223,6 @@ void CoreTcpServer::notifyClient(const QString &data)
     emit sendDataFromServer(data);
 }
 
-void CoreTcpServer::stopTheServer()
-{
-    this->stopTheServer(false);
-}
 
 void CoreTcpServer::stopTheServer(bool closeTheSocket)
 {

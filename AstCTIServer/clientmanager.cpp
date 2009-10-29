@@ -65,6 +65,7 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
     this->blockSize             = 0;
     this->compressionLevel      = -1;
     this->authenticated         = false;
+    this->ctiLogoffOnClose      = true;
     this->retries               = 3;
     if (config->qDebug) qDebug() << "In ClientManager::ClientManager";
 
@@ -87,25 +88,27 @@ ClientManager::~ClientManager()
 void ClientManager::initParserCommands()
 {
     if (config->qDebug) qDebug() << "In ClientManager::initParserCommands()";
-    commandsList["QUIT"]       = CmdQuit;
-    commandsList["CMPR"]       = CmdCompression;
-    commandsList["NOOP"]       = CmdNoOp;
-    commandsList["USER"]       = CmdUser;
-    commandsList["PASS"]       = CmdPass;
-    commandsList["KEEP"]       = CmdKeep;
-    commandsList["OSTYPE"]     = CmdOsType;
-    commandsList["IDEN"]       = CmdIden;
-    commandsList["SERVICES"]   = CmdServices;
-    commandsList["QUEUES"]     = CmdQueues;
-    commandsList["PAUSE"]      = CmdPause;
-    commandsList["ORIG"]       = CmdOrig;
-    commandsList["STOP"]       = CmdStop;
-    commandsList["MAC"]        = CmdMac;
+    this->commandsList.insert("QUIT",       CmdQuit);
+    this->commandsList.insert("CMPR",       CmdCompression);
+    this->commandsList.insert("NOOP",       CmdNoOp);
+    this->commandsList.insert("USER",       CmdUser);
+    this->commandsList.insert("PASS",       CmdPass);
+    this->commandsList.insert("CHPW",       CmdChangePassword);
+    this->commandsList.insert("KEEP",       CmdKeep);
+    this->commandsList.insert("OSTYPE",     CmdOsType);
+    this->commandsList.insert("IDEN",       CmdIden);
+    this->commandsList.insert("SERVICES",   CmdServices);
+    this->commandsList.insert("QUEUES",     CmdQueues);
+    this->commandsList.insert("PAUSE",      CmdPause);
+    this->commandsList.insert("ORIG",       CmdOrig);
+    this->commandsList.insert("STOP",       CmdStop);
+    this->commandsList.insert("MAC",        CmdMac);
 
 }
 
 void ClientManager::socketDisconnected() {
-    if (this->localIdentifier.startsWith("exten-")) {
+    if ( (this->ctiLogoffOnClose) &&
+         (this->localIdentifier.startsWith("exten-")) ) {
         // We should do a logoff right now..
         emit this->ctiLogoff(this);
 
@@ -252,6 +255,28 @@ void ClientManager::parseDataReceived(const QString &data)
             }
         }
         break;
+    case CmdChangePassword:
+        if (!authenticated) {
+            this->sendDataToClient("101 KO Not authenticated");
+            break;
+        } else {
+            if (cmd.parameters.count() < 1) {
+                this->sendDataToClient("101 KO Specify new password");
+                break;
+            }
+
+            if (this->activeOperator != 0) {
+                QString newPassword = cmd.parameters.at(0);
+                if (this->activeOperator->changePassword(newPassword)) {
+                    this->sendDataToClient("100 OK Password changed successfully");
+                } else {
+                    this->sendDataToClient("101 KO Password not changed. Error occurred");
+                }
+            } else {
+                this->sendDataToClient("101 KO Not authenticated");
+            }
+
+        }
     case CmdMac:
         if (!authenticated) {
             this->sendDataToClient("101 KO Not authenticated");
@@ -282,7 +307,7 @@ void ClientManager::parseDataReceived(const QString &data)
         }
         break;
     case CmdKeep:
-        this->sendDataToClient(QString("104 OK %1").arg(config->readTimeout));
+        this->sendDataToClient(QString("104 OK %1").arg(config->ctiReadTimeout));
         break;
     case CmdIden:
         if (!authenticated) {
@@ -297,8 +322,8 @@ void ClientManager::parseDataReceived(const QString &data)
         break;
 
     case CmdCompression:
-        this->sendDataToClient( QString("103 %1").arg(this->config->compressionLevel) );
-        this->compressionLevel = this->config->compressionLevel;
+        this->sendDataToClient( QString("103 %1").arg(this->config->ctiSocketCompressionLevel) );
+        this->compressionLevel = this->config->ctiSocketCompressionLevel;
         break;
     case CmdOsType:
         if (!authenticated) {
@@ -351,16 +376,7 @@ void ClientManager::parseDataReceived(const QString &data)
                 emit this->ctiPauseIn(this);
             }
         }
-        break;
-    case CmdStop:
-        if (!authenticated) {
-            this->sendDataToClient("101 KO Not authenticated");
-            break;
-        }
-        emit this->stopRequest(this->localIdentifier, this);
-        this->localSocket->close();
-        qDebug() << "Emitted signal STOP";
-        break;
+        break;    
     case CmdNotDefined:
         this->sendDataToClient("101 KO Invalid Command");
         break;
@@ -405,6 +421,11 @@ void ClientManager::ctiResponse(const QString &identifier, const int actionId,
                                        .arg(responseMessage);
         this->sendDataToClient(strMessage);
     }
+}
+
+void ClientManager::disconnectRequest() {
+    this->ctiLogoffOnClose = false;
+    this->localSocket->close();
 }
 
 void ClientManager::unlockAfterSuccessfullLogoff() {

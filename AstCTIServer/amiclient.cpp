@@ -43,11 +43,15 @@ Q_DECLARE_METATYPE(QAbstractSocket::SocketState);
 Q_DECLARE_METATYPE(QAbstractSocket::SocketError);
 
 Q_DECLARE_METATYPE(AMIEvent);
+Q_DECLARE_METATYPE(AMIConnectionStatus);
+
 
 AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
         : QThread(parent)
 
 {
+    qRegisterMetaType<AMIEvent>("AMIEvent");
+    qRegisterMetaType<AMIConnectionStatus>("AMIConnectionStatus");
 
     this->config = config;
     this->activeCalls  = new QHash<QString, QAstCTICall*>;
@@ -55,6 +59,7 @@ AMIClient::AMIClient(QAstCTIConfiguration *config, QObject *parent)
     this->quit = false;
     this->localSocket = 0;
     this->amiClientStatus = AmiStatusNotDefined;
+
 }
 
 AMIClient::~AMIClient()
@@ -73,13 +78,9 @@ void AMIClient::buildTheSocket()
 
     qRegisterMetaType<QAbstractSocket::SocketState>("QAbstractSocket::SocketState" );
     qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError" );
+    connect(this->localSocket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
     connect(this->localSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socketStateChanged(QAbstractSocket::SocketState) ), Qt::QueuedConnection);
-    connect(this->localSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError) ), Qt::QueuedConnection);
-
-    // Initialize how many times we need to restart
-    if (this->config->amiReconnectRetries > 0) {
-        this->retries = this->config->amiReconnectRetries;
-    }    
+    connect(this->localSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError) ), Qt::QueuedConnection);    
 }
 
 void AMIClient::run()
@@ -94,24 +95,19 @@ void AMIClient::run()
     forever {
         this->localSocket->connectToHost(config->amiHost, config->amiPort);
 
-        if (!this->localSocket->waitForConnected(1500) ) { // config->amiConnectTimeout)) {
-            this->retries --;
-            if (this->retries == 0) {
-                qDebug() << "AMI Client will now stop definitively";
-                emit amiClientNoRetries();
-                break;
-            }
+        if (!this->localSocket->waitForConnected(this->config->amiConnectTimeout) ) {
             this->amiClientStatus = AmiStatusNotDefined;
 
-            qDebug() << "AMI Client will retry reconnect within " << this->config->amiConnectTimeout << " seconds";
-            this->sleep(this->config->amiConnectTimeout);
+            qDebug() << "AMI Client will retry reconnect within " << this->config->amiConnectRetryAfter << " seconds";
+            this->sleep(this->config->amiConnectRetryAfter);
         }
         else {
+
             // Reset retries
-            this->retries = config->amiReconnectRetries;
-            forever {
-                //http://qt.gitorious.org/qt/miniak/blobs/6a994abef70012e2c0aa3d70253ef4b9985b2f20/src/corelib/kernel/qeventdispatcher_win.cpp
-                while(this->localSocket->waitForReadyRead(500)) {
+
+            while(!this->quit) {
+                //http://qt.git orious.org/qt/miniak/blobs/6a994abef70012e2c0aa3d70253ef4b9985b2f20/src/corelib/kernel/qeventdispatcher_win.cpp
+                while(this->localSocket->waitForReadyRead(this->config->amiReadTimeout)) {
 
                     QByteArray dataFromSocket = localSocket->readAll();
                     QString receivedData = QString(dataFromSocket);
@@ -126,6 +122,50 @@ void AMIClient::run()
             }
         }
     }
+}
+
+void AMIClient::socketStateChanged(QAbstractSocket::SocketState socketState)
+{
+    QString newState("");
+    switch(socketState) {
+    case QAbstractSocket::UnconnectedState:
+        newState = "UnconnectedState";
+        break;
+    case QAbstractSocket::HostLookupState:
+        newState = "HostLookupState";
+        break;
+    case QAbstractSocket::ConnectingState:
+        newState = "ConnectingState";
+        break;
+    case QAbstractSocket::ConnectedState:
+        newState = "ConnectedState";
+        break;
+    case QAbstractSocket::BoundState:
+        newState = "BoundState";
+        break;
+    case QAbstractSocket::ClosingState:
+        newState = "ClosingState";
+        break;
+    case QAbstractSocket::ListeningState:
+        newState = "ListeningState";
+        break;
+    }
+    if (config->qDebug) qDebug() << "AMIClient socket state changed: " << newState;
+}
+
+void AMIClient::socketError(QAbstractSocket::SocketError socketError)
+{    
+    if (socketError != QAbstractSocket::SocketTimeoutError) {
+        emit this->amiConnectionStatusChange(AmiConnectionStatusDisconnected);
+        qDebug() << "AMIClient Socket Error: " << socketError << " " << this->localSocket->errorString();
+    }
+}
+
+void AMIClient::socketDisconnected()
+{
+    emit this->amiConnectionStatusChange(AmiConnectionStatusDisconnected);
+    qDebug() << "AMIClient Socket Disconnected";
+
 }
 
 bool AMIClient::isConnected()
@@ -147,9 +187,10 @@ void AMIClient::parseDataReceivedFromAsterisk(const QString& message)
 {
     if (this->amiClientStatus != AmiStatusNotDefined) {
         this->dataBuffer+=message;
-        if (this->dataBuffer.contains("Authentication failed")) {
-            qDebug() << "Authentication failed. AMI Client will now stop definitively";
-            emit amiClientNoRetries();
+        if (this->dataBuffer.contains("AMI Authentication failed")) {
+            this->localSocket->close();
+            return;
+
         }
         if (this->dataBuffer.contains("\r\n\r\n")) {
             // here we can execute actions on buffer
@@ -176,6 +217,7 @@ void AMIClient::executeActions()
         if (localBuffer.contains("Message: Authentication accepted")) {
             qDebug() << "We're authenticated by AMI Server";
             this->amiClientStatus = AmiStatusLoggedIn;
+            emit this->amiConnectionStatusChange(AmiConnectionStatusConnected);
         }
         else {
             this->amiClientStatus = AmiStatusNotDefined;
@@ -425,39 +467,4 @@ void AMIClient::sendCommandToAsterisk(const int &actionId, const QString &comman
     this->sendDataToAsterisk(data);
 }
 
-void AMIClient::socketStateChanged(QAbstractSocket::SocketState socketState)
-{
-    QString newState("");
-    switch(socketState) {
-    case QAbstractSocket::UnconnectedState:
-        newState = "UnconnectedState";
-        break;
-    case QAbstractSocket::HostLookupState:
-        newState = "HostLookupState";
-        break;
-    case QAbstractSocket::ConnectingState:
-        newState = "ConnectingState";
-        break;
-    case QAbstractSocket::ConnectedState:
-        newState = "ConnectedState";
-        break;
-    case QAbstractSocket::BoundState:
-        newState = "BoundState";
-        break;
-    case QAbstractSocket::ClosingState:
-        newState = "ClosingState";
-        break;
-    case QAbstractSocket::ListeningState:
-        newState = "ListeningState";
-        break;
-    }
-    if (config->qDebug) qDebug() << "AMIClient socket state changed: " << newState;
-}
 
-void AMIClient::socketError(QAbstractSocket::SocketError socketError)
-{
-    // Q_UNUSED(socketError);
-    if (socketError != QAbstractSocket::SocketTimeoutError) {
-        qDebug() << "AMIClient Socket Error: " << socketError << " " << this->localSocket->errorString();
-    }
-}

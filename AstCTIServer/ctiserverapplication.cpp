@@ -53,18 +53,19 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
 
     if (config.qDebug) qDebug("Reading Configurations");
 
-    if (!readSettingsFile(configFile, &config)) {
+    // Read default settings for database connection from file
+    readSettingsFromFile(configFile, &config);
+    qDebug() << "Reading first runtime configuration from database";
+    if (!buildSqlDatabase()) {
         return;
     }
+
+    readSettingsFromDatabase(&config);
 
     // ConfigurationChecker will check if database configuration
     // will change
     this->configChecker = new ConfigurationChecker(this);
 
-    qDebug() << "Reading first runtime configuration from database";
-    if (!buildSqlDatabase()) {
-        return;
-    }
 
     // This will build all services list
     this->services = new QAstCTIServices(this);
@@ -157,13 +158,8 @@ CoreTcpServer *CtiServerApplication::buildNewCoreTcpServer()
     // Let's build our main window
     this->coreTcpServer = new CoreTcpServer(&this->config, this);
 
-    // Say we're listening on port..
-    if (config.qDebug) qDebug() << "CoreTcpServer listening on port " <<  config.serverPort;
 
-    // TODO : fix to listen also on specific addresses
-    this->coreTcpServer->listen(QHostAddress::Any, this->config.serverPort );
     connect(this->coreTcpServer, SIGNAL(destroyed()), this, SLOT(quit()));
-
     return this->coreTcpServer;
 }
 
@@ -227,88 +223,71 @@ void CtiServerApplication::destroySqlDatabase()
     // config.db = 0;
 }
 
-bool CtiServerApplication::readSettingsFile(const QString configFile, QAstCTIConfiguration *config)
+void CtiServerApplication::readSettingsFromFile(const QString configFile, QAstCTIConfiguration *config)
 {
-    QString logtxt;
-
+    qDebug() << "Reading settings from file " << configFile;
     // check that the config file exists
     QFile cfile(configFile);
-    if (!cfile.exists()) {
-        qCritical() << "MainServer Settings file " <<  configFile << "doesn't exists";
-        return false;
+    if ( (cfile.exists()) &&
+         (cfile.open(QIODevice::ReadOnly | QIODevice::Text)) ) {
+        cfile.close();
+
+        // Instantiate a QSettings object for read/write from/to ini file
+        QSettings settings(configFile, QSettings::IniFormat );
+
+        settings.beginGroup("RuntimeDb");
+        config->sqlHost             = settings.value("host",        defaultSqlHost ).toString();
+        config->sqlUserName         = settings.value("user",        defaultSqlUser).toString();
+        config->sqlPassWord         = settings.value("password",    defaultSqlPassWord).toString();
+        config->sqlPort             = settings.value("port",        defaultSqlPort).toInt();
+        config->sqlDatabase         = settings.value("database",    defaultSqlDatabase).toString();
+        settings.endGroup();
+    } else {
+        config->sqlHost             = defaultSqlHost;
+        config->sqlUserName         = defaultSqlUser;
+        config->sqlPassWord         = defaultSqlPassWord;
+        config->sqlPort             = defaultSqlPort;
+        config->sqlDatabase         = defaultSqlDatabase;
     }
-    // check that the config is readable
-    if (!cfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qCritical() << "MainServer Settings file " <<  configFile << "is not readable";
-        return false;
-    }
-    cfile.close();
-
-    // Instantiate a QSettings object for read/write from/to ini file
-    QSettings settings(configFile, QSettings::IniFormat );
-
-    // Just for the group named Server
-    // write default values if keys are not set
-    settings.beginGroup("Server");
-    writeSettingsFile(&settings, "port",                 DefaultServerPort);
-    writeSettingsFile(&settings, "readTimeout",          DefaultReadTimeout);
-    writeSettingsFile(&settings, "compressionLevel",     DefaultCompressionLevel);
-
-    settings.endGroup();
-
-    // write default values for Asterisk AMI
-    settings.beginGroup("AsteriskAMI");
-    writeSettingsFile(&settings, "host",            DefaultAmiHost);
-    writeSettingsFile(&settings, "port",            DefaultAmiPort);
-    writeSettingsFile(&settings, "user",            DefaultAmiUser);
-    writeSettingsFile(&settings, "secret",          DefaultAmiSecret);
-    writeSettingsFile(&settings, "connect_timeout", DefaultAmiConnectTimeout);
-    writeSettingsFile(&settings, "connect_retries", DefaultAmiConnectRetries);
-
-    settings.endGroup();
-
-    settings.beginGroup("RuntimeDb");
-    writeSettingsFile(&settings, "host",            DefaultSqlHost);
-    writeSettingsFile(&settings, "user",            DefaultSqlUser);
-    writeSettingsFile(&settings, "password",        DefaultSqlPassWord);
-    writeSettingsFile(&settings, "port",            DefaultSqlPort);
-    writeSettingsFile(&settings, "database",        DefaultSqlDatabase);
-
-    settings.endGroup();
-
-    // read values from the keys and store them in a config object
-    settings.beginGroup("Server");
-    config->readTimeout          = settings.value("readTimeout").toInt();
-    config->serverPort           = settings.value("port").toInt();
-    config->compressionLevel     = settings.value("compressionLevel").toInt();
-    settings.endGroup();
-
-    settings.beginGroup("AsteriskAMI");
-    config->amiHost                 = settings.value("host").toString();
-    config->amiPort                 = settings.value("port").toInt();
-    config->amiUser                 = settings.value("user").toString();
-    config->amiSecret               = settings.value("secret").toString();
-    config->amiConnectTimeout       = settings.value("connect_timeout").toInt();
-    config->amiReconnectRetries     = settings.value("connect_retries").toInt();
-    settings.endGroup();
-
-    settings.beginGroup("RuntimeDb");
-    config->sqlHost             = settings.value("host").toString();
-    config->sqlUserName         = settings.value("user").toString();
-    config->sqlPassWord         = settings.value("password").toString();
-    config->sqlPort             = settings.value("port").toInt();
-    config->sqlDatabase         = settings.value("database").toString();
-
-
-    settings.endGroup();
-    return true;
 }
 
-void CtiServerApplication::writeSettingsFile( QSettings *settings, const QString &key, const QVariant &defValue)
+void CtiServerApplication::readSettingsFromDatabase(QAstCTIConfiguration *config)
 {
-    if (!settings->contains(key)) {
-        settings->setValue(key,defValue);
+    qDebug() << "Reading settings from database";
+    config->amiHost                     = readSettingFromDatabase("ami_host",                       defaultAmiHost).toString();
+    config->amiPort                     = readSettingFromDatabase("ami_port",                       defaultAmiPort).toInt();
+    config->amiUser                     = readSettingFromDatabase("ami_user",                       defaultAmiUser).toString();
+    config->amiSecret                   = readSettingFromDatabase("ami_secret",                     defaultAmiSecret).toString();
+    config->amiConnectTimeout           = readSettingFromDatabase("ami_connect_timeout",            defaultAmiConnectTimeout).toInt();
+    config->amiReadTimeout              = readSettingFromDatabase("ami_read_timeout",               defaultAmiReadTimeout).toInt();
+    config->amiConnectRetryAfter        = readSettingFromDatabase("ami_connect_retry_after",        defaultAmiConnectRetryAfter).toInt();
+    config->ctiServerPort               = readSettingFromDatabase("cti_server_port",                defaultCtiServerPort).toInt();
+    config->ctiConnectTimeout           = readSettingFromDatabase("cti_connect_timeout",            defaultCtiConnectTimeout).toInt();
+    config->ctiReadTimeout              = readSettingFromDatabase("cti_read_timeout",               defaultCtiReadTimeout).toInt();
+    config->ctiSocketCompressionLevel   = readSettingFromDatabase("cti_socket_compression_level",   defaultCtiSocketCompressionLevel).toInt();
+
+}
+
+QVariant CtiServerApplication::readSettingFromDatabase(const QString &name, const QVariant &defaultValue)
+{
+    QVariant returnValue(defaultValue);
+    QSqlDatabase db = QSqlDatabase::database("mysqldb");
+    if (!db.isOpen()) {
+        db.open();
     }
+    QSqlQuery query(db);
+    if (query.prepare("SELECT val FROM server_settings WHERE name=:name")) {
+        
+        query.bindValue(":name", name);
+        if (query.exec()) {
+            query.first();
+            returnValue = query.value(0);
+            query.finish();
+        }
+    }
+    query.clear();
+    
+    return returnValue;
 }
 
 QAstCTIOperator *CtiServerApplication::getOperatorByUsername(const QString& username)

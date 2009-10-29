@@ -31,15 +31,6 @@ CREATE TABLE `applications` (
   CONSTRAINT `FK_services_applications` FOREIGN KEY (`ID_SERVICE`) REFERENCES `services` (`ID_SERVICE`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
 
-/*Data for the table `applications` */
-
-LOCK TABLES `applications` WRITE;
-
-insert  into `applications`(`ID_APPLICATION`,`ID_SERVICE`,`APPLICATION_OS_TYPE`,`APPLICATION_PATH`,`PARAMETERS`) values (1,1,'WIN','C:\\Program Files\\Firefox\\Firefox.exe','http://centralino-voip.brunosalzano.com?callerid={CALLERID}&appdata={APPDATA}');
-insert  into `applications`(`ID_APPLICATION`,`ID_SERVICE`,`APPLICATION_OS_TYPE`,`APPLICATION_PATH`,`PARAMETERS`) values (2,1,'LIN','/usr/bin/firefox','http://centralino-voip.brunosalzano.com?callerid={CALLERID}&appdata={APPDATA}');
-
-UNLOCK TABLES;
-
 /*Table structure for table `dbversion` */
 
 DROP TABLE IF EXISTS `dbversion`;
@@ -48,14 +39,6 @@ CREATE TABLE `dbversion` (
   `VERSION` double default NULL,
   `LAST_UPDATE` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
-
-/*Data for the table `dbversion` */
-
-LOCK TABLES `dbversion` WRITE;
-
-insert  into `dbversion`(`VERSION`,`LAST_UPDATE`) values (0.5,1255558719);
-
-UNLOCK TABLES;
 
 /*Table structure for table `operators` */
 
@@ -75,16 +58,6 @@ CREATE TABLE `operators` (
   CONSTRAINT `FK_seat_operator` FOREIGN KEY (`LAST_SEAT`) REFERENCES `seats` (`ID_SEAT`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
 
-/*Data for the table `operators` */
-
-LOCK TABLES `operators` WRITE;
-
-insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`LAST_SEAT`,`BEGIN_IN_PAUSE`,`ENABLED`) values (1,'Operator 1','oper1','5f4dcc3b5aa765d61d8327deb882cf99',1,0,0);
-insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`LAST_SEAT`,`BEGIN_IN_PAUSE`,`ENABLED`) values (2,'Operator 2','oper2','5f4dcc3b5aa765d61d8327deb882cf99',2,0,0);
-insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`LAST_SEAT`,`BEGIN_IN_PAUSE`,`ENABLED`) values (3,'Operator 3','oper3','5f4dcc3b5aa765d61d8327deb882cf99',NULL,0,0);
-
-UNLOCK TABLES;
-
 /*Table structure for table `seats` */
 
 DROP TABLE IF EXISTS `seats`;
@@ -99,14 +72,15 @@ CREATE TABLE `seats` (
   UNIQUE KEY `SEAT_EXTEN` (`SEAT_EXTEN`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
 
-/*Data for the table `seats` */
+/*Table structure for table `server_settings` */
 
-LOCK TABLES `seats` WRITE;
+DROP TABLE IF EXISTS `server_settings`;
 
-insert  into `seats`(`ID_SEAT`,`SEAT_MAC`,`SEAT_EXTEN`,`DESCRIPTION`) values (1,'00:1c:bf:37:53:ba','SIP/311','Seat 0/0');
-insert  into `seats`(`ID_SEAT`,`SEAT_MAC`,`SEAT_EXTEN`,`DESCRIPTION`) values (2,'00:21:9b:d7:7a:bb','SIP/310','Seat 0/1');
-
-UNLOCK TABLES;
+CREATE TABLE `server_settings` (
+  `name` varchar(128) NOT NULL,
+  `val` longtext NOT NULL,
+  PRIMARY KEY  (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 /*Table structure for table `services` */
 
@@ -123,14 +97,6 @@ CREATE TABLE `services` (
   PRIMARY KEY  (`ID_SERVICE`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
 
-/*Data for the table `services` */
-
-LOCK TABLES `services` WRITE;
-
-insert  into `services`(`ID_SERVICE`,`SERVICE_NAME`,`SERVICE_CONTEXT_TYPE`,`SERVICE_IS_QUEUE`,`SERVICE_QUEUE_NAME`,`SERVICE_TRIGGER_TYPE`,`ENABLED`) values (1,'ast-cti-demo','INBOUND',1,'600','APPLICATION',1);
-
-UNLOCK TABLES;
-
 /*Table structure for table `services_operators` */
 
 DROP TABLE IF EXISTS `services_operators`;
@@ -144,16 +110,6 @@ CREATE TABLE `services_operators` (
   CONSTRAINT `FK_services_operators` FOREIGN KEY (`ID_SERVICE`) REFERENCES `services` (`ID_SERVICE`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
 
-/*Data for the table `services_operators` */
-
-LOCK TABLES `services_operators` WRITE;
-
-insert  into `services_operators`(`ID_SERVICE`,`ID_OPERATOR`,`PENALTY`) values (1,1,0);
-insert  into `services_operators`(`ID_SERVICE`,`ID_OPERATOR`,`PENALTY`) values (1,2,0);
-insert  into `services_operators`(`ID_SERVICE`,`ID_OPERATOR`,`PENALTY`) values (1,3,0);
-
-UNLOCK TABLES;
-
 /*Table structure for table `services_variables` */
 
 DROP TABLE IF EXISTS `services_variables`;
@@ -166,15 +122,6 @@ CREATE TABLE `services_variables` (
   UNIQUE KEY `SERVICE_VARNAME` (`ID_SERVICE`,`VARNAME`),
   CONSTRAINT `FK_services_variables` FOREIGN KEY (`ID_SERVICE`) REFERENCES `services` (`ID_SERVICE`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
-
-/*Data for the table `services_variables` */
-
-LOCK TABLES `services_variables` WRITE;
-
-insert  into `services_variables`(`ID_VARIABLE`,`ID_SERVICE`,`VARNAME`) values (2,1,'APPDATA');
-insert  into `services_variables`(`ID_VARIABLE`,`ID_SERVICE`,`VARNAME`) values (1,1,'CALLERID');
-
-UNLOCK TABLES;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
