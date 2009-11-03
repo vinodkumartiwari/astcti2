@@ -36,32 +36,56 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef ASTCTICOMMAND_H
-#define ASTCTICOMMAND_H
+#include <QAbstractButton>
+#include <QCryptographicHash>
+#include <QMessageBox>
 
-enum AstCTICommands {
-    CmdNotDefined,
-    CmdNoOp,
-    CmdQuit,
-    CmdCompression,
-    CmdKeepAlive,
-    CmdUser,
-    CmdPass,
-    CmdChangePassword,
-    CmdMac,
-    CmdOsType,
-    CmdServices,
-    CmdQueues,
-    CmdPause,
-    CmdOrig,
-    CmdStop,
-    CmdEndList
-};
+#include "passwordwindow.h"
+#include "ui_passwordwindow.h"
 
-struct AstCTICommand
+PasswordWindow::PasswordWindow(QWidget *parent) :
+    QDialog(parent),
+    m_ui(new Ui::PasswordWindow)
 {
-    AstCTICommands command;
-    QString parameters;
-};
+    m_ui->setupUi(this);
 
-#endif // ASTCTICOMMAND_H
+    m_ui->dialogButtonBox->buttons().at(0)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
+    m_ui->dialogButtonBox->buttons().at(1)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
+
+    connect(this->m_ui->dialogButtonBox, SIGNAL(accepted()), this, SLOT(accepting()));
+}
+
+PasswordWindow::~PasswordWindow()
+{
+    delete m_ui;
+}
+
+void PasswordWindow::changeEvent(QEvent *e)
+{
+    QDialog::changeEvent(e);
+    switch (e->type()) {
+    case QEvent::LanguageChange:
+        m_ui->retranslateUi(this);
+        break;
+    default:
+        break;
+    }
+}
+
+void PasswordWindow::accepting()
+{
+    if (this->m_ui->passwordLineEdit->text() != this->m_ui->confirmPasswordLineEdit->text()) {
+        QMessageBox::critical(this, appName, "Passwords do not match.");
+        this->m_ui->passwordLineEdit->setFocus();
+        this->m_ui->passwordLineEdit->selectAll();
+    } else {
+        QCryptographicHash md5(QCryptographicHash::Md5);
+        md5.addData(QByteArray(this->m_ui->oldPasswordLineEdit->text().toAscii()));
+        this->oldPass = QString(md5.result().toHex());
+        md5.reset();
+        md5.addData(QByteArray(this->m_ui->passwordLineEdit->text().toAscii()));
+        this->newPass = QString(md5.result().toHex());
+
+        this->accept();
+    }
+}

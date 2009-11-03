@@ -36,32 +36,34 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef ASTCTICOMMAND_H
-#define ASTCTICOMMAND_H
+#ifndef PASSWORDWINDOW_H
+#define PASSWORDWINDOW_H
 
-enum AstCTICommands {
-    CmdNotDefined,
-    CmdNoOp,
-    CmdQuit,
-    CmdCompression,
-    CmdKeepAlive,
-    CmdUser,
-    CmdPass,
-    CmdChangePassword,
-    CmdMac,
-    CmdOsType,
-    CmdServices,
-    CmdQueues,
-    CmdPause,
-    CmdOrig,
-    CmdStop,
-    CmdEndList
+#include <QtGui/QDialog>
+
+#include "globalconstants.h"
+
+namespace Ui {
+    class PasswordWindow;
+}
+
+class PasswordWindow : public QDialog {
+    Q_OBJECT
+public:
+    PasswordWindow(QWidget *parent = 0);
+    ~PasswordWindow();
+
+    QString oldPass;
+    QString newPass;
+
+protected:
+    void changeEvent(QEvent *e);
+
+private:
+    Ui::PasswordWindow *m_ui;
+
+private slots:
+    void accepting();
 };
 
-struct AstCTICommand
-{
-    AstCTICommands command;
-    QString parameters;
-};
-
-#endif // ASTCTICOMMAND_H
+#endif // PASSWORDWINDOW_H

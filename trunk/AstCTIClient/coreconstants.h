@@ -35,9 +35,9 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+
 #ifndef CORECONSTANTS_H
 #define CORECONSTANTS_H
-
 
 #define APP_VERSION_MAJOR 0
 #define APP_VERSION_MINOR 0

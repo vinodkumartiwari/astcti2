@@ -40,9 +40,6 @@
 #include <QXmlSimpleReader>
 
 #include "cticlientapplication.h"
-#include "mainwindow.h"
-#include "browserwindow.h"
-#include "loginwindow.h"
 
 CtiClientApplication::CtiClientApplication(int &argc, char **argv)
              : QApplication(argc, argv)
@@ -117,19 +114,20 @@ CtiClientApplication::CtiClientApplication(int &argc, char **argv)
     this->commandsList = new QHash<int, QString>;
 
     //Commands that can be sent to CTI server
-    this->commandsList->insert(CmdQuit,         "QUIT");
-    this->commandsList->insert(CmdCompression,  "CMPR");
-    this->commandsList->insert(CmdKeepAlive,    "KEEP");
-    this->commandsList->insert(CmdNoOp,         "NOOP");
-    this->commandsList->insert(CmdUser,         "USER");
-    this->commandsList->insert(CmdPass,         "PASS");
-    this->commandsList->insert(CmdOsType,       "OSTYPE");
-    this->commandsList->insert(CmdServices,     "SERVICES");
-    this->commandsList->insert(CmdQueues,       "QUEUES");
-    this->commandsList->insert(CmdPause,        "PAUSE");
-    this->commandsList->insert(CmdOrig,         "ORIG");
-    this->commandsList->insert(CmdStop,         "STOP");
-    this->commandsList->insert(CmdMac,          "MAC");
+    this->commandsList->insert(CmdQuit,             "QUIT");
+    this->commandsList->insert(CmdCompression,      "CMPR");
+    this->commandsList->insert(CmdKeepAlive,        "KEEP");
+    this->commandsList->insert(CmdNoOp,             "NOOP");
+    this->commandsList->insert(CmdUser,             "USER");
+    this->commandsList->insert(CmdPass,             "PASS");
+    this->commandsList->insert(CmdChangePassword,   "CHPW");
+    this->commandsList->insert(CmdOsType,           "OSTYPE");
+    this->commandsList->insert(CmdServices,         "SERVICES");
+    this->commandsList->insert(CmdQueues,           "QUEUES");
+    this->commandsList->insert(CmdPause,            "PAUSE");
+    this->commandsList->insert(CmdOrig,             "ORIG");
+    this->commandsList->insert(CmdStop,             "STOP");
+    this->commandsList->insert(CmdMac,              "MAC");
 
     //Create socket for communication with server
     this->localSocket = new QTcpSocket();
@@ -198,6 +196,16 @@ void CtiClientApplication::loginReject()
 {
     //Close the application
     this->exit(0);
+}
+
+//Called when the user clicks 'Change password' in the main window
+void CtiClientApplication::changePassword(){
+    PasswordWindow *w = new PasswordWindow(this->mainWindow);
+    if (w->exec() == QDialog::Accepted) {
+        //Remember password so we can update it in configuration when (and if) server accepts it
+        this->newPassword = w->newPass;
+        sendCommandToServer(CmdChangePassword, w->oldPass + " " + this->newPassword);
+    }
 }
 
 //Called when the user logs off in the main window
@@ -277,7 +285,7 @@ void CtiClientApplication::connectionLost()
     //If the main window is displayed, the connection has been broken, otherwise it couldn't be started
     //We keep trying to connect either way
     if (this->mainWindow != 0) {
-        emit newMessage("Connection to server lost. Trying to reconnect...", QSystemTrayIcon::Critical);
+        emit statusChange(false);
     } else {
         //User won't be able to click OK button again until connection is established
         this->loginWindow->showMessage("AsteriskCTI client is unable to connect to AsteriskCTI server. "
@@ -331,10 +339,12 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
 
     switch (response.code) {
     case RspAuthOK:
+        resetLastCTICommand();
         sendCommandToServer(CmdKeepAlive);
         break;
     case RspCompressLevel:
         this->config->compressionLevel = response.data.last().toInt();
+        resetLastCTICommand();
         sendCommandToServer(CmdUser, this->config->user);
         break;
     case RspDisconnectOK:
@@ -347,6 +357,10 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
             case CmdPass:
                 abortConnection(StopInvalidCredentials, response.data.join(" "));
                 break;
+            case CmdChangePassword:
+                resetLastCTICommand();
+                this->newMessage("Changing of password did not succeed: " + response.data.join(" "), QSystemTrayIcon::Critical);
+                break;
             case CmdMac:
             case CmdOsType:
                 abortConnection(StopServerError, response.data.join(" "));
@@ -356,6 +370,7 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
                 break;
             default:
                 if (config->qDebug) qDebug() << "Received unexpected response from server: \'" << response.code << " " << response.data.join(" ") << "\' to command " << this->lastCTICommand->command;
+                resetLastCTICommand();
                 break;
             }
         } else {
@@ -364,21 +379,33 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
         break;
     case RspKeepAlive:
         this->config->keepAliveInterval = response.data.last().toInt();
-        //We reduce the interval to allow for network latency
-        if (this->config->keepAliveInterval > 1000)
-            this->config->keepAliveInterval -= 1000;
+        //Reduce the interval to allow for network latency
+        if (this->config->keepAliveInterval > 4000)
+            this->config->keepAliveInterval -= 2000;
+        else
+            this->config->keepAliveInterval /= 2;
+        resetLastCTICommand();
         sendCommandToServer(CmdMac, this->macAddress);
         break;
     case RspOK:
         if (this->lastCTICommand != 0) {
             switch (this->lastCTICommand->command) {
             case CmdUser:
+                resetLastCTICommand();
                 sendCommandToServer(CmdPass, this->config->pass);
                 break;
             case CmdPass:
+                resetLastCTICommand();
                 sendCommandToServer(CmdKeepAlive);
                 break;
+            case CmdChangePassword:
+                resetLastCTICommand();
+                //Update password
+                this->config->pass = this->newPassword;
+                this->newMessage("Changing of password was successfull.", QSystemTrayIcon::Information);
+                break;
             case CmdMac:
+                resetLastCTICommand();
                 sendCommandToServer(CmdOsType, osType);
                 break;
             case CmdOsType:
@@ -394,6 +421,7 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
                 break;
             default:
                 if (config->qDebug) qDebug() << "Received unexpected response from server: \'" << response.code << " " << response.data.join(" ") << "\' to command " << this->lastCTICommand->command;
+                resetLastCTICommand();
                 break;
             }
         } else {
@@ -414,18 +442,21 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
         emit pauseAccepted();
         break;
     case RspPausePending:
-        //TODO: Not sure what to do here. Is this necessary?
+        //Pause is pending, it will be confirmed or denied later by RspPauseOK or RspPauseError
+        resetLastCTICommand();
         break;
     case RspQueueData:
         this->queuesList->append(response.data.last());
         break;
     case RspQueueListEnd:
+        resetLastCTICommand();
         emit queuesReceived(this->queuesList);
         break;
     case RspServiceData:
         this->servicesList->insert(response.data.first(), response.data.last());
         break;
     case RspServiceListEnd:
+        resetLastCTICommand();
         emit servicesReceived(this->servicesList);
         break;
     }
@@ -496,8 +527,14 @@ void CtiClientApplication::sendCommandToServer(const AstCTICommands command)
 //Sends a command to server
 void CtiClientApplication::sendCommandToServer(const AstCTICommands command, const QString &parameters)
 {
-    //Delete last command if exists
-    resetLastCTICommand();
+    if (this->lastCTICommand != 0) {
+        //New command was requested before we received a response to last command
+        //This should not happen, it could indicate a bug in the client or server
+        qCritical() << "New command ("  << command << ") requested before receiving response from server to command " << this->lastCTICommand->command;
+
+        //We exit without sending the command
+        return;
+    }
 
     //Create and remember command object
     AstCTICommand *cmd = new AstCTICommand();
@@ -525,12 +562,14 @@ void CtiClientApplication::sendCommandToServer(const AstCTICommands command, con
 void CtiClientApplication::showMainWindow(const QString &extension)
 {
     if (this->mainWindow == 0) {
-        CompactWindow *w = new CompactWindow();
+        CompactWindow *w = new CompactWindow(this->config->user);
 
         connect(this, SIGNAL(newMessage(QString,QSystemTrayIcon::MessageIcon)), w, SLOT(showMessage(QString,QSystemTrayIcon::MessageIcon)));
+        connect(this, SIGNAL(statusChange(bool)), w, SLOT(setStatus(bool)));
         connect(this, SIGNAL(closeWindow(bool)), w, SLOT(quit(bool)));
 
         connect(w, SIGNAL(logOff()), this, SLOT(logOff()));
+        connect(w, SIGNAL(changePassword()), this, SLOT(changePassword()));
 
         this->mainWindow = dynamic_cast<QWidget*>(w);
         w->show();
@@ -540,7 +579,7 @@ void CtiClientApplication::showMainWindow(const QString &extension)
         this->loginWindow->hide();
     }
 
-    emit this->newMessage("Connection to server OK.", QSystemTrayIcon::Information);
+    emit statusChange(true);
     //TODO: Extension
 }
 
@@ -710,6 +749,15 @@ void CtiClientApplication::receiveData()
 //Called when connection has been idle for a specified period
 void CtiClientApplication::idleTimerElapsed()
 {
+    if (this->lastCTICommand != 0) {
+        //Idle timer elapsed before we received a response to last command
+        //This should not happen, it probably indicates a bug in the server
+        qCritical() << "Idle timer elapsed before receiving response from server to command " << this->lastCTICommand->command;
+
+        //We exit without sending keep-alive signal, this will probably result in server dropping the connection
+        return;
+    }
+
     //Send NoOp command to server to keep connection alive
     if (this->localSocket->state() == QAbstractSocket::ConnectedState) {
         if (this->connectionStatus == ConnStatusLoggedIn)

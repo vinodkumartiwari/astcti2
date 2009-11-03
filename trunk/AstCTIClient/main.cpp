@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 {
     CtiClientApplication application(argc, argv);
 
+    //If application encounters any error in constructor, showLoginWindow() will return false
     if (!application.showLoginWindow()) {
         return 1;
     }
