@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     argumentlist.cpp \
     loginwindow.cpp \
     astcticallxmlparser.cpp \
-    compactwindow.cpp
+    compactwindow.cpp \
+    passwordwindow.cpp
 HEADERS += mainwindow.h \
     aboutdialog.h \
     coreconstants.h \
@@ -32,12 +33,15 @@ HEADERS += mainwindow.h \
     astcticommand.h \
     astcticallxmlparser.h \
     astcticall.h \
-    compactwindow.h
+    compactwindow.h \
+    passwordwindow.h \
+    globalconstants.h
 FORMS += mainwindow.ui \
     aboutdialog.ui \
     browserwindow.ui \
     loginwindow.ui \
-    compactwindow.ui
+    compactwindow.ui \
+    passwordwindow.ui
 RESOURCES += mainresources.qrc
 TRANSLATIONS = AstCTIClient_en_US.ts \
     AstCTIClient_it_IT.ts

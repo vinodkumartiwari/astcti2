@@ -37,14 +37,14 @@
  */
 
 #include <QMouseEvent>
+#include <QMessageBox>
+#include <QSettings>
 
 #include "compactwindow.h"
 #include "ui_compactwindow.h"
 
-#include "cticlientapplication.h"
-
-CompactWindow::CompactWindow(QWidget *parent) :
-    QDialog(parent),
+CompactWindow::CompactWindow(const QString &userName) :
+    QDialog(),
     m_ui(new Ui::CompactWindow)
 {
     m_ui->setupUi(this);
@@ -52,13 +52,17 @@ CompactWindow::CompactWindow(QWidget *parent) :
     this->setWindowFlags(this->windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 
     this->m_ui->moveLabel->installEventFilter(this);
-    this->m_ui->messageLabel->installEventFilter(this);
+    this->m_ui->statusLabel->installEventFilter(this);
     this->m_ui->sizeLabel->installEventFilter(this);
 
     this->canClose = false;
 
     this->createTrayIcon();
     this->connectSlots();
+
+    this->userName = userName;
+
+    readSettings();
 }
 
 CompactWindow::~CompactWindow()
@@ -73,8 +77,9 @@ void CompactWindow::connectSlots()
     connect(m_ui->aboutButton, SIGNAL(clicked()), this, SLOT(about()));
     connect(m_ui->pauseButton, SIGNAL(toggled(bool)), this, SLOT(pause(bool)));
     connect(m_ui->minimizeButton, SIGNAL(clicked()), this, SLOT(minimizeToTray()));
+    connect(m_ui->passwordButton, SIGNAL(clicked()), this, SIGNAL(changePassword()));
     connect(m_ui->quitButton, SIGNAL(clicked(bool)), this, SLOT(quit(bool)));
-    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(this->trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 }
 
 void CompactWindow::createTrayIcon()
@@ -82,9 +87,16 @@ void CompactWindow::createTrayIcon()
      QIcon icon;
      icon.addPixmap(QPixmap(QString::fromUtf8(":/res/res/asteriskcti16x16.png")), QIcon::Normal, QIcon::Off);
 
-     trayIcon = new QSystemTrayIcon(icon, this);
-     trayIcon->setToolTip("AsteriskCTI client");
-     trayIcon->show();
+     this->trayIcon = new QSystemTrayIcon(icon, this);
+     this->trayIcon->setToolTip("AsteriskCTI client");
+     this->trayIcon->show();
+}
+
+void CompactWindow::enableControls(bool enable)
+{
+    m_ui->callComboBox->setEditable(enable);
+    m_ui->callButton->setEnabled(enable);
+    m_ui->passwordButton->setEnabled(enable);
 }
 
 void CompactWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -98,25 +110,41 @@ void CompactWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
+void CompactWindow::setStatus(bool status)
+{
+    if (status) {
+        enableControls(true);
+        this->m_ui->statusLabel->setPixmap(QPixmap(QString::fromUtf8(":/res/res/greenled.png")));
+        this->m_ui->statusLabel->setToolTip(statusMessageOK);
+        //Hide the message
+        if (this->trayIcon->supportsMessages())
+            this->trayIcon->showMessage("", "", QSystemTrayIcon::NoIcon, 1);
+    } else {
+        enableControls(false);
+        this->m_ui->statusLabel->setPixmap(QPixmap(QString::fromUtf8(":/res/res/redled.png")));
+        this->m_ui->statusLabel->setToolTip(statusMessageNotOK);
+        showMessage(statusMessageNotOK, QSystemTrayIcon::Critical);
+    }
+}
+
 void CompactWindow::showMessage(const QString &message, QSystemTrayIcon::MessageIcon severity)
 {
-    this->m_ui->messageLabel->setText(message);
-    switch (severity) {
-    case QSystemTrayIcon::Critical:
-        this->m_ui->messageLabel->setProperty("severity", "Critical");
-        break;
-    case QSystemTrayIcon::Warning:
-        this->m_ui->messageLabel->setProperty("severity", "Warning");
-        break;
-    default:
-        this->m_ui->messageLabel->setProperty("severity", "Information");
-        break;
+    if (this->trayIcon->supportsMessages()) {
+        this->trayIcon->showMessage(appName, message, severity, 50000);
+    } else {
+        switch (severity) {
+        case QSystemTrayIcon::NoIcon:
+        case QSystemTrayIcon::Information:
+            QMessageBox::information(this, appName, message);
+            break;
+        case QSystemTrayIcon::Warning:
+            QMessageBox::warning(this, appName, message);
+            break;
+        case QSystemTrayIcon::Critical:
+            QMessageBox::critical(this, appName, message);
+            break;
+        }
     }
-
-    this->m_ui->messageLabel->style()->polish(this->m_ui->messageLabel);
-
-    if (!this->isVisible())
-        trayIcon->showMessage("AsteriskCTI", message, severity, 5000);
 }
 
 void CompactWindow::keyPressEvent(QKeyEvent *event)
@@ -128,10 +156,12 @@ void CompactWindow::keyPressEvent(QKeyEvent *event)
 
 void CompactWindow::closeEvent(QCloseEvent *event)
 {
-    if (this->canClose)
+    if (this->canClose) {
+        writeSettings();
         event->accept();
-    else
+    } else {
         event->ignore();
+    }
 }
 
 void CompactWindow::changeEvent(QEvent *e)
@@ -240,3 +270,25 @@ void CompactWindow::quit(bool skipCheck)
         this->close();
     }
 }
+
+void CompactWindow::writeSettings()
+{
+    QSettings settings(appName);
+
+    settings.beginGroup("CompactWindow." + this->userName);
+    settings.setValue("size", this->size());
+    settings.setValue("pos", this->pos());
+    settings.endGroup();
+ }
+
+void CompactWindow::readSettings()
+{
+    QSettings settings(appName);
+
+    qDebug() << settings.fileName();
+
+    settings.beginGroup("CompactWindow." + this->userName);
+    this->resize(settings.value("size", QSize(400, 31)).toSize());
+    this->move(settings.value("pos", QPoint(50, 50)).toPoint());
+    settings.endGroup();
+ }

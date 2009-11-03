@@ -41,6 +41,8 @@
 
 #include <QtGui/QDialog>
 
+#include "globalconstants.h"
+
 namespace Ui {
     class LoginWindow;
 }

@@ -50,11 +50,13 @@
 #include <QTimer>
 #include <QDebug>
 
+#include "globalconstants.h"
 #include "argumentlist.h"
 #include "cticonfig.h"
 #include "astcticommand.h"
 #include "astcticallxmlparser.h"
 #include "loginwindow.h"
+#include "passwordwindow.h"
 #include "compactwindow.h"
 #include "browserwindow.h"
 
@@ -114,6 +116,7 @@ public slots:
     void                    loginReject();
 
     //Signals from main window
+    void                    changePassword();
     void                    logOff();
 
     //Signals from browser
@@ -126,6 +129,7 @@ signals:
     void                    pauseAccepted();
     void                    pauseError(const QString &message);
     void                    newMessage(const QString &message, QSystemTrayIcon::MessageIcon severity);
+    void                    statusChange(bool status);
     void                    closeWindow(bool skipCheck);
 
 private:
@@ -147,6 +151,7 @@ private:
     quint16                 blockSize;
     QString                 macAddress;
     bool                    reconnectNotify;
+    QString                 newPassword;
     AstCTIConfiguration     *config;
     AstCTICommand           *lastCTICommand;
     QHash<int, QString>     *commandsList;

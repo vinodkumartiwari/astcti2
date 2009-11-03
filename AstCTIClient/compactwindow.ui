@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>400</width>
     <height>31</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>600</width>
+    <width>400</width>
     <height>31</height>
    </size>
   </property>
@@ -31,6 +31,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">#CompactWindow {
+	border: 3px solid black;
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(184, 97, 158, 255), stop:1 rgba(255, 255, 255, 255));
 }
 
@@ -100,16 +101,29 @@ QToolButton:pressed , QToolButton:checked {
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="statusLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="mainresources.qrc">:/res/res/redled.png</pixmap>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QComboBox" name="callComboBox">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>150</width>
+       <width>0</width>
        <height>0</height>
       </size>
      </property>
@@ -140,6 +154,17 @@ QToolButton:pressed , QToolButton:checked {
     </widget>
    </item>
    <item>
+    <widget class="QToolButton" name="passwordButton">
+     <property name="toolTip">
+      <string>Change password</string>
+     </property>
+     <property name="icon">
+      <iconset resource="mainresources.qrc">
+       <normaloff>:/res/res/configure.png</normaloff>:/res/res/configure.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QToolButton" name="aboutButton">
      <property name="toolTip">
       <string>About</string>
@@ -152,6 +177,27 @@ QToolButton:pressed , QToolButton:checked {
    </item>
    <item>
     <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="repeatButton">
+     <property name="toolTip">
+      <string>Repeat last action</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="mainresources.qrc">
+       <normaloff>:/res/res/applications-system.png</normaloff>:/res/res/applications-system.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line_4">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -200,20 +246,6 @@ QToolButton:pressed , QToolButton:checked {
     </widget>
    </item>
    <item>
-    <widget class="Line" name="line_3">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="messageLabel">
-     <property name="severity" stdset="0">
-      <string>Information</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QLabel" name="sizeLabel">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -237,7 +269,9 @@ QToolButton:pressed , QToolButton:checked {
  <tabstops>
   <tabstop>callComboBox</tabstop>
   <tabstop>callButton</tabstop>
+  <tabstop>passwordButton</tabstop>
   <tabstop>aboutButton</tabstop>
+  <tabstop>repeatButton</tabstop>
   <tabstop>pauseButton</tabstop>
   <tabstop>minimizeButton</tabstop>
   <tabstop>quitButton</tabstop>

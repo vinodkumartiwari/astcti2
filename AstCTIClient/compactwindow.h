@@ -42,8 +42,12 @@
 #include <QtGui/QDialog>
 #include <QSystemTrayIcon>
 
+#include "globalconstants.h"
 #include "aboutdialog.h"
 #include "browserwindow.h"
+
+const QString statusMessageOK = "Conection to server OK";
+const QString statusMessageNotOK = "Conection to server has been lost. Trying to reconnect...";
 
 namespace Ui {
     class CompactWindow;
@@ -52,13 +56,20 @@ namespace Ui {
 class CompactWindow : public QDialog {
     Q_OBJECT
 public:
-    CompactWindow(QWidget *parent = 0);
+    CompactWindow(const QString &userName);
     ~CompactWindow();
 
 public slots:
+    void setStatus(bool status);
     void showMessage(const QString &message, QSystemTrayIcon::MessageIcon severity);
+    void placeCall();
+    void about();
+    void minimizeToTray();
+    void pause(bool paused);
+    void quit(bool skipCheck);
 
 signals:
+    void changePassword();
     void logOff();
 
 protected:
@@ -72,20 +83,17 @@ private:
 
     bool canClose;
     QPoint offset;
+    QString userName;
     QSystemTrayIcon *trayIcon;
 
     void createTrayIcon();
     void connectSlots();
+    void enableControls(bool enable);
+    void writeSettings();
+    void readSettings();
 
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
-
-public slots:
-    void placeCall();
-    void about();
-    void minimizeToTray();
-    void pause(bool paused);
-    void quit(bool skipCheck);
 };
 
 #endif // COMPACTWINDOW_H
