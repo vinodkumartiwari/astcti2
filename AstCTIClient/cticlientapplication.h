@@ -50,6 +50,8 @@
 #include <QTimer>
 #include <QDebug>
 
+#include <QtSingleApplication>
+
 #include "globalconstants.h"
 #include "argumentlist.h"
 #include "cticonfig.h"
@@ -100,12 +102,12 @@ struct AstCTIResponse {
     QStringList data;
 };
 
-class CtiClientApplication : public QApplication
+class CtiClientApplication : public QtSingleApplication
 {
     Q_OBJECT
 
 public:
-    CtiClientApplication(int &argc, char **argv);
+    CtiClientApplication(const QString &appId, int &argc, char **argv);
     ~CtiClientApplication();
 
     bool                    showLoginWindow();

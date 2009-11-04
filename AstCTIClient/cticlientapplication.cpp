@@ -41,8 +41,8 @@
 
 #include "cticlientapplication.h"
 
-CtiClientApplication::CtiClientApplication(int &argc, char **argv)
-             : QApplication(argc, argv)
+CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char **argv)
+             : QtSingleApplication(appId, argc, argv)
 {
     //If fatal error is encountered, we will exit the constructor without setting canStart to true
     //showLoginWindow() will then return false, which will tell main function to abort
@@ -175,6 +175,9 @@ bool CtiClientApplication::showLoginWindow()
         connect(this->loginWindow, SIGNAL(accepted(QString, QString)), this, SLOT(loginAccept(QString, QString)));
         connect(this->loginWindow, SIGNAL(rejected()), this, SLOT(loginReject()));
     }
+
+    //Set activation window for QtSingleApplication
+    this->setActivationWindow(this->loginWindow, true);
 
     this->loginWindow->show();
 
@@ -574,6 +577,9 @@ void CtiClientApplication::showMainWindow(const QString &extension)
         this->mainWindow = dynamic_cast<QWidget*>(w);
         w->show();
     }
+
+    //Set activation window for QtSingleApplication
+    this->setActivationWindow(this->mainWindow, true);
 
     if (this->loginWindow->isVisible()) {
         this->loginWindow->hide();

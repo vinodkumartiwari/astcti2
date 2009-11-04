@@ -40,7 +40,14 @@
 
 int main(int argc, char *argv[])
 {
-    CtiClientApplication application(argc, argv);
+    CtiClientApplication application("AsteriskCTIClient", argc, argv);
+
+    //Check if another instance is already running
+    if (application.isRunning()) {
+        //Wake up running instance and exit
+        application.sendMessage(QString(), 4000);
+        return 0;
+    }
 
     //If application encounters any error in constructor, showLoginWindow() will return false
     if (!application.showLoginWindow()) {
