@@ -1,6 +1,9 @@
 # -------------------------------------------------
 # Project created by QtCreator 2008-12-21T22:48:47
 # -------------------------------------------------
+
+include(../../qtsingleapplication-2.6-opensource/src/qtsingleapplication.pri)
+
 TARGET = AstCTIClient
 TEMPLATE = app
 QT += webkit \
