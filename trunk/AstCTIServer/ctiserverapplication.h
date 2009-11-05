@@ -47,17 +47,21 @@
 #include <QtCore/QCoreApplication>
 #include <QFileInfo>
 #include <QtSql>
+#include <QMutexLocker>
+#include <QMutex>
 
 #include "coretcpserver.h"
 #include "cticonfig.h"
 #include "logger.h"
 #include "argumentlist.h"
 #include "configurationchecker.h"
-#include "qastctiapplication.h"
+#include "qastctiaction.h"
+#include "qastctiactions.h"
 #include "qastctioperators.h"
 #include "qastctiservicesoperators.h"
 #include "qastctiservice.h"
 #include "qastctiservices.h"
+
 
 #define defaultCtiServerPort                5000
 #define defaultCtiConnectTimeout            1500
@@ -90,6 +94,7 @@ public:
     static CtiServerApplication *instance();
     QAstCTIOperator         *getOperatorByUsername(const QString &username);
     QAstCTIServices         *getServices();
+    QAstCTIActions          *getActions();
     bool                    containsUser(const QString &username);
     QAstCTIConfiguration    config; // Main configuration struct
 
@@ -110,9 +115,11 @@ private:
     void                    readSettingsFromFile(const QString configFile, QAstCTIConfiguration *config);
     void                    readSettingsFromDatabase(QAstCTIConfiguration *config);
     QVariant                readSettingFromDatabase(const QString &name, const QVariant &defaultValue);
+    QMutex                  configMutex;
 
 
 protected:
+    QAstCTIActions          *actions;
     QAstCTIServices         *services;
     QAstCTIOperators        *ctiOperators;
 

@@ -36,34 +36,31 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTISERVICES_H
-#define QASTCTISERVICES_H
+#ifndef QASTCTIACTIONS_H
+#define QASTCTIACTIONS_H
 
 #include <QObject>
 #include <QHash>
 
-#include "qastctiactions.h"
+#include "qastctiaction.h"
 
-class QAstCTIService;
-
-class QAstCTIServices : public QObject
+class QAstCTIActions : public QObject
 {
     Q_OBJECT
 
 public:
-    QAstCTIServices(QAstCTIActions *theActionsList, QObject *parent);
-    ~QAstCTIServices();
-    QAstCTIService *operator[](const QString &key);
+    QAstCTIActions (QObject *parent);
+    ~QAstCTIActions ();
+    QAstCTIAction *operator[](const int &key);
     int count();
 
+
 private:
-    QAstCTIActions *actionsList;
-
-    QHash<QString, QAstCTIService *> services;
-    void add_service(QAstCTIService *service);
-    void remove_service(const QString &key);
-    void fill_services();
+    QHash<int, QAstCTIAction *> actions;
+    void addAction(QAstCTIAction *app);
+    void removeAction(const int &key);
+    void fillActions();
     void clear();
-
 };
-#endif // QASTCTISERVICES_H
+
+#endif // QASTCTIACTIONS_H

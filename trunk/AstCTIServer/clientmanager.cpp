@@ -260,14 +260,19 @@ void ClientManager::parseDataReceived(const QString &data)
             this->sendDataToClient("101 KO Not authenticated");
             break;
         } else {
-            if (cmd.parameters.count() < 1) {
-                this->sendDataToClient("101 KO Specify new password");
+            if (cmd.parameters.count() < 2) {
+                this->sendDataToClient("101 KO Invalid parameters");
                 break;
             }
 
             if (this->activeOperator != 0) {
-                QString newPassword = cmd.parameters.at(0);
-                if (this->activeOperator->changePassword(newPassword)) {
+                QString oldPassword = cmd.parameters.at(0);
+                QString newPassword = cmd.parameters.at(1);
+
+                if ( (this->activeOperator->checkPassword(oldPassword) &&
+                      this->activeOperator->changePassword(newPassword)) ) {
+
+
                     this->sendDataToClient("100 OK Password changed successfully");
                 } else {
                     this->sendDataToClient("101 KO Password not changed. Error occurred");
