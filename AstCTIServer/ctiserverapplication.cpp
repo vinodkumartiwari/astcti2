@@ -67,8 +67,10 @@ CtiServerApplication::CtiServerApplication(int &argc, char **argv)
     this->configChecker = new ConfigurationChecker(this);
 
 
-    // This will build all services list
-    this->services = new QAstCTIServices(this);
+    // This will build all services list    
+    // actions should always be loaded before services
+    this->actions = new QAstCTIActions(this);
+    this->services = new QAstCTIServices(this->actions, this);
     this->ctiOperators = new QAstCTIOperators(this);
 
 
@@ -105,12 +107,24 @@ void  CtiServerApplication::reloadSqlDatabase()
     /* CODE TESTING START: used for testing purpose only */
     qDebug("CODE TESTING START AT %s:%d",  __FILE__ , __LINE__);
 
+    // Lock the mutex
+    QMutexLocker locker(&configMutex);
+
+    if (this->actions != 0) {
+        delete(this->actions);
+        this->actions = 0;
+    }
+
+    if (this->actions == 0) {
+        this->actions = new QAstCTIActions(this);
+    }
+
     if (this->services != 0) {
         delete(this->services);
         this->services = 0;
     }
     if (this->services == 0) {
-        this->services = new QAstCTIServices(this);
+        this->services = new QAstCTIServices(this->actions,this);
     }
 
     if (this->ctiOperators != 0) {
@@ -120,25 +134,10 @@ void  CtiServerApplication::reloadSqlDatabase()
 
     if (this->ctiOperators == 0) {
         this->ctiOperators = new QAstCTIOperators(this);
-    }
+    }    
 
-    QString sername = "ast-cti-demo";
-    QAstCTIService* service = services->operator [](sername);
-    if (service != 0) {
-        qDebug() << "Service alive is " << service->getServiceName();
-        qDebug() << "Number of operators on service is " << service->getOperators()->count();
-        QAstCTIApplication* app = service->getApplications()->operator []("LIN");
-        if (app != 0)
-            qDebug() << "Application for lin is " << app->getApplicationPath();
-
-        app = service->getApplications()->operator []("WIN");
-        if (app != 0)
-            qDebug() << "Application for win is " << app->getApplicationPath();
-    }
-
-    qDebug("CODE TESTING END AT %s:%d",  __FILE__ , __LINE__);
-    /* CODE TESTING END*/
-
+    // Not really necessary..
+    locker.unlock();
 }
 
 CtiServerApplication *CtiServerApplication::instance()

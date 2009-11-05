@@ -162,7 +162,9 @@ bool QAstCTIOperator::changePassword(QString &newPassword)
         retVal ? db.commit() :  db.rollback();
     }
     query.clear();
-
+    if (retVal) {
+        this->passWord = newPassword;
+    }
     emit this->updateComplete(retVal);
     return retVal;
 }

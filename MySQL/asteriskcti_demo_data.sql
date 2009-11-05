@@ -1,6 +1,6 @@
 /*
 SQLyog Community Edition- MySQL GUI v8.14 
-MySQL - 5.0.75-0ubuntu10.2 : Database - asteriskcti
+MySQL - 5.1.37-1ubuntu5 : Database - asteriskcti
 *********************************************************************
 */
 
@@ -12,15 +12,19 @@ MySQL - 5.0.75-0ubuntu10.2 : Database - asteriskcti
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`asteriskcti` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
 USE `asteriskcti`;
 
-/*Data for the table `applications` */
+/*Data for the table `actions` */
 
-LOCK TABLES `applications` WRITE;
+LOCK TABLES `actions` WRITE;
 
-insert  into `applications`(`ID_APPLICATION`,`ID_SERVICE`,`APPLICATION_OS_TYPE`,`APPLICATION_PATH`,`PARAMETERS`) values (1,1,'WIN','C:\\Program Files\\Firefox\\Firefox.exe','http://centralino-voip.brunosalzano.com?callerid={CALLERID}&appdata={APPDATA}');
-insert  into `applications`(`ID_APPLICATION`,`ID_SERVICE`,`APPLICATION_OS_TYPE`,`APPLICATION_PATH`,`PARAMETERS`) values (2,1,'LIN','/usr/bin/firefox','http://centralino-voip.brunosalzano.com?callerid={CALLERID}&appdata={APPDATA}');
+insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`) values (1,'ALL','INTERNAL_BROWSER',NULL,'http://astcti2.googlecode.com',NULL);
+insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`) values (2,'LINUX','APPLICATION','/usr/bin/gedit',NULL,NULL);
+insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`) values (3,'WINDOWS','APPLICATION','notepad.exe',NULL,NULL);
+insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`) values (4,'LINUX','TCP_MESSAGE','192.168.0.2:2323','Caller: {CALLERID}','UTF8');
+insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`) values (5,'LINUX','UDP_MESSAGE','192.168.0.2:2323','Caller: {CALLERID}','UTF8');
 
 UNLOCK TABLES;
 
@@ -28,7 +32,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `dbversion` WRITE;
 
-insert  into `dbversion`(`VERSION`,`LAST_UPDATE`) values (0.6,0);
+insert  into `dbversion`(`VERSION`) values (0.9);
 
 UNLOCK TABLES;
 
@@ -46,8 +50,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `seats` WRITE;
 
-insert  into `seats`(`ID_SEAT`,`SEAT_MAC`,`SEAT_EXTEN`,`DESCRIPTION`) values (1,'00:00:00:00:00:00','SIP/311','Seat 0/0');
-insert  into `seats`(`ID_SEAT`,`SEAT_MAC`,`SEAT_EXTEN`,`DESCRIPTION`) values (2,'00:00:00:00:00:01','SIP/310','Seat 0/1');
+insert  into `seats`(`ID_SEAT`,`SEAT_MAC`,`SEAT_EXTEN`,`DESCRIPTION`) values (1,'00:1c:bf:37:53:ba','SIP/311','Seat 0/0');
+insert  into `seats`(`ID_SEAT`,`SEAT_MAC`,`SEAT_EXTEN`,`DESCRIPTION`) values (2,'00:21:9b:d7:7a:bb','SIP/310','Seat 0/1');
 
 UNLOCK TABLES;
 
@@ -67,13 +71,36 @@ insert  into `server_settings`(`name`,`val`) values ('cti_connect_timeout','1500
 insert  into `server_settings`(`name`,`val`) values ('cti_read_timeout','30000');
 insert  into `server_settings`(`name`,`val`) values ('cti_socket_compression_level','7');
 
+
 UNLOCK TABLES;
 
 /*Data for the table `services` */
 
 LOCK TABLES `services` WRITE;
 
-insert  into `services`(`ID_SERVICE`,`SERVICE_NAME`,`SERVICE_CONTEXT_TYPE`,`SERVICE_IS_QUEUE`,`SERVICE_QUEUE_NAME`,`SERVICE_TRIGGER_TYPE`,`ENABLED`) values (1,'test-ivr','INBOUND',1,'600','APPLICATION',1);
+insert  into `services`(`ID_SERVICE`,`SERVICE_NAME`,`SERVICE_CONTEXT_TYPE`,`SERVICE_IS_QUEUE`,`SERVICE_QUEUE_NAME`,`ENABLED`) values (1,'test-ivr','INBOUND',1,'600',1);
+
+UNLOCK TABLES;
+
+/*Data for the table `services_actions` */
+
+LOCK TABLES `services_actions` WRITE;
+
+insert  into `services_actions`(`ID_SERVICE`,`ID_ACTION`,`ACTION_ORDER`) values (1,1,2);
+insert  into `services_actions`(`ID_SERVICE`,`ID_ACTION`,`ACTION_ORDER`) values (1,2,1);
+insert  into `services_actions`(`ID_SERVICE`,`ID_ACTION`,`ACTION_ORDER`) values (1,3,3);
+insert  into `services_actions`(`ID_SERVICE`,`ID_ACTION`,`ACTION_ORDER`) values (1,4,4);
+insert  into `services_actions`(`ID_SERVICE`,`ID_ACTION`,`ACTION_ORDER`) values (1,5,5);
+
+UNLOCK TABLES;
+
+/*Data for the table `services_operators` */
+
+LOCK TABLES `services_operators` WRITE;
+
+insert  into `services_operators`(`ID_SERVICE`,`ID_OPERATOR`,`PENALTY`) values (1,1,0);
+insert  into `services_operators`(`ID_SERVICE`,`ID_OPERATOR`,`PENALTY`) values (1,2,0);
+insert  into `services_operators`(`ID_SERVICE`,`ID_OPERATOR`,`PENALTY`) values (1,3,0);
 
 UNLOCK TABLES;
 

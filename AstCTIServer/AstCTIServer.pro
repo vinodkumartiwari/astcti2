@@ -19,16 +19,16 @@ SOURCES += main.cpp \
     qastctiseat.cpp \
     qastctiservice.cpp \
     qastctivariable.cpp \
-    qastctiapplication.cpp \
+    qastctiaction.cpp \
     qastctiservices.cpp \
     qastctiservicesoperators.cpp \
     qastctiservicesvariables.cpp \
-    qastctiservicesapplications.cpp \
     configurationchecker.cpp \
     coretcpserver.cpp \
     qastctioperators.cpp \
     qastcticall.cpp \
-    qastctioperatorservices.cpp
+    qastctioperatorservices.cpp \
+    qastctiactions.cpp
 HEADERS += clientmanager.h \
     cticonfig.h \
     logger.h \
@@ -40,13 +40,13 @@ HEADERS += clientmanager.h \
     qastctiseat.h \
     qastctiservice.h \
     qastctivariable.h \
-    qastctiapplication.h \
+    qastctiaction.h \
     qastctiservices.h \
     qastctiservicesoperators.h \
     qastctiservicesvariables.h \
-    qastctiservicesapplications.h \
     configurationchecker.h \
     coretcpserver.h \
     qastctioperators.h \
     qastcticall.h \
-    qastctioperatorservices.h
+    qastctioperatorservices.h \
+    qastctiactions.h

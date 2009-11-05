@@ -42,14 +42,15 @@
 #include <QObject>
 #include "qastctiservicesoperators.h"
 #include "qastctiservicesvariables.h"
-#include "qastctiservicesapplications.h"
+#include "qastctiactions.h"
+
 
 class QAstCTIService : public QObject
 {
     Q_OBJECT
 
 public:
-    QAstCTIService(const int& id, QObject* parent);
+    QAstCTIService(const int& id, QAstCTIActions *theActionsList, QObject* parent);
     ~QAstCTIService();
 
     int                         getIdService();
@@ -57,17 +58,16 @@ public:
     QString                     getServiceContextType();
     bool                        getServiceIsQueue();
     QString                     getServiceQueueName();
-    QString                     getServiceTriggerType();
     bool                        getEnabled();
     QAstCTIServicesOperators    *getOperators();
     QAstCTIServicesVariables    *getVariables();
-    QAstCTIServicesApplications *getApplications();
+    QHash<int, QAstCTIAction *> *getActions();
 
 public slots:
     bool        load();
     void        loadOperators(const bool &bMayLoad);
     void        loadVariables(const bool &bMayLoad);
-    void        loadApplications(const bool &bMayLoad);
+    void        loadActions(const bool &bMayLoad);
 
 signals:
     void        loadComplete(const bool &result);
@@ -77,13 +77,15 @@ private:
     QString     serviceName;
     QString     serviceContextType;
     bool        serviceIsQueue;
-    QString     serviceQueueName;
-    QString     serviceTriggerType;
+    QString     serviceQueueName;    
     bool        enabled;
+
+
 
     QAstCTIServicesOperators        *operators;
     QAstCTIServicesVariables        *variables;
-    QAstCTIServicesApplications     *applications;
+    QAstCTIActions                  *actionsList;
+    QHash<int, QAstCTIAction *>     actions;
 };
 
 #endif // QASTCTISERVICE_H

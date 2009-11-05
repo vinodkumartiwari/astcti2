@@ -401,7 +401,7 @@ void AMIClient::evaluateEvent(QHash<QString, QString>* event)
                         // Before the call is passed to the clientmanager
                         // will be selected the right application using client's
                         // operating system.
-                        newCall->setApplications(service->getApplications());
+                        newCall->setActions(service->getActions());
 
                         // Let's say where the call is directed. The destination
                         // will let us know the client to signal.

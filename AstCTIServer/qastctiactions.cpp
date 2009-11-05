@@ -35,83 +35,84 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+
 #include <QtSql>
 #include <QDebug>
-#include "qastctiservices.h"
-#include "qastctiservice.h"
 
-QAstCTIServices::QAstCTIServices(QAstCTIActions *theActionsList, QObject* parent) :
-        QObject(parent)
+#include "qastctiactions.h"
+
+QAstCTIActions::QAstCTIActions(QObject *parent)
+        : QObject(parent)
 {
-    this->actionsList = theActionsList;
-    this->fill_services();
+    this->fillActions();
 }
 
-QAstCTIServices::~QAstCTIServices()
+QAstCTIActions::~QAstCTIActions()
 {
-    qDebug() << "In QAstCTIServices::~QAstCTIServices()";
+    qDebug() << "In QAstCTIActions::~QAstCTIActions()";
     this->clear();
 }
 
-QAstCTIService *QAstCTIServices::operator[](const QString &key)
-{
-    return (this->services.contains(key)) ? this->services[key] : 0;
 
+QAstCTIAction* QAstCTIActions::operator[](const int &actionId)
+{
+    return (this->actions.contains(actionId)) ? this->actions[actionId] : 0;
 }
 
-void QAstCTIServices::add_service(QAstCTIService *service)
+void QAstCTIActions::addAction(QAstCTIAction *app)
 {
-    this->services.insert(service->getServiceName(), service);
+    this->actions.insert(app->getIdAction() , app);
 }
 
-void QAstCTIServices::remove_service(const QString &key)
+void QAstCTIActions::removeAction(const int &actionId)
 {
-    if (this->services.contains(key))
-    {
-        QAstCTIService *service = this->services[key];
-        delete(service);
-        this->services.remove(key);
+    if (this->actions.contains(actionId)) {
+        QAstCTIAction *app = this->actions[actionId];
+        if (app != 0) {
+            delete(app);
+        }
+        this->actions.remove(actionId);
     }
 }
-int QAstCTIServices::count()
+int QAstCTIActions::count()
 {
     // Count how many elements we have
-    return this->services.count();
+    return this->actions.count();
 }
 
-void QAstCTIServices::clear()
+void QAstCTIActions::clear()
 {
     // Do a clear only if really needed
-    if (this->services.count() > 0) {
-        QMutableHashIterator<QString, QAstCTIService*> i(this->services);
+    if (this->actions.count() > 0) {
+        QMutableHashIterator<int, QAstCTIAction *> i(this->actions);
         while (i.hasNext()) {
             i.next();
             delete(i.value());
         }
-        this->services.clear();
+        this->actions.clear();
     }
 }
 
-void QAstCTIServices::fill_services()
+void QAstCTIActions::fillActions()
 {
     QSqlDatabase db = QSqlDatabase::database("mysqldb");
     if (!db.isOpen()) {
         db.open();
     }
     QSqlQuery query(db);
-    if (!query.exec("SELECT ID_SERVICE FROM services ORDER BY ID_SERVICE ASC")) {
-        qCritical("Query failed in QAstCTIServices::fill_services() %s:%d",  __FILE__ , __LINE__);
+    QString sql = "SELECT ID_ACTION FROM services_actions ORDER BY ID_ACTION ASC";
+
+    if (!query.exec(sql)) {
+        qCritical("Query execution failed in QAstCTIActions::fillActions() %s:%d",  __FILE__ , __LINE__);
     } else {
         while(query.next()) {
-            QAstCTIService *service = new QAstCTIService(query.value(0).toInt(0),this->actionsList,  this);
-            if (service->load())
-            {
-                QString serviceName = service->getServiceName();
-
-                // Remove service if exists before load
-                this->remove_service(serviceName);
-                this->add_service(service);
-
+            int actionId = query.value(0).toInt(0);
+            QAstCTIAction *action = new QAstCTIAction(actionId, this);
+            if (action->load()) {
+                // Remove application if alread exists
+                this->removeAction(actionId);
+                // Add the new one
+                this->addAction(action);
             }
         }
         query.finish();

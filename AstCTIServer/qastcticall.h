@@ -45,8 +45,7 @@
 #include <QDomDocument>
 #include <QHash>
 
-#include "qastctiapplication.h"
-#include "qastctiservicesapplications.h"
+#include "qastctiaction.h"
 
 class QAstCTICall : public QObject
 {
@@ -83,7 +82,7 @@ public:
     void                    setState(QString state);
     void                    addVariable(QString key, QString value);
 
-    void                    setApplications(QAstCTIServicesApplications *applications);
+    void                    setActions(QHash<int, QAstCTIAction *> *callActions);
     void                    setOperatingSystem(QString operatingSystem);
 
 
@@ -103,13 +102,12 @@ private:
     QString                         clientOperatingSystem;
 
     QHash<QString, QString>         *variables;
-    QAstCTIServicesApplications     *applications;
-    QAstCTIApplication              *application;
+    QHash<int, QAstCTIAction *>     *actions;
 
     void                            parseChannel();
-    void                            parseDestChannel();
-    void                            setApplication();
-    void                            parseApplicationParameters();
+    void                            parseDestChannel();    
+    void                            parseActionsParameters();
+
 };
 
 #endif // QASTCTICALL_H
