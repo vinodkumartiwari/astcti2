@@ -53,50 +53,56 @@ void logHandler(QtMsgType type, const char *msg)
 
 int main(int argc, char *argv[])
 {
-    
-    QString logo = "";
-    logo += "            '.~.-'                                              \n";
-    logo += "           -.~~~~~.-'                                           \n";
-    logo += "         '-~~~~~~~~~~.-'                                        \n";
-    logo += "        '.~~~~~~~~~~~~~~.''                         ''''        \n";
-    logo += "      '-~~.-.~~~~~.---.~~~.-'                '''--..~~~.-       \n";
-    logo += "     '.~.-''-.~~~.-''-.~~~~~~.-'       ''--..~~~~~~~~~~~.'      \n";
-    logo += "   '-~~~~.-'''-..-''-.~~~~~~~~~~.---..~~~~~~~~~.--.~~~~~~-      \n";
-    logo += "  '~oooo~~~.--'--'--~~~~~~~~~~~~~~~~~~~~~~~~~~.'   -~~~~~.'     \n";
-    logo += "'-~ooooooo~..-'''''-------.~~~~~~~~~~~~~~~~~~~.-''-.~~~~~~-'    \n";
-    logo += ".ooooo~.--------'----''''-.~~~~~~~~~~.-''-~~~~~~..---~~~~~.-    \n";
-    logo += "ooooooo.---.~o~.--.~~~....~~~~~~~~~~~-'  '----~~-   '.~~ooo.'   \n";
-    logo += "'-~ooooo~~oooo~.--.oooooooo~~~~~~~~~.''      '.~.'   -oooooo-   \n";
-    logo += "   '-~oooooooo~.---~oooooooo~.-'' -o.'     -~oooo.'  '.ooooo~'  \n";
-    logo += "      '.~oooooo~~~~ooooooo.'   ''-.ooo~-   -~oooo~-   -~ooooo.' \n";
-    logo += "        ''.oooooooooooooo.'  '.oooooooo~'  '.ooooo.'  '.ooooo~- \n";
-    logo += "           '-.oooooooooo~'  '.oooooooooo.   '.o~ooo-   '~ooooo. \n";
-    logo += "              '-~ooooooo~'   -oooooooooo~-      -~o~---.~ooooooo\n";
-    logo += "                 -~oooooo.'   -.~o~..~oooo.'  ''.~oooooooooooo~~\n";
-    logo += "                 '.ooooooo.'         '~ooooooooooooooooo~.--''  \n";
-    logo += "                  '~oooooooo.--'''-.~oooooooooooo~..-''         \n";
-    logo += "                   -oooooooooooooooooooooo~..-''                \n";
-    logo += "                   '.oooooooooooooo~..-''                       \n";
-    logo += "                    -~oooooo~..-''                              \n";
-    logo += "                     ~ooo~.                                     \n";
-    qDebug("%s", qPrintable(logo));
-
-    qDebug() << "AsteriskCTI Server version" << APP_VERSION_LONG;
-    qDebug() << "Based on Qt" << QT_VERSION_STR;
-    qDebug() << "Built on " __DATE__ " at " __TIME__;
-    qDebug() << "Copyright" <<  APP_YEAR << ". All rights reserved.";
-    qDebug() << "The program is provided AS IS with NO WARRANTY OF ANY ";
-    qDebug() << "KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY";
-    qDebug() << "AND FITNESS FOR A PARTICULAR PURPOSE.";
-
-    qInstallMsgHandler(logHandler);
-
     // QCoreApplication needs to be initialized here
-    CtiServerApplication app(argc, argv);
-    if (app.buildNewCoreTcpServer() == 0) {
-        return 1;
+    CtiServerApplication application("AsteriskCTIServer", argc, argv);
+
+    if (application.isRunning()) {
+         //Wake up running instance and exit
+        application.sendMessage(QString(), 4000);
+        return 0;
+     } else {
+        QString logo = "";
+        logo += "            '.~.-'                                              \n";
+        logo += "           -.~~~~~.-'                                           \n";
+        logo += "         '-~~~~~~~~~~.-'                                        \n";
+        logo += "        '.~~~~~~~~~~~~~~.''                         ''''        \n";
+        logo += "      '-~~.-.~~~~~.---.~~~.-'                '''--..~~~.-       \n";
+        logo += "     '.~.-''-.~~~.-''-.~~~~~~.-'       ''--..~~~~~~~~~~~.'      \n";
+        logo += "   '-~~~~.-'''-..-''-.~~~~~~~~~~.---..~~~~~~~~~.--.~~~~~~-      \n";
+        logo += "  '~oooo~~~.--'--'--~~~~~~~~~~~~~~~~~~~~~~~~~~.'   -~~~~~.'     \n";
+        logo += "'-~ooooooo~..-'''''-------.~~~~~~~~~~~~~~~~~~~.-''-.~~~~~~-'    \n";
+        logo += ".ooooo~.--------'----''''-.~~~~~~~~~~.-''-~~~~~~..---~~~~~.-    \n";
+        logo += "ooooooo.---.~o~.--.~~~....~~~~~~~~~~~-'  '----~~-   '.~~ooo.'   \n";
+        logo += "'-~ooooo~~oooo~.--.oooooooo~~~~~~~~~.''      '.~.'   -oooooo-   \n";
+        logo += "   '-~oooooooo~.---~oooooooo~.-'' -o.'     -~oooo.'  '.ooooo~'  \n";
+        logo += "      '.~oooooo~~~~ooooooo.'   ''-.ooo~-   -~oooo~-   -~ooooo.' \n";
+        logo += "        ''.oooooooooooooo.'  '.oooooooo~'  '.ooooo.'  '.ooooo~- \n";
+        logo += "           '-.oooooooooo~'  '.oooooooooo.   '.o~ooo-   '~ooooo. \n";
+        logo += "              '-~ooooooo~'   -oooooooooo~-      -~o~---.~ooooooo\n";
+        logo += "                 -~oooooo.'   -.~o~..~oooo.'  ''.~oooooooooooo~~\n";
+        logo += "                 '.ooooooo.'         '~ooooooooooooooooo~.--''  \n";
+        logo += "                  '~oooooooo.--'''-.~oooooooooooo~..-''         \n";
+        logo += "                   -oooooooooooooooooooooo~..-''                \n";
+        logo += "                   '.oooooooooooooo~..-''                       \n";
+        logo += "                    -~oooooo~..-''                              \n";
+        logo += "                     ~ooo~.                                     \n";
+        qDebug("%s", qPrintable(logo));
+
+        qDebug() << "AsteriskCTI Server version" << APP_VERSION_LONG;
+        qDebug() << "Based on Qt" << QT_VERSION_STR;
+        qDebug() << "Built on " __DATE__ " at " __TIME__;
+        qDebug() << "Copyright" <<  APP_YEAR << ". All rights reserved.";
+        qDebug() << "The program is provided AS IS with NO WARRANTY OF ANY ";
+        qDebug() << "KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY";
+        qDebug() << "AND FITNESS FOR A PARTICULAR PURPOSE.";
+
+        qInstallMsgHandler(logHandler);
+
+        if (application.buildNewCoreTcpServer() == 0) {
+            return 1;
+        }
+        return application.exec();
     }
-    return app.exec();
 }
 
 

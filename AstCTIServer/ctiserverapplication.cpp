@@ -38,64 +38,67 @@
 #include "ctiserverapplication.h"
 
 
-CtiServerApplication::CtiServerApplication(int &argc, char **argv)
-        : QCoreApplication(argc, argv), coreTcpServer(0)
+CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char **argv)
+        : QtSingleCoreApplication(appId, argc, argv), coreTcpServer(0)
 {
     this->services = 0;
     this->ctiOperators = 0;
     this->configChecker = 0;
     isConfigLoading = false;
     canStart = false;
+    if (!this->isRunning()) {
+        QArgumentList args(argc, argv);
+        config.qDebug = args.getSwitch("--debug") | args.getSwitch("-d");
+        QString configFile = args.getSwitchArg("-c", "settings.ini");
 
-    QArgumentList args(argc, argv);
-    config.qDebug = args.getSwitch("--debug") | args.getSwitch("-d");
-    QString configFile = args.getSwitchArg("-c", "settings.ini");
+        if (config.qDebug) qDebug("Reading Configurations");
 
-    if (config.qDebug) qDebug("Reading Configurations");
+        // Read default settings for database connection from file
+        readSettingsFromFile(configFile, &config);
+        qDebug() << "Reading first runtime configuration from database";
+        if (!buildSqlDatabase()) {
+            return;
+        }
 
-    // Read default settings for database connection from file
-    readSettingsFromFile(configFile, &config);
-    qDebug() << "Reading first runtime configuration from database";
-    if (!buildSqlDatabase()) {
-        return;
+        readSettingsFromDatabase(&config);
+
+        // ConfigurationChecker will check if database configuration
+        // will change
+        this->configChecker = new ConfigurationChecker(this);
+
+
+        // This will build all services list
+        // actions should always be loaded before services
+        this->actions = new QAstCTIActions(this);
+        this->services = new QAstCTIServices(this->actions, this);
+        this->ctiOperators = new QAstCTIOperators(this);
+
+
+        // here we connect an event that will be triggered everytime
+        // there's a newer runtime configuration database to read
+        connect(this->configChecker, SIGNAL(newConfiguration()), this, SLOT(reloadSqlDatabase()));
+
+        this->configChecker->startConfigurationCheckerThread();
+
+        canStart = true;
     }
-
-    readSettingsFromDatabase(&config);
-
-    // ConfigurationChecker will check if database configuration
-    // will change
-    this->configChecker = new ConfigurationChecker(this);
-
-
-    // This will build all services list    
-    // actions should always be loaded before services
-    this->actions = new QAstCTIActions(this);
-    this->services = new QAstCTIServices(this->actions, this);
-    this->ctiOperators = new QAstCTIOperators(this);
-
-
-    // here we connect an event that will be triggered everytime
-    // there's a newer runtime configuration database to read
-    connect(this->configChecker, SIGNAL(newConfiguration()), this, SLOT(reloadSqlDatabase()));
-
-    this->configChecker->startConfigurationCheckerThread();
-
-    canStart = true;
 
 }
 
 CtiServerApplication::~CtiServerApplication()
 {
-    if (config.qDebug) qDebug() << "In CtiServerApplication::~CtiServerApplication()";
-    if (this->configChecker != 0) delete(this->configChecker);
-    if (this->coreTcpServer != 0) delete(this->coreTcpServer);
-    if (config.qDebug) qDebug() << "CtiServerApplication closing";
-    this->destroySqlDatabase();
-    if (config.qDebug) qDebug() << "MySQL database connection closed";
-    if (config.qDebug) qDebug() << "Stopped";
+    if (!this->isRunning()) {
+        if (config.qDebug) qDebug() << "In CtiServerApplication::~CtiServerApplication()";
+        if (this->configChecker != 0) delete(this->configChecker);
+        if (this->coreTcpServer != 0) delete(this->coreTcpServer);
+        if (config.qDebug) qDebug() << "CtiServerApplication closing";
+        this->destroySqlDatabase();
+        if (config.qDebug) qDebug() << "MySQL database connection closed";
+        if (config.qDebug) qDebug() << "Stopped";
 
-    // Remove msg handler to avoid access to this QApplication
-    qInstallMsgHandler(0);
+        // Remove msg handler to avoid access to this QApplication
+        qInstallMsgHandler(0);
+    }
 }
 
 void  CtiServerApplication::reloadSqlDatabase()

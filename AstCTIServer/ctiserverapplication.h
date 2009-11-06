@@ -39,7 +39,6 @@
 #ifndef CTISERVERAPPLICATION_H
 #define CTISERVERAPPLICATION_H
 
-#include <QCoreApplication>
 #include <QFile>
 #include <QtDebug>
 #include <QSettings>
@@ -49,6 +48,8 @@
 #include <QtSql>
 #include <QMutexLocker>
 #include <QMutex>
+
+
 
 #include "coretcpserver.h"
 #include "cticonfig.h"
@@ -61,7 +62,7 @@
 #include "qastctiservicesoperators.h"
 #include "qastctiservice.h"
 #include "qastctiservices.h"
-
+ #include "qtsinglecoreapplication.h"
 
 #define defaultCtiServerPort                5000
 #define defaultCtiConnectTimeout            1500
@@ -84,12 +85,12 @@
 
 #define exitCodeSuccess                     0
 
-class CtiServerApplication : public QCoreApplication
+class CtiServerApplication : public QtSingleCoreApplication
 {
     Q_OBJECT
 
 public:
-    CtiServerApplication(int &argc, char **argv);
+    CtiServerApplication(const QString &appId, int &argc, char **argv);
     ~CtiServerApplication();
     static CtiServerApplication *instance();
     QAstCTIOperator         *getOperatorByUsername(const QString &username);
