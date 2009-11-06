@@ -1,6 +1,8 @@
 # -------------------------------------------------
 # Project created by QtCreator 2008-12-27T09:05:04
 # -------------------------------------------------
+include(../../qtsingleapplication-2.6-opensource/src/qtsinglecoreapplication.pri)
+
 QT += sql \
     xml \
     network
