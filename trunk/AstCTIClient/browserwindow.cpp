@@ -40,35 +40,30 @@
 #include "browserwindow.h"
 #include "ui_browserwindow.h"
 
-BrowserWindow::BrowserWindow(QWidget *parent) :
+BrowserWindow::BrowserWindow(const QString &userName, QUrl url, QWidget *parent) :
     QMainWindow(parent),
-    m_ui(new Ui::BrowserWindowClass)
+    m_ui(new Ui::BrowserWindow)
 {
     m_ui->setupUi(this);
-    //this->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    this->addExtraWidgets();
-}
 
-BrowserWindow::~BrowserWindow()
-{
-    delete m_ui;
-}
-
-WebView *BrowserWindow::currentView() const
-{
-    return this->webView;
-}
-
-void BrowserWindow::addExtraWidgets()
-{
+    this->setWindowFlags(this->windowFlags() & ~Qt::WindowStaysOnTopHint);
 
     webView = new WebView(this->m_ui->centralwidget);
     webView->setObjectName(QString::fromUtf8("webView"));
     webView->setUrl(QUrl("about:blank"));
     this->m_ui->verticalLayout->addWidget(webView);
 
-    lblCurrentStatus = new QLabel(trUtf8("<b>Not Connected</b>")) ;
-    this->statusBar()->addWidget(lblCurrentStatus);
+    this->statusLabel = new QLabel(trUtf8("<b>Not Connected</b>")) ;
+    this->statusBar()->addWidget(this->statusLabel);
+
+    this->currentHistoryItem = -1;
+    historySetEnabled();
+
+    connect(this->m_ui->prevButton, SIGNAL(clicked()), this, SLOT(prevButton_clicked()));
+    connect(this->m_ui->nextButton, SIGNAL(clicked()), this, SLOT(nextButton_clicked()));
+    connect(this->m_ui->reloadButton, SIGNAL(clicked()), this, SLOT(reloadButton_clicked()));
+    connect(this->m_ui->stopButton, SIGNAL(clicked()), this, SLOT(stopButton_clicked()));
+    connect(this->m_ui->goButton, SIGNAL(clicked()), this, SLOT(goButton_clicked()));
 
     connect(webView, SIGNAL(loadStarted()), this, SLOT(webView_loadStarted()));
     connect(webView, SIGNAL(loadProgress(int)), this, SLOT(webView_loadProgress(int)));
@@ -76,10 +71,24 @@ void BrowserWindow::addExtraWidgets()
     connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(webView_titleChanged(QString)));
     connect(webView, SIGNAL(linkClicked(QUrl)), this, SLOT(webView_linkClicked(QUrl)));
 
+    this->userName = userName;
+
+    setUrl(url);
 }
-void BrowserWindow::setUrl(QUrl url)
+
+BrowserWindow::~BrowserWindow()
 {
-    this->m_ui->txtUrl->setText(url.toString() );
+    delete m_ui;
+}
+
+void BrowserWindow::keyPressEvent(QKeyEvent *e)
+{
+    if (e->key() == Qt::Key_Return) {
+        if (this->focusWidget() == this->m_ui->urlLineEdit) {
+            goButton_clicked();
+            e->accept();
+        }
+    }
 }
 
 void BrowserWindow::changeEvent(QEvent *e)
@@ -93,53 +102,84 @@ void BrowserWindow::changeEvent(QEvent *e)
     }
 }
 
-void BrowserWindow::closeEvent(QCloseEvent *event)
+void BrowserWindow::closeEvent(QCloseEvent *e)
 {
+    writeSettings();
     emit windowClosing(this);
+}
+
+WebView *BrowserWindow::currentView() const
+{
+    return this->webView;
+}
+
+void BrowserWindow::setUrl(QUrl url)
+{
+    this->currentUrl = url;
+    //Settings are stored per-site (and per-user)
+    readSettings();
+
+    this->webView->setUrl(url);
+    this->currentHistoryItem++;
+    for (int i = this->history.size(); i > this->currentHistoryItem; i--) {
+        this->history.removeLast();
+    }
+    this->history.append(url.toString());
+    historySetEnabled();
 }
 
 void BrowserWindow::webView_loadStarted()
 {
     QUrl url = this->webView->url();
-    this->m_ui->txtUrl->setText(url.toString());
-    this->m_ui->txtUrl->setEnabled(false);
-    this->m_ui->btnGo->setText(trUtf8("&Stop"));
-    this->lblCurrentStatus->setText(trUtf8("Loading"));
-
-
-
-
+    this->m_ui->urlLineEdit->setText(url.toString());
+    this->m_ui->reloadButton->setEnabled(false);
+    this->m_ui->stopButton->setEnabled(true);
+    this->statusLabel->setText(trUtf8("Loading..."));
 }
 
-void BrowserWindow::on_btnGo_clicked()
+void BrowserWindow::goButton_clicked()
 {
-    if (this->m_ui->btnGo->text()==trUtf8("&Stop"))
-    {
-        this->webView->stop();
+    QString url = this->m_ui->urlLineEdit->text();
+    if (!url.startsWith("http://") && !url.startsWith("https://"))  {
+        url = "http://" + url;
     }
-    else
-    {
-        QString url = this->m_ui->txtUrl->text();
-        if (!url.startsWith("http://"))
-        {
-            url = "http://" + url;
-            this->m_ui->txtUrl->setText(url);
+    setUrl(QUrl(url));
+}
 
-        }
-        this->webView->setUrl(url);
-    }
+void BrowserWindow::stopButton_clicked()
+{
+    this->webView->stop();
+}
+
+void BrowserWindow::reloadButton_clicked()
+{
+    this->webView->reload();
+}
+
+void BrowserWindow::prevButton_clicked()
+{
+    this->currentHistoryItem--;
+    this->webView->setUrl(this->history[this->currentHistoryItem]);
+    historySetEnabled();
+}
+
+void BrowserWindow::nextButton_clicked()
+{
+    this->currentHistoryItem++;
+    this->webView->setUrl(this->history[this->currentHistoryItem]);
+    historySetEnabled();
 }
 
 void BrowserWindow::webView_loadFinished(bool)
 {
-    this->m_ui->btnGo->setText(trUtf8("&Go"));
-    this->m_ui->txtUrl->setEnabled(true);
-    this->lblCurrentStatus->setText(trUtf8("Complete"));
+    this->m_ui->reloadButton->setEnabled(true);
+    this->m_ui->stopButton->setEnabled(false);
+    this->statusLabel->setText(trUtf8("Complete"));
 }
 
 void BrowserWindow::webView_statusBarMessage(QString text)
 {
-     this->lblCurrentStatus->setText(text);
+     this->statusLabel->setText(text);
 }
 
 void BrowserWindow::webView_titleChanged(QString title)
@@ -149,15 +189,39 @@ void BrowserWindow::webView_titleChanged(QString title)
 
 void BrowserWindow::webView_loadProgress(int progress)
 {
-
-   this->lblCurrentStatus->setText(trUtf8("Progress: %1 %").arg(progress));
+   this->statusLabel->setText(trUtf8("Progress: %1 %").arg(progress));
 }
 
 void BrowserWindow::webView_linkClicked(QUrl url)
 {
-
-    BrowserWindow *sec = new BrowserWindow();
-    sec->move(x() + 40, y() + 40);
-    sec->show();
-    sec->setUrl(url);
+    emit linkClicked(url);
 }
+
+void BrowserWindow::historySetEnabled(){
+    this->m_ui->prevButton->setEnabled(this->currentHistoryItem > 0);
+    this->m_ui->nextButton->setEnabled(this->currentHistoryItem < this->history.size() - 1);
+}
+
+void BrowserWindow::writeSettings()
+{
+    QSettings settings(appName);
+
+    settings.beginGroup("BrowserWindow." + this->userName + "." + this->currentUrl.host());
+    settings.setValue("geometry", this->saveGeometry());
+    settings.setValue("windowState", this->saveState());
+    settings.endGroup();
+ }
+
+void BrowserWindow::readSettings()
+{
+    QSettings settings(appName);
+
+    settings.beginGroup("BrowserWindow." + this->userName + "." + this->currentUrl.host());
+    //TODO
+    //On X11, restoreGeometry cannot account for non-client area because the window is not shown yet
+    //So, the window will shift toward bottom right corner depending on the size of window decoration
+    //Currently (Qt 4.6), there doesn't appear to be a workaround for this
+    this->restoreGeometry(settings.value("geometry").toByteArray());
+    this->restoreState(settings.value("windowState").toByteArray());
+    settings.endGroup();
+ }

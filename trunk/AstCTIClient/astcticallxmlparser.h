@@ -54,7 +54,7 @@ public:
 
 private:
     AstCTICall *call;
-
+    AstCTIAction *currentAction;
     QString currentText;
     bool inVariables;
 };

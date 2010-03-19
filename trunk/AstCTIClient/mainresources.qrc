@@ -22,5 +22,10 @@
         <file>res/call-start.png</file>
         <file>res/call-stop.png</file>
         <file>res/arrow-down.png</file>
+        <file>res/toolbarhandle.png</file>
+        <file>res/browser-go.png</file>
+        <file>res/browser-next.png</file>
+        <file>res/browser-previous.png</file>
+        <file>res/browser-refresh.png</file>
     </qresource>
 </RCC>

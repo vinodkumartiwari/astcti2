@@ -36,69 +36,55 @@
  * If you do not wish that, delete this exception notice.
  */
 
-
-#include "browserwindow.h"
 #include "webview.h"
-#include "cticlientapplication.h"
 
 #include <QtGui/QClipboard>
 #include <QtGui/QMenu>
 #include <QtGui/QMessageBox>
 #include <QtGui/QMouseEvent>
+#include <QtGui/QStyle>
 #include <QtNetwork/QNetworkRequest>
 #include <QtWebKit/QWebHitTestResult>
 #include <QtNetwork/QNetworkReply>
 #include <QtUiTools/QUiLoader>
-
+#include <QtCore/QFile>
 #include <QtCore/QDebug>
 #include <QtCore/QBuffer>
 
+/******************************************************************************
+** WebPage
+*/
+
 WebPage::WebPage(QObject *parent)
     : QWebPage(parent)
-
 {
-    /*setNetworkAccessManager(BrowserApplication::networkAccessManager());
-    connect(this, SIGNAL(unsupportedContent(QNetworkReply *)),
-            this, SLOT(handleUnsupportedContent(QNetworkReply *)));*/
+//    connect(this, SIGNAL(unsupportedContent(QNetworkReply *)), this, SLOT(handleUnsupportedContent(QNetworkReply *)));
 }
-
-/*BrowserMainWindow *WebPage::mainWindow()
-{
-    QObject *w = this->parent();
-    while (w) {
-        if (BrowserWindow *mw = qobject_cast<BrowserWindow*>(w))
-            return mw;
-        w = w->parent();
-    }
-    return null;
-    //return BrowserApplication::instance()->mainWindow();
-}*/
 
 bool WebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
 {
-
     if (frame == mainFrame()) {
         m_loadingUrl = request.url();
         emit loadingUrl(m_loadingUrl);
     }
     return QWebPage::acceptNavigationRequest(frame, request, type);
 }
-
-QWebPage *WebPage::createWindow(QWebPage::WebWindowType type)
-{
-    Q_UNUSED(type);
-    /*switch(type)
-    {
-        case QWebPage::WebBrowserWindow:
-
-            break;
-        case QWebPage::WebModalDialog:
-            break;
-    }*/
-    BrowserWindow *w = new BrowserWindow( qobject_cast<QWidget*>(this->parent()) );
-    w->show();
-    return w->currentView()->webPage();
-}
+//
+//QWebPage *WebPage::createWindow(QWebPage::WebWindowType type)
+//{
+//    Q_UNUSED(type);
+//    /*switch(type)
+//    {
+//        case QWebPage::WebBrowserWindow:
+//
+//            break;
+//        case QWebPage::WebModalDialog:
+//            break;
+//    }*/
+//    BrowserWindow *w = new BrowserWindow( qobject_cast<QWidget*>(this->parent()) );
+//    w->show();
+//    return w->currentView()->webPage();
+//}
 
 #if !defined(QT_NO_UITOOLS)
 QObject *WebPage::createPlugin(const QString &classId, const QUrl &url, const QStringList &paramNames, const QStringList &paramValues)
@@ -122,7 +108,7 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply)
                         .arg(reply->errorString())
                         .arg(reply->url().toString());
 
-     QBuffer imageBuffer;
+    QBuffer imageBuffer;
     imageBuffer.open(QBuffer::ReadWrite);
     QIcon icon = view()->style()->standardIcon(QStyle::SP_MessageBoxWarning, 0, view());
     QPixmap pixmap = icon.pixmap(QSize(32,32));
@@ -148,26 +134,24 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply)
     }
 }
 
+/******************************************************************************
+** WebView
+*/
+
 WebView::WebView(QWidget* parent)
     : QWebView(parent)
     , m_progress(0)
     , m_page(new WebPage(this))
 {
     setPage(m_page);
-    connect(page(), SIGNAL(statusBarMessage(const QString&)),
-            SLOT(setStatusBarText(const QString&)));
-    connect(this, SIGNAL(loadProgress(int)),
-            this, SLOT(setProgress(int)));
-    connect(this, SIGNAL(loadFinished(bool)),
-            this, SLOT(loadFinished()));
-    connect(page(), SIGNAL(loadingUrl(const QUrl&)),
-            this, SIGNAL(urlChanged(const QUrl &)));
-    connect(page(), SIGNAL(downloadRequested(const QNetworkRequest &)),
-            this, SLOT(downloadRequested(const QNetworkRequest &)));
-    connect(this, SIGNAL(unsupportedContent(QNetworkReply *)),
-            this, SLOT(handleUnsupportedContent(QNetworkReply *)));
-    page()->setForwardUnsupportedContent(true);
-
+    connect(page(), SIGNAL(statusBarMessage(const QString&)), SLOT(setStatusBarText(const QString&)));
+    connect(this, SIGNAL(loadProgress(int)), this, SLOT(setProgress(int)));
+    connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished()));
+    connect(page(), SIGNAL(loadingUrl(const QUrl&)), this, SIGNAL(urlChanged(const QUrl &)));
+    connect(page(), SIGNAL(downloadRequested(const QNetworkRequest &)), this, SLOT(downloadRequested(const QNetworkRequest &)));
+    connect(this, SIGNAL(unsupportedContent(QNetworkReply *)), this, SLOT(handleUnsupportedContent(QNetworkReply *)));
+    this->page()->setForwardUnsupportedContent(true);
+    this->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 }
 
 void WebView::setProgress(int progress)
@@ -177,9 +161,8 @@ void WebView::setProgress(int progress)
 
 void WebView::loadFinished()
 {
-    if (100 != m_progress) {
-        qWarning() << "Recieved finished signal while progress is still:" << progress()
-                   << "Url:" << url();
+    if (m_progress != 100) {
+        qWarning() << "Recieved finished signal while progress is still:" << progress() << "Url:" << url();
     }
     m_progress = 0;
 }
@@ -204,13 +187,7 @@ QUrl WebView::url() const
     return m_initialUrl;
 }
 
-
-void WebView::setStatusBarText(const QString &string)
+void WebView::setStatusBarText(const QString &message)
 {
-    m_statusBarText = string;
+    m_statusBarText = message;
 }
-
-
-
-
-

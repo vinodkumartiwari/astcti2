@@ -56,8 +56,8 @@ namespace Ui {
 class CompactWindow : public QDialog {
     Q_OBJECT
 public:
-    CompactWindow(const QString &userName);
-    ~CompactWindow();
+    explicit CompactWindow(const QString &userName);
+    virtual ~CompactWindow();
 
 public slots:
     void setStatus(bool status);
@@ -73,10 +73,10 @@ signals:
     void logOff();
 
 protected:
-    void keyPressEvent (QKeyEvent *event);
-    void closeEvent(QCloseEvent *event);
+    void keyPressEvent(QKeyEvent *e);
+    void closeEvent(QCloseEvent *e);
     void changeEvent(QEvent *e);
-    bool eventFilter(QObject *object, QEvent *event);
+    bool eventFilter(QObject *object, QEvent *e);
 
 private:
     Ui::CompactWindow *m_ui;

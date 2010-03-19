@@ -35,49 +35,68 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+
 #ifndef BROWSERWINDOW_H
 #define BROWSERWINDOW_H
 
 #include <QtGui>
 #include <QtGui/QMainWindow>
+#include <QStringList>
+
+#include "globalconstants.h"
 
 class WebView;
 
 namespace Ui {
-    class BrowserWindowClass;
+    class BrowserWindow;
 }
 
 class BrowserWindow : public QMainWindow {
     Q_OBJECT
-
 public:
-    explicit BrowserWindow(QWidget *parent = 0);
+    explicit BrowserWindow(const QString &userName, QUrl url, QWidget *parent = 0);
     virtual ~BrowserWindow();
+
     void setUrl(QUrl url);
     WebView *currentView() const;
 
 signals:
     void windowClosing(BrowserWindow*);
+    void linkClicked(QUrl);
 
 protected:
-    QLabel *lblCurrentStatus;
+    QLabel *statusLabel;
+
+    QStringList history;
+    int currentHistoryItem;
+
     void changeEvent(QEvent *e);
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *e);
+    void keyPressEvent(QKeyEvent *e);
 
 private:
-    Ui::BrowserWindowClass *m_ui;
+    Ui::BrowserWindow *m_ui;
     WebView *webView;
-    void addExtraWidgets();
+
+    QString userName;
+    QUrl currentUrl;
+
+    void historySetEnabled();
+    void writeSettings();
+    void readSettings();
 
 private slots:
-    void on_btnGo_clicked();
+    void prevButton_clicked();
+    void nextButton_clicked();
+    void reloadButton_clicked();
+    void stopButton_clicked();
+    void goButton_clicked();
     void webView_linkClicked(QUrl url);
     void webView_loadProgress(int progress);
     void webView_titleChanged(QString title);
     void webView_statusBarMessage(QString text);
     void webView_loadFinished(bool );
     void webView_loadStarted();
-
 };
 
 #endif // BROWSERWINDOW_H

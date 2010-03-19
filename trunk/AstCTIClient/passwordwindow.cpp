@@ -53,6 +53,7 @@ PasswordWindow::PasswordWindow(QWidget *parent) :
     m_ui->dialogButtonBox->buttons().at(1)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
 
     connect(this->m_ui->dialogButtonBox, SIGNAL(accepted()), this, SLOT(accepting()));
+    connect(this->m_ui->dialogButtonBox, SIGNAL(rejected()), this, SLOT(rejecting()));
 }
 
 PasswordWindow::~PasswordWindow()
@@ -88,4 +89,9 @@ void PasswordWindow::accepting()
 
         this->accept();
     }
+}
+
+void PasswordWindow::rejecting()
+{
+    this->reject();
 }

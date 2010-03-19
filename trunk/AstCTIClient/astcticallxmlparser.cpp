@@ -36,21 +36,40 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include <QHashIterator>
+#include <QDebug>
+
 #include "astcticallxmlparser.h"
 
 AstCTICallXMLParser::AstCTICallXMLParser(AstCTICall *call)
         : QXmlDefaultHandler()
 {
     this->call = call;
-    this->call->application = 0;
 
     this->inVariables = false;
 }
 
-bool AstCTICallXMLParser::startElement(const QString &, const QString &, const QString &name, const QXmlAttributes &)
+bool AstCTICallXMLParser::startElement(const QString &, const QString &, const QString &name, const QXmlAttributes &attrs)
 {
     if (name == "Variables") {
         this->inVariables = true;
+    } else if (name == "Application") {
+        this->currentAction = new AstCTIAction;
+        this->currentAction->type = ActionTypeApplication;
+    } else if (name == "Browser") {
+        this->currentAction = new AstCTIAction;
+        this->currentAction->type = ActionTypeExternalBrowser;
+    } else if (name == "InternalBrowser") {
+        this->currentAction = new AstCTIAction;
+        this->currentAction->type = ActionTypeInternalBrowser;
+    } else if (name == "TcpMessage") {
+        this->currentAction = new AstCTIAction;
+        this->currentAction->type = ActionTypeTcpMessage;
+    } else if (name == "UdpMessage") {
+        this->currentAction = new AstCTIAction;
+        this->currentAction->type = ActionTypeUdpMessage;
+    } else if (name == "call") {
+        this->call->uniqueId = attrs.value(0);
     }
 
     return true;
@@ -66,13 +85,37 @@ bool AstCTICallXMLParser::characters(const QString &ch)
 bool AstCTICallXMLParser::endElement(const QString &, const QString &, const QString &name)
 {
     if (inVariables) {
-        this->call->variables[name] = this->currentText;
+        this->call->variables.insert(name, this->currentText);
     } else if (name == "Variables") {
         this->inVariables = false;
+    } else if (name == "Application" ||
+               name == "Browser" ||
+               name == "InternalBrowser" ||
+               name == "TcpMessage" ||
+               name == "UdpMessage") {
+        this->call->actions.append(this->currentAction);
+        this->currentAction = 0;
     } else if (name == "Path") {
-        this->call->application->path = this->currentText;
-    } else if (name == "Parameters") {
-        this->call->application->parameters = this->currentText;
+        this->currentAction->path = this->currentText;
+    } else if (name == "Server") {
+        this->currentAction->server = this->currentText;
+    } else if (name == "Port") {
+        bool ok;
+        this->currentAction->port = this->currentText.toUShort(&ok);
+        if (!ok)
+            qCritical() << "Wrong value received from server for Server Port:" << this->currentText;
+    } else if (name == "Parameters" ||
+               name == "Url" ||
+               name == "Message") {
+        //Server will fill in the variable values, no need to do it here
+//        QHashIterator<QString, QString> i(this->call->variables);
+//        while (i.hasNext()) {
+//            i.next();
+//            this->currentText.replace(i.key(), i.value(), Qt::CaseSensitive);
+//        }
+        this->currentAction->parameters = this->currentText;
+    } else if (name == "Encoding") {
+        this->currentAction->encoding = this->currentText;
     } else if (name == "Channel") {
         this->call->channel = this->currentText;
     } else if (name == "ParsedChannel") {
@@ -85,8 +128,6 @@ bool AstCTICallXMLParser::endElement(const QString &, const QString &, const QSt
         this->call->callerIdNum = this->currentText;
     } else if (name == "CallerIdName") {
         this->call->callerIdName = this->currentText;
-    } else if (name == "UniqueId") {
-        this->call->uniqueId = this->currentText;
     } else if (name == "DestUniqueId") {
         this->call->destUniqueId = this->currentText;
     } else if (name == "Context") {

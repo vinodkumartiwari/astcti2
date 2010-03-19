@@ -70,7 +70,6 @@ CompactWindow::~CompactWindow()
     delete m_ui;
 }
 
-
 void CompactWindow::connectSlots()
 {
     connect(m_ui->callButton, SIGNAL(clicked()), this, SLOT(placeCall()));
@@ -147,20 +146,20 @@ void CompactWindow::showMessage(const QString &message, QSystemTrayIcon::Message
     }
 }
 
-void CompactWindow::keyPressEvent(QKeyEvent *event)
+void CompactWindow::keyPressEvent(QKeyEvent *e)
 {
-    if (event->key() == Qt::Key_Escape) {
-        event->accept();
+    if (e->key() == Qt::Key_Escape) {
+        e->accept();
     }
 }
 
-void CompactWindow::closeEvent(QCloseEvent *event)
+void CompactWindow::closeEvent(QCloseEvent *e)
 {
     if (this->canClose) {
         writeSettings();
-        event->accept();
+        e->accept();
     } else {
-        event->ignore();
+        e->ignore();
     }
 }
 
@@ -176,14 +175,14 @@ void CompactWindow::changeEvent(QEvent *e)
     }
 }
 
-bool CompactWindow::eventFilter(QObject *object, QEvent *event)
+bool CompactWindow::eventFilter(QObject *object, QEvent *e)
 {
-    QEvent::Type type = event->type();
+    QEvent::Type type = e->type();
 
     if (type != QEvent::MouseButtonPress && type != QEvent::MouseButtonRelease && type != QEvent::MouseMove)
         return false;
 
-    QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event);
+    QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(e);
 
     if (!mouseEvent || mouseEvent->modifiers() != Qt::NoModifier)
         return false;
@@ -198,7 +197,7 @@ bool CompactWindow::eventFilter(QObject *object, QEvent *event)
         } else {
             this->offset = mouseEvent->globalPos() - this->pos();
         }
-        event->accept();
+        e->accept();
         accepted = true;
     }
 
@@ -276,8 +275,7 @@ void CompactWindow::writeSettings()
     QSettings settings(appName);
 
     settings.beginGroup("CompactWindow." + this->userName);
-    settings.setValue("size", this->size());
-    settings.setValue("pos", this->pos());
+    settings.setValue("geometry", this->saveGeometry());
     settings.endGroup();
  }
 
@@ -285,10 +283,7 @@ void CompactWindow::readSettings()
 {
     QSettings settings(appName);
 
-    qDebug() << settings.fileName();
-
     settings.beginGroup("CompactWindow." + this->userName);
-    this->resize(settings.value("size", QSize(400, 31)).toSize());
-    this->move(settings.value("pos", QPoint(50, 50)).toPoint());
+    this->restoreGeometry(settings.value("geometry").toByteArray());
     settings.endGroup();
  }
