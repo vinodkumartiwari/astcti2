@@ -40,10 +40,23 @@
 #define ASTCTICALL_H
 
 #include <QHash>
+#include <QList>
 
-struct AstCTIApplication
+enum AstCTIActionType {
+    ActionTypeApplication,
+    ActionTypeInternalBrowser,
+    ActionTypeExternalBrowser,
+    ActionTypeTcpMessage,
+    ActionTypeUdpMessage
+};
+
+struct AstCTIAction
 {
+    AstCTIActionType type;
     QString path;
+    QString server;
+    quint16 port;
+    QString encoding;
     QString parameters;
 };
 
@@ -60,7 +73,7 @@ struct AstCTICall
     QString                 context;
     QString                 state;
     QHash<QString, QString> variables;
-    AstCTIApplication       *application;
+    QList<AstCTIAction*>    actions;
 };
 
 #endif // ASTCTICALL_H

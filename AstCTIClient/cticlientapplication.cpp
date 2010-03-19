@@ -158,7 +158,8 @@ CtiClientApplication::~CtiClientApplication()
     delete(this->servicesList);
     delete(this->queuesList);
 
-    qDeleteAll(browserWindows);
+    qDeleteAll(this->applications);
+    qDeleteAll(this->browserWindows);
 }
 
 //Called by main() and basically kicks of the application
@@ -209,6 +210,9 @@ void CtiClientApplication::changePassword(){
         this->newPassword = w->newPass;
         sendCommandToServer(CmdChangePassword, w->oldPass + " " + this->newPassword);
     }
+
+    //TEMP
+    newBrowserWindow(QUrl("http://www.google.com"));
 }
 
 //Called when the user logs off in the main window
@@ -216,6 +220,14 @@ void CtiClientApplication::logOff()
 {
     //Let the server know that the user has logged off
     sendCommandToServer(CmdQuit);
+
+    //Close all open applications (application is closed when QProcess is destroyed)
+    qDeleteAll(this->applications);
+    this->applications.clear();
+
+    //Browsers will be closed automatically, we just do the cleanup
+    qDeleteAll(this->browserWindows);
+    this->browserWindows.clear();
 
     //We don't wait for server to acknowledge user logoff
     //If connection is dropped before that, the server will log user off automatically
@@ -227,6 +239,13 @@ void  CtiClientApplication::browserWindowClosed(BrowserWindow *window)
 {
     //Remove browser from the list
     this->browserWindows.removeOne(window);
+}
+
+//Called when one of started applications closes
+void  CtiClientApplication::applicationClosed(QProcess *process)
+{
+    //Remove process from the list
+    this->applications.removeOne(process);
 }
 
 //Initiates TCP connection
@@ -300,7 +319,7 @@ void CtiClientApplication::connectionLost()
 
 void CtiClientApplication::resetLastCTICommand()
 {
-    delete(this->lastCTICommand);
+    delete this->lastCTICommand;
     this->lastCTICommand = 0;
 }
 
@@ -589,14 +608,27 @@ void CtiClientApplication::showMainWindow(const QString &extension)
     //TODO: Extension
 }
 
-//Displays the internal browser
-void CtiClientApplication::newBrowserWindow()
+//Displays the internal browser with the specified URL
+void CtiClientApplication::newBrowserWindow(QUrl url)
 {
-    // All browsers will be child of our main window
-    // if we close main window all browser' windows will close too
-    BrowserWindow *browser = new BrowserWindow(this->mainWindow);
+    //All browsers will be children of our main window
+    //If we close main window all browser windows will close too
+    BrowserWindow *browser = new BrowserWindow(this->config->user, url, this->mainWindow);
     this->browserWindows.append(browser);
+    connect(browser, SIGNAL(windowClosing(BrowserWindow*)), this, SLOT(browserWindowClosed(BrowserWindow*)));
+    connect(browser, SIGNAL(linkClicked(QUrl)), this, SLOT(newBrowserWindow(QUrl)));
     browser->show();
+}
+
+//Starts a new application
+void CtiClientApplication::newApplication(const QString &path, const QString &parameters)
+{
+    //We keep track of started applications by their processes
+    //When main window closes, all QProcess objects will be destroyed, thus closing the applications
+    QProcess *process = new QProcess();
+    this->applications.append(process);
+    connect(process, SIGNAL(destroyed(QObject*)), this, SLOT(applicationClosed(QProcess*)));
+    process->start(path, QStringList(parameters), QIODevice::ReadOnly);
 }
 
 //Slot which receives socket's connected signal

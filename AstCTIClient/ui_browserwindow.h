@@ -1,10 +1,10 @@
 /********************************************************************************
-** Form generated from reading ui file 'browserwindow.ui'
+** Form generated from reading UI file 'browserwindow.ui'
 **
-** Created: Mon Oct 26 18:53:02 2009
-**      by: Qt User Interface Compiler version 4.5.2
+** Created: Mon Mar 15 13:08:55 2010
+**      by: Qt User Interface Compiler version 4.6.1
 **
-** WARNING! All changes made in this file will be lost when recompiling ui file!
+** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
 #ifndef UI_BROWSERWINDOW_H
@@ -18,52 +18,125 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QLineEdit>
 #include <QtGui/QMainWindow>
-#include <QtGui/QPushButton>
+#include <QtGui/QSpacerItem>
 #include <QtGui/QStatusBar>
+#include <QtGui/QToolButton>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
 
 QT_BEGIN_NAMESPACE
 
-class Ui_BrowserWindowClass
+class Ui_BrowserWindow
 {
 public:
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout_2;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
-    QLineEdit *txtUrl;
-    QPushButton *btnGo;
-    QPushButton *pushButton_2;
+    QToolButton *prevButton;
+    QToolButton *nextButton;
+    QSpacerItem *horizontalSpacer;
+    QToolButton *reloadButton;
+    QSpacerItem *horizontalSpacer_2;
+    QToolButton *stopButton;
+    QLineEdit *urlLineEdit;
+    QToolButton *goButton;
     QStatusBar *statusbar;
 
-    void setupUi(QMainWindow *BrowserWindowClass)
+    void setupUi(QMainWindow *BrowserWindow)
     {
-        if (BrowserWindowClass->objectName().isEmpty())
-            BrowserWindowClass->setObjectName(QString::fromUtf8("BrowserWindowClass"));
-        BrowserWindowClass->resize(800, 600);
-        centralwidget = new QWidget(BrowserWindowClass);
+        if (BrowserWindow->objectName().isEmpty())
+            BrowserWindow->setObjectName(QString::fromUtf8("BrowserWindow"));
+        BrowserWindow->resize(800, 600);
+        BrowserWindow->setStyleSheet(QString::fromUtf8("#prevButton, #stopButton {\n"
+"	border-top-left-radius: 3px;\n"
+"	border-bottom-left-radius: 3px;\n"
+"	border: 1px solid gray;\n"
+"	border-right: none;\n"
+"	background: transparent;\n"
+"}\n"
+"#nextButton, #goButton {\n"
+"	border-top-right-radius: 3px;\n"
+"	border-bottom-right-radius: 3px;\n"
+"	border: 1px solid gray;\n"
+"	border-left: none;\n"
+"	background: transparent;\n"
+"}\n"
+"#reloadButton {\n"
+"	border-radius: 3px;\n"
+"	border: 1px solid gray;\n"
+"	background: transparent;\n"
+"}\n"
+"#urlLineEdit {\n"
+"	border: 1px solid gray;\n"
+"}"));
+        centralwidget = new QWidget(BrowserWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         verticalLayout_2 = new QVBoxLayout(centralwidget);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(0);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        txtUrl = new QLineEdit(centralwidget);
-        txtUrl->setObjectName(QString::fromUtf8("txtUrl"));
+        prevButton = new QToolButton(centralwidget);
+        prevButton->setObjectName(QString::fromUtf8("prevButton"));
+        prevButton->setMinimumSize(QSize(26, 25));
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/res/res/browser-previous.png"), QSize(), QIcon::Normal, QIcon::Off);
+        prevButton->setIcon(icon);
 
-        horizontalLayout->addWidget(txtUrl);
+        horizontalLayout->addWidget(prevButton);
 
-        btnGo = new QPushButton(centralwidget);
-        btnGo->setObjectName(QString::fromUtf8("btnGo"));
+        nextButton = new QToolButton(centralwidget);
+        nextButton->setObjectName(QString::fromUtf8("nextButton"));
+        nextButton->setMinimumSize(QSize(26, 25));
+        QIcon icon1;
+        icon1.addFile(QString::fromUtf8(":/res/res/browser-next.png"), QSize(), QIcon::Normal, QIcon::Off);
+        nextButton->setIcon(icon1);
 
-        horizontalLayout->addWidget(btnGo);
+        horizontalLayout->addWidget(nextButton);
 
-        pushButton_2 = new QPushButton(centralwidget);
-        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
+        horizontalSpacer = new QSpacerItem(6, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
-        horizontalLayout->addWidget(pushButton_2);
+        horizontalLayout->addItem(horizontalSpacer);
+
+        reloadButton = new QToolButton(centralwidget);
+        reloadButton->setObjectName(QString::fromUtf8("reloadButton"));
+        reloadButton->setMinimumSize(QSize(26, 25));
+        QIcon icon2;
+        icon2.addFile(QString::fromUtf8(":/res/res/browser-refresh.png"), QSize(), QIcon::Normal, QIcon::Off);
+        reloadButton->setIcon(icon2);
+
+        horizontalLayout->addWidget(reloadButton);
+
+        horizontalSpacer_2 = new QSpacerItem(6, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_2);
+
+        stopButton = new QToolButton(centralwidget);
+        stopButton->setObjectName(QString::fromUtf8("stopButton"));
+        stopButton->setMinimumSize(QSize(26, 25));
+        QIcon icon3;
+        icon3.addFile(QString::fromUtf8(":/res/res/cancel.png"), QSize(), QIcon::Normal, QIcon::Off);
+        stopButton->setIcon(icon3);
+
+        horizontalLayout->addWidget(stopButton);
+
+        urlLineEdit = new QLineEdit(centralwidget);
+        urlLineEdit->setObjectName(QString::fromUtf8("urlLineEdit"));
+        urlLineEdit->setMinimumSize(QSize(0, 25));
+
+        horizontalLayout->addWidget(urlLineEdit);
+
+        goButton = new QToolButton(centralwidget);
+        goButton->setObjectName(QString::fromUtf8("goButton"));
+        goButton->setMinimumSize(QSize(26, 25));
+        QIcon icon4;
+        icon4.addFile(QString::fromUtf8(":/res/res/browser-go.png"), QSize(), QIcon::Normal, QIcon::Off);
+        goButton->setIcon(icon4);
+
+        horizontalLayout->addWidget(goButton);
 
 
         verticalLayout->addLayout(horizontalLayout);
@@ -71,28 +144,45 @@ public:
 
         verticalLayout_2->addLayout(verticalLayout);
 
-        BrowserWindowClass->setCentralWidget(centralwidget);
-        statusbar = new QStatusBar(BrowserWindowClass);
+        BrowserWindow->setCentralWidget(centralwidget);
+        statusbar = new QStatusBar(BrowserWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
-        BrowserWindowClass->setStatusBar(statusbar);
+        BrowserWindow->setStatusBar(statusbar);
+        QWidget::setTabOrder(urlLineEdit, goButton);
+        QWidget::setTabOrder(goButton, prevButton);
+        QWidget::setTabOrder(prevButton, nextButton);
+        QWidget::setTabOrder(nextButton, reloadButton);
+        QWidget::setTabOrder(reloadButton, stopButton);
 
-        retranslateUi(BrowserWindowClass);
+        retranslateUi(BrowserWindow);
 
-        QMetaObject::connectSlotsByName(BrowserWindowClass);
+        QMetaObject::connectSlotsByName(BrowserWindow);
     } // setupUi
 
-    void retranslateUi(QMainWindow *BrowserWindowClass)
+    void retranslateUi(QMainWindow *BrowserWindow)
     {
-        BrowserWindowClass->setWindowTitle(QApplication::translate("BrowserWindowClass", "AsteriskCTI Browser", 0, QApplication::UnicodeUTF8));
-        btnGo->setText(QApplication::translate("BrowserWindowClass", "&Go", 0, QApplication::UnicodeUTF8));
-        pushButton_2->setText(QApplication::translate("BrowserWindowClass", "&Back", 0, QApplication::UnicodeUTF8));
-        Q_UNUSED(BrowserWindowClass);
+        BrowserWindow->setWindowTitle(QApplication::translate("BrowserWindow", "AsteriskCTI Browser", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        prevButton->setToolTip(QApplication::translate("BrowserWindow", "Previous page", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
+        nextButton->setToolTip(QApplication::translate("BrowserWindow", "Next page", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
+        reloadButton->setToolTip(QApplication::translate("BrowserWindow", "Reload current page", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
+        stopButton->setToolTip(QApplication::translate("BrowserWindow", "Stop loading current page", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
+        goButton->setToolTip(QApplication::translate("BrowserWindow", "Go to this page", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class BrowserWindowClass: public Ui_BrowserWindowClass {};
+    class BrowserWindow: public Ui_BrowserWindow {};
 } // namespace Ui
 
 QT_END_NAMESPACE

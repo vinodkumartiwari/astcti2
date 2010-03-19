@@ -1,10 +1,10 @@
 /********************************************************************************
-** Form generated from reading ui file 'aboutdialog.ui'
+** Form generated from reading UI file 'aboutdialog.ui'
 **
-** Created: Mon Oct 26 18:53:02 2009
-**      by: Qt User Interface Compiler version 4.5.2
+** Created: Mon Mar 15 13:08:55 2010
+**      by: Qt User Interface Compiler version 4.6.1
 **
-** WARNING! All changes made in this file will be lost when recompiling ui file!
+** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
 #ifndef UI_ABOUTDIALOG_H
@@ -78,7 +78,6 @@ public:
         btnShowLicence->setText(QApplication::translate("AboutDialog", "Show &Licence", 0, QApplication::UnicodeUTF8));
         btnAboutQt->setText(QApplication::translate("AboutDialog", "About &QT", 0, QApplication::UnicodeUTF8));
         lblCopyright->setText(QString());
-        Q_UNUSED(AboutDialog);
     } // retranslateUi
 
 };

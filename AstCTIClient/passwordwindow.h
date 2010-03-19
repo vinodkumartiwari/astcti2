@@ -64,6 +64,7 @@ private:
 
 private slots:
     void accepting();
+    void rejecting();
 };
 
 #endif // PASSWORDWINDOW_H

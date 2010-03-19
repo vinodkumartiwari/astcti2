@@ -48,7 +48,6 @@ class QNetworkReply;
 class QSslError;
 QT_END_NAMESPACE
 
-class BrowserWindow;
 class WebPage : public QWebPage {
     Q_OBJECT
 
@@ -57,14 +56,13 @@ signals:
 
 public:
     WebPage(QObject *parent = 0);
-    BrowserWindow *mainWindow();
 
 private slots:
     void handleUnsupportedContent(QNetworkReply *reply);
 
 protected:
     bool acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type);
-    QWebPage *createWindow(QWebPage::WebWindowType type);
+//    QWebPage *createWindow(QWebPage::WebWindowType type);
 #if !defined(QT_NO_UITOOLS)
     QObject *createPlugin(const QString &classId, const QUrl &url, const QStringList &paramNames, const QStringList &paramValues);
 #endif
@@ -79,18 +77,17 @@ class WebView : public QWebView {
 
 public:
     WebView(QWidget *parent = 0);
-    WebPage *webPage() const { return m_page; }
+    WebPage *webPage() const {return m_page;}
 
     void loadUrl(const QUrl &url);
     QUrl url() const;
-
     QString lastStatusBarText() const;
-    inline int progress() const { return m_progress; }
+    inline int progress() const {return m_progress;}
 
 private slots:
     void setProgress(int progress);
     void loadFinished();
-    void setStatusBarText(const QString &string);
+    void setStatusBarText(const QString &message);
 
 private:
     QString m_statusBarText;

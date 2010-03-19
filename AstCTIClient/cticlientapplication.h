@@ -63,13 +63,13 @@
 #include "browserwindow.h"
 
 #ifdef Q_WS_WIN
-const QString osType = "WIN";
+const QString osType = "WINDOWS";
 #endif
 #ifdef Q_WS_MAC
-const QString osType = "MAC";
+const QString osType = "MACINTOSH";
 #endif
 #ifdef Q_WS_X11
-const QString osType = "LIN";
+const QString osType = "LINUX";
 #endif
 #ifdef Q_WS_QWS
 const QString osType = "QWS";
@@ -123,6 +123,10 @@ public slots:
 
     //Signals from browser
     void                    browserWindowClosed(BrowserWindow *window);
+    void                    newBrowserWindow(QUrl url);
+
+    //Signals from QProcess
+    void                    applicationClosed(QProcess *process);
 
 signals:
     void                    eventReceived(AstCTICall *astCTICall);
@@ -165,6 +169,7 @@ private:
     LoginWindow             *loginWindow;
     QWidget                 *mainWindow;
     QList<BrowserWindow*>   browserWindows;
+    QList<QProcess*>        applications;
 
     void                    connectSocket();
     void                    abortConnection(StopReason stopReason, const QString &message);
@@ -179,7 +184,7 @@ private:
     void                    sendCommandToServer(const AstCTICommands command);
     void                    sendCommandToServer(const AstCTICommands command, const QString &parameters);
     void                    showMainWindow(const QString &extension);
-    void                    newBrowserWindow();
+    void                    newApplication(const QString &path, const QString &parameters);
 
 private slots:
     void                    socketConnected();
