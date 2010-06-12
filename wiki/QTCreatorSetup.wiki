@@ -1,0 +1,13 @@
+#summary Setup development environment with QTCreator
+
+= QTCreator Setup =
+Please follow these steps to get QTCreator up and running to develop AsteriskCTI.
+
+  # Download the right QTCreator LGPL version from [http://qt.nokia.com/downloads Nokia].
+  # Run the setup. If - like me - you are on GNU/Linux, you need to make the downloaded .bin file executable. Do a `chmod u+x qt-sdk-linux-[your-version-here].bin` and then a `./qt-sdk-linux-[your-version-here].bin`
+  # Once your QTCreator is installed, you need to build the MySQL Driver. Please check that you've mysql client libraries and development files installed before continue.
+  # If you're on windows, you can follow [http://www.jiggerjuice.net/software/qt-sql-drivers.html these steps].
+  # If you're on linux, simply chdir into your qtsdk directory and then into this path qtsdk/src/plugins/sqldrivers/mysql. Once there do the following: `qmake -o Makefile INCLUDEPATH+=/usr/include/mysql LIBS+=/usr/lib/libmysqlclient.a mysql.pro && make`
+  # Copy the libqsqlmysql.so file in the qtsdk/qt/plugins/sqldriver directory.
+
+That's all.
