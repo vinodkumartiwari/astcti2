@@ -1,7 +1,6 @@
 #summary Setup development environment with QTCreator
 
-= QTCreator Setup =
-Please follow these steps to get QTCreator up and running to develop AsteriskCTI.
+*Please follow these steps to get QTCreator up and running to develop AsteriskCTI.*
 
   # Download the right QTCreator LGPL version from [http://qt.nokia.com/downloads Nokia].
   # Run the setup. If - like me - you are on GNU/Linux, you need to make the downloaded .bin file executable. Do a `chmod u+x qt-sdk-linux-[your-version-here].bin` and then a `./qt-sdk-linux-[your-version-here].bin`
