@@ -236,9 +236,20 @@ void CompactWindow::minimizeToTray()
     this->hide();
 }
 
+void CompactWindow::pauseError(const QString &message)
+{
+   this->m_ui->pauseButton->setEnabled(true);
+   this->showMessage(message, QSystemTrayIcon::Warning);
+}
+
+void CompactWindow::pauseAccepted() {
+    this->m_ui->pauseButton->setEnabled(true);
+}
+
 void CompactWindow::pause(bool paused)
 {
-    //TODO
+    this->m_ui->pauseButton->setEnabled(false);
+    emit this->pauseRequest(paused);
 }
 
 void CompactWindow::quit(bool skipCheck)
