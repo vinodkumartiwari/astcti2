@@ -65,10 +65,13 @@ public slots:
     void placeCall();
     void about();
     void minimizeToTray();
+    void pauseAccepted();
+    void pauseError(const QString &message);
     void pause(bool paused);
     void quit(bool skipCheck);
 
 signals:
+    void pauseRequest(bool bPause);
     void changePassword();
     void logOff();
 

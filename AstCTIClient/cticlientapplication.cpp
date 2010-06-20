@@ -202,6 +202,15 @@ void CtiClientApplication::loginReject()
     this->exit(0);
 }
 
+void CtiClientApplication::pause(bool bPause)
+{
+    if (bPause) {
+        sendCommandToServer(CmdPause, "IN");
+    } else {
+        sendCommandToServer(CmdPause, "IN");
+    }
+}
+
 //Called when the user clicks 'Change password' in the main window
 void CtiClientApplication::changePassword(){
     PasswordWindow *w = new PasswordWindow(this->mainWindow);
@@ -440,7 +449,7 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
                 break;
             case CmdOrig:
                 //TODO
-                break;
+                break;            
             default:
                 if (config->qDebug) qDebug() << "Received unexpected response from server: \'" << response.code << " " << response.data.join(" ") << "\' to command " << this->lastCTICommand->command;
                 resetLastCTICommand();
@@ -589,9 +598,14 @@ void CtiClientApplication::showMainWindow(const QString &extension)
         connect(this, SIGNAL(newMessage(QString,QSystemTrayIcon::MessageIcon)), w, SLOT(showMessage(QString,QSystemTrayIcon::MessageIcon)));
         connect(this, SIGNAL(statusChange(bool)), w, SLOT(setStatus(bool)));
         connect(this, SIGNAL(closeWindow(bool)), w, SLOT(quit(bool)));
+        connect(this, SIGNAL(pauseAccepted()), w, SLOT(pauseAccepted()));
+        connect(this, SIGNAL(pauseError(QString)), w , SLOT(pauseError(QString)) );
 
         connect(w, SIGNAL(logOff()), this, SLOT(logOff()));
         connect(w, SIGNAL(changePassword()), this, SLOT(changePassword()));
+
+        // insert here signals to handle pause
+        connect(w, SIGNAL(pauseRequest(bool)), this, SLOT(pause(bool)));
 
         this->mainWindow = dynamic_cast<QWidget*>(w);
         w->show();

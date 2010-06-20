@@ -120,6 +120,7 @@ public slots:
     //Signals from main window
     void                    changePassword();
     void                    logOff();
+    void                    pause(bool bPause);
 
     //Signals from browser
     void                    browserWindowClosed(BrowserWindow *window);
