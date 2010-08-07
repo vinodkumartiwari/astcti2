@@ -1,4 +1,4 @@
-    /* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2009 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -103,6 +103,14 @@ CtiServerApplication::~CtiServerApplication()
 
 void  CtiServerApplication::reloadSqlDatabase()
 {
+
+    // TODO : About race condition, you could add all the data (services, actions...) to the
+    // TODO : main configuration struct. Then, when database is changed, you could read the
+    // TODO : data from within the configurationchecker thread and put it in a temporary
+    // TODO : config struct. Once you are sure that you read all the data, you can pass the
+    // TODO : temporary struct to the main thread within newConfiguration signal, and make
+    // TODO : it active (and delete the old one, of course).
+
     qDebug() << "Configuration has changed on " << this->configChecker->getLastModified();
 
     buildSqlDatabase();

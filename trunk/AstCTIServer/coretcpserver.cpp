@@ -244,7 +244,7 @@ void CoreTcpServer::receiveCtiEvent(const AMIEvent &eventId, QAstCTICall *theCal
     if (theCall != 0) {
         QString callChannel = theCall->getParsedDestChannel();
 
-        logMsg = "for call" + theCall->getUniqueId();
+        logMsg = "for call " + theCall->getUniqueId();
         if (callChannel.length() > 0) {
             QString identifier = QString("exten-%1").arg(callChannel);
 
