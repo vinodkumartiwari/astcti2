@@ -1,0 +1,2859 @@
+10:43:49 (DEBUG): Reading Configurations
+10:43:49 (DEBUG): Reading first runtime configuration from database 
+10:43:49 (WARNING): QSqlDatabase: QMYSQL driver not loaded
+10:43:49 (WARNING): QSqlDatabase: available drivers: QSQLITE QPSQL7 QPSQL
+10:43:49 (CRITICAL): Unable to open MySQL database:  QSqlError(-1, "Driver not loaded", "Driver not loaded") 
+ 
+10:43:49 (DEBUG): In CtiServerApplication::~CtiServerApplication() 
+10:43:49 (DEBUG): In ConfigurationChecker::~ConfigurationChecker() 
+10:43:49 (DEBUG): CtiServerApplication closing 
+10:43:49 (DEBUG): MySQL database connection closed 
+10:43:49 (DEBUG): Stopped 
+10:50:51 (DEBUG): Reading Configurations
+10:51:21 (DEBUG): Reading first runtime configuration from database 
+10:51:22 (WARNING): QSqlDatabase: QMYSQL driver not loaded
+10:51:22 (WARNING): QSqlDatabase: available drivers: QSQLITE QPSQL7 QPSQL
+10:51:22 (CRITICAL): Unable to open MySQL database:  QSqlError(-1, "Driver not loaded", "Driver not loaded") 
+ 
+10:54:13 (DEBUG): Reading Configurations
+10:54:13 (DEBUG): Reading first runtime configuration from database 
+10:54:33 (WARNING): QSqlDatabase: QMYSQL driver not loaded
+10:54:33 (WARNING): QSqlDatabase: available drivers: QSQLITE QPSQL7 QPSQL
+10:56:14 (CRITICAL): Unable to open MySQL database:  QSqlError(-1, "Driver not loaded", "Driver not loaded") 
+ 
+11:20:05 (DEBUG): Reading Configurations
+11:20:05 (DEBUG): Reading first runtime configuration from database 
+11:23:12 (DEBUG): MySQL database successfully opened
+ 
+11:23:12 (DEBUG): MySQL database version  "0.5" 
+ 
+11:23:12 (DEBUG): loadSeat complete for operator "oper1" 
+11:23:12 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:23:12 (DEBUG): loadSeat complete for operator "oper1" 
+11:23:12 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:23:12 (DEBUG): loadSeat complete for operator "oper2" 
+11:23:12 (DEBUG): loadListOfServices complete for operator "oper2" 
+11:23:12 (DEBUG): loadListOfServices complete for operator "oper3" 
+11:23:12 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+11:23:12 (DEBUG): CoreTcpServer listening on port  5000 
+11:23:12 (DEBUG): Configuration has changed on  1255558719 
+11:23:19 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+11:23:19 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:23:19 (DEBUG): MySQL database successfully opened
+ 
+11:23:19 (DEBUG): MySQL database version  "0.5" 
+ 
+11:23:19 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+11:23:19 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+11:23:19 (DEBUG): In QAstCTIService::~QAstCTIService() 
+11:23:19 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+11:23:19 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:23:19 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:23:19 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+11:23:19 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+11:23:19 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+11:23:19 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+11:23:19 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+11:23:19 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+11:23:19 (DEBUG): loadSeat complete for operator "oper1" 
+11:23:19 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:23:19 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+11:23:19 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:23:19 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:23:19 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:23:19 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:23:19 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:23:19 (DEBUG): loadSeat complete for operator "oper1" 
+11:23:19 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:23:19 (DEBUG): loadSeat complete for operator "oper2" 
+11:23:19 (DEBUG): loadListOfServices complete for operator "oper2" 
+11:23:19 (DEBUG): loadListOfServices complete for operator "oper3" 
+11:23:19 (DEBUG): Service alive is  "ast-cti-demo" 
+11:23:19 (DEBUG): Number of operators on service is  1 
+11:23:19 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+11:23:19 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+11:23:19 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+11:23:19 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:23:19 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:23:19 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:23:19 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:23:49 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:23:49 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:23:49 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:23:49 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:23:49 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:24:19 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:24:19 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:24:19 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:24:19 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:24:19 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:24:49 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:24:49 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:24:49 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:24:49 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:24:49 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:25:19 (DEBUG): AMI Client will now stop definitively 
+11:25:19 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:25:19 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:25:19 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:25:19 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:25:19 (DEBUG): Received STOP signal 
+11:25:19 (DEBUG): In CtiServerApplication::~CtiServerApplication() 
+11:25:19 (DEBUG): In ConfigurationChecker::~ConfigurationChecker() 
+11:25:19 (WARNING): QThread: Destroyed while thread is still running
+11:25:19 (DEBUG): In CoreTcpServer::~CoreTcpServer() 
+11:25:19 (DEBUG): In AMIClient::~AMIClient() 
+11:25:19 (DEBUG): CtiServerApplication closing 
+11:25:19 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+11:25:19 (DEBUG): MySQL database connection closed 
+11:25:19 (DEBUG): Stopped 
+11:38:16 (DEBUG): Reading Configurations
+11:38:16 (DEBUG): Reading first runtime configuration from database 
+11:38:16 (DEBUG): MySQL database successfully opened
+ 
+11:38:16 (DEBUG): MySQL database version  "0.5" 
+ 
+11:38:16 (DEBUG): loadSeat complete for operator "oper1" 
+11:38:17 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:38:17 (DEBUG): loadSeat complete for operator "oper1" 
+11:38:17 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:38:17 (DEBUG): loadSeat complete for operator "oper2" 
+11:38:17 (DEBUG): loadListOfServices complete for operator "oper2" 
+11:38:17 (DEBUG): loadListOfServices complete for operator "oper3" 
+11:38:17 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+11:38:17 (DEBUG): CoreTcpServer listening on port  5000 
+11:38:17 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:38:17 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:38:17 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:38:17 (DEBUG): Configuration has changed on  1255558719 
+11:38:17 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+11:38:17 (DEBUG): MySQL database successfully opened
+ 
+11:38:17 (DEBUG): MySQL database version  "0.5" 
+ 
+11:38:17 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+11:38:17 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+11:38:17 (DEBUG): In QAstCTIService::~QAstCTIService() 
+11:38:17 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+11:38:17 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:38:17 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:38:17 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+11:38:17 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+11:38:17 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+11:38:17 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+11:38:17 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+11:38:17 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+11:38:17 (DEBUG): loadSeat complete for operator "oper1" 
+11:38:17 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:38:17 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+11:38:17 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:38:17 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:38:17 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:38:17 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:38:17 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:38:17 (DEBUG): loadSeat complete for operator "oper1" 
+11:38:17 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:38:17 (DEBUG): loadSeat complete for operator "oper2" 
+11:38:17 (DEBUG): loadListOfServices complete for operator "oper2" 
+11:38:17 (DEBUG): loadListOfServices complete for operator "oper3" 
+11:38:17 (DEBUG): Service alive is  "ast-cti-demo" 
+11:38:17 (DEBUG): Number of operators on service is  1 
+11:38:17 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+11:38:17 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+11:38:17 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+11:38:17 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:38:17 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:38:47 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:38:47 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:38:47 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:38:47 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:38:47 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:39:17 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:39:17 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:39:17 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:39:17 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:39:17 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:39:47 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:39:47 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:39:47 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:39:47 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:39:47 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:39:59 (DEBUG): Reading Configurations
+11:39:59 (DEBUG): Reading first runtime configuration from database 
+11:39:59 (DEBUG): MySQL database successfully opened
+ 
+11:39:59 (DEBUG): MySQL database version  "0.5" 
+ 
+11:39:59 (DEBUG): loadSeat complete for operator "oper1" 
+11:39:59 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:39:59 (DEBUG): loadSeat complete for operator "oper1" 
+11:39:59 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:39:59 (DEBUG): loadSeat complete for operator "oper2" 
+11:39:59 (DEBUG): loadListOfServices complete for operator "oper2" 
+11:39:59 (DEBUG): loadListOfServices complete for operator "oper3" 
+11:39:59 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+11:39:59 (DEBUG): CoreTcpServer listening on port  5000 
+11:39:59 (DEBUG): Configuration has changed on  1255558719 
+11:39:59 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+11:39:59 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:39:59 (DEBUG): MySQL database successfully opened
+ 
+11:39:59 (DEBUG): MySQL database version  "0.5" 
+ 
+11:39:59 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+11:39:59 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+11:39:59 (DEBUG): In QAstCTIService::~QAstCTIService() 
+11:39:59 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+11:39:59 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:39:59 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:39:59 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+11:39:59 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+11:39:59 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+11:39:59 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+11:39:59 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+11:39:59 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+11:39:59 (DEBUG): loadSeat complete for operator "oper1" 
+11:39:59 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:39:59 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+11:39:59 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:39:59 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:39:59 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:39:59 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:39:59 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:39:59 (DEBUG): loadSeat complete for operator "oper1" 
+11:39:59 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:39:59 (DEBUG): loadSeat complete for operator "oper2" 
+11:39:59 (DEBUG): loadListOfServices complete for operator "oper2" 
+11:39:59 (DEBUG): loadListOfServices complete for operator "oper3" 
+11:39:59 (DEBUG): Service alive is  "ast-cti-demo" 
+11:39:59 (DEBUG): Number of operators on service is  1 
+11:39:59 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+11:39:59 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+11:39:59 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+11:39:59 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:39:59 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:39:59 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:39:59 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:40:29 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:40:29 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:40:29 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:40:29 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:40:29 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:40:59 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:40:59 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:40:59 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:40:59 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:40:59 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:41:29 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+11:41:29 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:41:29 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:41:29 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:41:29 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:41:59 (DEBUG): AMI Client will now stop definitively 
+11:41:59 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:41:59 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:41:59 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+11:41:59 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+11:41:59 (DEBUG): Received STOP signal 
+11:41:59 (DEBUG): In CtiServerApplication::~CtiServerApplication() 
+11:41:59 (DEBUG): In ConfigurationChecker::~ConfigurationChecker() 
+11:41:59 (WARNING): QThread: Destroyed while thread is still running
+11:41:59 (DEBUG): In CoreTcpServer::~CoreTcpServer() 
+11:41:59 (DEBUG): In AMIClient::~AMIClient() 
+11:41:59 (DEBUG): CtiServerApplication closing 
+11:41:59 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+11:41:59 (DEBUG): MySQL database connection closed 
+11:41:59 (DEBUG): Stopped 
+11:44:16 (DEBUG): Reading Configurations
+11:44:16 (DEBUG): Reading first runtime configuration from database 
+11:44:16 (DEBUG): MySQL database successfully opened
+ 
+11:44:16 (DEBUG): MySQL database version  "0.5" 
+ 
+11:44:16 (DEBUG): loadSeat complete for operator "oper1" 
+11:44:16 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:44:16 (DEBUG): loadSeat complete for operator "oper1" 
+11:44:16 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:44:16 (DEBUG): loadSeat complete for operator "oper2" 
+11:44:16 (DEBUG): loadListOfServices complete for operator "oper2" 
+11:44:16 (DEBUG): loadListOfServices complete for operator "oper3" 
+11:44:16 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+11:44:16 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+11:44:16 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+11:44:16 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+11:44:16 (DEBUG): CoreTcpServer listening on port  5000 
+11:44:16 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:44:16 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:44:16 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+11:44:16 (DEBUG): Configuration has changed on  1255558719 
+11:44:16 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+11:44:16 (DEBUG): MySQL database successfully opened
+ 
+11:44:16 (DEBUG): MySQL database version  "0.5" 
+ 
+11:44:16 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+11:44:16 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+11:44:16 (DEBUG): In QAstCTIService::~QAstCTIService() 
+11:44:16 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+11:44:16 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:44:16 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:44:16 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+11:44:16 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+11:44:16 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+11:44:16 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+11:44:16 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+11:44:16 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+11:44:16 (DEBUG): loadSeat complete for operator "oper1" 
+11:44:16 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:44:16 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+11:44:16 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:44:16 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:44:16 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:44:16 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:44:16 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:44:16 (DEBUG): We're authenticated by AMI Server 
+11:44:16 (DEBUG): loadSeat complete for operator "oper1" 
+11:44:16 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:44:16 (DEBUG): loadSeat complete for operator "oper2" 
+11:44:16 (DEBUG): loadListOfServices complete for operator "oper2" 
+11:44:16 (DEBUG): loadListOfServices complete for operator "oper3" 
+11:44:16 (DEBUG): Service alive is  "ast-cti-demo" 
+11:44:16 (DEBUG): Number of operators on service is  1 
+11:44:16 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+11:44:16 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+11:44:16 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+11:45:28 (DEBUG): Reading Configurations
+11:45:28 (DEBUG): Reading first runtime configuration from database 
+11:45:28 (DEBUG): MySQL database successfully opened
+ 
+11:45:28 (DEBUG): MySQL database version  "0.5" 
+ 
+11:45:28 (DEBUG): loadSeat complete for operator "oper1" 
+11:45:28 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:45:28 (DEBUG): loadSeat complete for operator "oper1" 
+11:45:28 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:45:28 (DEBUG): loadSeat complete for operator "oper2" 
+11:45:28 (DEBUG): loadListOfServices complete for operator "oper2" 
+11:45:28 (DEBUG): loadListOfServices complete for operator "oper3" 
+11:45:28 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+11:45:28 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+11:45:28 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+11:45:28 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+11:45:28 (DEBUG): CoreTcpServer listening on port  5000 
+11:45:28 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+11:45:28 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+11:45:28 (DEBUG): Configuration has changed on  1255558719 
+11:45:28 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+11:45:28 (DEBUG): MySQL database successfully opened
+ 
+11:45:28 (DEBUG): MySQL database version  "0.5" 
+ 
+11:45:28 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+11:45:28 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+11:45:28 (DEBUG): In QAstCTIService::~QAstCTIService() 
+11:45:28 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+11:45:28 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:45:28 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:45:28 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+11:45:28 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+11:45:28 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+11:45:28 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+11:45:28 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+11:45:28 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+11:45:28 (DEBUG): loadSeat complete for operator "oper1" 
+11:45:28 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:45:28 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+11:45:28 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:45:28 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:45:28 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:45:28 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+11:45:28 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+11:45:28 (DEBUG): loadSeat complete for operator "oper1" 
+11:45:28 (DEBUG): We're authenticated by AMI Server 
+11:45:28 (DEBUG): loadListOfServices complete for operator "oper1" 
+11:45:28 (DEBUG): loadSeat complete for operator "oper2" 
+11:45:28 (DEBUG): loadListOfServices complete for operator "oper2" 
+11:45:28 (DEBUG): loadListOfServices complete for operator "oper3" 
+11:45:28 (DEBUG): Service alive is  "ast-cti-demo" 
+11:45:28 (DEBUG): Number of operators on service is  1 
+11:45:28 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+11:45:28 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+11:45:28 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+11:45:28 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+11:49:28 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+11:49:28 (DEBUG): In ClientManager::ClientManager 
+11:49:28 (DEBUG): In ClientManager::initParserCommands() 
+11:49:28 (DEBUG): In ClientManager::run 
+11:49:28 (DEBUG): Adding exten "client-127.0.0.1-47526" 
+11:49:28 (DEBUG): Number of clients: 1 
+11:49:28 (DEBUG): Incoming Connection from  "127.0.0.1" : 47526 
+11:49:28 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+11:49:28 (DEBUG): Read Timeout is  50000 
+11:50:04 (DEBUG): Removing exten "client-127.0.0.1-47526" 
+11:50:04 (DEBUG): Number of clients: 0 
+11:51:41 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+11:51:41 (DEBUG): In ClientManager::ClientManager 
+11:51:41 (DEBUG): In ClientManager::initParserCommands() 
+11:51:41 (DEBUG): In ClientManager::run 
+11:51:41 (DEBUG): Adding exten "client-127.0.0.1-47531" 
+11:51:41 (DEBUG): Number of clients: 1 
+11:51:41 (DEBUG): Incoming Connection from  "127.0.0.1" : 47531 
+11:51:41 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+11:51:41 (DEBUG): Read Timeout is  50000 
+11:52:56 (DEBUG): Removing exten "client-127.0.0.1-47531" 
+11:52:56 (DEBUG): Number of clients: 0 
+11:53:31 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+11:53:31 (DEBUG): In ClientManager::ClientManager 
+11:53:31 (DEBUG): In ClientManager::initParserCommands() 
+11:53:31 (DEBUG): In ClientManager::run 
+11:53:31 (DEBUG): Incoming Connection from  "127.0.0.1" : 56705 
+11:53:31 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+11:53:31 (DEBUG): Read Timeout is  50000 
+11:53:31 (DEBUG): Adding exten "client-127.0.0.1-56705" 
+11:53:31 (DEBUG): Number of clients: 1 
+11:54:46 (DEBUG): Removing exten "client-127.0.0.1-56705" 
+11:54:46 (DEBUG): Number of clients: 0 
+11:57:25 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+11:57:25 (DEBUG): In ClientManager::ClientManager 
+11:57:25 (DEBUG): In ClientManager::initParserCommands() 
+11:57:25 (DEBUG): In ClientManager::run 
+11:57:25 (DEBUG): Incoming Connection from  "127.0.0.1" : 56706 
+11:57:25 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+11:57:25 (DEBUG): Read Timeout is  50000 
+11:57:25 (DEBUG): Adding exten "client-127.0.0.1-56706" 
+11:57:25 (DEBUG): Number of clients: 1 
+11:58:10 (DEBUG): Removing exten "client-127.0.0.1-56706" 
+11:58:10 (DEBUG): Number of clients: 0 
+12:02:00 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+12:02:00 (DEBUG): In ClientManager::ClientManager 
+12:02:00 (DEBUG): In ClientManager::initParserCommands() 
+12:02:00 (DEBUG): In ClientManager::run 
+12:02:00 (DEBUG): Adding exten "client-127.0.0.1-59660" 
+12:02:00 (DEBUG): Incoming Connection from  "127.0.0.1" : 59660 
+12:02:00 (DEBUG): Number of clients: 1 
+12:02:00 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+12:02:00 (DEBUG): Read Timeout is  50000 
+12:09:03 (DEBUG): Removing exten "client-127.0.0.1-59660" 
+12:09:03 (DEBUG): Number of clients: 0 
+12:11:28 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+12:11:28 (DEBUG): In ClientManager::ClientManager 
+12:11:28 (DEBUG): In ClientManager::initParserCommands() 
+12:11:28 (DEBUG): In ClientManager::run 
+12:11:28 (DEBUG): Incoming Connection from  "127.0.0.1" : 55832 
+12:11:28 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+12:11:28 (DEBUG): Read Timeout is  50000 
+12:11:28 (DEBUG): Adding exten "client-127.0.0.1-55832" 
+12:11:28 (DEBUG): Number of clients: 1 
+12:13:29 (DEBUG): Removing exten "client-127.0.0.1-55832" 
+12:13:29 (DEBUG): Number of clients: 0 
+12:21:49 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+12:21:49 (DEBUG): In ClientManager::ClientManager 
+12:21:49 (DEBUG): In ClientManager::initParserCommands() 
+12:21:49 (DEBUG): In ClientManager::run 
+12:21:49 (DEBUG): Adding exten "client-127.0.0.1-33352" 
+12:21:49 (DEBUG): Number of clients: 1 
+12:21:49 (DEBUG): Incoming Connection from  "127.0.0.1" : 33352 
+12:21:49 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+12:21:49 (DEBUG): Read Timeout is  50000 
+12:22:18 (DEBUG): Removing exten "client-127.0.0.1-33352" 
+12:22:18 (DEBUG): Number of clients: 0 
+12:29:05 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+12:29:05 (DEBUG): In ClientManager::ClientManager 
+12:29:05 (DEBUG): In ClientManager::initParserCommands() 
+12:29:05 (DEBUG): In ClientManager::run 
+12:29:05 (DEBUG): Incoming Connection from  "127.0.0.1" : 42576 
+12:29:05 (DEBUG): Adding exten "client-127.0.0.1-42576" 
+12:29:05 (DEBUG): Number of clients: 1 
+12:29:05 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+12:29:05 (DEBUG): Read Timeout is  50000 
+12:29:57 (DEBUG): Removing exten "client-127.0.0.1-42576" 
+12:29:57 (DEBUG): Number of clients: 0 
+12:40:55 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+12:40:55 (DEBUG): In ClientManager::ClientManager 
+12:40:55 (DEBUG): In ClientManager::initParserCommands() 
+12:40:55 (DEBUG): In ClientManager::run 
+12:40:55 (DEBUG): Adding exten "client-127.0.0.1-40111" 
+12:40:55 (DEBUG): Number of clients: 1 
+12:40:55 (DEBUG): Incoming Connection from  "127.0.0.1" : 40111 
+12:40:55 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+12:40:55 (DEBUG): Read Timeout is  50000 
+12:43:39 (DEBUG): Removing exten "client-127.0.0.1-40111" 
+12:43:39 (DEBUG): Number of clients: 0 
+12:52:57 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+12:52:57 (DEBUG): In ClientManager::ClientManager 
+12:52:57 (DEBUG): In ClientManager::initParserCommands() 
+12:52:57 (DEBUG): In ClientManager::run 
+12:52:57 (DEBUG): Incoming Connection from  "127.0.0.1" : 51851 
+12:52:57 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+12:52:57 (DEBUG): Read Timeout is  50000 
+12:52:57 (DEBUG): Adding exten "client-127.0.0.1-51851" 
+12:52:57 (DEBUG): Number of clients: 1 
+12:55:07 (DEBUG): Removing exten "client-127.0.0.1-51851" 
+12:55:07 (DEBUG): Number of clients: 0 
+13:07:36 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:07:36 (DEBUG): In ClientManager::ClientManager 
+13:07:36 (DEBUG): In ClientManager::initParserCommands() 
+13:07:36 (DEBUG): In ClientManager::run 
+13:07:36 (DEBUG): Adding exten "client-127.0.0.1-51236" 
+13:07:36 (DEBUG): Number of clients: 1 
+13:07:36 (DEBUG): Incoming Connection from  "127.0.0.1" : 51236 
+13:07:36 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:07:36 (DEBUG): Read Timeout is  50000 
+13:12:14 (DEBUG): Removing exten "client-127.0.0.1-51236" 
+13:12:14 (DEBUG): Number of clients: 0 
+13:13:05 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:13:05 (DEBUG): In ClientManager::ClientManager 
+13:13:05 (DEBUG): In ClientManager::initParserCommands() 
+13:13:05 (DEBUG): In ClientManager::run 
+13:13:05 (DEBUG): Incoming Connection from  "127.0.0.1" : 47472 
+13:13:05 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:13:05 (DEBUG): Read Timeout is  50000 
+13:13:05 (DEBUG): Adding exten "client-127.0.0.1-47472" 
+13:13:05 (DEBUG): Number of clients: 1 
+13:14:07 (DEBUG): Removing exten "client-127.0.0.1-47472" 
+13:14:07 (DEBUG): Number of clients: 0 
+13:14:17 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:14:17 (DEBUG): In ClientManager::ClientManager 
+13:14:17 (DEBUG): In ClientManager::initParserCommands() 
+13:14:17 (DEBUG): In ClientManager::run 
+13:14:17 (DEBUG): Adding exten "client-127.0.0.1-40955" 
+13:14:17 (DEBUG): Number of clients: 1 
+13:14:17 (DEBUG): Incoming Connection from  "127.0.0.1" : 40955 
+13:14:17 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:14:17 (DEBUG): Read Timeout is  50000 
+13:16:50 (DEBUG): Removing exten "client-127.0.0.1-40955" 
+13:16:50 (DEBUG): Number of clients: 0 
+13:21:06 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:21:06 (DEBUG): In ClientManager::ClientManager 
+13:21:06 (DEBUG): In ClientManager::initParserCommands() 
+13:21:06 (DEBUG): In ClientManager::run 
+13:21:06 (DEBUG): Incoming Connection from  "127.0.0.1" : 52726 
+13:21:06 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:21:06 (DEBUG): Read Timeout is  50000 
+13:21:06 (DEBUG): Adding exten "client-127.0.0.1-52726" 
+13:21:06 (DEBUG): Number of clients: 1 
+13:21:58 (DEBUG): Removing exten "client-127.0.0.1-52726" 
+13:21:58 (DEBUG): Number of clients: 0 
+13:22:21 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:22:21 (DEBUG): In ClientManager::ClientManager 
+13:22:21 (DEBUG): In ClientManager::initParserCommands() 
+13:22:21 (DEBUG): In ClientManager::run 
+13:22:21 (DEBUG): Incoming Connection from  "127.0.0.1" : 52729 
+13:22:21 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:22:21 (DEBUG): Read Timeout is  50000 
+13:22:21 (DEBUG): Adding exten "client-127.0.0.1-52729" 
+13:22:21 (DEBUG): Number of clients: 1 
+13:23:08 (DEBUG): Removing exten "client-127.0.0.1-52729" 
+13:23:08 (DEBUG): Number of clients: 0 
+13:23:39 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:23:39 (DEBUG): In ClientManager::ClientManager 
+13:23:39 (DEBUG): In ClientManager::initParserCommands() 
+13:23:39 (DEBUG): In ClientManager::run 
+13:23:39 (DEBUG): Incoming Connection from  "127.0.0.1" : 60653 
+13:23:39 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:23:39 (DEBUG): Read Timeout is  50000 
+13:23:39 (DEBUG): Adding exten "client-127.0.0.1-60653" 
+13:23:39 (DEBUG): Number of clients: 1 
+13:23:56 (DEBUG): Received signal dataReceived in parseDataReceived:  "äå" 
+13:23:56 (DEBUG): In ClientManager::sendDataToClient( "101 KO Invalid Command" ) 
+13:24:04 (DEBUG): Removing exten "client-127.0.0.1-60653" 
+13:24:04 (DEBUG): Number of clients: 0 
+13:24:10 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:24:10 (DEBUG): In ClientManager::ClientManager 
+13:24:10 (DEBUG): In ClientManager::initParserCommands() 
+13:24:10 (DEBUG): In ClientManager::run 
+13:24:10 (DEBUG): Adding exten "client-127.0.0.1-60654" 
+13:24:10 (DEBUG): Number of clients: 1 
+13:24:10 (DEBUG): Incoming Connection from  "127.0.0.1" : 60654 
+13:24:10 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:24:10 (DEBUG): Read Timeout is  50000 
+13:24:10 (DEBUG): Received signal dataReceived in parseDataReceived:  "äå" 
+13:24:10 (DEBUG): In ClientManager::sendDataToClient( "101 KO Invalid Command" ) 
+13:24:17 (DEBUG): Removing exten "client-127.0.0.1-60654" 
+13:24:17 (DEBUG): Number of clients: 0 
+13:26:50 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:26:50 (DEBUG): In ClientManager::ClientManager 
+13:26:50 (DEBUG): In ClientManager::initParserCommands() 
+13:26:50 (DEBUG): In ClientManager::run 
+13:26:50 (DEBUG): Adding exten "client-127.0.0.1-60655" 
+13:26:50 (DEBUG): Number of clients: 1 
+13:26:50 (DEBUG): Incoming Connection from  "127.0.0.1" : 60655 
+13:26:50 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:26:50 (DEBUG): Read Timeout is  50000 
+13:26:50 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+13:26:50 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+13:26:50 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER tew" 
+13:26:50 (DEBUG): In ClientManager::sendDataToClient( "101 KO User doesn't exists" ) 
+13:26:50 (DEBUG): Removing exten "client-127.0.0.1-60655" 
+13:26:50 (DEBUG): Number of clients: 0 
+13:26:59 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:26:59 (DEBUG): In ClientManager::ClientManager 
+13:26:59 (DEBUG): In ClientManager::initParserCommands() 
+13:26:59 (DEBUG): In ClientManager::run 
+13:26:59 (DEBUG): Incoming Connection from  "127.0.0.1" : 60656 
+13:26:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:26:59 (DEBUG): Read Timeout is  50000 
+13:26:59 (DEBUG): Adding exten "client-127.0.0.1-60656" 
+13:26:59 (DEBUG): Number of clients: 1 
+13:26:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+13:26:59 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+13:26:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+13:26:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+13:26:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS" 
+13:26:59 (DEBUG): In ClientManager::sendDataToClient( "101 KO No password given" ) 
+13:26:59 (DEBUG): Removing exten "client-127.0.0.1-60656" 
+13:26:59 (DEBUG): Number of clients: 0 
+13:27:09 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:27:09 (DEBUG): In ClientManager::ClientManager 
+13:27:09 (DEBUG): In ClientManager::initParserCommands() 
+13:27:09 (DEBUG): In ClientManager::run 
+13:27:09 (DEBUG): Incoming Connection from  "127.0.0.1" : 60657 
+13:27:09 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:27:09 (DEBUG): Read Timeout is  50000 
+13:27:09 (DEBUG): Adding exten "client-127.0.0.1-60657" 
+13:27:09 (DEBUG): Number of clients: 1 
+13:27:09 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+13:27:09 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+13:27:09 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+13:27:09 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+13:27:09 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS oper" 
+13:27:09 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+13:27:09 (DEBUG): Removing exten "client-127.0.0.1-60657" 
+13:27:09 (DEBUG): Number of clients: 0 
+13:27:18 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:27:18 (DEBUG): In ClientManager::ClientManager 
+13:27:18 (DEBUG): In ClientManager::initParserCommands() 
+13:27:18 (DEBUG): In ClientManager::run 
+13:27:18 (DEBUG): Incoming Connection from  "127.0.0.1" : 60658 
+13:27:18 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:27:18 (DEBUG): Read Timeout is  50000 
+13:27:18 (DEBUG): Adding exten "client-127.0.0.1-60658" 
+13:27:18 (DEBUG): Number of clients: 1 
+13:27:18 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+13:27:18 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+13:27:18 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+13:27:18 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+13:27:18 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS oper1" 
+13:27:18 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+13:27:18 (DEBUG): Removing exten "client-127.0.0.1-60658" 
+13:27:18 (DEBUG): Number of clients: 0 
+13:29:50 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+13:29:50 (DEBUG): In ClientManager::ClientManager 
+13:29:50 (DEBUG): In ClientManager::initParserCommands() 
+13:29:50 (DEBUG): In ClientManager::run 
+13:29:50 (DEBUG): Incoming Connection from  "127.0.0.1" : 47716 
+13:29:50 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+13:29:50 (DEBUG): Read Timeout is  50000 
+13:29:50 (DEBUG): Adding exten "client-127.0.0.1-47716" 
+13:29:50 (DEBUG): Number of clients: 1 
+13:29:50 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+13:29:50 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+13:29:50 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+13:29:50 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+13:29:50 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS pass1" 
+13:29:50 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+13:29:50 (DEBUG): Removing exten "client-127.0.0.1-47716" 
+13:29:50 (DEBUG): Number of clients: 0 
+14:58:14 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+14:58:14 (DEBUG): In ClientManager::ClientManager 
+14:58:14 (DEBUG): In ClientManager::initParserCommands() 
+14:58:14 (DEBUG): In ClientManager::run 
+14:58:14 (DEBUG): Incoming Connection from  "127.0.0.1" : 54407 
+14:58:14 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+14:58:14 (DEBUG): Read Timeout is  50000 
+14:58:14 (DEBUG): Adding exten "client-127.0.0.1-54407" 
+14:58:14 (DEBUG): Number of clients: 1 
+14:58:14 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+14:58:14 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+14:58:14 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+14:58:14 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+14:58:14 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS" 
+14:58:14 (DEBUG): In ClientManager::sendDataToClient( "101 KO No password given" ) 
+14:58:14 (DEBUG): Removing exten "client-127.0.0.1-54407" 
+14:58:14 (DEBUG): Number of clients: 0 
+14:58:27 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+14:58:27 (DEBUG): In ClientManager::ClientManager 
+14:58:27 (DEBUG): In ClientManager::initParserCommands() 
+14:58:27 (DEBUG): In ClientManager::run 
+14:58:27 (DEBUG): Adding exten "client-127.0.0.1-54408" 
+14:58:27 (DEBUG): Number of clients: 1 
+14:58:27 (DEBUG): Incoming Connection from  "127.0.0.1" : 54408 
+14:58:27 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+14:58:27 (DEBUG): Read Timeout is  50000 
+14:58:27 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+14:58:27 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+14:58:27 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+14:58:27 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+14:58:27 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS" 
+14:58:27 (DEBUG): In ClientManager::sendDataToClient( "101 KO No password given" ) 
+14:58:27 (DEBUG): Removing exten "client-127.0.0.1-54408" 
+14:58:27 (DEBUG): Number of clients: 0 
+14:58:37 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+14:58:37 (DEBUG): In ClientManager::ClientManager 
+14:58:37 (DEBUG): In ClientManager::initParserCommands() 
+14:58:37 (DEBUG): In ClientManager::run 
+14:58:37 (DEBUG): Adding exten "client-127.0.0.1-54409" 
+14:58:37 (DEBUG): Number of clients: 1 
+14:58:37 (DEBUG): Incoming Connection from  "127.0.0.1" : 54409 
+14:58:37 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+14:58:37 (DEBUG): Read Timeout is  50000 
+14:58:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+14:58:37 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+14:58:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+14:58:37 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+14:58:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS oper1" 
+14:58:37 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+14:58:37 (DEBUG): Removing exten "client-127.0.0.1-54409" 
+14:58:37 (DEBUG): Number of clients: 0 
+14:58:46 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+14:58:46 (DEBUG): In ClientManager::ClientManager 
+14:58:46 (DEBUG): In ClientManager::initParserCommands() 
+14:58:46 (DEBUG): In ClientManager::run 
+14:58:46 (DEBUG): Incoming Connection from  "127.0.0.1" : 54410 
+14:58:46 (DEBUG): Adding exten "client-127.0.0.1-54410" 
+14:58:46 (DEBUG): Number of clients: 1 
+14:58:46 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+14:58:46 (DEBUG): Read Timeout is  50000 
+14:58:46 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+14:58:46 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+14:58:46 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+14:58:46 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+14:58:46 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS password1" 
+14:58:46 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+14:58:46 (DEBUG): Removing exten "client-127.0.0.1-54410" 
+14:58:46 (DEBUG): Number of clients: 0 
+15:00:59 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:00:59 (DEBUG): In ClientManager::ClientManager 
+15:00:59 (DEBUG): In ClientManager::initParserCommands() 
+15:00:59 (DEBUG): In ClientManager::run 
+15:00:59 (DEBUG): Adding exten "client-127.0.0.1-54411" 
+15:00:59 (DEBUG): Number of clients: 1 
+15:00:59 (DEBUG): Incoming Connection from  "127.0.0.1" : 54411 
+15:00:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:00:59 (DEBUG): Read Timeout is  50000 
+15:00:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:00:59 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:00:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+15:00:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+15:00:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS password" 
+15:00:59 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+15:00:59 (DEBUG): Removing exten "client-127.0.0.1-54411" 
+15:00:59 (DEBUG): Number of clients: 0 
+15:08:44 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:08:44 (DEBUG): In ClientManager::ClientManager 
+15:08:44 (DEBUG): In ClientManager::initParserCommands() 
+15:08:44 (DEBUG): In ClientManager::run 
+15:08:44 (DEBUG): Incoming Connection from  "127.0.0.1" : 40549 
+15:08:44 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:08:44 (DEBUG): Read Timeout is  50000 
+15:08:44 (DEBUG): Adding exten "client-127.0.0.1-40549" 
+15:08:44 (DEBUG): Number of clients: 1 
+15:08:44 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:08:44 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:08:44 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+15:08:44 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+15:08:44 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS" 
+15:08:44 (DEBUG): In ClientManager::sendDataToClient( "101 KO No password given" ) 
+15:08:44 (DEBUG): Removing exten "client-127.0.0.1-40549" 
+15:08:44 (DEBUG): Number of clients: 0 
+15:10:45 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:10:45 (DEBUG): In ClientManager::ClientManager 
+15:10:45 (DEBUG): In ClientManager::initParserCommands() 
+15:10:45 (DEBUG): In ClientManager::run 
+15:10:45 (DEBUG): Incoming Connection from  "127.0.0.1" : 40550 
+15:10:45 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:10:45 (DEBUG): Read Timeout is  50000 
+15:10:45 (DEBUG): Adding exten "client-127.0.0.1-40550" 
+15:10:45 (DEBUG): Number of clients: 1 
+15:10:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:10:45 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:10:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+15:10:45 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+15:10:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS pass" 
+15:10:45 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+15:10:45 (DEBUG): Removing exten "client-127.0.0.1-40550" 
+15:10:45 (DEBUG): Number of clients: 0 
+15:28:41 (DEBUG): Reading Configurations
+15:28:41 (DEBUG): Reading first runtime configuration from database 
+15:28:41 (DEBUG): MySQL database successfully opened
+ 
+15:28:41 (DEBUG): MySQL database version  "0.5" 
+ 
+15:28:41 (DEBUG): loadSeat complete for operator "oper1" 
+15:28:41 (DEBUG): loadListOfServices complete for operator "oper1" 
+15:28:41 (DEBUG): loadSeat complete for operator "oper1" 
+15:28:41 (DEBUG): loadListOfServices complete for operator "oper1" 
+15:28:41 (DEBUG): loadSeat complete for operator "oper2" 
+15:28:41 (DEBUG): loadListOfServices complete for operator "oper2" 
+15:28:41 (DEBUG): loadListOfServices complete for operator "oper3" 
+15:28:41 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+15:28:41 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+15:28:41 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+15:28:41 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+15:28:41 (DEBUG): CoreTcpServer listening on port  5000 
+15:28:41 (DEBUG): Configuration has changed on  1255558719 
+15:28:41 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+15:28:41 (DEBUG): MySQL database successfully opened
+ 
+15:28:41 (DEBUG): MySQL database version  "0.5" 
+ 
+15:28:41 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+15:28:41 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+15:28:41 (DEBUG): In QAstCTIService::~QAstCTIService() 
+15:28:41 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+15:28:41 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+15:28:41 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+15:28:41 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+15:28:41 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+15:28:41 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+15:28:41 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+15:28:41 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+15:28:41 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+15:28:41 (DEBUG): loadSeat complete for operator "oper1" 
+15:28:41 (DEBUG): loadListOfServices complete for operator "oper1" 
+15:28:41 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+15:28:41 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+15:28:41 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+15:28:41 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+15:28:41 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+15:28:41 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+15:28:41 (DEBUG): loadSeat complete for operator "oper1" 
+15:28:41 (DEBUG): loadListOfServices complete for operator "oper1" 
+15:28:41 (DEBUG): We're authenticated by AMI Server 
+15:28:41 (DEBUG): loadSeat complete for operator "oper2" 
+15:28:41 (DEBUG): loadListOfServices complete for operator "oper2" 
+15:28:41 (DEBUG): loadListOfServices complete for operator "oper3" 
+15:28:41 (DEBUG): Service alive is  "ast-cti-demo" 
+15:28:41 (DEBUG): Number of operators on service is  1 
+15:28:41 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+15:28:41 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+15:28:41 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+15:28:41 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+15:28:41 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+15:28:41 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+15:44:28 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:44:28 (DEBUG): In ClientManager::ClientManager 
+15:44:28 (DEBUG): In ClientManager::initParserCommands() 
+15:44:28 (DEBUG): In ClientManager::run 
+15:44:28 (DEBUG): Adding exten "client-127.0.0.1-32932" 
+15:44:28 (DEBUG): Number of clients: 1 
+15:44:28 (DEBUG): Incoming Connection from  "127.0.0.1" : 32932 
+15:44:28 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:44:28 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:44:28 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:44:28 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER Poer" 
+15:44:28 (DEBUG): In ClientManager::sendDataToClient( "101 KO User doesn't exists" ) 
+15:44:28 (DEBUG): Removing exten "client-127.0.0.1-32932" 
+15:44:28 (DEBUG): Number of clients: 0 
+15:44:28 (DEBUG): ClientManager terminated 
+15:51:55 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:51:55 (DEBUG): In ClientManager::ClientManager 
+15:51:55 (DEBUG): In ClientManager::initParserCommands() 
+15:51:55 (DEBUG): In ClientManager::run 
+15:51:55 (DEBUG): Incoming Connection from  "127.0.0.1" : 35517 
+15:51:55 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:51:55 (DEBUG): Adding exten "client-127.0.0.1-35517" 
+15:51:55 (DEBUG): Number of clients: 1 
+15:51:55 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:51:55 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:51:55 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER peor" 
+15:51:55 (DEBUG): In ClientManager::sendDataToClient( "101 KO User doesn't exists" ) 
+15:51:55 (DEBUG): Removing exten "client-127.0.0.1-35517" 
+15:51:55 (DEBUG): Number of clients: 0 
+15:51:55 (DEBUG): ClientManager terminated 
+16:07:35 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:07:35 (DEBUG): In ClientManager::ClientManager 
+16:07:35 (DEBUG): In ClientManager::initParserCommands() 
+16:07:35 (DEBUG): In ClientManager::run 
+16:07:35 (DEBUG): Adding exten "client-127.0.0.1-45068" 
+16:07:35 (DEBUG): Number of clients: 1 
+16:07:35 (DEBUG): Incoming Connection from  "127.0.0.1" : 45068 
+16:07:35 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:07:35 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:07:35 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:07:35 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER Peo" 
+16:07:35 (DEBUG): In ClientManager::sendDataToClient( "101 KO User doesn't exists" ) 
+16:07:35 (DEBUG): Removing exten "client-127.0.0.1-45068" 
+16:07:35 (DEBUG): Number of clients: 0 
+16:07:35 (DEBUG): ClientManager terminated 
+16:13:18 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:13:18 (DEBUG): In ClientManager::ClientManager 
+16:13:18 (DEBUG): In ClientManager::initParserCommands() 
+16:13:18 (DEBUG): In ClientManager::run 
+16:13:18 (DEBUG): Incoming Connection from  "127.0.0.1" : 41343 
+16:13:18 (DEBUG): Adding exten "client-127.0.0.1-41343" 
+16:13:18 (DEBUG): Number of clients: 1 
+16:13:18 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:13:18 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:13:18 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:13:18 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER aegr" 
+16:13:18 (DEBUG): In ClientManager::sendDataToClient( "101 KO User doesn't exists" ) 
+16:13:18 (DEBUG): Removing exten "client-127.0.0.1-41343" 
+16:13:18 (DEBUG): Number of clients: 0 
+16:13:18 (DEBUG): ClientManager terminated 
+16:13:20 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:13:20 (DEBUG): In ClientManager::ClientManager 
+16:13:20 (DEBUG): In ClientManager::initParserCommands() 
+16:13:20 (DEBUG): In ClientManager::run 
+16:13:20 (DEBUG): Incoming Connection from  "127.0.0.1" : 41344 
+16:13:20 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:13:20 (DEBUG): Adding exten "client-127.0.0.1-41344" 
+16:13:20 (DEBUG): Number of clients: 1 
+16:13:20 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:13:20 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:13:20 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER aerg" 
+16:13:20 (DEBUG): In ClientManager::sendDataToClient( "101 KO User doesn't exists" ) 
+16:13:20 (DEBUG): Removing exten "client-127.0.0.1-41344" 
+16:13:20 (DEBUG): Number of clients: 0 
+16:13:20 (DEBUG): ClientManager terminated 
+16:13:21 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:13:21 (DEBUG): In ClientManager::ClientManager 
+16:13:21 (DEBUG): In ClientManager::initParserCommands() 
+16:13:21 (DEBUG): In ClientManager::run 
+16:13:21 (DEBUG): Incoming Connection from  "127.0.0.1" : 41345 
+16:13:21 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:13:21 (DEBUG): Adding exten "client-127.0.0.1-41345" 
+16:13:21 (DEBUG): Number of clients: 1 
+16:13:21 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:13:21 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:13:21 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER aerga" 
+16:13:21 (DEBUG): In ClientManager::sendDataToClient( "101 KO User doesn't exists" ) 
+16:13:21 (DEBUG): Removing exten "client-127.0.0.1-41345" 
+16:13:21 (DEBUG): Number of clients: 0 
+16:13:21 (DEBUG): ClientManager terminated 
+16:13:24 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:13:24 (DEBUG): In ClientManager::ClientManager 
+16:13:24 (DEBUG): In ClientManager::initParserCommands() 
+16:13:24 (DEBUG): In ClientManager::run 
+16:13:24 (DEBUG): Adding exten "client-127.0.0.1-41346" 
+16:13:24 (DEBUG): Number of clients: 1 
+16:13:24 (DEBUG): Incoming Connection from  "127.0.0.1" : 41346 
+16:13:24 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:13:24 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:13:24 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:13:24 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:13:24 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:13:24 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS" 
+16:13:24 (DEBUG): In ClientManager::sendDataToClient( "101 KO No password given" ) 
+16:13:24 (DEBUG): Removing exten "client-127.0.0.1-41346" 
+16:13:24 (DEBUG): Number of clients: 0 
+16:13:24 (DEBUG): ClientManager terminated 
+16:13:28 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:13:28 (DEBUG): In ClientManager::ClientManager 
+16:13:28 (DEBUG): In ClientManager::initParserCommands() 
+16:13:28 (DEBUG): In ClientManager::run 
+16:13:28 (DEBUG): Incoming Connection from  "127.0.0.1" : 41347 
+16:13:28 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:13:28 (DEBUG): Adding exten "client-127.0.0.1-41347" 
+16:13:28 (DEBUG): Number of clients: 1 
+16:13:28 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:13:28 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:13:28 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:13:28 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:13:28 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS pass" 
+16:13:28 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+16:13:28 (DEBUG): Removing exten "client-127.0.0.1-41347" 
+16:13:28 (DEBUG): Number of clients: 0 
+16:13:28 (DEBUG): ClientManager terminated 
+16:13:31 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:13:31 (DEBUG): In ClientManager::ClientManager 
+16:13:31 (DEBUG): In ClientManager::initParserCommands() 
+16:13:31 (DEBUG): In ClientManager::run 
+16:13:31 (DEBUG): Incoming Connection from  "127.0.0.1" : 41348 
+16:13:31 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:13:31 (DEBUG): Adding exten "client-127.0.0.1-41348" 
+16:13:31 (DEBUG): Number of clients: 1 
+16:13:31 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:13:31 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:13:31 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:13:31 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:13:31 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS pass1" 
+16:13:31 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+16:13:31 (DEBUG): Removing exten "client-127.0.0.1-41348" 
+16:13:31 (DEBUG): Number of clients: 0 
+16:13:31 (DEBUG): ClientManager terminated 
+16:14:36 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:14:36 (DEBUG): In ClientManager::ClientManager 
+16:14:36 (DEBUG): In ClientManager::initParserCommands() 
+16:14:36 (DEBUG): In ClientManager::run 
+16:14:36 (DEBUG): Incoming Connection from  "127.0.0.1" : 41349 
+16:14:36 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:14:36 (DEBUG): Adding exten "client-127.0.0.1-41349" 
+16:14:36 (DEBUG): Number of clients: 1 
+16:14:36 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:14:36 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:14:36 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:14:36 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:14:36 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS pass" 
+16:14:36 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+16:14:36 (DEBUG): Removing exten "client-127.0.0.1-41349" 
+16:14:36 (DEBUG): Number of clients: 0 
+16:14:36 (DEBUG): ClientManager terminated 
+16:17:40 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:17:40 (DEBUG): In ClientManager::ClientManager 
+16:17:40 (DEBUG): In ClientManager::initParserCommands() 
+16:17:40 (DEBUG): In ClientManager::run 
+16:17:40 (DEBUG): Adding exten "client-127.0.0.1-41351" 
+16:17:40 (DEBUG): Number of clients: 1 
+16:17:40 (DEBUG): Incoming Connection from  "127.0.0.1" : 41351 
+16:17:40 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:17:40 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:17:40 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:17:40 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER asg" 
+16:17:40 (DEBUG): In ClientManager::sendDataToClient( "101 KO User doesn't exists" ) 
+16:17:40 (DEBUG): Removing exten "client-127.0.0.1-41351" 
+16:17:40 (DEBUG): Number of clients: 0 
+16:17:40 (DEBUG): ClientManager terminated 
+16:17:45 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:17:45 (DEBUG): In ClientManager::ClientManager 
+16:17:45 (DEBUG): In ClientManager::initParserCommands() 
+16:17:45 (DEBUG): In ClientManager::run 
+16:17:45 (DEBUG): Adding exten "client-127.0.0.1-41352" 
+16:17:45 (DEBUG): Number of clients: 1 
+16:17:45 (DEBUG): Incoming Connection from  "127.0.0.1" : 41352 
+16:17:45 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:17:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:17:45 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:17:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:17:45 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:17:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS pass" 
+16:17:45 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+16:17:45 (DEBUG): Removing exten "client-127.0.0.1-41352" 
+16:17:45 (DEBUG): Number of clients: 0 
+16:17:45 (DEBUG): ClientManager terminated 
+16:27:42 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:27:42 (DEBUG): In ClientManager::ClientManager 
+16:27:42 (DEBUG): In ClientManager::initParserCommands() 
+16:27:42 (DEBUG): In ClientManager::run 
+16:27:42 (DEBUG): Incoming Connection from  "127.0.0.1" : 50823 
+16:27:42 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:27:42 (DEBUG): Adding exten "client-127.0.0.1-50823" 
+16:27:42 (DEBUG): Number of clients: 1 
+16:27:42 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:27:42 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:27:42 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:27:42 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:27:42 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS ÃÂs%ÃÂqÃÃ°ÃDÂ¼r" 
+16:27:42 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+16:27:42 (DEBUG): Removing exten "client-127.0.0.1-50823" 
+16:27:42 (DEBUG): Number of clients: 0 
+16:27:42 (DEBUG): ClientManager terminated 
+16:30:30 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:30:30 (DEBUG): In ClientManager::ClientManager 
+16:30:30 (DEBUG): In ClientManager::initParserCommands() 
+16:30:30 (DEBUG): In ClientManager::run 
+16:30:30 (DEBUG): Adding exten "client-127.0.0.1-47190" 
+16:30:30 (DEBUG): Number of clients: 1 
+16:30:30 (DEBUG): Incoming Connection from  "127.0.0.1" : 47190 
+16:30:30 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:30:30 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:30:30 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:30:30 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:30:30 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:30:30 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS ÃÂs%ÃÂqÃÃ°ÃDÂ¼r" 
+16:30:30 (DEBUG): In ClientManager::sendDataToClient( "101 KO Wrong password" ) 
+16:30:30 (DEBUG): Removing exten "client-127.0.0.1-47190" 
+16:30:30 (DEBUG): Number of clients: 0 
+16:30:30 (DEBUG): ClientManager terminated 
+16:32:59 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+16:32:59 (DEBUG): In ClientManager::ClientManager 
+16:32:59 (DEBUG): In ClientManager::initParserCommands() 
+16:32:59 (DEBUG): In ClientManager::run 
+16:32:59 (DEBUG): Adding exten "client-127.0.0.1-47191" 
+16:32:59 (DEBUG): Number of clients: 1 
+16:32:59 (DEBUG): Incoming Connection from  "127.0.0.1" : 47191 
+16:32:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:32:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:32:59 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+16:32:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:32:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:32:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+16:32:59 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+16:32:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+16:32:59 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+16:32:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+16:32:59 (DEBUG): Changing client exten from "client-127.0.0.1-47191" to "exten-" 
+16:32:59 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+16:32:59 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+16:32:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:32:59 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+16:32:59 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+16:32:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+16:32:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+16:33:48 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:33:48 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:34:38 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:34:38 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:35:27 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:35:27 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:36:17 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:36:17 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:37:07 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:37:07 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:37:56 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:37:56 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:38:46 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:38:46 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:39:35 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:39:35 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:40:25 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:40:25 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:41:14 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:41:14 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:42:04 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:42:04 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:42:53 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:42:53 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:43:43 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:43:43 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:44:32 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:44:32 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:45:22 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:45:22 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:46:12 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:46:12 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:47:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:47:01 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:47:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:47:51 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:48:01 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" ) 
+16:48:01 (DEBUG): "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" 
+16:48:01 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 2 .Cause: "Unable to remove interface from queue: No such queue" 
+16:48:01 (DEBUG): Removing exten "exten-" 
+16:48:01 (DEBUG): Number of clients: 0 
+16:48:01 (DEBUG): ClientManager terminated 
+16:48:01 (DEBUG): Evaluated response  "Error" . For channel: "ClientManager terminated " .ActionId: 2 .Cause: "Unable to remove interface from queue: No such queue" 
+16:58:00 (DEBUG): Reading Configurations
+16:58:00 (DEBUG): Reading first runtime configuration from database 
+16:58:00 (DEBUG): MySQL database successfully opened
+ 
+16:58:00 (DEBUG): MySQL database version  "0.5" 
+ 
+16:58:00 (DEBUG): loadSeat complete for operator "oper1" 
+16:58:00 (DEBUG): loadListOfServices complete for operator "oper1" 
+16:58:00 (DEBUG): loadSeat complete for operator "oper1" 
+16:58:00 (DEBUG): loadListOfServices complete for operator "oper1" 
+16:58:00 (DEBUG): loadSeat complete for operator "oper2" 
+16:58:00 (DEBUG): loadListOfServices complete for operator "oper2" 
+16:58:00 (DEBUG): loadListOfServices complete for operator "oper3" 
+16:58:00 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+16:58:00 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+16:58:00 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+16:58:00 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+16:58:00 (DEBUG): CoreTcpServer listening on port  5000 
+16:58:00 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+16:58:00 (DEBUG): Configuration has changed on  1255558719 
+16:58:00 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+16:58:00 (DEBUG): MySQL database successfully opened
+ 
+16:58:00 (DEBUG): MySQL database version  "0.5" 
+ 
+16:58:00 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+16:58:00 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+16:58:00 (DEBUG): In QAstCTIService::~QAstCTIService() 
+16:58:00 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+16:58:00 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+16:58:00 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+16:58:00 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+16:58:00 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+16:58:00 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+16:58:00 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+16:58:00 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+16:58:00 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+16:58:00 (DEBUG): loadSeat complete for operator "oper1" 
+16:58:00 (DEBUG): loadListOfServices complete for operator "oper1" 
+16:58:00 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+16:58:00 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+16:58:00 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+16:58:00 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+16:58:00 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+16:58:00 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+16:58:00 (DEBUG): We're authenticated by AMI Server 
+16:58:00 (DEBUG): loadSeat complete for operator "oper1" 
+16:58:00 (DEBUG): loadListOfServices complete for operator "oper1" 
+16:58:00 (DEBUG): loadSeat complete for operator "oper2" 
+16:58:00 (DEBUG): loadListOfServices complete for operator "oper2" 
+16:58:00 (DEBUG): loadListOfServices complete for operator "oper3" 
+16:58:00 (DEBUG): Service alive is  "ast-cti-demo" 
+16:58:00 (DEBUG): Number of operators on service is  1 
+16:58:00 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+16:58:00 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+16:58:00 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+16:58:00 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+16:58:00 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+17:00:00 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+17:00:00 (DEBUG): In ClientManager::ClientManager 
+17:00:00 (DEBUG): In ClientManager::initParserCommands() 
+17:00:00 (DEBUG): In ClientManager::run 
+17:00:00 (DEBUG): Incoming Connection from  "127.0.0.1" : 46007 
+17:00:00 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:00:00 (DEBUG): Adding exten "client-127.0.0.1-46007" 
+17:00:00 (DEBUG): Number of clients: 1 
+17:00:00 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:00:00 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+17:00:00 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:00:00 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:00:00 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:00:00 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:00:00 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:00:00 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:00:00 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:00:00 (DEBUG): Changing client exten from "client-127.0.0.1-46007" to "exten-" 
+17:00:00 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:00:00 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:00:00 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+17:00:00 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:00:00 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:00:00 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:00:00 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+17:04:24 (DEBUG): Reading Configurations
+17:04:24 (DEBUG): Reading first runtime configuration from database 
+17:04:24 (DEBUG): MySQL database successfully opened
+ 
+17:04:24 (DEBUG): MySQL database version  "0.5" 
+ 
+17:04:24 (DEBUG): loadSeat complete for operator "oper1" 
+17:04:24 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:04:24 (DEBUG): loadSeat complete for operator "oper1" 
+17:04:24 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:04:24 (DEBUG): loadSeat complete for operator "oper2" 
+17:04:24 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:04:24 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:04:24 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+17:04:24 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:04:24 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+17:04:24 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:04:24 (DEBUG): CoreTcpServer listening on port  5000 
+17:04:24 (DEBUG): Configuration has changed on  1255558719 
+17:04:24 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+17:04:24 (DEBUG): MySQL database successfully opened
+ 
+17:04:24 (DEBUG): MySQL database version  "0.5" 
+ 
+17:04:24 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+17:04:24 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+17:04:24 (DEBUG): In QAstCTIService::~QAstCTIService() 
+17:04:24 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+17:04:24 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:04:24 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:04:24 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+17:04:24 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:04:24 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:04:24 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+17:04:24 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:04:24 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:04:24 (DEBUG): loadSeat complete for operator "oper1" 
+17:04:24 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:04:24 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+17:04:24 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:04:24 (DEBUG): We're authenticated by AMI Server 
+17:04:24 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:04:24 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:04:24 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:04:24 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:04:24 (DEBUG): loadSeat complete for operator "oper1" 
+17:04:24 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:04:24 (DEBUG): loadSeat complete for operator "oper2" 
+17:04:24 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:04:24 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:04:24 (DEBUG): Service alive is  "ast-cti-demo" 
+17:04:24 (DEBUG): Number of operators on service is  1 
+17:04:24 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+17:04:24 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+17:04:24 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+17:04:24 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+17:04:24 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+17:04:24 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+17:04:25 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+17:04:25 (DEBUG): In ClientManager::ClientManager 
+17:04:25 (DEBUG): In ClientManager::initParserCommands() 
+17:04:25 (DEBUG): In ClientManager::run 
+17:04:25 (DEBUG): Adding exten "client-127.0.0.1-41629" 
+17:04:25 (DEBUG): Number of clients: 1 
+17:04:25 (DEBUG): Incoming Connection from  "127.0.0.1" : 41629 
+17:04:25 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:04:25 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:04:25 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+17:04:25 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:04:25 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:04:25 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:04:25 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:04:25 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:04:25 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:04:25 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:04:25 (DEBUG): Changing client exten from "client-127.0.0.1-41629" to "exten-" 
+17:04:25 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:04:25 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:04:25 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:04:25 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+17:04:25 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:04:25 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:04:25 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+17:04:48 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" ) 
+17:04:48 (DEBUG): "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" 
+17:04:48 (DEBUG): Removing exten "exten-" 
+17:04:48 (DEBUG): Number of clients: 0 
+17:04:48 (DEBUG): ClientManager terminated 
+17:04:48 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 2 .Cause: "Unable to remove interface from queue: No such queue" 
+17:08:51 (DEBUG): Reading Configurations
+17:08:51 (DEBUG): Reading first runtime configuration from database 
+17:08:51 (DEBUG): MySQL database successfully opened
+ 
+17:08:51 (DEBUG): MySQL database version  "0.5" 
+ 
+17:08:51 (DEBUG): loadSeat complete for operator "oper1" 
+17:08:51 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:08:51 (DEBUG): loadSeat complete for operator "oper1" 
+17:08:51 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:08:51 (DEBUG): loadSeat complete for operator "oper2" 
+17:08:51 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:08:51 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:08:51 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+17:08:51 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:08:51 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+17:08:51 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:08:51 (DEBUG): CoreTcpServer listening on port  5000 
+17:08:51 (DEBUG): Configuration has changed on  1255558719 
+17:08:51 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+17:08:51 (DEBUG): MySQL database successfully opened
+ 
+17:08:51 (DEBUG): MySQL database version  "0.5" 
+ 
+17:08:51 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+17:08:51 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+17:08:51 (DEBUG): In QAstCTIService::~QAstCTIService() 
+17:08:51 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+17:08:51 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:08:51 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:08:51 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+17:08:51 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:08:51 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:08:51 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+17:08:51 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:08:51 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:08:51 (DEBUG): loadSeat complete for operator "oper1" 
+17:08:51 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:08:51 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+17:08:51 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:08:51 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:08:51 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:08:51 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:08:51 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:08:51 (DEBUG): We're authenticated by AMI Server 
+17:08:51 (DEBUG): loadSeat complete for operator "oper1" 
+17:08:51 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:08:51 (DEBUG): loadSeat complete for operator "oper2" 
+17:08:51 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:08:51 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:08:51 (DEBUG): Service alive is  "ast-cti-demo" 
+17:08:51 (DEBUG): Number of operators on service is  1 
+17:08:51 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+17:08:51 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+17:08:51 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+17:08:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+17:08:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+17:08:51 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+17:08:51 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+17:08:51 (DEBUG): In ClientManager::ClientManager 
+17:08:51 (DEBUG): In ClientManager::initParserCommands() 
+17:08:51 (DEBUG): In ClientManager::run 
+17:08:51 (DEBUG): Adding exten "client-127.0.0.1-34908" 
+17:08:51 (DEBUG): Number of clients: 1 
+17:08:51 (DEBUG): Incoming Connection from  "127.0.0.1" : 34908 
+17:08:51 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:08:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:08:51 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+17:08:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:08:51 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:08:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:08:51 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:08:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:08:51 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:08:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:08:52 (DEBUG): Changing client exten from "client-127.0.0.1-34908" to "exten-" 
+17:08:52 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:08:52 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:08:52 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:08:52 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+17:08:52 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:08:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:08:52 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+17:09:27 (DEBUG): Reading Configurations
+17:09:27 (DEBUG): Reading first runtime configuration from database 
+17:09:27 (DEBUG): MySQL database successfully opened
+ 
+17:09:27 (DEBUG): MySQL database version  "0.5" 
+ 
+17:09:27 (DEBUG): loadSeat complete for operator "oper1" 
+17:09:27 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:09:27 (DEBUG): loadSeat complete for operator "oper1" 
+17:09:27 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:09:27 (DEBUG): loadSeat complete for operator "oper2" 
+17:09:27 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:09:27 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:09:27 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+17:09:27 (DEBUG): CoreTcpServer listening on port  5000 
+17:09:27 (DEBUG): Configuration has changed on  1255558719 
+17:09:27 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:09:27 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+17:09:27 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+17:09:27 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:09:27 (DEBUG): MySQL database successfully opened
+ 
+17:09:27 (DEBUG): MySQL database version  "0.5" 
+ 
+17:09:27 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+17:09:27 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+17:09:27 (DEBUG): In QAstCTIService::~QAstCTIService() 
+17:09:27 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+17:09:27 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:09:27 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:09:27 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+17:09:27 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:09:27 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:09:27 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+17:09:27 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:09:27 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:09:27 (DEBUG): loadSeat complete for operator "oper1" 
+17:09:27 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:09:27 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+17:09:27 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:09:27 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:09:27 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:09:27 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:09:27 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:09:27 (DEBUG): loadSeat complete for operator "oper1" 
+17:09:27 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:09:27 (DEBUG): We're authenticated by AMI Server 
+17:09:27 (DEBUG): loadSeat complete for operator "oper2" 
+17:09:27 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:09:27 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:09:27 (DEBUG): Service alive is  "ast-cti-demo" 
+17:09:27 (DEBUG): Number of operators on service is  1 
+17:09:27 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+17:09:27 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+17:09:27 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+17:09:27 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+17:09:27 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+17:09:27 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+17:09:29 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+17:09:29 (DEBUG): In ClientManager::ClientManager 
+17:09:29 (DEBUG): In ClientManager::initParserCommands() 
+17:09:29 (DEBUG): In ClientManager::run 
+17:09:29 (DEBUG): Incoming Connection from  "127.0.0.1" : 34944 
+17:09:29 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:09:29 (DEBUG): Adding exten "client-127.0.0.1-34944" 
+17:09:29 (DEBUG): Number of clients: 1 
+17:09:29 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:09:29 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+17:09:29 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:09:29 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:09:29 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:09:29 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:09:29 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:09:29 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:09:29 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:09:29 (DEBUG): Changing client exten from "client-127.0.0.1-34944" to "exten-" 
+17:09:29 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:09:29 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:09:29 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+17:09:29 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:09:29 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:09:29 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:09:29 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+17:10:11 (DEBUG): Reading Configurations
+17:10:11 (DEBUG): Reading first runtime configuration from database 
+17:10:11 (DEBUG): MySQL database successfully opened
+ 
+17:10:11 (DEBUG): MySQL database version  "0.5" 
+ 
+17:10:11 (DEBUG): loadSeat complete for operator "oper1" 
+17:10:11 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:10:11 (DEBUG): loadSeat complete for operator "oper1" 
+17:10:11 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:10:11 (DEBUG): loadSeat complete for operator "oper2" 
+17:10:11 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:10:11 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:10:11 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+17:10:11 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:10:11 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+17:10:11 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:10:11 (DEBUG): CoreTcpServer listening on port  5000 
+17:10:11 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+17:10:11 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+17:10:11 (DEBUG): Configuration has changed on  1255558719 
+17:10:11 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+17:10:11 (DEBUG): MySQL database successfully opened
+ 
+17:10:11 (DEBUG): MySQL database version  "0.5" 
+ 
+17:10:11 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+17:10:11 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+17:10:11 (DEBUG): In QAstCTIService::~QAstCTIService() 
+17:10:11 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+17:10:11 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:10:11 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:10:11 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+17:10:11 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:10:11 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:10:11 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+17:10:11 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:10:11 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:10:11 (DEBUG): loadSeat complete for operator "oper1" 
+17:10:11 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:10:11 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+17:10:11 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:10:11 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:10:11 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:10:11 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:10:11 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:10:11 (DEBUG): We're authenticated by AMI Server 
+17:10:11 (DEBUG): loadSeat complete for operator "oper1" 
+17:10:11 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:10:11 (DEBUG): loadSeat complete for operator "oper2" 
+17:10:11 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:10:11 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:10:11 (DEBUG): Service alive is  "ast-cti-demo" 
+17:10:11 (DEBUG): Number of operators on service is  1 
+17:10:11 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+17:10:11 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+17:10:11 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+17:10:11 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+17:10:13 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+17:10:13 (DEBUG): In ClientManager::ClientManager 
+17:10:13 (DEBUG): In ClientManager::initParserCommands() 
+17:10:13 (DEBUG): In ClientManager::run 
+17:10:13 (DEBUG): Adding exten "client-127.0.0.1-35036" 
+17:10:13 (DEBUG): Number of clients: 1 
+17:10:13 (DEBUG): Incoming Connection from  "127.0.0.1" : 35036 
+17:10:13 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:10:13 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:10:13 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+17:10:13 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:10:13 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:10:13 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:10:13 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:10:13 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:10:13 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:10:13 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:10:13 (DEBUG): Changing client exten from "client-127.0.0.1-35036" to "exten-" 
+17:10:13 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:10:13 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:10:13 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:10:13 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+17:10:13 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:10:13 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:10:13 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+17:10:26 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+17:10:26 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+17:10:26 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" ) 
+17:10:26 (DEBUG): "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" 
+17:10:26 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 2 .Cause: "Unable to remove interface from queue: No such queue" 
+17:10:26 (DEBUG): Removing exten "exten-" 
+17:10:26 (DEBUG): Number of clients: 0 
+17:10:26 (DEBUG): ClientManager terminated 
+17:10:26 (DEBUG): Evaluated response  "Error" . For channel: "ClientManager terminated " .ActionId: 2 .Cause: "Unable to remove interface from queue: No such queue" 
+17:40:47 (DEBUG): Reading Configurations
+17:40:47 (DEBUG): Reading first runtime configuration from database 
+17:40:47 (DEBUG): MySQL database successfully opened
+ 
+17:40:47 (DEBUG): MySQL database version  "0.5" 
+ 
+17:40:47 (DEBUG): loadSeat complete for operator "oper1" 
+17:40:47 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:40:47 (DEBUG): loadSeat complete for operator "oper1" 
+17:40:47 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:40:47 (DEBUG): loadSeat complete for operator "oper2" 
+17:40:47 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:40:47 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:40:47 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+17:40:47 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:40:47 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+17:40:47 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:40:47 (DEBUG): CoreTcpServer listening on port  5000 
+17:40:47 (DEBUG): Configuration has changed on  1255558719 
+17:40:47 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+17:40:47 (DEBUG): MySQL database successfully opened
+ 
+17:40:47 (DEBUG): MySQL database version  "0.5" 
+ 
+17:40:47 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+17:40:47 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+17:40:47 (DEBUG): In QAstCTIService::~QAstCTIService() 
+17:40:47 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+17:40:47 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:40:47 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:40:47 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+17:40:47 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:40:47 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:40:47 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+17:40:47 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:40:47 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:40:47 (DEBUG): loadSeat complete for operator "oper1" 
+17:40:47 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:40:47 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+17:40:47 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:40:47 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:40:47 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:40:47 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:40:47 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:40:47 (DEBUG): We're authenticated by AMI Server 
+17:40:47 (DEBUG): loadSeat complete for operator "oper1" 
+17:40:47 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:40:47 (DEBUG): loadSeat complete for operator "oper2" 
+17:40:47 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:40:47 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:40:47 (DEBUG): Service alive is  "ast-cti-demo" 
+17:40:47 (DEBUG): Number of operators on service is  1 
+17:40:47 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+17:40:47 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+17:40:47 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+17:40:47 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+17:40:47 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+17:40:47 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+17:40:53 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+17:40:53 (DEBUG): In ClientManager::ClientManager 
+17:40:53 (DEBUG): In ClientManager::initParserCommands() 
+17:40:53 (DEBUG): In ClientManager::run 
+17:40:53 (DEBUG): Incoming Connection from  "127.0.0.1" : 51364 
+17:40:53 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:40:53 (DEBUG): Adding exten "client-127.0.0.1-51364" 
+17:40:53 (DEBUG): Number of clients: 1 
+17:40:53 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:40:53 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+17:40:53 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:40:53 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:40:53 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:40:53 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:40:53 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:40:53 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:40:53 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:40:53 (DEBUG): Changing client exten from "client-127.0.0.1-51364" to "exten-" 
+17:40:53 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:40:53 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:40:53 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+17:40:53 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:40:53 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:40:53 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:40:53 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+17:41:09 (DEBUG): Reading Configurations
+17:41:09 (DEBUG): Reading first runtime configuration from database 
+17:41:09 (DEBUG): MySQL database successfully opened
+ 
+17:41:09 (DEBUG): MySQL database version  "0.5" 
+ 
+17:41:09 (DEBUG): loadSeat complete for operator "oper1" 
+17:41:09 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:41:09 (DEBUG): loadSeat complete for operator "oper1" 
+17:41:09 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:41:09 (DEBUG): loadSeat complete for operator "oper2" 
+17:41:09 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:41:09 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:41:09 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+17:41:09 (DEBUG): CoreTcpServer listening on port  5000 
+17:41:09 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+17:41:09 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+17:41:09 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:41:09 (DEBUG): Configuration has changed on  1255558719 
+17:41:09 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+17:41:09 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+17:41:09 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:41:09 (DEBUG): MySQL database successfully opened
+ 
+17:41:09 (DEBUG): MySQL database version  "0.5" 
+ 
+17:41:09 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+17:41:09 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+17:41:09 (DEBUG): In QAstCTIService::~QAstCTIService() 
+17:41:09 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+17:41:09 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:41:09 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:41:09 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+17:41:09 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:41:09 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:41:09 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+17:41:09 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:41:09 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:41:09 (DEBUG): loadSeat complete for operator "oper1" 
+17:41:09 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:41:09 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+17:41:09 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:41:09 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:41:09 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:41:09 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:41:09 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:41:09 (DEBUG): loadSeat complete for operator "oper1" 
+17:41:09 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:41:09 (DEBUG): We're authenticated by AMI Server 
+17:41:09 (DEBUG): loadSeat complete for operator "oper2" 
+17:41:09 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:41:10 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:41:10 (DEBUG): Service alive is  "ast-cti-demo" 
+17:41:10 (DEBUG): Number of operators on service is  1 
+17:41:10 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+17:41:10 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+17:41:10 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+17:41:10 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+17:41:11 (DEBUG): In CoreTcpServer::incomingConnection( 7 ) 
+17:41:11 (DEBUG): In ClientManager::ClientManager 
+17:41:11 (DEBUG): In ClientManager::initParserCommands() 
+17:41:11 (DEBUG): In ClientManager::run 
+17:41:11 (DEBUG): Adding exten "client-127.0.0.1-51405" 
+17:41:11 (DEBUG): Number of clients: 1 
+17:41:11 (DEBUG): Incoming Connection from  "127.0.0.1" : 51405 
+17:41:11 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:41:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:41:11 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+17:41:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:41:11 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:41:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:41:11 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:41:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:41:11 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:41:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:41:11 (DEBUG): Changing client exten from "client-127.0.0.1-51405" to "exten-" 
+17:41:11 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:41:11 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:41:11 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:41:11 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+17:41:11 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:41:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:41:11 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+17:47:29 (DEBUG): Reading Configurations
+17:47:29 (DEBUG): Reading first runtime configuration from database 
+17:47:29 (DEBUG): MySQL database successfully opened
+ 
+17:47:29 (DEBUG): MySQL database version  "0.5" 
+ 
+17:47:29 (DEBUG): loadSeat complete for operator "oper1" 
+17:47:29 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:47:29 (DEBUG): loadSeat complete for operator "oper1" 
+17:47:29 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:47:29 (DEBUG): loadSeat complete for operator "oper2" 
+17:47:29 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:47:29 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:47:29 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+17:47:29 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:47:29 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+17:47:29 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:47:29 (DEBUG): CoreTcpServer listening on port  5000 
+17:47:29 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+17:47:29 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+17:47:29 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+17:47:29 (DEBUG): Configuration has changed on  1255558719 
+17:47:29 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+17:47:29 (DEBUG): MySQL database successfully opened
+ 
+17:47:29 (DEBUG): MySQL database version  "0.5" 
+ 
+17:47:29 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+17:47:29 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+17:47:29 (DEBUG): In QAstCTIService::~QAstCTIService() 
+17:47:29 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+17:47:29 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:47:29 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:47:29 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+17:47:29 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:47:29 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:47:29 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+17:47:29 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:47:29 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:47:29 (DEBUG): loadSeat complete for operator "oper1" 
+17:47:29 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:47:29 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+17:47:29 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:47:29 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:47:29 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:47:29 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:47:29 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:47:29 (DEBUG): loadSeat complete for operator "oper1" 
+17:47:29 (DEBUG): We're authenticated by AMI Server 
+17:47:29 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:47:29 (DEBUG): loadSeat complete for operator "oper2" 
+17:47:29 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:47:29 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:47:29 (DEBUG): Service alive is  "ast-cti-demo" 
+17:47:29 (DEBUG): Number of operators on service is  1 
+17:47:29 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+17:47:29 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+17:47:29 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+17:47:34 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+17:47:34 (DEBUG): In ClientManager::ClientManager 
+17:47:34 (DEBUG): In ClientManager::initParserCommands() 
+17:47:34 (DEBUG): In ClientManager::run 
+17:47:34 (DEBUG): Adding exten "client-127.0.0.1-41451" 
+17:47:34 (DEBUG): Number of clients: 1 
+17:47:34 (DEBUG): Incoming Connection from  "127.0.0.1" : 41451 
+17:47:34 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:47:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:47:34 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+17:47:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:47:34 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:47:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:47:34 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:47:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:47:34 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:47:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:47:34 (DEBUG): Changing client exten from "client-127.0.0.1-41451" to "exten-" 
+17:47:34 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:47:34 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:47:34 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:47:34 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:47:34 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+17:47:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:47:34 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+17:49:13 (DEBUG): Reading Configurations
+17:49:13 (DEBUG): Reading first runtime configuration from database 
+17:49:13 (DEBUG): MySQL database successfully opened
+ 
+17:49:13 (DEBUG): MySQL database version  "0.5" 
+ 
+17:49:13 (DEBUG): loadSeat complete for operator "oper1" 
+17:49:13 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:49:13 (DEBUG): loadSeat complete for operator "oper1" 
+17:49:13 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:49:13 (DEBUG): loadSeat complete for operator "oper2" 
+17:49:13 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:49:13 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:49:13 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+17:49:13 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:49:13 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+17:49:13 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:49:13 (DEBUG): CoreTcpServer listening on port  5000 
+17:49:13 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+17:49:13 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+17:49:13 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+17:49:13 (DEBUG): Configuration has changed on  1255558719 
+17:49:13 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+17:49:13 (DEBUG): MySQL database successfully opened
+ 
+17:49:13 (DEBUG): MySQL database version  "0.5" 
+ 
+17:49:13 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+17:49:13 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+17:49:13 (DEBUG): In QAstCTIService::~QAstCTIService() 
+17:49:13 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+17:49:13 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:49:13 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:49:13 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+17:49:13 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:49:13 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:49:13 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+17:49:13 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:49:13 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:49:13 (DEBUG): loadSeat complete for operator "oper1" 
+17:49:13 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:49:13 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+17:49:13 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:49:13 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:49:13 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:49:13 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:49:13 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:49:13 (DEBUG): loadSeat complete for operator "oper1" 
+17:49:13 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:49:13 (DEBUG): We're authenticated by AMI Server 
+17:49:13 (DEBUG): loadSeat complete for operator "oper2" 
+17:49:13 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:49:13 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:49:13 (DEBUG): Service alive is  "ast-cti-demo" 
+17:49:13 (DEBUG): Number of operators on service is  1 
+17:49:13 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+17:49:13 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+17:49:13 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+17:49:20 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+17:49:20 (DEBUG): In ClientManager::ClientManager 
+17:49:20 (DEBUG): In ClientManager::initParserCommands() 
+17:49:20 (DEBUG): In ClientManager::run 
+17:49:20 (DEBUG): Incoming Connection from  "127.0.0.1" : 33703 
+17:49:20 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:49:20 (DEBUG): Adding exten "client-127.0.0.1-33703" 
+17:49:20 (DEBUG): Number of clients: 1 
+17:49:20 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:49:20 (DEBUG): In ClientManager::sendDataToClient( "103 5" ) 
+17:49:20 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:49:20 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:49:20 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:49:20 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:49:20 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:49:20 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:49:20 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:49:20 (DEBUG): Changing client exten from "client-127.0.0.1-33703" to "exten-" 
+17:49:20 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:49:20 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:49:20 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:49:20 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+17:49:20 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:49:20 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:49:20 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+17:50:10 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+17:50:10 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:50:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+17:50:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:51:49 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+17:51:49 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:51:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+17:51:52 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+17:51:52 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" ) 
+17:51:52 (DEBUG): "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" 
+17:51:52 (DEBUG): Removing exten "exten-" 
+17:51:52 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 2 .Cause: "Unable to remove interface from queue: No such queue" 
+17:51:52 (DEBUG): Number of clients: 0 
+17:51:52 (DEBUG): ClientManager terminated 
+17:52:30 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+17:52:30 (DEBUG): In ClientManager::ClientManager 
+17:52:30 (DEBUG): In ClientManager::initParserCommands() 
+17:52:30 (DEBUG): In ClientManager::run 
+17:52:30 (DEBUG): Adding exten "client-127.0.0.1-33705" 
+17:52:30 (DEBUG): Number of clients: 1 
+17:52:30 (DEBUG): Incoming Connection from  "127.0.0.1" : 33705 
+17:52:30 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:52:30 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:52:30 (DEBUG): In ClientManager::sendDataToClient( "103 5" ) 
+17:52:30 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:52:30 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:52:30 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:52:30 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:52:30 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:52:30 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:52:30 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:52:30 (DEBUG): Changing client exten from "client-127.0.0.1-33705" to "exten-" 
+17:52:30 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 3
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:52:30 (DEBUG): "Action: QueueAdd
+ActionID: 3
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:52:30 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:52:30 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 3 .Cause: "Unable to add interface to queue: No such queue" 
+17:52:30 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:52:30 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:52:30 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+17:52:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+17:52:52 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+17:52:52 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 4
+Queue: 600
+Interface: SIP/311
+
+" ) 
+17:52:52 (DEBUG): "Action: QueueRemove
+ActionID: 4
+Queue: 600
+Interface: SIP/311
+
+" 
+17:52:52 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 4 .Cause: "Unable to remove interface from queue: No such queue" 
+17:52:52 (DEBUG): Removing exten "exten-" 
+17:52:52 (DEBUG): Number of clients: 0 
+17:52:52 (DEBUG): ClientManager terminated 
+17:55:54 (DEBUG): Reading Configurations
+17:55:54 (DEBUG): Reading first runtime configuration from database 
+17:55:54 (DEBUG): MySQL database successfully opened
+ 
+17:55:54 (DEBUG): MySQL database version  "0.5" 
+ 
+17:55:54 (DEBUG): loadSeat complete for operator "oper1" 
+17:55:54 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:55:54 (DEBUG): loadSeat complete for operator "oper1" 
+17:55:54 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:55:54 (DEBUG): loadSeat complete for operator "oper2" 
+17:55:54 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:55:54 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:55:54 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+17:55:54 (DEBUG): CoreTcpServer listening on port  5000 
+17:55:54 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+17:55:54 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:55:54 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+17:55:54 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+17:55:54 (DEBUG): Configuration has changed on  1255558719 
+17:55:54 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+17:55:54 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+17:55:54 (DEBUG): MySQL database successfully opened
+ 
+17:55:54 (DEBUG): MySQL database version  "0.5" 
+ 
+17:55:54 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+17:55:54 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+17:55:54 (DEBUG): In QAstCTIService::~QAstCTIService() 
+17:55:54 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+17:55:54 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:55:54 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:55:54 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+17:55:54 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:55:54 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+17:55:54 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+17:55:54 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:55:54 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+17:55:54 (DEBUG): loadSeat complete for operator "oper1" 
+17:55:54 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:55:54 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+17:55:54 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:55:54 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:55:54 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:55:54 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:55:54 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+17:55:54 (DEBUG): loadSeat complete for operator "oper1" 
+17:55:54 (DEBUG): loadListOfServices complete for operator "oper1" 
+17:55:54 (DEBUG): We're authenticated by AMI Server 
+17:55:54 (DEBUG): loadSeat complete for operator "oper2" 
+17:55:54 (DEBUG): loadListOfServices complete for operator "oper2" 
+17:55:54 (DEBUG): loadListOfServices complete for operator "oper3" 
+17:55:54 (DEBUG): Service alive is  "ast-cti-demo" 
+17:55:54 (DEBUG): Number of operators on service is  1 
+17:55:54 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+17:55:54 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+17:55:54 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+17:55:54 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+17:55:55 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+17:55:55 (DEBUG): In ClientManager::ClientManager 
+17:55:55 (DEBUG): In ClientManager::initParserCommands() 
+17:55:55 (DEBUG): In ClientManager::run 
+17:55:55 (DEBUG): Incoming Connection from  "127.0.0.1" : 50425 
+17:55:55 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+17:55:55 (DEBUG): Adding exten "client-127.0.0.1-50425" 
+17:55:55 (DEBUG): Number of clients: 1 
+17:55:55 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+17:55:55 (DEBUG): In ClientManager::sendDataToClient( "103 5" ) 
+17:55:55 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+17:55:55 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+17:55:55 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+17:55:55 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+17:55:55 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+17:55:55 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+17:55:55 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+17:55:55 (DEBUG): Changing client exten from "client-127.0.0.1-50425" to "exten-" 
+17:55:55 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+17:55:55 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+17:55:55 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+17:55:55 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+17:55:55 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+17:55:55 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+17:55:55 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+18:14:01 (DEBUG): Reading Configurations
+18:14:01 (DEBUG): Reading first runtime configuration from database 
+18:14:01 (DEBUG): MySQL database successfully opened
+ 
+18:14:01 (DEBUG): MySQL database version  "0.5" 
+ 
+18:14:01 (DEBUG): loadSeat complete for operator "oper1" 
+18:14:01 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:14:01 (DEBUG): loadSeat complete for operator "oper1" 
+18:14:01 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:14:01 (DEBUG): loadSeat complete for operator "oper2" 
+18:14:01 (DEBUG): loadListOfServices complete for operator "oper2" 
+18:14:01 (DEBUG): loadListOfServices complete for operator "oper3" 
+18:14:01 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+18:14:01 (DEBUG): CoreTcpServer listening on port  5000 
+18:14:01 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+18:14:01 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+18:14:01 (DEBUG): Configuration has changed on  1255558719 
+18:14:01 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+18:14:01 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+18:14:01 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+18:14:01 (DEBUG): MySQL database successfully opened
+ 
+18:14:01 (DEBUG): MySQL database version  "0.5" 
+ 
+18:14:01 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+18:14:01 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+18:14:01 (DEBUG): In QAstCTIService::~QAstCTIService() 
+18:14:01 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+18:14:01 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:14:01 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:14:01 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+18:14:01 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+18:14:01 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+18:14:01 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+18:14:01 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+18:14:01 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+18:14:01 (DEBUG): loadSeat complete for operator "oper1" 
+18:14:01 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:14:01 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+18:14:01 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:14:01 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:14:01 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:14:01 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:14:01 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:14:01 (DEBUG): loadSeat complete for operator "oper1" 
+18:14:01 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:14:01 (DEBUG): We're authenticated by AMI Server 
+18:14:01 (DEBUG): loadSeat complete for operator "oper2" 
+18:14:01 (DEBUG): loadListOfServices complete for operator "oper2" 
+18:14:01 (DEBUG): loadListOfServices complete for operator "oper3" 
+18:14:01 (DEBUG): Service alive is  "ast-cti-demo" 
+18:14:01 (DEBUG): Number of operators on service is  1 
+18:14:01 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+18:14:01 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+18:14:01 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+18:14:01 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+18:14:01 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+18:14:01 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+18:14:01 (DEBUG): In ClientManager::ClientManager 
+18:14:01 (DEBUG): In ClientManager::initParserCommands() 
+18:14:01 (DEBUG): In ClientManager::run 
+18:14:01 (DEBUG): Incoming Connection from  "127.0.0.1" : 45641 
+18:14:01 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+18:14:01 (DEBUG): Adding exten "client-127.0.0.1-45641" 
+18:14:01 (DEBUG): Number of clients: 1 
+18:14:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+18:14:01 (DEBUG): In ClientManager::sendDataToClient( "103 5" ) 
+18:14:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+18:14:01 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+18:14:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+18:14:01 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+18:14:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+18:14:01 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+18:14:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+18:14:01 (DEBUG): Changing client exten from "client-127.0.0.1-45641" to "exten-" 
+18:14:01 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+18:14:01 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+18:14:01 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+18:14:01 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+18:14:01 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:14:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+18:14:01 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+18:14:37 (DEBUG): Reading Configurations
+18:14:37 (DEBUG): Reading first runtime configuration from database 
+18:14:37 (DEBUG): MySQL database successfully opened
+ 
+18:14:37 (DEBUG): MySQL database version  "0.5" 
+ 
+18:14:37 (DEBUG): loadSeat complete for operator "oper1" 
+18:14:37 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:14:37 (DEBUG): loadSeat complete for operator "oper1" 
+18:14:37 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:14:37 (DEBUG): loadSeat complete for operator "oper2" 
+18:14:37 (DEBUG): loadListOfServices complete for operator "oper2" 
+18:14:37 (DEBUG): loadListOfServices complete for operator "oper3" 
+18:14:37 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+18:14:37 (DEBUG): CoreTcpServer listening on port  5000 
+18:14:37 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+18:14:37 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+18:14:37 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+18:14:37 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+18:14:37 (DEBUG): Configuration has changed on  1255558719 
+18:14:37 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+18:14:37 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+18:14:37 (DEBUG): MySQL database successfully opened
+ 
+18:14:37 (DEBUG): MySQL database version  "0.5" 
+ 
+18:14:37 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+18:14:37 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+18:14:37 (DEBUG): In QAstCTIService::~QAstCTIService() 
+18:14:37 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+18:14:37 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:14:37 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:14:37 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+18:14:37 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+18:14:37 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+18:14:37 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+18:14:37 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+18:14:37 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+18:14:37 (DEBUG): loadSeat complete for operator "oper1" 
+18:14:37 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:14:37 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+18:14:37 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:14:37 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:14:37 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:14:37 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:14:37 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:14:37 (DEBUG): loadSeat complete for operator "oper1" 
+18:14:37 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:14:37 (DEBUG): We're authenticated by AMI Server 
+18:14:37 (DEBUG): loadSeat complete for operator "oper2" 
+18:14:37 (DEBUG): loadListOfServices complete for operator "oper2" 
+18:14:37 (DEBUG): loadListOfServices complete for operator "oper3" 
+18:14:37 (DEBUG): Service alive is  "ast-cti-demo" 
+18:14:37 (DEBUG): Number of operators on service is  1 
+18:14:37 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+18:14:37 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+18:14:37 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+18:14:37 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+18:14:38 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+18:14:38 (DEBUG): In ClientManager::ClientManager 
+18:14:38 (DEBUG): In ClientManager::initParserCommands() 
+18:14:38 (DEBUG): In ClientManager::run 
+18:14:38 (DEBUG): Adding exten "client-127.0.0.1-45686" 
+18:14:38 (DEBUG): Number of clients: 1 
+18:14:38 (DEBUG): Incoming Connection from  "127.0.0.1" : 45686 
+18:14:38 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+18:14:58 (DEBUG): Received signal dataReceived in parseDataReceived:  "
+18:14:58 (DEBUG): In ClientManager::sendDataToClient( "101 KO Invalid Command" ) 
+18:14:58 (DEBUG): Removing exten "client-127.0.0.1-45686" 
+18:14:58 (DEBUG): Number of clients: 0 
+18:14:58 (DEBUG): ClientManager terminated 
+18:15:49 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+18:15:49 (DEBUG): In ClientManager::ClientManager 
+18:15:49 (DEBUG): In ClientManager::initParserCommands() 
+18:15:49 (DEBUG): In ClientManager::run 
+18:15:49 (DEBUG): Incoming Connection from  "127.0.0.1" : 45687 
+18:15:49 (DEBUG): Adding exten "client-127.0.0.1-45687" 
+18:15:49 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+18:15:49 (DEBUG): Number of clients: 1 
+18:15:49 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+18:15:49 (DEBUG): In ClientManager::sendDataToClient( "103 5" ) 
+18:15:49 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+18:15:49 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+18:15:49 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+18:15:49 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+18:15:49 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+18:15:49 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+18:15:49 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+18:15:49 (DEBUG): Changing client exten from "client-127.0.0.1-45687" to "exten-" 
+18:15:49 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+18:15:49 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+18:15:49 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+18:15:49 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+18:15:49 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:15:49 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+18:15:49 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+18:15:57 (DEBUG): Reading Configurations
+18:15:57 (DEBUG): Reading first runtime configuration from database 
+18:15:57 (DEBUG): MySQL database successfully opened
+ 
+18:15:57 (DEBUG): MySQL database version  "0.5" 
+ 
+18:15:57 (DEBUG): loadSeat complete for operator "oper1" 
+18:15:57 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:15:57 (DEBUG): loadSeat complete for operator "oper1" 
+18:15:57 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:15:57 (DEBUG): loadSeat complete for operator "oper2" 
+18:15:57 (DEBUG): loadListOfServices complete for operator "oper2" 
+18:15:57 (DEBUG): loadListOfServices complete for operator "oper3" 
+18:15:57 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+18:15:57 (DEBUG): CoreTcpServer listening on port  5000 
+18:15:57 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+18:15:57 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+18:15:57 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+18:15:57 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+18:15:57 (DEBUG): Configuration has changed on  1255558719 
+18:15:57 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+18:15:57 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+18:15:57 (DEBUG): MySQL database successfully opened
+ 
+18:15:57 (DEBUG): MySQL database version  "0.5" 
+ 
+18:15:57 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+18:15:57 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+18:15:57 (DEBUG): In QAstCTIService::~QAstCTIService() 
+18:15:57 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+18:15:57 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:15:57 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:15:57 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+18:15:57 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+18:15:57 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+18:15:57 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+18:15:57 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+18:15:57 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+18:15:57 (DEBUG): loadSeat complete for operator "oper1" 
+18:15:57 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:15:57 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+18:15:57 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:15:57 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:15:57 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:15:57 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:15:57 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:15:57 (DEBUG): loadSeat complete for operator "oper1" 
+18:15:57 (DEBUG): We're authenticated by AMI Server 
+18:15:57 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:15:57 (DEBUG): loadSeat complete for operator "oper2" 
+18:15:57 (DEBUG): loadListOfServices complete for operator "oper2" 
+18:15:57 (DEBUG): loadListOfServices complete for operator "oper3" 
+18:15:57 (DEBUG): Service alive is  "ast-cti-demo" 
+18:15:57 (DEBUG): Number of operators on service is  1 
+18:15:57 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+18:15:57 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+18:15:57 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+18:15:57 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+18:15:57 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+18:15:57 (DEBUG): In ClientManager::ClientManager 
+18:15:57 (DEBUG): In ClientManager::initParserCommands() 
+18:15:57 (DEBUG): In ClientManager::run 
+18:15:57 (DEBUG): Incoming Connection from  "127.0.0.1" : 45707 
+18:15:57 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+18:15:57 (DEBUG): Adding exten "client-127.0.0.1-45707" 
+18:15:57 (DEBUG): Number of clients: 1 
+18:15:57 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+18:15:57 (DEBUG): In ClientManager::sendDataToClient( "103 5" ) 
+18:15:57 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+18:15:57 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+18:15:57 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+18:15:57 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+18:15:57 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+18:15:57 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+18:15:57 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+18:15:57 (DEBUG): Changing client exten from "client-127.0.0.1-45707" to "exten-" 
+18:15:57 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+18:15:57 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+18:15:57 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+18:15:57 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+18:15:57 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:15:57 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+18:15:57 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+18:16:09 (DEBUG): Reading Configurations
+18:16:09 (DEBUG): Reading first runtime configuration from database 
+18:16:09 (DEBUG): MySQL database successfully opened
+ 
+18:16:09 (DEBUG): MySQL database version  "0.5" 
+ 
+18:16:09 (DEBUG): loadSeat complete for operator "oper1" 
+18:16:09 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:16:09 (DEBUG): loadSeat complete for operator "oper1" 
+18:16:09 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:16:09 (DEBUG): loadSeat complete for operator "oper2" 
+18:16:09 (DEBUG): loadListOfServices complete for operator "oper2" 
+18:16:09 (DEBUG): loadListOfServices complete for operator "oper3" 
+18:16:09 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+18:16:09 (DEBUG): CoreTcpServer listening on port  5000 
+18:16:09 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+18:16:09 (DEBUG): Configuration has changed on  1255558719 
+18:16:09 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+18:16:09 (WARNING): QSqlDatabasePrivate::removeDatabase: connection 'mysqldb' is still in use, all queries will cease to work.
+18:16:09 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+18:16:09 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+18:16:09 (DEBUG): MySQL database successfully opened
+ 
+18:16:09 (DEBUG): MySQL database version  "0.5" 
+ 
+18:16:09 (DEBUG): CODE TESTING START AT ctiserverapplication.cpp:105
+18:16:09 (DEBUG): In QAstCTIServices::~QAstCTIServices() 
+18:16:09 (DEBUG): In QAstCTIService::~QAstCTIService() 
+18:16:09 (DEBUG): In QAstCTIServicesOperators::~QAstCTIServicesOperators() 
+18:16:09 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:16:09 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:16:09 (DEBUG): In QAstCTIServicesApplications::~QAstCTIServicesApplications() 
+18:16:09 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+18:16:09 (DEBUG): In QAstCTIApplication::~QAstCTIApplication() 
+18:16:09 (DEBUG): In QAstCTIServicesVariables::~QAstCTIServicesVariables() 
+18:16:09 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+18:16:09 (DEBUG): In QAstCTIVariable::~QAstCTIVariable() 
+18:16:09 (DEBUG): loadSeat complete for operator "oper1" 
+18:16:09 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:16:09 (DEBUG): In QAstCTIOperators::~QAstCTIOperators() 
+18:16:09 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:16:09 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:16:09 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:16:09 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:16:09 (DEBUG): In QAstCTIOperator::~QAstCTIOperator() 
+18:16:09 (DEBUG): loadSeat complete for operator "oper1" 
+18:16:09 (DEBUG): loadListOfServices complete for operator "oper1" 
+18:16:09 (DEBUG): We're authenticated by AMI Server 
+18:16:09 (DEBUG): loadSeat complete for operator "oper2" 
+18:16:09 (DEBUG): loadListOfServices complete for operator "oper2" 
+18:16:09 (DEBUG): loadListOfServices complete for operator "oper3" 
+18:16:09 (DEBUG): Service alive is  "ast-cti-demo" 
+18:16:09 (DEBUG): Number of operators on service is  1 
+18:16:09 (DEBUG): Application for lin is  "/usr/bin/firefox" 
+18:16:09 (DEBUG): Application for win is  "C:\Program Files\Firefox\Firefox.exe" 
+18:16:09 (DEBUG): CODE TESTING END AT ctiserverapplication.cpp:138
+18:16:09 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+18:16:09 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+18:16:11 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+18:16:11 (DEBUG): In ClientManager::ClientManager 
+18:16:11 (DEBUG): In ClientManager::initParserCommands() 
+18:16:11 (DEBUG): In ClientManager::run 
+18:16:11 (DEBUG): Adding exten "client-127.0.0.1-45739" 
+18:16:11 (DEBUG): Number of clients: 1 
+18:16:11 (DEBUG): Incoming Connection from  "127.0.0.1" : 45739 
+18:16:11 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+18:16:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+18:16:11 (DEBUG): In ClientManager::sendDataToClient( "103 5" ) 
+18:16:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+18:16:11 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+18:16:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+18:16:11 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+18:16:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+18:16:11 (DEBUG): In ClientManager::sendDataToClient( "104 OK 50000" ) 
+18:16:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+18:16:11 (DEBUG): Changing client exten from "client-127.0.0.1-45739" to "exten-" 
+18:16:11 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+18:16:11 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+18:16:11 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+18:16:11 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 1 .Cause: "Unable to add interface to queue: No such queue" 
+18:16:11 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+18:16:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LIN" 
+18:16:11 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+18:16:49 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+18:16:49 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+18:16:49 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" ) 
+18:16:49 (DEBUG): "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" 
+18:16:49 (DEBUG): Removing exten "exten-" 
+18:16:49 (DEBUG): Evaluated response  "Error" . For channel: "SIP/311" .ActionId: 2 .Cause: "Unable to remove interface from queue: No such queue" 
+18:16:49 (DEBUG): Number of clients: 0 
+18:16:49 (DEBUG): ClientManager terminated 
+

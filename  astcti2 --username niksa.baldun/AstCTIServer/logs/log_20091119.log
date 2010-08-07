@@ -1,0 +1,466 @@
+09:11:50 (DEBUG): Reading Configurations
+09:11:50 (DEBUG): Reading settings from file  "settings.ini" 
+09:11:50 (DEBUG): Reading first runtime configuration from database 
+09:11:51 (DEBUG): MySQL database successfully opened
+ 
+09:11:51 (DEBUG): MySQL database version  "0.9" 
+ 
+09:11:51 (DEBUG): Reading settings from database 
+09:11:51 (DEBUG): loadSeat complete for operator "oper1" 
+09:11:51 (DEBUG): loadListOfServices complete for operator "oper1" 
+09:11:51 (DEBUG): loadSeat complete for operator "oper1" 
+09:11:51 (DEBUG): loadListOfServices complete for operator "oper1" 
+09:11:51 (DEBUG): loadSeat complete for operator "oper2" 
+09:11:51 (DEBUG): loadListOfServices complete for operator "oper2" 
+09:11:51 (DEBUG): loadListOfServices complete for operator "oper3" 
+09:11:51 (DEBUG): In CoreTcpServer:CoreTcpServer() 
+09:11:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:11:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:11:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:11:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:11:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:12:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:12:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:12:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:12:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:12:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:12:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:12:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:12:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:12:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:12:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:13:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:13:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:13:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:13:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:13:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:13:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:13:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:13:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:13:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:13:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:14:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:14:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:14:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:14:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:14:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:14:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:14:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:14:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:14:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:14:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:15:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:15:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:15:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:15:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:15:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:15:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:15:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:15:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:15:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:15:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:16:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:16:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:16:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:16:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:16:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:16:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:16:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:16:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:16:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:16:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:17:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:17:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:17:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:17:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:17:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:17:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:17:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:17:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:17:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:17:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:18:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:18:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:18:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:18:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:18:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:18:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:18:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:18:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:18:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:18:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:19:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:19:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:19:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:19:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:19:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:19:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:19:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:19:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:19:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:19:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:20:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:20:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:20:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:20:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:20:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:20:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:20:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:20:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:20:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:20:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:21:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:21:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:21:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:21:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:21:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:21:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:21:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:21:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:21:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:21:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:22:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:22:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:22:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:22:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:22:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:22:51 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:22:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:22:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:22:51 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:22:51 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:23:21 (DEBUG): AMI Client will retry reconnect within  30  seconds 
+09:23:21 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:23:21 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:23:21 (DEBUG): AMIClient socket state changed:  "UnconnectedState" 
+09:23:21 (DEBUG): AMIClient Socket Error:  QAbstractSocket::ConnectionRefusedError   "Connection refused" 
+09:23:51 (DEBUG): AMIClient socket state changed:  "HostLookupState" 
+09:23:51 (DEBUG): AMIClient socket state changed:  "ConnectingState" 
+09:23:51 (DEBUG): AMIClient socket state changed:  "ConnectedState" 
+09:23:51 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+09:23:51 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" ) 
+09:23:51 (DEBUG): "Action: Login
+Username: ctiserver
+Secret: ctiserver
+
+" 
+09:23:51 (DEBUG): We're authenticated by AMI Server 
+09:23:51 (DEBUG): CoreTcpServer listening on port  5000 
+09:23:56 (DEBUG): In CoreTcpServer::incomingConnection( 18 ) 
+09:23:56 (DEBUG): In ClientManager::ClientManager 
+09:23:56 (DEBUG): In ClientManager::initParserCommands() 
+09:23:56 (DEBUG): In ClientManager::run 
+09:23:56 (DEBUG): Incoming Connection from  "127.0.0.1" : 48666 
+09:23:56 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+09:23:56 (DEBUG): Adding exten "client-127.0.0.1-48666" 
+09:23:56 (DEBUG): Number of clients: 1 
+09:23:56 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+09:23:56 (DEBUG): In ClientManager::sendDataToClient( "103 7" ) 
+09:23:56 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+09:23:56 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+09:23:56 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+09:23:56 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+09:23:56 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+09:23:56 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+09:23:56 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+09:23:56 (DEBUG): Changing client exten from "client-127.0.0.1-48666" to "exten-" 
+09:23:56 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+09:23:56 (DEBUG): "Action: QueueAdd
+ActionID: 1
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+09:23:56 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+09:23:56 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+09:23:56 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+09:23:56 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+09:23:56 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 1 .Cause: "Added interface to queue" 
+09:23:56 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+09:24:24 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+09:24:24 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+09:24:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+09:24:52 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+09:24:54 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+09:24:54 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+09:24:54 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" ) 
+09:24:54 (DEBUG): "Action: QueueRemove
+ActionID: 2
+Queue: 600
+Interface: SIP/311
+
+" 
+09:24:54 (DEBUG): Removing exten "exten-" 
+09:24:54 (DEBUG): Number of clients: 0 
+09:24:54 (DEBUG): ClientManager terminated 
+09:24:54 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 2 .Cause: "Removed interface from queue" 
+09:24:54 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+16:20:59 (DEBUG): In CoreTcpServer::incomingConnection( 18 ) 
+16:20:59 (DEBUG): In ClientManager::ClientManager 
+16:20:59 (DEBUG): In ClientManager::initParserCommands() 
+16:20:59 (DEBUG): In ClientManager::run 
+16:20:59 (DEBUG): Incoming Connection from  "127.0.0.1" : 49440 
+16:20:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:20:59 (DEBUG): Adding exten "client-127.0.0.1-49440" 
+16:20:59 (DEBUG): Number of clients: 1 
+16:20:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:20:59 (DEBUG): In ClientManager::sendDataToClient( "103 7" ) 
+16:20:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:20:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:20:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+16:20:59 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+16:20:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+16:20:59 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+16:20:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+16:20:59 (DEBUG): Changing client exten from "client-127.0.0.1-49440" to "exten-" 
+16:20:59 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 3
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+16:20:59 (DEBUG): "Action: QueueAdd
+ActionID: 3
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+16:20:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:20:59 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+16:20:59 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+16:20:59 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+16:20:59 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 3 .Cause: "Added interface to queue" 
+16:20:59 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+16:21:16 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 4
+Queue: 600
+Interface: SIP/311
+
+" ) 
+16:21:16 (DEBUG): "Action: QueueRemove
+ActionID: 4
+Queue: 600
+Interface: SIP/311
+
+" 
+16:21:16 (DEBUG): Removing exten "exten-" 
+16:21:16 (DEBUG): Number of clients: 0 
+16:21:16 (DEBUG): ClientManager terminated 
+16:21:16 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 4 .Cause: "Removed interface from queue" 
+16:21:16 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+16:24:37 (DEBUG): In CoreTcpServer::incomingConnection( 18 ) 
+16:24:37 (DEBUG): In ClientManager::ClientManager 
+16:24:37 (DEBUG): In ClientManager::initParserCommands() 
+16:24:37 (DEBUG): In ClientManager::run 
+16:24:37 (DEBUG): Incoming Connection from  "127.0.0.1" : 48024 
+16:24:37 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:24:37 (DEBUG): Adding exten "client-127.0.0.1-48024" 
+16:24:37 (DEBUG): Number of clients: 1 
+16:24:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:24:37 (DEBUG): In ClientManager::sendDataToClient( "103 7" ) 
+16:24:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:24:37 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:24:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+16:24:37 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+16:24:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+16:24:37 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+16:24:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+16:24:37 (DEBUG): Changing client exten from "client-127.0.0.1-48024" to "exten-" 
+16:24:37 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 5
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+16:24:37 (DEBUG): "Action: QueueAdd
+ActionID: 5
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+16:24:37 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:24:37 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+16:24:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+16:24:37 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+16:24:37 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 5 .Cause: "Added interface to queue" 
+16:24:37 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+16:26:52 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 6
+Queue: 600
+Interface: SIP/311
+
+" ) 
+16:26:52 (DEBUG): "Action: QueueRemove
+ActionID: 6
+Queue: 600
+Interface: SIP/311
+
+" 
+16:26:52 (DEBUG): Removing exten "exten-" 
+16:26:52 (DEBUG): Number of clients: 0 
+16:26:52 (DEBUG): ClientManager terminated 
+16:26:52 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 6 .Cause: "Removed interface from queue" 
+16:26:52 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+16:31:34 (DEBUG): In CoreTcpServer::incomingConnection( 18 ) 
+16:31:34 (DEBUG): In ClientManager::ClientManager 
+16:31:34 (DEBUG): In ClientManager::initParserCommands() 
+16:31:34 (DEBUG): In ClientManager::run 
+16:31:34 (DEBUG): Adding exten "client-127.0.0.1-39588" 
+16:31:34 (DEBUG): Number of clients: 1 
+16:31:34 (DEBUG): Incoming Connection from  "127.0.0.1" : 39588 
+16:31:34 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:31:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:31:34 (DEBUG): In ClientManager::sendDataToClient( "103 7" ) 
+16:31:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:31:34 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:31:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+16:31:34 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+16:31:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+16:31:34 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+16:31:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+16:31:34 (DEBUG): Changing client exten from "client-127.0.0.1-39588" to "exten-" 
+16:31:34 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 7
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+16:31:34 (DEBUG): "Action: QueueAdd
+ActionID: 7
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+16:31:34 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:31:34 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+16:31:34 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+16:31:34 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+16:31:34 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 7 .Cause: "Added interface to queue" 
+16:31:34 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+16:31:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+16:31:52 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+16:31:52 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 8
+Queue: 600
+Interface: SIP/311
+
+" ) 
+16:31:52 (DEBUG): "Action: QueueRemove
+ActionID: 8
+Queue: 600
+Interface: SIP/311
+
+" 
+16:31:52 (DEBUG): Removing exten "exten-" 
+16:31:52 (DEBUG): Number of clients: 0 
+16:31:52 (DEBUG): ClientManager terminated 
+16:31:52 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 8 .Cause: "Removed interface from queue" 
+16:31:52 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+16:33:01 (DEBUG): In CoreTcpServer::incomingConnection( 18 ) 
+16:33:01 (DEBUG): In ClientManager::ClientManager 
+16:33:01 (DEBUG): In ClientManager::initParserCommands() 
+16:33:01 (DEBUG): In ClientManager::run 
+16:33:01 (DEBUG): Adding exten "client-127.0.0.1-57921" 
+16:33:01 (DEBUG): Number of clients: 1 
+16:33:01 (DEBUG): Incoming Connection from  "127.0.0.1" : 57921 
+16:33:01 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+16:33:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+16:33:01 (DEBUG): In ClientManager::sendDataToClient( "103 7" ) 
+16:33:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+16:33:01 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+16:33:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+16:33:01 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+16:33:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+16:33:01 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+16:33:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+16:33:01 (DEBUG): Changing client exten from "client-127.0.0.1-57921" to "exten-" 
+16:33:01 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 9
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+16:33:01 (DEBUG): "Action: QueueAdd
+ActionID: 9
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+16:33:01 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:33:01 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+16:33:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+16:33:01 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+16:33:01 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 9 .Cause: "Added interface to queue" 
+16:33:01 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+16:33:29 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:33:29 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:33:57 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:33:57 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:34:25 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:34:25 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:34:53 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:34:53 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:35:21 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:35:21 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:35:49 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:35:49 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:36:17 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+16:36:17 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+16:36:22 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+16:36:22 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+16:36:22 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 10
+Queue: 600
+Interface: SIP/311
+
+" ) 
+16:36:22 (DEBUG): "Action: QueueRemove
+ActionID: 10
+Queue: 600
+Interface: SIP/311
+
+" 
+16:36:22 (DEBUG): Removing exten "exten-" 
+16:36:22 (DEBUG): Number of clients: 0 
+16:36:22 (DEBUG): ClientManager terminated 
+16:36:22 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 10 .Cause: "Removed interface from queue" 
+16:36:22 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+

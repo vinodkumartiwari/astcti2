@@ -1,0 +1,17 @@
+/**
+ * Copyright (c) CreaLabs SNC (http://www.crealabs.it)
+ * Code licensed under LGPL3 license:
+ * http://www.gnu.org/licenses/lgpl.html
+ */
+
+h2 img {
+	display: none;
+}
+
+#p4a_top_container {
+	position: absolute;
+}
+
+.p4a_message img {
+	display: none;
+}

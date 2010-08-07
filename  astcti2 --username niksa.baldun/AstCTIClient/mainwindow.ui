@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindowClass</class>
+ <widget class="QMainWindow" name="MainWindowClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>344</width>
+    <height>116</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
+  </property>
+  <property name="windowTitle">
+   <string>AstCTIClient</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="mainresources.qrc">
+    <normaloff>:/res/res/asteriskcti16x16.png</normaloff>:/res/res/asteriskcti16x16.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string/>
+  </property>
+  <property name="animated">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string>background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(184, 97, 158, 255), stop:1 rgba(255, 255, 255, 255));
+</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>24</width>
+     <height>24</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionLogin"/>
+   <addaction name="actionPause"/>
+   <addaction name="separator"/>
+   <addaction name="actionConfigure"/>
+   <addaction name="separator"/>
+   <addaction name="actionAbout"/>
+   <addaction name="separator"/>
+   <addaction name="actionExit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="styleSheet">
+    <string>padding: 2px;</string>
+   </property>
+   <property name="sizeGripEnabled">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>344</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionConfigure_2"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit_2"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>?</string>
+    </property>
+    <addaction name="actionAbout_2"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout_Qt"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu"/>
+  </widget>
+  <action name="actionLogin">
+   <property name="icon">
+    <iconset resource="mainresources.qrc">
+     <normaloff>:/res/res/agt_forward.png</normaloff>:/res/res/agt_forward.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Login</string>
+   </property>
+   <property name="toolTip">
+    <string>Login</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="icon">
+    <iconset resource="mainresources.qrc">
+     <normaloff>:/res/res/agt_pause-queue.png</normaloff>:/res/res/agt_pause-queue.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Pause</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionConfigure">
+   <property name="icon">
+    <iconset resource="mainresources.qrc">
+     <normaloff>:/res/res/configure.png</normaloff>:/res/res/configure.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Configure</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="mainresources.qrc">
+     <normaloff>:/res/res/documentinfo.png</normaloff>:/res/res/documentinfo.png</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="mainresources.qrc">
+     <normaloff>:/res/res/exit.png</normaloff>:/res/res/exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="toolTip">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionAbout_2">
+   <property name="icon">
+    <iconset resource="mainresources.qrc">
+     <normaloff>:/res/res/documentinfo.png</normaloff>:/res/res/documentinfo.png</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionAbout_Qt">
+   <property name="text">
+    <string>About Qt</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::AboutQtRole</enum>
+   </property>
+  </action>
+  <action name="actionConfigure_2">
+   <property name="icon">
+    <iconset resource="mainresources.qrc">
+     <normaloff>:/res/res/configure.png</normaloff>:/res/res/configure.png</iconset>
+   </property>
+   <property name="text">
+    <string>Configure</string>
+   </property>
+  </action>
+  <action name="actionExit_2">
+   <property name="icon">
+    <iconset resource="mainresources.qrc">
+     <normaloff>:/res/res/exit.png</normaloff>:/res/res/exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="mainresources.qrc"/>
+ </resources>
+ <connections/>
+ <slots>
+  <slot>showDialog()</slot>
+  <slot>toolBarActionTriggered(QAction*)</slot>
+ </slots>
+</ui>
