@@ -1,0 +1,400 @@
+14:57:40 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+14:57:40 (DEBUG): In ClientManager::ClientManager 
+14:57:40 (DEBUG): In ClientManager::initParserCommands() 
+14:57:40 (DEBUG): In ClientManager::run 
+14:57:40 (DEBUG): Incoming Connection from  "127.0.0.1" : 56481 
+14:57:40 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+14:57:40 (DEBUG): Adding exten "client-127.0.0.1-56481" 
+14:57:40 (DEBUG): Number of clients: 1 
+14:57:40 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+14:57:40 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+14:57:40 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+14:57:40 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+14:57:40 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+14:57:40 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+14:57:40 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+14:57:40 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+14:57:40 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+14:57:40 (DEBUG): Changing client exten from "client-127.0.0.1-56481" to "exten-" 
+14:57:40 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 3
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+14:57:40 (DEBUG): "Action: QueueAdd
+ActionID: 3
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+14:57:40 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+14:57:40 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+14:57:40 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+14:57:40 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+14:57:41 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 3 .Cause: "Added interface to queue" 
+14:57:41 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+14:58:09 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+14:58:09 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+14:58:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+14:58:37 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+14:58:39 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+14:58:39 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+14:58:39 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 4
+Queue: 600
+Interface: SIP/311
+
+" ) 
+14:58:39 (DEBUG): "Action: QueueRemove
+ActionID: 4
+Queue: 600
+Interface: SIP/311
+
+" 
+14:58:39 (DEBUG): Removing exten "exten-" 
+14:58:39 (DEBUG): Number of clients: 0 
+14:58:39 (DEBUG): ClientManager terminated 
+14:58:40 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 4 .Cause: "Removed interface from queue" 
+14:58:40 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+15:17:24 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:17:24 (DEBUG): In ClientManager::ClientManager 
+15:17:24 (DEBUG): In ClientManager::initParserCommands() 
+15:17:24 (DEBUG): In ClientManager::run 
+15:17:24 (DEBUG): Incoming Connection from  "127.0.0.1" : 38683 
+15:17:24 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:17:24 (DEBUG): Adding exten "client-127.0.0.1-38683" 
+15:17:24 (DEBUG): Number of clients: 1 
+15:17:24 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:17:24 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:17:24 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+15:17:24 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+15:17:24 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+15:17:24 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+15:17:24 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+15:17:24 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+15:17:24 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+15:17:24 (DEBUG): Changing client exten from "client-127.0.0.1-38683" to "exten-" 
+15:17:24 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 5
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+15:17:24 (DEBUG): "Action: QueueAdd
+ActionID: 5
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+15:17:24 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:17:24 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+15:17:24 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+15:17:24 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+15:17:24 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 5 .Cause: "Added interface to queue" 
+15:17:24 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+15:17:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+15:17:45 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+15:17:45 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 6
+Queue: 600
+Interface: SIP/311
+
+" ) 
+15:17:45 (DEBUG): "Action: QueueRemove
+ActionID: 6
+Queue: 600
+Interface: SIP/311
+
+" 
+15:17:45 (DEBUG): Removing exten "exten-" 
+15:17:45 (DEBUG): Number of clients: 0 
+15:17:45 (DEBUG): ClientManager terminated 
+15:17:45 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 6 .Cause: "Removed interface from queue" 
+15:17:45 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+15:20:51 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:20:51 (DEBUG): In ClientManager::ClientManager 
+15:20:51 (DEBUG): In ClientManager::initParserCommands() 
+15:20:51 (DEBUG): In ClientManager::run 
+15:20:51 (DEBUG): Incoming Connection from  "127.0.0.1" : 55940 
+15:20:51 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:20:51 (DEBUG): Adding exten "client-127.0.0.1-55940" 
+15:20:51 (DEBUG): Number of clients: 1 
+15:20:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:20:51 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:20:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+15:20:51 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+15:20:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+15:20:51 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+15:20:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+15:20:51 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+15:20:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+15:20:51 (DEBUG): Changing client exten from "client-127.0.0.1-55940" to "exten-" 
+15:20:51 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 7
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+15:20:51 (DEBUG): "Action: QueueAdd
+ActionID: 7
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+15:20:51 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:20:51 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+15:20:51 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+15:20:51 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+15:20:51 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 7 .Cause: "Added interface to queue" 
+15:20:51 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+15:21:12 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+15:21:12 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+15:21:12 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 8
+Queue: 600
+Interface: SIP/311
+
+" ) 
+15:21:12 (DEBUG): "Action: QueueRemove
+ActionID: 8
+Queue: 600
+Interface: SIP/311
+
+" 
+15:21:12 (DEBUG): Removing exten "exten-" 
+15:21:12 (DEBUG): Number of clients: 0 
+15:21:12 (DEBUG): ClientManager terminated 
+15:21:12 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 8 .Cause: "Removed interface from queue" 
+15:21:12 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+15:27:39 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:27:39 (DEBUG): In ClientManager::ClientManager 
+15:27:39 (DEBUG): In ClientManager::initParserCommands() 
+15:27:39 (DEBUG): In ClientManager::run 
+15:27:39 (DEBUG): Incoming Connection from  "127.0.0.1" : 34870 
+15:27:39 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:27:39 (DEBUG): Adding exten "client-127.0.0.1-34870" 
+15:27:39 (DEBUG): Number of clients: 1 
+15:27:39 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:27:39 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:27:39 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1PASS" 
+15:27:39 (DEBUG): In ClientManager::sendDataToClient( "101 KO User doesn't exists" ) 
+15:27:39 (DEBUG): Removing exten "client-127.0.0.1-34870" 
+15:27:39 (DEBUG): Number of clients: 0 
+15:27:39 (DEBUG): ClientManager terminated 
+15:27:45 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:27:45 (DEBUG): In ClientManager::ClientManager 
+15:27:45 (DEBUG): In ClientManager::initParserCommands() 
+15:27:45 (DEBUG): In ClientManager::run 
+15:27:45 (DEBUG): Incoming Connection from  "127.0.0.1" : 34871 
+15:27:45 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:27:45 (DEBUG): Adding exten "client-127.0.0.1-34871" 
+15:27:45 (DEBUG): Number of clients: 1 
+15:27:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:27:45 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:27:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+15:27:45 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+15:27:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+15:27:45 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+15:27:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+15:27:45 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+15:27:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+15:27:45 (DEBUG): Changing client exten from "client-127.0.0.1-34871" to "exten-" 
+15:27:45 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 9
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+15:27:45 (DEBUG): "Action: QueueAdd
+ActionID: 9
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+15:27:45 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:27:45 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+15:27:45 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+15:27:45 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+15:27:45 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 9 .Cause: "Added interface to queue" 
+15:27:45 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+15:28:13 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:28:13 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:28:41 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:28:41 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:29:09 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:29:09 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:29:37 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:29:37 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:30:05 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:30:05 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:30:33 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:30:33 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:31:01 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:31:01 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:31:29 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:31:29 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:31:57 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:31:57 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:32:25 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:32:25 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:32:42 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+15:32:42 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+15:32:42 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 10
+Queue: 600
+Interface: SIP/311
+
+" ) 
+15:32:42 (DEBUG): "Action: QueueRemove
+ActionID: 10
+Queue: 600
+Interface: SIP/311
+
+" 
+15:32:42 (DEBUG): Removing exten "exten-" 
+15:32:42 (DEBUG): Number of clients: 0 
+15:32:42 (DEBUG): ClientManager terminated 
+15:32:43 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 10 .Cause: "Removed interface from queue" 
+15:32:43 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+15:38:52 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:38:52 (DEBUG): In ClientManager::ClientManager 
+15:38:52 (DEBUG): In ClientManager::initParserCommands() 
+15:38:52 (DEBUG): In ClientManager::run 
+15:38:52 (DEBUG): Adding exten "client-127.0.0.1-40330" 
+15:38:52 (DEBUG): Number of clients: 1 
+15:38:52 (DEBUG): Incoming Connection from  "127.0.0.1" : 40330 
+15:38:52 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:38:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:38:52 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:38:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+15:38:52 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+15:38:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+15:38:52 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+15:38:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+15:38:52 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+15:38:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+15:38:52 (DEBUG): Changing client exten from "client-127.0.0.1-40330" to "exten-" 
+15:38:52 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 11
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+15:38:52 (DEBUG): "Action: QueueAdd
+ActionID: 11
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+15:38:52 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:38:52 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+15:38:52 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+15:38:52 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+15:38:53 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 11 .Cause: "Added interface to queue" 
+15:38:53 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+15:39:11 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+15:39:11 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+15:39:11 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 12
+Queue: 600
+Interface: SIP/311
+
+" ) 
+15:39:11 (DEBUG): "Action: QueueRemove
+ActionID: 12
+Queue: 600
+Interface: SIP/311
+
+" 
+15:39:11 (DEBUG): Removing exten "exten-" 
+15:39:11 (DEBUG): Number of clients: 0 
+15:39:11 (DEBUG): ClientManager terminated 
+15:39:11 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 12 .Cause: "Removed interface from queue" 
+15:39:11 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+15:41:46 (DEBUG): In CoreTcpServer::incomingConnection( 15 ) 
+15:41:46 (DEBUG): In ClientManager::ClientManager 
+15:41:46 (DEBUG): In ClientManager::initParserCommands() 
+15:41:46 (DEBUG): In ClientManager::run 
+15:41:46 (DEBUG): Incoming Connection from  "127.0.0.1" : 41652 
+15:41:46 (DEBUG): In ClientManager::sendDataToClient( "100 OK Welcome to AstCTIServer" ) 
+15:41:46 (DEBUG): Adding exten "client-127.0.0.1-41652" 
+15:41:46 (DEBUG): Number of clients: 1 
+15:41:46 (DEBUG): Received signal dataReceived in parseDataReceived:  "CMPR" 
+15:41:46 (DEBUG): In ClientManager::sendDataToClient( "103 0" ) 
+15:41:46 (DEBUG): Received signal dataReceived in parseDataReceived:  "USER oper1" 
+15:41:46 (DEBUG): In ClientManager::sendDataToClient( "100 OK Send Password Now" ) 
+15:41:46 (DEBUG): Received signal dataReceived in parseDataReceived:  "PASS 1a1dc91c907325c69271ddf0c944bc72" 
+15:41:46 (DEBUG): In ClientManager::sendDataToClient( "102 OK Authentication successful" ) 
+15:41:46 (DEBUG): Received signal dataReceived in parseDataReceived:  "KEEP" 
+15:41:46 (DEBUG): In ClientManager::sendDataToClient( "104 OK 30000" ) 
+15:41:46 (DEBUG): Received signal dataReceived in parseDataReceived:  "MAC 00:00:00:00:00:00" 
+15:41:46 (DEBUG): Changing client exten from "client-127.0.0.1-41652" to "exten-" 
+15:41:46 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueAdd
+ActionID: 13
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" ) 
+15:41:46 (DEBUG): "Action: QueueAdd
+ActionID: 13
+Queue: 600
+Interface: SIP/311
+Penalty: 1
+Paused: false
+
+" 
+15:41:46 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:41:46 (DEBUG): In QAstCTISeat::~QAstCTISeat() 
+15:41:46 (DEBUG): Received signal dataReceived in parseDataReceived:  "OSTYPE LINUX" 
+15:41:46 (DEBUG): In ClientManager::sendDataToClient( "100 OK Operating System Is Set" ) 
+15:41:46 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 13 .Cause: "Added interface to queue" 
+15:41:46 (DEBUG): Received event  "QueueMemberAdded" In context:  "" 
+15:42:14 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:42:14 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:42:42 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:42:42 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:43:10 (DEBUG): Received signal dataReceived in parseDataReceived:  "NOOP" 
+15:43:10 (DEBUG): In ClientManager::sendDataToClient( "100 OK" ) 
+15:43:15 (DEBUG): Received signal dataReceived in parseDataReceived:  "QUIT" 
+15:43:15 (DEBUG): In ClientManager::sendDataToClient( "900 BYE" ) 
+15:43:15 (DEBUG): In AMIClient::sendDataToAsterisk( "Action: QueueRemove
+ActionID: 14
+Queue: 600
+Interface: SIP/311
+
+" ) 
+15:43:15 (DEBUG): "Action: QueueRemove
+ActionID: 14
+Queue: 600
+Interface: SIP/311
+
+" 
+15:43:15 (DEBUG): Removing exten "exten-" 
+15:43:15 (DEBUG): Number of clients: 0 
+15:43:15 (DEBUG): ClientManager terminated 
+15:43:15 (DEBUG): Evaluated response  "Success" . For channel: "SIP/311" .ActionId: 14 .Cause: "Removed interface from queue" 
+15:43:15 (DEBUG): Received event  "QueueMemberRemoved" In context:  "" 
+

@@ -1,0 +1,7 @@
+[RuntimeDb]
+host=localhost
+user=asteriskcti
+password=asteriskcti
+port=3306
+database=asteriskcti
+

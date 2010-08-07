@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/res" >
+        <file>res/agt_forward.png</file>
+        <file>res/agt_pause-queue.png</file>
+        <file>res/cancel.png</file>
+        <file>res/configure.png</file>
+        <file>res/documentinfo.png</file>
+        <file>res/editdelete.png</file>
+        <file>res/exit.png</file>
+        <file>res/greenled.png</file>
+        <file>res/redled.png</file>
+        <file>res/stop.png</file>
+        <file>res/yellowled.png</file>
+        <file>res/applications-system.png</file>
+        <file>res/asteriskcti.png</file>
+        <file>res/asteriskcti-3d.png</file>
+        <file>res/asteriskcti16x16.png</file>
+        <file>res/asteriskcti-3d128x128.png</file>
+        <file>res/asteriskcti128x128.png</file>
+        <file>res/ok.png</file>
+        <file>res/notfound.html</file>
+        <file>res/call-start.png</file>
+        <file>res/call-stop.png</file>
+        <file>res/arrow-down.png</file>
+        <file>res/toolbarhandle.png</file>
+        <file>res/browser-go.png</file>
+        <file>res/browser-next.png</file>
+        <file>res/browser-previous.png</file>
+        <file>res/browser-refresh.png</file>
+    </qresource>
+</RCC>

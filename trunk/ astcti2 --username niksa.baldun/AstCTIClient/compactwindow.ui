@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CompactWindow</class>
+ <widget class="QDialog" name="CompactWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>32</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>400</width>
+    <height>32</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>32</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>AsteriskCTI</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="mainresources.qrc">
+    <normaloff>:/res/res/asteriskcti16x16.png</normaloff>:/res/res/asteriskcti16x16.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#CompactWindow {
+	border: 1px solid purple;
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(184, 97, 158, 255), stop:1 rgba(255, 255, 255, 255));
+}
+
+QToolButton {
+	background-color: transparent;
+}
+
+QToolButton:hover, QToolButton:focus {
+	background-color: transparent;
+	border-width: 1px;
+	border-style: outset;
+	border-color: rgb(170, 85, 255);
+}
+
+QToolButton:pressed , QToolButton:checked {
+	background-color: transparent;
+	border-width: 1px;
+	border-style: inset;
+	border-color: rgb(170, 85, 255);
+}
+
+/*
+#messageLabel[severity=&quot;Information&quot;] {
+	color: black;
+}
+
+#messageLabel[severity=&quot;Warning&quot;] {
+	color: orange;
+}
+
+#messageLabel[severity=&quot;Critical&quot;] {
+	color: red;
+}
+*/
+
+#moveLabel {
+	background-image: url(:/res/res/toolbarhandle.png);
+
+}
+
+#sizeLabel {
+	background-image: url(:/res/res/toolbarhandle.png);
+}
+</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="spacing">
+    <number>2</number>
+   </property>
+   <property name="margin">
+    <number>3</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="moveLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>6</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>6</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="cursor">
+      <cursorShape>SizeAllCursor</cursorShape>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="statusLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="mainresources.qrc">:/res/res/redled.png</pixmap>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="callComboBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+     <property name="insertPolicy">
+      <enum>QComboBox::InsertAtTop</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="callButton">
+     <property name="toolTip">
+      <string>Call</string>
+     </property>
+     <property name="icon">
+      <iconset resource="mainresources.qrc">
+       <normaloff>:/res/res/call-start.png</normaloff>:/res/res/call-start.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line1">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="passwordButton">
+     <property name="toolTip">
+      <string>Change password</string>
+     </property>
+     <property name="icon">
+      <iconset resource="mainresources.qrc">
+       <normaloff>:/res/res/configure.png</normaloff>:/res/res/configure.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="aboutButton">
+     <property name="toolTip">
+      <string>About</string>
+     </property>
+     <property name="icon">
+      <iconset resource="mainresources.qrc">
+       <normaloff>:/res/res/documentinfo.png</normaloff>:/res/res/documentinfo.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="repeatButton">
+     <property name="toolTip">
+      <string>Repeat last action</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="mainresources.qrc">
+       <normaloff>:/res/res/applications-system.png</normaloff>:/res/res/applications-system.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line3">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="pauseButton">
+     <property name="toolTip">
+      <string>Pause</string>
+     </property>
+     <property name="icon">
+      <iconset resource="mainresources.qrc">
+       <normaloff>:/res/res/agt_pause-queue.png</normaloff>:/res/res/agt_pause-queue.png</iconset>
+     </property>
+     <property name="shortcut">
+      <string>Pause</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="minimizeButton">
+     <property name="toolTip">
+      <string>Minimize to system tray</string>
+     </property>
+     <property name="icon">
+      <iconset resource="mainresources.qrc">
+       <normaloff>:/res/res/arrow-down.png</normaloff>:/res/res/arrow-down.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="quitButton">
+     <property name="toolTip">
+      <string>Quit</string>
+     </property>
+     <property name="icon">
+      <iconset resource="mainresources.qrc">
+       <normaloff>:/res/res/exit.png</normaloff>:/res/res/exit.png</iconset>
+     </property>
+     <property name="shortcut">
+      <string>Ctrl+Q</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="sizeLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>3</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>3</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="cursor">
+      <cursorShape>SizeHorCursor</cursorShape>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>callComboBox</tabstop>
+  <tabstop>callButton</tabstop>
+  <tabstop>passwordButton</tabstop>
+  <tabstop>aboutButton</tabstop>
+  <tabstop>repeatButton</tabstop>
+  <tabstop>pauseButton</tabstop>
+  <tabstop>minimizeButton</tabstop>
+  <tabstop>quitButton</tabstop>
+ </tabstops>
+ <resources>
+  <include location="mainresources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
