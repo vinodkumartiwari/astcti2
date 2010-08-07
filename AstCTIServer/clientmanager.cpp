@@ -376,6 +376,7 @@ void ClientManager::parseDataReceived(const QString &data)
             if (this->state == StatePaused) {
                 this->state = StatePauseOutReuqested;
                 emit this->ctiPauseOut(this);
+
             } else {
                 this->state = StatePauseInRequested;
                 emit this->ctiPauseIn(this);

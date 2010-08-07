@@ -78,15 +78,15 @@ enum AMIClientStatus {
 };
 
 enum AMIEvent {
-    AmiEventUndefined,
-    AmiEventShutdown,
-    AmiEventNewChannel,
-    AmiEventHangup,
-    AmiEventNewExten,
-    AmiEventVarSet,
-    AmiEventJoin,
-    AmiEventBridge,
-    AmiEventEndList
+    AmiEventUndefined, // 1
+    AmiEventShutdown, // 2
+    AmiEventNewChannel,// 3
+    AmiEventHangup, // 4
+    AmiEventNewExten, // 5
+    AmiEventVarSet, // 6
+    AmiEventJoin, // 7
+    AmiEventBridge, // 8
+    AmiEventEndList // 9
 };
 
 enum AMIConnectionStatus {

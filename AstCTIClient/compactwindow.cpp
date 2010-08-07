@@ -239,7 +239,12 @@ void CompactWindow::minimizeToTray()
 void CompactWindow::pauseError(const QString &message)
 {
    this->m_ui->pauseButton->setEnabled(true);
-   this->showMessage(message, QSystemTrayIcon::Warning);
+   QString errorMessage = trUtf8("An error occurred: ");
+   // errorMessage.append(message.remove("KO").trimmed());
+   //TODO: decide what to do with pause Errors
+   //a pause error can occur also if we, administratively using CLI,
+   //remove an agent from queue...
+   this->showMessage(errorMessage, QSystemTrayIcon::Warning);
 }
 
 void CompactWindow::pauseAccepted() {
