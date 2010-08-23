@@ -45,11 +45,8 @@
 #include <QtCore>
 #include <QtCore/QCoreApplication>
 #include <QFileInfo>
-#include <QtSql>
 #include <QMutexLocker>
 #include <QMutex>
-
-
 
 #include "coretcpserver.h"
 #include "cticonfig.h"
@@ -62,7 +59,7 @@
 #include "qastctiservicesoperators.h"
 #include "qastctiservice.h"
 #include "qastctiservices.h"
- #include "qtsinglecoreapplication.h"
+#include "qtsinglecoreapplication.h"
 
 #define defaultCtiServerPort                5000
 #define defaultCtiConnectTimeout            1500
@@ -101,7 +98,7 @@ public:
 
 public slots:
     CoreTcpServer           *buildNewCoreTcpServer();
-    void                    reloadSqlDatabase();
+    void                    reloadSettings();
     void                    addUser(const QString &username);
     void                    removeUser(const QString &username);
 
@@ -110,21 +107,16 @@ private:
     CoreTcpServer           *coreTcpServer;
     ConfigurationChecker    *configChecker;
     bool                    isConfigLoading;
-    bool                    buildSqlDatabase();
-    void                    destroySqlDatabase();
     QString                 readDatabaseVersion();
     void                    readSettingsFromFile(const QString configFile, QAstCTIConfiguration *config);
     void                    readSettingsFromDatabase(QAstCTIConfiguration *config);
     QVariant                readSettingFromDatabase(const QString &name, const QVariant &defaultValue);
     QMutex                  configMutex;
 
-
 protected:
     QAstCTIActions          *actions;
     QAstCTIServices         *services;
     QAstCTIOperators        *ctiOperators;
-
-
 };
 
 #endif // CTISERVERAPPLICATION_H

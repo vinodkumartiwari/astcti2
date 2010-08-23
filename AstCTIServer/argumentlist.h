@@ -136,6 +136,6 @@ class QArgumentList : public QStringList
       @param argument to check
       @return true if the argument is a switch
     */
-    bool isSwitch(QString arg);
+    bool isSwitch(QString arg) const;
 };
 #endif
