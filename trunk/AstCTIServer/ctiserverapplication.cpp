@@ -35,8 +35,9 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#include "ctiserverapplication.h"
 
+#include "ctiserverapplication.h"
+#include "db.h"
 
 CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char **argv)
         : QtSingleCoreApplication(appId, argc, argv), coreTcpServer(0)
@@ -56,9 +57,12 @@ CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char
         // Read default settings for database connection from file
         readSettingsFromFile(configFile, &config);
         qDebug() << "Reading first runtime configuration from database";
-        if (!buildSqlDatabase()) {
+        if (!DB::buildSqlDatabase(config.sqlHost, config.sqlPort, config.sqlUserName, config.sqlPassWord, config.sqlDatabase)) {
             return;
         }
+
+        if (config.qDebug) qDebug() << "MySQL database successfully open\n";
+        if (config.qDebug) qDebug() << "MySQL database version " << this->readDatabaseVersion() << "\n";
 
         readSettingsFromDatabase(&config);
 
@@ -76,13 +80,12 @@ CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char
 
         // here we connect an event that will be triggered everytime
         // there's a newer runtime configuration database to read
-        connect(this->configChecker, SIGNAL(newConfiguration()), this, SLOT(reloadSqlDatabase()));
+        connect(this->configChecker, SIGNAL(newConfiguration()), this, SLOT(reloadSettings()));
 
         this->configChecker->startConfigurationCheckerThread();
 
         canStart = true;
     }
-
 }
 
 CtiServerApplication::~CtiServerApplication()
@@ -92,7 +95,7 @@ CtiServerApplication::~CtiServerApplication()
         if (this->configChecker != 0) delete(this->configChecker);
         if (this->coreTcpServer != 0) delete(this->coreTcpServer);
         if (config.qDebug) qDebug() << "CtiServerApplication closing";
-        this->destroySqlDatabase();
+        DB::destroySqlDatabase();
         if (config.qDebug) qDebug() << "MySQL database connection closed";
         if (config.qDebug) qDebug() << "Stopped";
 
@@ -101,7 +104,7 @@ CtiServerApplication::~CtiServerApplication()
     }
 }
 
-void  CtiServerApplication::reloadSqlDatabase()
+void  CtiServerApplication::reloadSettings()
 {
 
     // TODO : About race condition, you could add all the data (services, actions...) to the
@@ -113,7 +116,8 @@ void  CtiServerApplication::reloadSqlDatabase()
 
     qDebug() << "Configuration has changed on " << this->configChecker->getLastModified();
 
-    buildSqlDatabase();
+    //TODO (by Nik): Is this necessary? Database connection should already be open, no need to reopen it.
+    DB::buildSqlDatabase(config.sqlHost, config.sqlPort, config.sqlUserName, config.sqlPassWord, config.sqlDatabase);
 
     /* CODE TESTING START: used for testing purpose only */
     qDebug("CODE TESTING START AT %s:%d",  __FILE__ , __LINE__);
@@ -173,64 +177,14 @@ CoreTcpServer *CtiServerApplication::buildNewCoreTcpServer()
     return this->coreTcpServer;
 }
 
-bool CtiServerApplication::buildSqlDatabase()
-{
-    QSqlDatabase db  = QSqlDatabase::database("mysqldb");
-    if (db.isValid()) {
-        this->destroySqlDatabase();
-    }
-
-    db = QSqlDatabase::addDatabase("QMYSQL", "mysqldb");
-    db.setHostName(config.sqlHost);
-    db.setPort(config.sqlPort);
-    db.setUserName(config.sqlUserName);
-    db.setPassword(config.sqlPassWord);
-    db.setDatabaseName(config.sqlDatabase);
-
-
-    if(!db.open()) {
-        qCritical() << "Unable to open MySQL database: " << db.lastError() << "\n";
-
-        return false;
-    }
-
-    if (config.qDebug) qDebug() << "MySQL database successfully opened\n";
-
-    if (config.qDebug) qDebug() << "MySQL database version " << this->readDatabaseVersion() << "\n";
-
-    return true;
-
-}
-
 QString CtiServerApplication::readDatabaseVersion()
 {
-    QString result = "";
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-    if (query.exec("SELECT VERSION FROM dbversion LIMIT 1")) {
-        query.first();
-        result = query.value(0).toString();
-        query.finish();
-    }
-    query.clear();
-    return result;
-}
+    bool ok;
+    QVariant result = DB::readScalar("SELECT VERSION FROM dbversion LIMIT 1", &ok);
+    if (!ok)
+        result = "Error reading database version";
 
-void CtiServerApplication::destroySqlDatabase()
-{
-
-    if (QSqlDatabase::contains("mysqldb")) {
-        QSqlDatabase db = QSqlDatabase::database("mysqldb");
-
-        if (db.isValid()) {
-            if (db.isOpen()) db.close();
-            QSqlDatabase::removeDatabase("mysqldb");
-        }
-    }
-    // config.db = 0;
+    return result.toString();
 }
 
 void CtiServerApplication::readSettingsFromFile(const QString configFile, QAstCTIConfiguration *config)
@@ -280,24 +234,16 @@ void CtiServerApplication::readSettingsFromDatabase(QAstCTIConfiguration *config
 
 QVariant CtiServerApplication::readSettingFromDatabase(const QString &name, const QVariant &defaultValue)
 {
-    QVariant returnValue(defaultValue);
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-    if (query.prepare("SELECT val FROM server_settings WHERE name=:name")) {
-        
-        query.bindValue(":name", name);
-        if (query.exec()) {
-            query.first();
-            returnValue = query.value(0);
-            query.finish();
-        }
-    }
-    query.clear();
-    
-    return returnValue;
+    QVariantList parameters;
+    parameters.append(name);
+    bool ok;
+    QVariant returnValue = DB::readScalar("SELECT val FROM server_settings WHERE name=?", parameters, &ok);
+    if (ok)
+        return returnValue;
+    else
+        //TODO: We return the default value in case of an error.
+        //TODO: Perhaps execution should be stopped in that case
+        return defaultValue;
 }
 
 QAstCTIOperator *CtiServerApplication::getOperatorByUsername(const QString& username)
@@ -308,14 +254,17 @@ QAstCTIOperator *CtiServerApplication::getOperatorByUsername(const QString& user
     }
     return 0;
 }
+
 bool CtiServerApplication::containsUser(const QString &username)
 {
     return this->coreTcpServer->containsUser(username);
 }
+
 void CtiServerApplication::addUser(const QString &username)
 {
     this->coreTcpServer->addUser(username);
 }
+
 void CtiServerApplication::removeUser(const QString &username)
 {
     this->coreTcpServer->removeUser(username);

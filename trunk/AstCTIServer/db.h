@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2010 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2010 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,75 +37,30 @@
  * If you write modifications of your own for AstCTIServer, it is your choice
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
- *
- * Author: S. Alan Ezust sae@mcs.suffolk.edu
- * Code taken from: http://cartan.cas.suffolk.edu/oopdocbook/opensource/argumentlist.html
  */
 
-#include <QCoreApplication>
-#include "argumentlist.h"
-#include <QDebug>
-/**
-  Obtain the command line arguments from the currently
-  running QApplication */
+#ifndef DB_H
+#define DB_H
 
-QArgumentList::QArgumentList()
+#include <QtSql>
+
+class DB
 {
-    if (qApp != NULL) {
-        /* a global pointer to the current qApplication */
-        argsToStringlist(qApp->argc(), qApp->argv());
-    }
-}
 
-void QArgumentList::argsToStringlist(int argc, char * argv [])
-{
-    for (int i=0; i < argc; ++i) {
-        *this += argv[i];
-    }
-}
+public:
+    static bool buildSqlDatabase(const QString &host, quint16 &port, const QString &user, const QString &pass, const QString &database);
+    static void destroySqlDatabase();
+    static QVariant readScalar(const QString &sql, const QVariantList &parameters, bool *ok);
+    static QVariant readScalar(const QString &sql, bool *ok);
+    static QVariantList readList(const QString &sql, const QVariantList &parameters, bool* ok);
+    static QVariantList readList(const QString &sql, bool* ok);
+    static QList<QVariantList> readTable(const QString &sql, const QVariantList &parameters, bool *ok);
+    static QList<QVariantList> readTable(const QString &sql, bool *ok);
+    static int executeNonQuery(const QString &sql, const QVariantList &parameters, bool *ok);
+    static int executeNonQuery(const QString &sql, bool *ok);
 
-bool QArgumentList::isSwitch(QString arg) const
-{
-    return arg.startsWith('-');
-}
+private:
+    static QSqlQuery execSQL(const QString &sql, const QVariantList &parameters, bool *ok);
+};
 
-bool QArgumentList::getSwitch (QString option)
-{
-    QMutableStringListIterator itr(*this);
-    while (itr.hasNext()) {
-        if (option == itr.next()) {
-            itr.remove();
-            return true;
-        }
-    }
-    return false;
-}
-
-QString QArgumentList::getSwitchArg(QString option, QString defaultValue)
-{
-    if (isEmpty()) {
-        return defaultValue;
-    }
-    QMutableStringListIterator itr(*this);
-    while (itr.hasNext()) {
-        if (option == itr.next()) {
-            itr.remove();
-            if (itr.hasNext()) {
-                QString retval = itr.next();
-                if (isSwitch(retval)) {
-                    qDebug() << "Missing Argument for " << option;
-                    return QString();
-                } else {
-                    itr.remove();
-                    return retval;
-                }
-            } else {
-                qDebug() << "Missing Argument for " << option;
-                return QString();
-            }
-        }
-    }
-    return defaultValue;
-}
-
-
+#endif // DB_H

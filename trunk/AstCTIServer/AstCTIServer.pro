@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     qastctioperators.cpp \
     qastcticall.cpp \
     qastctioperatorservices.cpp \
-    qastctiactions.cpp
+    qastctiactions.cpp \
+    db.cpp
 HEADERS += clientmanager.h \
     cticonfig.h \
     logger.h \
@@ -51,4 +52,5 @@ HEADERS += clientmanager.h \
     qastctioperators.h \
     qastcticall.h \
     qastctioperatorservices.h \
-    qastctiactions.h
+    qastctiactions.h \
+    db.h
