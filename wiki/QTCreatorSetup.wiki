@@ -15,7 +15,8 @@
 
   # If you're on GNU/Linux:
     * open a terminal and chdir into your qtsdk directory `qtsdk/src/plugins/sqldrivers/mysql`
-    * Execute `qmake -o Makefile INCLUDEPATH+=/usr/include/mysql LIBS+=/usr/lib/libmysqlclient.a mysql.pro && make`
+    * Execute `qmake -o Makefile "INCLUDEPATH+=/usr/include" "LIBS+=-L/usr/lib -lmysqlclient_r" mysql.pro && make`
+    * Change the above line to match path for your includes and libraries and make sure to have libmysqlclient-dev libraries installed.
     * Copy the `libqsqlmysql.so` file in the `qtsdk/qt/plugins/sqldriver` directory.
 
 That's all.
