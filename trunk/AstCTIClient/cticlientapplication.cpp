@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2010 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2010 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,11 +58,13 @@ CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char
     translator.load(QString("AstCTIClient_") + locale);
     installTranslator(&translator);
 
-#if defined(Q_WS_MAC)
-    QApplication::setQuitOnLastWindowClosed(false);
-#else
-    QApplication::setQuitOnLastWindowClosed(true);
-#endif
+//On Mac, the common behaviour is to leave application running even when last window is closed
+//However, that doesn't make sense for this type of application
+//#if defined(Q_WS_MAC)
+//    QApplication::setQuitOnLastWindowClosed(false);
+//#else
+//    QApplication::setQuitOnLastWindowClosed(true);
+//#endif
 
     //Create configuration object
     this->config = new AstCTIConfiguration();
@@ -202,13 +207,10 @@ void CtiClientApplication::loginReject()
     this->exit(0);
 }
 
-void CtiClientApplication::pause(bool bPause)
+//Called when the user clicks 'Pause' in the main window
+void CtiClientApplication::pause(bool paused)
 {
-    if (bPause) {
-        sendCommandToServer(CmdPause, "IN");
-    } else {
-        sendCommandToServer(CmdPause, "IN");
-    }
+    sendCommandToServer(CmdPause, paused ? "IN" : "OUT");
 }
 
 //Called when the user clicks 'Change password' in the main window
@@ -234,9 +236,10 @@ void CtiClientApplication::logOff()
     qDeleteAll(this->applications);
     this->applications.clear();
 
-    //Browsers will be closed automatically, we just do the cleanup
-    qDeleteAll(this->browserWindows);
-    this->browserWindows.clear();
+    //Close all browser windows (window is automatically removed from array when closed, see browserWindowClosed())
+    for (int i = this->browserWindows.count() - 1; i > -1; i--) {
+        this->browserWindows[i]->close();
+    }
 
     //We don't wait for server to acknowledge user logoff
     //If connection is dropped before that, the server will log user off automatically
@@ -289,13 +292,13 @@ void CtiClientApplication::abortConnection(StopReason stopReason, const QString 
         //User disconnected manually by rejecting login, application will be closed
         return;
     case StopInternalError:
-        msg = "Internal error occured:\n" + message;
+        msg = trUtf8("Internal error occured:\n") + message;
         break;
     case StopServerError:
-        msg = "Server error occured:\n" + message;
+        msg = trUtf8("Server error occured:\n") + message;
         break;
     case StopInvalidCredentials:
-        msg = "Your credentials were not accepted:\n" + message;
+        msg = trUtf8("Your credentials were not accepted:\n") + message;
         break;
     }
 
@@ -319,9 +322,9 @@ void CtiClientApplication::connectionLost()
         emit statusChange(false);
     } else {
         //User won't be able to click OK button again until connection is established
-        this->loginWindow->showMessage("AsteriskCTI client is unable to connect to AsteriskCTI server. "
-                                      "Please check that the correct parameter is passed from the command line.\n\n"
-                                      "AsteriskCTI client will keep trying to connect.", true);
+        this->loginWindow->showMessage(trUtf8("AsteriskCTI client is unable to connect to AsteriskCTI server. "
+                                              "Please check that the correct parameter is passed from the command line.\n\n"
+                                              "AsteriskCTI client will keep trying to connect."), true);
         this->loginWindow->show();
     }
 }
@@ -390,7 +393,7 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
                 break;
             case CmdChangePassword:
                 resetLastCTICommand();
-                this->newMessage("Changing of password did not succeed: " + response.data.join(" "), QSystemTrayIcon::Critical);
+                this->newMessage(trUtf8("Changing of password did not succeed: ") + response.data.join(" "), QSystemTrayIcon::Critical);
                 break;
             case CmdMac:
             case CmdOsType:
@@ -433,7 +436,7 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
                 resetLastCTICommand();
                 //Update password
                 this->config->pass = this->newPassword;
-                this->newMessage("Changing of password was successfull.", QSystemTrayIcon::Information);
+                this->newMessage(trUtf8("Changing of password was successfull."), QSystemTrayIcon::Information);
                 break;
             case CmdMac:
                 resetLastCTICommand();
@@ -604,7 +607,6 @@ void CtiClientApplication::showMainWindow(const QString &extension)
         connect(w, SIGNAL(logOff()), this, SLOT(logOff()));
         connect(w, SIGNAL(changePassword()), this, SLOT(changePassword()));
 
-        // insert here signals to handle pause
         connect(w, SIGNAL(pauseRequest(bool)), this, SLOT(pause(bool)));
 
         this->mainWindow = dynamic_cast<QWidget*>(w);
@@ -625,9 +627,7 @@ void CtiClientApplication::showMainWindow(const QString &extension)
 //Displays the internal browser with the specified URL
 void CtiClientApplication::newBrowserWindow(QUrl url)
 {
-    //All browsers will be children of our main window
-    //If we close main window all browser windows will close too
-    BrowserWindow *browser = new BrowserWindow(this->config->user, url, this->mainWindow);
+    BrowserWindow *browser = new BrowserWindow(this->config->user, url, 0);
     this->browserWindows.append(browser);
     connect(browser, SIGNAL(windowClosing(BrowserWindow*)), this, SLOT(browserWindowClosed(BrowserWindow*)));
     connect(browser, SIGNAL(linkClicked(QUrl)), this, SLOT(newBrowserWindow(QUrl)));
@@ -668,7 +668,7 @@ void CtiClientApplication::socketConnected()
     }
     if (this->macAddress.isEmpty()) {
         qCritical() << "Unable to determine local MAC address. Aborting.";
-        abortConnection(StopInternalError, "Unable to determine local MAC address.");
+        abortConnection(StopInternalError, trUtf8("Unable to determine local MAC address."));
         return;
     }
 
@@ -747,7 +747,7 @@ void CtiClientApplication::socketError(QAbstractSocket::SocketError socketError)
         this->localSocket->abort();
 
         //Restart connect timer so it reinitiates connection after a specified interval
-        this->connectTimer->start(this->config->connectTimeout);
+        this->connectTimer->start(this->config->connectRetryInterval);
     } else {
         if (config->qDebug) qDebug() << "Socket Error: " << socketError << " " << this->localSocket->errorString();
     }

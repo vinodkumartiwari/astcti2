@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2010 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2010 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,18 +45,19 @@
 #include <QtGui/QDialog>
 #include <QSystemTrayIcon>
 
-#include "globalconstants.h"
+#include "coreconstants.h"
 #include "aboutdialog.h"
 #include "browserwindow.h"
 
 const QString statusMessageOK = "Conection to server OK";
 const QString statusMessageNotOK = "Conection to server has been lost. Trying to reconnect...";
+const QString pauseErrorMessage = "There was an error with pause operation:";
 
 namespace Ui {
     class CompactWindow;
 }
 
-class CompactWindow : public QDialog {
+class CompactWindow : public QWidget {
     Q_OBJECT
 public:
     explicit CompactWindow(const QString &userName);
@@ -71,7 +75,7 @@ public slots:
     void quit(bool skipCheck);
 
 signals:
-    void pauseRequest(bool bPause);
+    void pauseRequest(bool paused);
     void changePassword();
     void logOff();
 
@@ -82,13 +86,14 @@ protected:
     bool eventFilter(QObject *object, QEvent *e);
 
 private:
-    Ui::CompactWindow *m_ui;
+    Ui::CompactWindow *ui;
 
     bool canClose;
-    QPoint offset;
+    QPoint dragOrigin;
     QString userName;
     QSystemTrayIcon *trayIcon;
 
+    bool isValidDrag(QMouseEvent *mouseEvent) const;
     void createTrayIcon();
     void connectSlots();
     void enableControls(bool enable);

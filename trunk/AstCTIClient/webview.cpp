@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2010 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2010 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,7 +105,7 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply)
     QFile file(QLatin1String(":/res/notfound.html"));
     bool isOpened = file.open(QIODevice::ReadOnly);
     Q_ASSERT(isOpened);
-    QString title = tr("Error loading page: %1").arg(reply->url().toString());
+    QString title = trUtf8("Error loading page: %1").arg(reply->url().toString());
     QString html = QString(QLatin1String(file.readAll()))
                         .arg(title)
                         .arg(reply->errorString())

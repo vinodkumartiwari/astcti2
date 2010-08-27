@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2010 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2010 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,15 +44,17 @@
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),
-    m_ui(new Ui::AboutDialog)
+    ui(new Ui::AboutDialog)
 {
-    m_ui->setupUi(this);
+    ui->setupUi(this);
+    this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
+
     this->setUpInfoLabel();
 }
 
 AboutDialog::~AboutDialog()
 {
-    delete m_ui;
+    delete ui;
 }
 
 void AboutDialog::setUpInfoLabel()
@@ -75,18 +80,18 @@ void AboutDialog::setUpInfoLabel()
              , QString(APP_REVISION_STR).left(10)
 #endif
              );
-    this->m_ui->lblCopyright->setText(description);
+    this->ui->lblCopyright->setText(description);
 
-    this->m_ui->lblCopyright->setWordWrap(true);
-    this->m_ui->lblCopyright->setOpenExternalLinks(true);
-    this->m_ui->lblCopyright->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    this->ui->lblCopyright->setWordWrap(true);
+    this->ui->lblCopyright->setOpenExternalLinks(true);
+    this->ui->lblCopyright->setTextInteractionFlags(Qt::TextBrowserInteraction);
 }
 
 void AboutDialog::changeEvent(QEvent *e)
 {
     switch (e->type()) {
     case QEvent::LanguageChange:
-        m_ui->retranslateUi(this);
+        ui->retranslateUi(this);
         break;
     default:
         break;
@@ -112,7 +117,7 @@ void AboutDialog::on_btnShowLicence_clicked()
     flags |= Qt::WindowContextHelpButtonHint;
     dialog->setWindowFlags(flags);
 
-    dialog->setWindowTitle("License");
+    dialog->setWindowTitle(trUtf8("License"));
     QVBoxLayout *layout = new QVBoxLayout(dialog);
     QTextBrowser *licenseBrowser = new QTextBrowser(dialog);
     layout->addWidget(licenseBrowser);
@@ -127,7 +132,7 @@ void AboutDialog::on_btnShowLicence_clicked()
 
     QString licenseText;
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        licenseText = "File '" + fileName + "' could not be read.";
+        licenseText = trUtf8("Could not read file: ") + fileName;
     else
         licenseText = file.readAll();
 

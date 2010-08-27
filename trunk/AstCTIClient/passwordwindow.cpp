@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2010 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2010 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,20 +48,20 @@
 
 PasswordWindow::PasswordWindow(QWidget *parent) :
     QDialog(parent),
-    m_ui(new Ui::PasswordWindow)
+    ui(new Ui::PasswordWindow)
 {
-    m_ui->setupUi(this);
+    ui->setupUi(this);
 
-    m_ui->dialogButtonBox->buttons().at(0)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
-    m_ui->dialogButtonBox->buttons().at(1)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
+    ui->dialogButtonBox->buttons().at(0)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
+    ui->dialogButtonBox->buttons().at(1)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
 
-    connect(this->m_ui->dialogButtonBox, SIGNAL(accepted()), this, SLOT(accepting()));
-    connect(this->m_ui->dialogButtonBox, SIGNAL(rejected()), this, SLOT(rejecting()));
+    connect(this->ui->dialogButtonBox, SIGNAL(accepted()), this, SLOT(accepting()));
+    connect(this->ui->dialogButtonBox, SIGNAL(rejected()), this, SLOT(rejecting()));
 }
 
 PasswordWindow::~PasswordWindow()
 {
-    delete m_ui;
+    delete ui;
 }
 
 void PasswordWindow::changeEvent(QEvent *e)
@@ -66,7 +69,7 @@ void PasswordWindow::changeEvent(QEvent *e)
     QDialog::changeEvent(e);
     switch (e->type()) {
     case QEvent::LanguageChange:
-        m_ui->retranslateUi(this);
+        ui->retranslateUi(this);
         break;
     default:
         break;
@@ -75,16 +78,16 @@ void PasswordWindow::changeEvent(QEvent *e)
 
 void PasswordWindow::accepting()
 {
-    if (this->m_ui->passwordLineEdit->text() != this->m_ui->confirmPasswordLineEdit->text()) {
-        QMessageBox::critical(this, appName, "Passwords do not match.");
-        this->m_ui->passwordLineEdit->setFocus();
-        this->m_ui->passwordLineEdit->selectAll();
+    if (this->ui->passwordLineEdit->text() != this->ui->confirmPasswordLineEdit->text()) {
+        QMessageBox::critical(this, APP_NAME, trUtf8("Passwords do not match."));
+        this->ui->passwordLineEdit->setFocus();
+        this->ui->passwordLineEdit->selectAll();
     } else {
         QCryptographicHash md5(QCryptographicHash::Md5);
-        md5.addData(QByteArray(this->m_ui->oldPasswordLineEdit->text().toAscii()));
+        md5.addData(QByteArray(this->ui->oldPasswordLineEdit->text().toAscii()));
         this->oldPass = QString(md5.result().toHex());
         md5.reset();
-        md5.addData(QByteArray(this->m_ui->passwordLineEdit->text().toAscii()));
+        md5.addData(QByteArray(this->ui->passwordLineEdit->text().toAscii()));
         this->newPass = QString(md5.result().toHex());
 
         this->accept();

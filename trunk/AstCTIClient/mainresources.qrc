@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/res" >
+    <qresource prefix="/res">
         <file>res/agt_forward.png</file>
         <file>res/agt_pause-queue.png</file>
         <file>res/cancel.png</file>
@@ -27,5 +27,23 @@
         <file>res/browser-next.png</file>
         <file>res/browser-previous.png</file>
         <file>res/browser-refresh.png</file>
+        <file>res/window-close.png</file>
+        <file>res/window-help.png</file>
+        <file>res/window-maximize.png</file>
+        <file>res/window-minimize.png</file>
+        <file>res/window-restore.png</file>
+        <file>res/view.png</file>
+        <file>res/voicemail32x32.png</file>
+        <file>res/emergency32x32.png</file>
+        <file>res/redial32x32.png</file>
+        <file>res/phone.png</file>
+        <file>res/add.png</file>
+        <file>res/remove.png</file>
+        <file>res/change.png</file>
+        <file>res/allcalls.png</file>
+        <file>res/answered.png</file>
+        <file>res/accepted.png</file>
+        <file>res/missed.png</file>
+        <file>res/unanswered.png</file>
     </qresource>
 </RCC>

@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2010 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2010 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +44,7 @@
 
 #include <QtGui/QDialog>
 
-#include "globalconstants.h"
+#include "coreconstants.h"
 
 namespace Ui {
     class PasswordWindow;
@@ -60,7 +63,7 @@ protected:
     void changeEvent(QEvent *e);
 
 private:
-    Ui::PasswordWindow *m_ui;
+    Ui::PasswordWindow *ui;
 
 private slots:
     void accepting();
