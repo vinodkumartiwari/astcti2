@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2010 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2010 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,20 +47,24 @@
 
 LoginWindow::LoginWindow(QWidget *parent) :
     QDialog(parent),
-    m_ui(new Ui::LoginWindow)
+    ui(new Ui::LoginWindow)
 {
-    m_ui->setupUi(this);
+    ui->setupUi(this);
 
-    m_ui->dialogButtonBox->buttons().at(0)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
-    m_ui->dialogButtonBox->buttons().at(1)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
+    ui->dialogButtonBox->buttons().at(0)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
+    ui->dialogButtonBox->buttons().at(1)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
 
-    connect(this->m_ui->dialogButtonBox, SIGNAL(accepted()), this, SLOT(accepting()));
-    connect(this->m_ui->dialogButtonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));
+    connect(this->ui->dialogButtonBox, SIGNAL(accepted()), this, SLOT(accepting()));
+    connect(this->ui->dialogButtonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));
+
+    //TEMP
+    ui->usernameLineEdit->setText("oper1");
+    ui->passwordLineEdit->setText("pass");
 }
 
 LoginWindow::~LoginWindow()
 {
-    delete m_ui;
+    delete ui;
 }
 
 void LoginWindow::changeEvent(QEvent *e)
@@ -65,7 +72,7 @@ void LoginWindow::changeEvent(QEvent *e)
     QDialog::changeEvent(e);
     switch (e->type()) {
     case QEvent::LanguageChange:
-        m_ui->retranslateUi(this);
+        ui->retranslateUi(this);
         break;
     default:
         break;
@@ -74,25 +81,25 @@ void LoginWindow::changeEvent(QEvent *e)
 
 void LoginWindow::showMessage(const QString message, bool connectionLost)
 {
-    this->m_ui->dialogButtonBox->buttons().at(0)->setEnabled(!connectionLost);
-    this->m_ui->messageLabel->setText(message);
+    this->ui->dialogButtonBox->buttons().at(0)->setEnabled(!connectionLost);
+    this->ui->messageLabel->setText(message);
 }
 
 void LoginWindow::accepting()
 {
-    if (this->m_ui->usernameLineEdit->text().isEmpty()) {
-        this->showMessage("Username is required to continue. Please enter your username.", false);
-        this->m_ui->usernameLineEdit->setFocus();
+    if (this->ui->usernameLineEdit->text().isEmpty()) {
+        this->showMessage(trUtf8("Username is required to continue. Please enter your username."), false);
+        this->ui->usernameLineEdit->setFocus();
     } else {
         this->hide();
 
-        QString pass = this->m_ui->passwordLineEdit->text();
+        QString pass = this->ui->passwordLineEdit->text();
         if (!pass.isEmpty()) {
             QCryptographicHash md5(QCryptographicHash::Md5);
             md5.addData(QByteArray(pass.toAscii()));
             pass = QString(md5.result().toHex());
         }
 
-        emit accepted(this->m_ui->usernameLineEdit->text(), pass);
+        emit accepted(this->ui->usernameLineEdit->text(), pass);
     }
 }

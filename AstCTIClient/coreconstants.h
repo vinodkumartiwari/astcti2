@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2010 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2010 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +54,9 @@
     "." STRINGIFY(APP_VERSION_RELEASE)
 
 const char * const APP_VERSION_LONG      = APP_VERSION;
-const char * const APP_AUTHOR            = "centralino-voip";
-const char * const APP_YEAR              = "2009";
+const char * const APP_NAME              = "AsteriskCTI";
+const char * const APP_AUTHOR            = "centralino-voip & lumiss";
+const char * const APP_YEAR              = "2010";
 
 #ifdef APP_REVISION
 const char * const APP_REVISION_STR      = STRINGIFY(APP_REVISION);
@@ -63,7 +67,5 @@ const char * const APP_REVISION_STR      = "";
 #undef APP_VERSION
 #undef STRINGIFY
 #undef STRINGIFY_INTERNAL
-
-#define LINKS_TIMEOUT  10
 
 #endif // CORECONSTANTS_H

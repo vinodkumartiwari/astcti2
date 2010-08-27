@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AstCTISpeedDialWidget</class>
+ <widget class="QWidget" name="AstCTISpeedDialWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>173</width>
+    <height>63</height>
+   </rect>
+  </property>
+  <widget class="QLabel" name="callForwardLabel">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>0</y>
+     <width>13</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>13</width>
+     <height>13</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>13</width>
+     <height>13</height>
+    </size>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="astctispeeddialwidget.qrc">:/res/res/callforward.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QLabel" name="doNotDisturbLabel">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>13</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>13</width>
+     <height>13</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>13</width>
+     <height>13</height>
+    </size>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="astctispeeddialwidget.qrc">:/res/res/donotdisturb.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QLabel" name="callWaitingLabel">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>50</y>
+     <width>13</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>13</width>
+     <height>13</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>13</width>
+     <height>13</height>
+    </size>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="astctispeeddialwidget.qrc">:/res/res/callwaiting.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QLabel" name="voicemailLabel">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>50</y>
+     <width>13</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>13</width>
+     <height>13</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>13</width>
+     <height>13</height>
+    </size>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="astctispeeddialwidget.qrc">:/res/res/voicemail.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QLabel" name="captionLabel">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>171</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Caption</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+   <property name="margin">
+    <number>10</number>
+   </property>
+   <property name="textInteractionFlags">
+    <set>Qt::NoTextInteraction</set>
+   </property>
+  </widget>
+  <zorder>captionLabel</zorder>
+  <zorder>callForwardLabel</zorder>
+  <zorder>doNotDisturbLabel</zorder>
+  <zorder>callWaitingLabel</zorder>
+  <zorder>voicemailLabel</zorder>
+ </widget>
+ <resources>
+  <include location="astctispeeddialwidget.qrc"/>
+ </resources>
+ <connections/>
+</ui>
