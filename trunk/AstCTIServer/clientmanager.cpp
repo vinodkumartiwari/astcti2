@@ -73,7 +73,7 @@ ClientManager::ClientManager(QAstCTIConfiguration *config,
     this->initParserCommands();
 
     connect(parent, SIGNAL(sendDataFromServer(QString)), this, SLOT(sendDataToClient(QString)));
-    connect(this, SIGNAL(dataReceived(QString)), this, SLOT(parseDataReceived(QString)));
+    connect(this, SIGNAL(dataReceived(QString)), this, SLOT(parseDataReceived(QString)), Qt::DirectConnection);
 }
 
 ClientManager::~ClientManager()
@@ -134,8 +134,8 @@ void ClientManager::run()
         return;
     }
 
-    connect(this->localSocket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
-    connect(this->localSocket, SIGNAL(readyRead()), this, SLOT(sockedDataReceived()));
+    connect(this->localSocket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()), Qt::DirectConnection);
+    connect(this->localSocket, SIGNAL(readyRead()), this, SLOT(socketDataReceived()), Qt::DirectConnection);
     // Let's grab some informations about remote endpoint
     QHostAddress    remoteAddr = tcpSocket.peerAddress();  // Remote ip addr
     quint16         remotePort = tcpSocket.peerPort();     // Remote port
@@ -151,7 +151,7 @@ void ClientManager::run()
     exec();
 }
 
-void ClientManager::sockedDataReceived()
+void ClientManager::socketDataReceived()
 {
     QDataStream in(this->localSocket);
     in.setVersion ( QDataStream::Qt_4_5 );
