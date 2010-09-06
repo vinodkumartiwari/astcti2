@@ -65,7 +65,7 @@ bool DB::buildSqlDatabase(const QString &host, quint16 &port, const QString &use
     return true;
 }
 
-//Cleses the database connection and removes it from the list of connections
+//Closes the database connection and removes it from the list of connections
 void DB::destroySqlDatabase()
 {
     if (QSqlDatabase::contains("mysqldb")) {

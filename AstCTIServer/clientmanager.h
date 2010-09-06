@@ -103,7 +103,7 @@ public:
 public slots:
     ///////////////////////////////////////////////////////////////////////////
     // Socket
-    void                    sockedDataReceived();
+    void                    socketDataReceived();
     void                    socketDisconnected();
     void                    sendDataToClient(const QString &data);
     void                    parseDataReceived(const QString &data);

@@ -54,3 +54,21 @@ HEADERS += clientmanager.h \
     qastctioperatorservices.h \
     qastctiactions.h \
     db.h
+
+!equals($${PWD}, $${OUT_PWD}) {
+    # Shadow building is enabled
+    # Specify files for copying
+    SETTINGS_SOURCE = $${PWD}/settings.ini
+    SETTINGS_DEST = $${OUT_PWD}
+
+    # Replace '/' with '\' in Windows paths
+    win32 {
+        SETTINGS_SOURCE = $${replace(SETTINGS_SOURCE, /, \)}
+        SETTINGS_DEST = $${replace(SETTINGS_DEST, /, \)}
+    }
+
+    # COPY_FILE is a variable that qmake automatically creates in Makefile
+    COPY_SETTINGS = $(COPY_FILE) $$quote($$SETTINGS_SOURCE) $$quote($$SETTINGS_DEST)
+
+    QMAKE_PRE_LINK += $$COPY_SETTINGS
+}
