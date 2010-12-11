@@ -2,7 +2,8 @@
 SQLyog Community Edition- MySQL GUI v8.14 
 MySQL - 5.1.37-1ubuntu5 : Database - asteriskcti
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -32,7 +33,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `dbversion` WRITE;
 
-insert  into `dbversion`(`VERSION`) values (0.9);
+insert  into `dbversion`(`VERSION`,`LAST_UPDATE`) values (0.9,UNIX_TIMESTAMP());
 
 UNLOCK TABLES;
 
