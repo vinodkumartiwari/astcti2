@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2008-12-27T09:05:04
 # -------------------------------------------------
-include(../../qtsingleapplication-2.6-opensource/src/qtsinglecoreapplication.pri)
+include(../../qtsingleapplication-2.6_1-opensource/src/qtsinglecoreapplication.pri)
 
 QT += sql \
     xml \
@@ -58,8 +58,8 @@ HEADERS += clientmanager.h \
 !equals($${PWD}, $${OUT_PWD}) {
     # Shadow building is enabled
     # Specify files for copying
-    SETTINGS_SOURCE = $${PWD}/settings.ini
-    SETTINGS_DEST = $${OUT_PWD}
+    SETTINGS_SOURCE = $${PWD}/settings.ini.dist
+    SETTINGS_DEST = $${OUT_PWD}/settings.ini
 
     # Replace '/' with '\' in Windows paths
     win32 {
