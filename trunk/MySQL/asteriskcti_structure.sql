@@ -2,7 +2,8 @@
 SQLyog Community Edition- MySQL GUI v8.14 
 MySQL - 5.1.37-1ubuntu5 : Database - asteriskcti
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -35,8 +36,9 @@ CREATE TABLE `actions` (
 DROP TABLE IF EXISTS `dbversion`;
 
 CREATE TABLE `dbversion` (
-  `VERSION` double DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
+  `VERSION` double DEFAULT NULL,
+  `LAST_UPDATE` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC
 
 /*Table structure for table `operators` */
 
