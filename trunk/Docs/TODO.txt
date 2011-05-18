@@ -1,0 +1,15 @@
+* Test and complete actions, especially internal browser
+* SIP Client
+* Support for multiple Asterisk servers (?)
+* Dial/Originate
+* Soft Answer
+* Call transfer
+* Call parking
+* Conference
+* Call recording
+* Speed dial
+* Busy lamp field (SIP subscriptions)
+* Call log
+* Address book
+* Voicemail handling
+* Account codes
