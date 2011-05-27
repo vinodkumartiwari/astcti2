@@ -1,7 +1,13 @@
+----------------------------------------------------------
+Both
+----------------------------------------------------------
 * Test and complete actions, especially internal browser
-* SIP Client
-* Support for multiple Asterisk servers (?)
 * Dial/Originate
+
+----------------------------------------------------------
+Client
+----------------------------------------------------------
+* SIP Client
 * Soft Answer
 * Call transfer
 * Call parking
@@ -13,3 +19,14 @@
 * Address book
 * Voicemail handling
 * Account codes
+
+----------------------------------------------------------
+Server
+----------------------------------------------------------
+* Support for multiple Asterisk servers (?)
+
+----------------------------------------------------------
+Web GUI
+----------------------------------------------------------
+* Management GUI
+
