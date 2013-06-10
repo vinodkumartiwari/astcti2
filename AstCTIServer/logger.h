@@ -45,18 +45,18 @@
 #include <QtCore>
 
 
-class QAsteriskCTILogger : public QObject
+class AsteriskCTILogger : public QObject
 {
     Q_OBJECT
 
 public:
     QtMsgType minimumLogLevel;
-    QAsteriskCTILogger(QObject *parent=0);
+	AsteriskCTILogger(QObject *parent=0);
     void writeToLog(const QtMsgType level, const QString &logdata="");
 
 private:
     QDir loggingDirectory;
-    bool buildLogDirectoryIfNotExists();
+    bool buildLogDirectory();
     QString getLevelDescriptionFromId(const QtMsgType level);
 };
 

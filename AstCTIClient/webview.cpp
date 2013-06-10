@@ -61,10 +61,12 @@
 WebPage::WebPage(QObject *parent)
     : QWebPage(parent)
 {
-//    connect(this, SIGNAL(unsupportedContent(QNetworkReply *)), this, SLOT(handleUnsupportedContent(QNetworkReply *)));
+//    connect(this, SIGNAL(unsupportedContent(QNetworkReply *)),
+//            this, SLOT(handleUnsupportedContent(QNetworkReply *)));
 }
 
-bool WebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
+bool WebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request,
+									  NavigationType type)
 {
     if (frame == mainFrame()) {
         m_loadingUrl = request.url();
@@ -90,7 +92,8 @@ bool WebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &r
 //}
 
 #if !defined(QT_NO_UITOOLS)
-QObject *WebPage::createPlugin(const QString &classId, const QUrl &url, const QStringList &paramNames, const QStringList &paramValues)
+QObject *WebPage::createPlugin(const QString &classId, const QUrl &url,
+							   const QStringList &paramNames, const QStringList &paramValues)
 {
     Q_UNUSED(url);
     Q_UNUSED(paramNames);
@@ -142,19 +145,24 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply)
 */
 
 WebView::WebView(QWidget* parent)
-    : QWebView(parent)
-    , m_progress(0)
-    , m_page(new WebPage(this))
+	: QWebView(parent), m_progress(0), m_page(new WebPage(this))
 {
-    setPage(m_page);
-    connect(page(), SIGNAL(statusBarMessage(const QString&)), SLOT(setStatusBarText(const QString&)));
-    connect(this, SIGNAL(loadProgress(int)), this, SLOT(setProgress(int)));
-    connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished()));
-    connect(page(), SIGNAL(loadingUrl(const QUrl&)), this, SIGNAL(urlChanged(const QUrl &)));
-    connect(page(), SIGNAL(downloadRequested(const QNetworkRequest &)), this, SLOT(downloadRequested(const QNetworkRequest &)));
-    connect(this, SIGNAL(unsupportedContent(QNetworkReply *)), this, SLOT(handleUnsupportedContent(QNetworkReply *)));
-    this->page()->setForwardUnsupportedContent(true);
-    this->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+	connect(m_page, SIGNAL(statusBarMessage(const QString&)),
+			this, SLOT(setStatusBarText(const QString&)));
+	connect(this, SIGNAL(loadProgress(int)),
+			this, SLOT(setProgress(int)));
+	connect(this, SIGNAL(loadFinished(bool)),
+			this, SLOT(loadFinished()));
+	connect(m_page, SIGNAL(loadingUrl(const QUrl&)),
+			this, SIGNAL(urlChanged(const QUrl &)));
+//	connect(m_page, SIGNAL(downloadRequested(const QNetworkRequest &)),
+//			this, SLOT(downloadRequested(const QNetworkRequest &)));
+	connect(m_page, SIGNAL(unsupportedContent(QNetworkReply *)),
+			m_page, SLOT(handleUnsupportedContent(QNetworkReply *)));
+	m_page->setForwardUnsupportedContent(true);
+	m_page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+
+	this->setPage(m_page);
 }
 
 void WebView::setProgress(int progress)
@@ -165,7 +173,8 @@ void WebView::setProgress(int progress)
 void WebView::loadFinished()
 {
     if (m_progress != 100) {
-        qWarning() << "Recieved finished signal while progress is still:" << progress() << "Url:" << url();
+		qWarning() << "Recieved finished signal while progress is still:"
+				   << progress() << "Url:" << url();
     }
     m_progress = 0;
 }

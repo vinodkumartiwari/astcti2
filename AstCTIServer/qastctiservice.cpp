@@ -35,111 +35,90 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#include <QtSql>
 
+#include "db.h"
 #include "qastctiservicesoperators.h"
 #include "qastctiservice.h"
 
-
-QAstCTIService::QAstCTIService(const int &id, QAstCTIActions *theActionsList, QObject *parent)
+QAstCTIService::QAstCTIService(const int &id, QAstCTIActions *actions, QObject *parent)
         : QObject(parent), idService(id), serviceName(""), serviceContextType(""),
-        serviceIsQueue(false), serviceQueueName(""),  enabled(false)
+		serviceIsQueue(false), serviceQueueName(""), enabled(false)
 {
-    this->actionsList = theActionsList;
+	this->actionsList = actions;
 
     this->operators = new QAstCTIServicesOperators(this);    
     this->variables = new QAstCTIServicesVariables(this);
-    connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadActions(const bool&)));
-    connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadOperators(const bool&)));
-    connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadVariables(const bool&)));    
-
+	connect(this, SIGNAL(loadComplete(const bool&)),
+			this, SLOT(loadActions(const bool&)));
+	connect(this, SIGNAL(loadComplete(const bool&)),
+			this, SLOT(loadOperators(const bool&)));
+	connect(this, SIGNAL(loadComplete(const bool&)),
+			this, SLOT(loadVariables(const bool&)));
 }
 
 QAstCTIService::~QAstCTIService()
 {
     qDebug() << "In QAstCTIService::~QAstCTIService()";
 
+	delete this->operators;
+	delete this->variables;
 }
 
 bool QAstCTIService::load()
 {
-    bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-    QString sql = "SELECT * FROM services WHERE ID_SERVICE=:id";
+	bool ok;
+	QVariantList params;
+	params.append(this->idService);
+	const QVariantList serviceData =
+		  DB::readRow("SELECT * FROM services WHERE ID_SERVICE=?", params, &ok);
+	if (ok) {
+		this->serviceName = serviceData.at(1).toString();
+		this->serviceContextType = serviceData.at(2).toString();
+		this->serviceIsQueue = serviceData.at(3).toBool();
+		this->serviceQueueName = serviceData.at(4).toString();
+		this->enabled = serviceData.at(5).toBool();
+	}
 
-    if (!query.prepare(sql)) {
-        qCritical("Prepare failed in QAstCTIService::load() %s:%d",  __FILE__ , __LINE__);
-    } else {
-        query.bindValue(":id", this->idService);
-        if (!query.exec()) {
-            qCritical("Query execution failed in QAstCTIService::load() %s:%d",  __FILE__ , __LINE__);
-            return false;
-        } else {
-            retVal = query.first();
-            this->serviceName = query.value(1).toString();
-            this->serviceContextType= query.value(2).toString();
-            this->serviceIsQueue = query.value(3).toBool();
-            this->serviceQueueName = query.value(4).toString();
-            this->enabled = query.value(5).toBool();
-            query.finish();
-        }
-    }
-    query.clear();
-
-    emit this->loadComplete(retVal);
-    return retVal;
+	emit this->loadComplete(ok);
+	return ok;
 }
 
 void QAstCTIService::loadActions(const bool &bMayLoad)
 {
-    if (!bMayLoad) return;
+	if (!bMayLoad)
+		return;
 
-    this->actions.clear();
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-    QString sql = "SELECT ID_ACTION FROM services_actions WHERE ID_SERVICE=:id ORDER BY ACTION_ORDER ASC, ID_ACTION ASC";
-    if (!query.prepare(sql)) {
-        qCritical("Prepare failed in QAstCTIService::loadActions() %s:%d",  __FILE__ , __LINE__);
-    } else {
-        query.bindValue(":id", this->idService);
-        if (!query.exec()) {
-            qCritical("Query execution failed in QAstCTIService::loadActions() %s:%d",  __FILE__ , __LINE__);
-        } else {
-            while(query.next()) {
-                int actionId = query.value(0).toInt(0);
-                QAstCTIAction *action = this->actionsList->operator [](actionId);
-                if (action != 0) {
-                    this->actions.insert(actionId, action);
-                }
-            }
-            query.finish();
-        }
-    }
+	this->actions.clear();
 
-    query.clear();
+	bool ok;
+	QVariantList params;
+	params.append(this->idService);
+	const QVariantList actionIds =
+			DB::readList("SELECT ID_ACTION FROM services_actions WHERE ID_SERVICE=? "
+						 "ORDER BY ACTION_ORDER ASC, ID_ACTION ASC", params, &ok);
+	if (ok) {
+		const int listSize = actionIds.size();
+		for (int i = 0; i < listSize; i++) {
+			int actionId = actionIds.at(i).toInt();
+			QAstCTIAction *action = this->actionsList->operator [](actionId);
+			if (action != 0) {
+				this->actions.insert(actionId, action);
+			}
+		}
+	}
 }
 
 void QAstCTIService::loadOperators(const bool &bMayLoad)
 {
-    if (bMayLoad) {
+	if (bMayLoad)
         this->operators->setIdService(this->idService);
-    }
 }
 
 void QAstCTIService::loadVariables(const bool &bMayLoad)
 {
-    if (bMayLoad) {
+	if (bMayLoad)
         this->variables->setIdService(this->idService);
-    }
 }
-
 
 int QAstCTIService::getIdService()
 {
@@ -166,7 +145,6 @@ QString QAstCTIService::getServiceQueueName()
     return this->serviceQueueName;
 }
 
-
 bool QAstCTIService::getEnabled()
 {
     return this->enabled;
@@ -182,7 +160,7 @@ QAstCTIServicesVariables *QAstCTIService::getVariables()
     return this->variables;
 }
 
-QHash<int, QAstCTIAction *> *QAstCTIService::getActions()
+QHash<int, QAstCTIAction*> *QAstCTIService::getActions()
 {
     return &this->actions;
 }

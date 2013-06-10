@@ -75,7 +75,8 @@ void AboutDialog::setUpInfoLabel()
         "The program is provided AS IS with NO WARRANTY OF ANY KIND, "
         "INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A "
         "PARTICULAR PURPOSE.<br/>")
-        .arg(version, QLatin1String(QT_VERSION_STR), QLatin1String(APP_YEAR), (QLatin1String(APP_AUTHOR))
+		.arg(version, QLatin1String(QT_VERSION_STR),
+			 QLatin1String(APP_YEAR), (QLatin1String(APP_AUTHOR))
 #ifdef APP_REVISION
              , QString(APP_REVISION_STR).left(10)
 #endif
@@ -108,7 +109,7 @@ void AboutDialog::on_btnClose_clicked()
     this->close();
 }
 
-void AboutDialog::on_btnShowLicence_clicked()
+void AboutDialog::on_btnShowLicense_clicked()
 {
     QDialog *dialog = new QDialog(this);
 

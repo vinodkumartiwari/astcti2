@@ -54,10 +54,9 @@ public:
     QAstCTIAction *operator[](const int &key);
     int count();
 
-
 private:
-    QHash<int, QAstCTIAction *> actions;
-    void addAction(QAstCTIAction *app);
+	QHash<int, QAstCTIAction*> actions;
+	void addAction(QAstCTIAction *action);
     void removeAction(const int &key);
     void fillActions();
     void clear();

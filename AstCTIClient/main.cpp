@@ -40,6 +40,7 @@
  */
 
 #include "cticlientapplication.h"
+#include "astctidefaultstyle.h"
 
 int main(int argc, char *argv[])
 {
@@ -51,6 +52,8 @@ int main(int argc, char *argv[])
         application.sendMessage(QString(), 4000);
         return 0;
     }
+
+    //QApplication::setStyle(new AstCTIDefaultStyle);
 
     //If application encounters any error in constructor, showLoginWindow() will return false
     if (!application.showLoginWindow()) {

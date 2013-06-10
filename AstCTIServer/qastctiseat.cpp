@@ -35,9 +35,9 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#include <QtSql>
 #include <QDebug>
 
+#include "db.h"
 #include "qastctiseat.h"
 
 QAstCTISeat::QAstCTISeat(const int &id, QObject *parent)
@@ -60,54 +60,33 @@ QAstCTISeat::~QAstCTISeat()
 
 bool QAstCTISeat::load()
 {
-    bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-    QString sql = "SELECT * FROM seats WHERE ID_SEAT=:id";
-    if (!query.prepare(sql)) {
-        qCritical("Prepare failed in QAstCTISeat::load() %s:%d",  __FILE__ , __LINE__);
-    }
-    query.bindValue(":id", this->idSeat);
+	bool ok;
+	QVariantList params;
+	params.append(this->idSeat);
+	const QVariantList seatData = DB::readRow("SELECT * FROM seats WHERE ID_SEAT=?", params, &ok);
+	if (ok) {
+		this->seatMac = seatData.at(1).toString();
+		this->seatExten  = seatData.at(2).toString();
+		this->description = seatData.at(3).toString();
+	}
 
-    if (!query.exec()) {
-        qCritical("Query failed in QAstCTISeat::load() %s:%d",  __FILE__ , __LINE__);
-    } else {
-        retVal = query.first();
-        this->seatMac = query.value(1).toString();
-        this->seatExten  = query.value(2).toString();
-        this->description = query.value(3).toString();
-        query.finish();
-    }
-    query.clear();
-
-    emit this->loadComplete(retVal);
-    return retVal;
+	emit this->loadComplete(ok);
+	return ok;
 }
 
 bool QAstCTISeat::loadFromMac() {
-    bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
+	bool ok;
+	QVariantList params;
+	params.append(this->seatMac);
+	const QVariantList seatData = DB::readRow("SELECT * FROM seats WHERE SEAT_MAC=?", params, &ok);
+	if (ok) {
+		this->idSeat = seatData.at(0).toInt();
+		this->seatExten  = seatData.at(2).toString();
+		this->description = seatData.at(3).toString();
+	}
 
-    query.prepare("SELECT * FROM seats WHERE SEAT_MAC=:mac");
-    query.bindValue(":mac", this->seatMac);
-    retVal = query.exec();
-    if ( (retVal) &  (query.first()) ) {
-        this->idSeat = query.value(0).toInt();
-        this->seatExten  = query.value(2).toString();
-        this->description = query.value(3).toString();
-        query.finish();
-    }
-    query.clear();
-
-    emit this->loadComplete(retVal);
-    return retVal;
+	emit this->loadComplete(ok);
+	return ok;
 }
 
 int  QAstCTISeat::getIdSeat()

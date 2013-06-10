@@ -44,7 +44,7 @@
 // DOCS STYLE COMMENTS:
 // http://www.ph.unimelb.edu.au/~ssk/kde/kdoc/
 
-QAsteriskCTILogger      logger; // Our logger object
+AsteriskCTILogger logger; // Our logger object
 
 void logHandler(QtMsgType type, const char *msg)
 {
@@ -61,31 +61,31 @@ int main(int argc, char *argv[])
         application.sendMessage(QString(), 4000);
         return 0;
      } else {
-        QString logo = "";
-        logo += "            '.~.-'                                              \n";
-        logo += "           -.~~~~~.-'                                           \n";
-        logo += "         '-~~~~~~~~~~.-'                                        \n";
-        logo += "        '.~~~~~~~~~~~~~~.''                         ''''        \n";
-        logo += "      '-~~.-.~~~~~.---.~~~.-'                '''--..~~~.-       \n";
-        logo += "     '.~.-''-.~~~.-''-.~~~~~~.-'       ''--..~~~~~~~~~~~.'      \n";
-        logo += "   '-~~~~.-'''-..-''-.~~~~~~~~~~.---..~~~~~~~~~.--.~~~~~~-      \n";
-        logo += "  '~oooo~~~.--'--'--~~~~~~~~~~~~~~~~~~~~~~~~~~.'   -~~~~~.'     \n";
-        logo += "'-~ooooooo~..-'''''-------.~~~~~~~~~~~~~~~~~~~.-''-.~~~~~~-'    \n";
-        logo += ".ooooo~.--------'----''''-.~~~~~~~~~~.-''-~~~~~~..---~~~~~.-    \n";
-        logo += "ooooooo.---.~o~.--.~~~....~~~~~~~~~~~-'  '----~~-   '.~~ooo.'   \n";
-        logo += "'-~ooooo~~oooo~.--.oooooooo~~~~~~~~~.''      '.~.'   -oooooo-   \n";
-        logo += "   '-~oooooooo~.---~oooooooo~.-'' -o.'     -~oooo.'  '.ooooo~'  \n";
-        logo += "      '.~oooooo~~~~ooooooo.'   ''-.ooo~-   -~oooo~-   -~ooooo.' \n";
-        logo += "        ''.oooooooooooooo.'  '.oooooooo~'  '.ooooo.'  '.ooooo~- \n";
-        logo += "           '-.oooooooooo~'  '.oooooooooo.   '.o~ooo-   '~ooooo. \n";
-        logo += "              '-~ooooooo~'   -oooooooooo~-      -~o~---.~ooooooo\n";
-        logo += "                 -~oooooo.'   -.~o~..~oooo.'  ''.~oooooooooooo~~\n";
-        logo += "                 '.ooooooo.'         '~ooooooooooooooooo~.--''  \n";
-        logo += "                  '~oooooooo.--'''-.~oooooooooooo~..-''         \n";
-        logo += "                   -oooooooooooooooooooooo~..-''                \n";
-        logo += "                   '.oooooooooooooo~..-''                       \n";
-        logo += "                    -~oooooo~..-''                              \n";
-        logo += "                     ~ooo~.                                     \n";
+		QString logo =
+		"            '.~.-'                                              \n"
+		"           -.~~~~~.-'                                           \n"
+		"         '-~~~~~~~~~~.-'                                        \n"
+		"        '.~~~~~~~~~~~~~~.''                         ''''        \n"
+		"      '-~~.-.~~~~~.---.~~~.-'                '''--..~~~.-       \n"
+		"     '.~.-''-.~~~.-''-.~~~~~~.-'       ''--..~~~~~~~~~~~.'      \n"
+		"   '-~~~~.-'''-..-''-.~~~~~~~~~~.---..~~~~~~~~~.--.~~~~~~-      \n"
+		"  '~oooo~~~.--'--'--~~~~~~~~~~~~~~~~~~~~~~~~~~.'   -~~~~~.'     \n"
+		"'-~ooooooo~..-'''''-------.~~~~~~~~~~~~~~~~~~~.-''-.~~~~~~-'    \n"
+		".ooooo~.--------'----''''-.~~~~~~~~~~.-''-~~~~~~..---~~~~~.-    \n"
+		"ooooooo.---.~o~.--.~~~....~~~~~~~~~~~-'  '----~~-   '.~~ooo.'   \n"
+		"'-~ooooo~~oooo~.--.oooooooo~~~~~~~~~.''      '.~.'   -oooooo-   \n"
+		"   '-~oooooooo~.---~oooooooo~.-'' -o.'     -~oooo.'  '.ooooo~'  \n"
+		"      '.~oooooo~~~~ooooooo.'   ''-.ooo~-   -~oooo~-   -~ooooo.' \n"
+		"        ''.oooooooooooooo.'  '.oooooooo~'  '.ooooo.'  '.ooooo~- \n"
+		"           '-.oooooooooo~'  '.oooooooooo.   '.o~ooo-   '~ooooo. \n"
+		"              '-~ooooooo~'   -oooooooooo~-      -~o~---.~ooooooo\n"
+		"                 -~oooooo.'   -.~o~..~oooo.'  ''.~oooooooooooo~~\n"
+		"                 '.ooooooo.'         '~ooooooooooooooooo~.--''  \n"
+		"                  '~oooooooo.--'''-.~oooooooooooo~..-''         \n"
+		"                   -oooooooooooooooooooooo~..-''                \n"
+		"                   '.oooooooooooooo~..-''                       \n"
+		"                    -~oooooo~..-''                              \n"
+		"                     ~ooo~.                                     \n";
         qDebug("%s", qPrintable(logo));
 
         qDebug() << "AsteriskCTI Server version" << APP_VERSION_LONG;
@@ -104,6 +104,4 @@ int main(int argc, char *argv[])
         return application.exec();
     }
 }
-
-
 

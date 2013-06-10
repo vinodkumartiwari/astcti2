@@ -65,7 +65,7 @@
      <normaloff>:/res/res/cancel.png</normaloff>:/res/res/cancel.png</iconset>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnShowLicence">
+  <widget class="QPushButton" name="btnShowLicense">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -75,7 +75,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Show &amp;Licence</string>
+    <string>Show &amp;License</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btnAboutQt">

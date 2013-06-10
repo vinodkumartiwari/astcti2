@@ -55,9 +55,6 @@
        <property name="pixmap">
         <pixmap resource="mainresources.qrc">:/res/res/asteriskcti-3d128x128.png</pixmap>
        </property>
-       <property name="buddy">
-        <cstring>credentialsFrame</cstring>
-       </property>
       </widget>
      </item>
      <item>

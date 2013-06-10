@@ -40,7 +40,6 @@
  */
 
 #include <QMouseEvent>
-#include <QMessageBox>
 #include <QSettings>
 
 #include "compactwindow.h"
@@ -48,7 +47,7 @@
 #include "managerwindow.h"
 
 CompactWindow::CompactWindow(const QString &userName) :
-    QWidget(),
+    CTIClientWindow(userName),
     ui(new Ui::CompactWindow)
 {
     ui->setupUi(this);
@@ -66,114 +65,13 @@ CompactWindow::CompactWindow(const QString &userName) :
     this->ui->statusLabel->installEventFilter(this);
     this->ui->sizeLabel->installEventFilter(this);
 
-    this->canClose = false;
-
-    this->createTrayIcon();
     this->connectSlots();
-
-    this->userName = userName;
-
-    this->dragOrigin = QPoint(-1, -1);
-
-    readSettings();
+    this->readSettings();
 }
 
 CompactWindow::~CompactWindow()
 {
     delete ui;
-}
-
-void CompactWindow::connectSlots()
-{
-    connect(ui->callButton, SIGNAL(clicked()), this, SLOT(placeCall()));
-    connect(ui->aboutButton, SIGNAL(clicked()), this, SLOT(about()));
-    connect(ui->pauseButton, SIGNAL(toggled(bool)), this, SLOT(pause(bool)));
-    connect(ui->minimizeButton, SIGNAL(clicked()), this, SLOT(minimizeToTray()));
-    connect(ui->passwordButton, SIGNAL(clicked()), this, SIGNAL(changePassword()));
-    connect(ui->quitButton, SIGNAL(clicked(bool)), this, SLOT(quit(bool)));
-    connect(this->trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
-}
-
-void CompactWindow::createTrayIcon()
-{
-     QIcon icon;
-     icon.addPixmap(QPixmap(QString::fromUtf8(":/res/res/asteriskcti16x16.png")), QIcon::Normal, QIcon::Off);
-
-     this->trayIcon = new QSystemTrayIcon(icon, this);
-     this->trayIcon->setToolTip(QString(APP_NAME) + " client " + QString(APP_VERSION_LONG));
-     this->trayIcon->show();
-}
-
-void CompactWindow::enableControls(bool enable)
-{
-    ui->callComboBox->setEditable(enable);
-    ui->callButton->setEnabled(enable);
-    ui->passwordButton->setEnabled(enable);
-}
-
-void CompactWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-    switch (reason) {
-    case QSystemTrayIcon::Trigger:
-        this->isVisible() ? this->hide() : this->show();
-        break;
-    default:
-        ;
-    }
-}
-
-void CompactWindow::setStatus(bool status)
-{
-    if (status) {
-        enableControls(true);
-        this->ui->statusLabel->setPixmap(QPixmap(QString::fromUtf8(":/res/res/greenled.png")));
-        this->ui->statusLabel->setToolTip(statusMessageOK);
-        //Hide the message
-        if (this->trayIcon->supportsMessages())
-            this->trayIcon->showMessage("", "", QSystemTrayIcon::NoIcon, 1);
-    } else {
-        enableControls(false);
-        this->ui->statusLabel->setPixmap(QPixmap(QString::fromUtf8(":/res/res/redled.png")));
-        this->ui->statusLabel->setToolTip(statusMessageNotOK);
-        showMessage(statusMessageNotOK, QSystemTrayIcon::Critical);
-    }
-}
-
-void CompactWindow::showMessage(const QString &message, QSystemTrayIcon::MessageIcon severity)
-{
-    if (this->trayIcon->supportsMessages()) {
-        this->trayIcon->showMessage(APP_NAME, message, severity, 50000);
-    } else {
-        switch (severity) {
-        case QSystemTrayIcon::NoIcon:
-        case QSystemTrayIcon::Information:
-            QMessageBox::information(this, APP_NAME, message);
-            break;
-        case QSystemTrayIcon::Warning:
-            QMessageBox::warning(this, APP_NAME, message);
-            break;
-        case QSystemTrayIcon::Critical:
-            QMessageBox::critical(this, APP_NAME, message);
-            break;
-        }
-    }
-}
-
-void CompactWindow::keyPressEvent(QKeyEvent *e)
-{
-    if (e->key() == Qt::Key_Escape) {
-        e->accept();
-    }
-}
-
-void CompactWindow::closeEvent(QCloseEvent *e)
-{
-    if (this->canClose) {
-        writeSettings();
-        e->accept();
-    } else {
-        e->ignore();
-    }
 }
 
 void CompactWindow::changeEvent(QEvent *e)
@@ -222,88 +120,38 @@ bool CompactWindow::eventFilter(QObject *object, QEvent *e)
     return accepted;
 }
 
-bool CompactWindow::isValidDrag(QMouseEvent *mouseEvent) const
+void CompactWindow::connectSlots()
 {
-    if (!mouseEvent || mouseEvent->modifiers() != Qt::NoModifier)
-        return false;
-
-    if (mouseEvent->type() == QEvent::MouseButtonPress && mouseEvent->button() == Qt::LeftButton)
-        return true;
-    else
-        return false;
+	connect(ui->callButton, SIGNAL(clicked()),
+			this, SLOT(placeCall()));
+	connect(ui->aboutButton, SIGNAL(clicked()),
+			this, SLOT(about()));
+	connect(ui->pauseButton, SIGNAL(toggled(bool)),
+			this, SLOT(pause(bool)));
+	connect(ui->minimizeButton, SIGNAL(clicked()),
+			this, SLOT(minimizeToTray()));
+	connect(ui->passwordButton, SIGNAL(clicked())
+			, this, SIGNAL(changePassword()));
+	connect(ui->quitButton, SIGNAL(clicked(bool)),
+			this, SLOT(quit(bool)));
+	connect(this->trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+			this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 }
 
-void CompactWindow::placeCall()
+void CompactWindow::enableControls(bool enable)
 {
-    //TODO
-    ManagerWindow *win = new ManagerWindow(this);
-    win->show();
+    ui->callComboBox->setEditable(enable);
+    ui->callButton->setEnabled(enable);
+    ui->passwordButton->setEnabled(enable);
 }
 
-void CompactWindow::about()
+void CompactWindow::readSettings()
 {
-    AboutDialog aboutDialog(this);
-    aboutDialog.exec();
-}
+    QSettings settings(APP_NAME);
 
-void CompactWindow::minimizeToTray()
-{
-    this->hide();
-}
-
-void CompactWindow::pauseError(const QString &message)
-{
-   this->ui->pauseButton->setEnabled(true);
-   //TODO: decide what to do with pause Errors
-   //a pause error can occur also if we, administratively using CLI,
-   //remove an agent from queue...
-   this->showMessage(pauseErrorMessage + "\n\n" + message, QSystemTrayIcon::Warning);
-}
-
-void CompactWindow::pauseAccepted() {
-    bool paused = !this->ui->pauseButton->isChecked();
-
-    this->ui->callComboBox->setEnabled(!paused);
-    this->ui->callButton->setEnabled(!paused);
-    this->ui->passwordButton->setEnabled(!paused);
-    this->ui->repeatButton->setEnabled(!paused);
-    this->ui->pauseButton->setChecked(paused);
-    this->ui->pauseButton->setEnabled(true);
-}
-
-void CompactWindow::pause(bool paused)
-{
-    this->ui->pauseButton->setEnabled(false);
-    emit this->pauseRequest(paused);
-}
-
-void CompactWindow::quit(bool skipCheck)
-{
-    if (!skipCheck) {
-        QMessageBox msgBox(this);
-
-        msgBox.setText(trUtf8("Are you sure you want to quit?"));
-        QPushButton *yesBtn = msgBox.addButton(trUtf8("&Yes"),QMessageBox::YesRole);
-        yesBtn->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
-        QPushButton *noBtn = msgBox.addButton(trUtf8("&No"),QMessageBox::NoRole);
-        noBtn->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
-
-        msgBox.setDefaultButton(noBtn);
-        msgBox.setIcon(QMessageBox::Question);
-
-        msgBox.exec();
-        if (msgBox.clickedButton() == yesBtn) {
-            this->canClose = true;
-        }
-    } else {
-        this->canClose = true;
-    }
-
-    if (this->canClose) {
-        emit logOff();
-
-        this->close();
-    }
+    settings.beginGroup("CompactWindow." + this->userName);
+    this->restoreGeometry(settings.value("geometry").toByteArray());
+    settings.endGroup();
 }
 
 void CompactWindow::writeSettings()
@@ -313,13 +161,41 @@ void CompactWindow::writeSettings()
     settings.beginGroup("CompactWindow." + this->userName);
     settings.setValue("geometry", this->saveGeometry());
     settings.endGroup();
- }
+}
 
-void CompactWindow::readSettings()
+void CompactWindow::setStatus(bool status)
 {
-    QSettings settings(APP_NAME);
+    CTIClientWindow::setStatus(status);
+    if (status) {
+        this->ui->statusLabel->setPixmap(QPixmap(QString::fromUtf8(":/res/res/greenled.png")));
+        this->ui->statusLabel->setToolTip(statusMessageOK);
+    } else {
+        this->ui->statusLabel->setPixmap(QPixmap(QString::fromUtf8(":/res/res/redled.png")));
+        this->ui->statusLabel->setToolTip(statusMessageNotOK);
+    }
+}
 
-    settings.beginGroup("CompactWindow." + this->userName);
-    this->restoreGeometry(settings.value("geometry").toByteArray());
-    settings.endGroup();
- }
+void CompactWindow::pause(bool paused)
+{
+    this->ui->pauseButton->setEnabled(false);
+
+    CTIClientWindow::pause(paused);
+}
+
+void CompactWindow::pauseAccepted() {
+    CTIClientWindow::pauseAccepted();
+
+    this->ui->callComboBox->setEnabled(!paused);
+    this->ui->callButton->setEnabled(!paused);
+    this->ui->passwordButton->setEnabled(!paused);
+    this->ui->repeatButton->setEnabled(!paused);
+    this->ui->pauseButton->setChecked(paused);
+    this->ui->pauseButton->setEnabled(true);
+}
+
+void CompactWindow::pauseError(const QString &message)
+{
+   this->ui->pauseButton->setEnabled(true);
+
+   CTIClientWindow::pauseError(message);
+}

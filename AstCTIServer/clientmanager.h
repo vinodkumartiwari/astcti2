@@ -39,26 +39,23 @@
 #ifndef CLIENTMANAGER_H
 #define CLIENTMANAGER_H
 
-#include <QThread>
+#include <QObject>
 #include <QSemaphore>
-#include <QMutex>
 #include <QTcpSocket>
-#include <QHostAddress>
 #include <QStringList>
-#include <QDebug>
-#include <QSettings>
 #include <QHash>
 
 #include "cticonfig.h"
 #include "qastctioperator.h"
+#include "qastctiseat.h"
 
-struct QAstCTICommand
+struct AstCTICommand
 {
     QString command;
     QStringList parameters;
 };
 
-enum QAstCTICommands {
+enum AstCTICommands {
     CmdNotDefined,
     CmdNoOp,
     CmdQuit,
@@ -74,94 +71,91 @@ enum QAstCTICommands {
     CmdQueues,
     CmdPause,
     CmdOrig,
-    CmdStop,
-    CmdEndList
+	CmdStop
 };
 
-enum QAstCTIClientState {
-    StateNotLoggedIn,
+enum AstCTIClientState {
+	StateLoggedOff,
     StateLoggedIn,
     StatePaused,
     StatePauseInRequested,
-    StatePauseOutReuqested,
-    StateEndList
+	StatePauseOutReuqested
 };
 
-class ClientManager : public  QThread
+class ClientManager : public  QObject
 {
     Q_OBJECT
 
 public:
-    ClientManager(QAstCTIConfiguration *config, int socketDescriptor, QObject *parent);
+	ClientManager(AstCTIConfiguration *config, int socketDescriptor);
     ~ClientManager();
-    void                    run();
-    QAstCTIClientState      getState();
-    QAstCTIOperator         *getActiveOperator();
-    QString                 getClientOperatingSystem();
-    QString                 getLocalIdentifier();
+	QAstCTIOperator     *getActiveOperator();
+	AstCTIClientState    getState();
+	QString              getClientOperatingSystem();
+	QString              getLocalIdentifier();
+	//void                 stop();
 
 public slots:
-    ///////////////////////////////////////////////////////////////////////////
+	void                 run();
+
+	///////////////////////////////////////////////////////////////////////////
     // Socket
-    void                    socketDataReceived();
-    void                    socketDisconnected();
-    void                    sendDataToClient(const QString &data);
-    void                    parseDataReceived(const QString &data);
+	void                 socketDataReceived();
+	void                 socketDisconnected();
+	void                 sendDataToClient(const QString &data);
+	void                 parseReceivedData(const QString &data);
     ///////////////////////////////////////////////////////////////////////////
     // CTI Server
-    void                    disconnectRequest();
-    void                    unlockAfterSuccessfullLogoff();
-    void                    pauseInResult(const QString &identifier, const bool &result, const QString& reason);
-    void                    pauseOutResult(const QString &identifier, const bool &result, const QString& reason);
-    void                    ctiResponse(const QString &identifier, const int actionId, const QString &commandName,
-                                        const QString &responseString, const QString &responseMessage);
+	void                 disconnectRequest();
+	void                 unlockAfterSuccessfullLogoff();
+	void                 pauseInResult(const QString &identifier, const bool &result,
+									   const QString& reason);
+	void                 pauseOutResult(const QString &identifier, const bool &result,
+										const QString& reason);
+	void                 ctiResponse(const QString &identifier, const QString &actionName,
+									 const QString &responseString, const QString &responseMessage);
 
 signals:
     ///////////////////////////////////////////////////////////////////////////
     // Socket
-    void                    dataReceived(const QString &data);
+	void                 dataReceived(const QString &data);
 
     ///////////////////////////////////////////////////////////////////////////
     // CTI Server
-    void                    addClient(const QString &exten, ClientManager *cl);
-    void                    changeClient(const QString &oldexten, const QString &newexten);
-    void                    removeClient(const QString &exten);
-    void                    notifyServer(const QString &data);
+	void                 addClient(const QString &exten, ClientManager *cl);
+	void                 changeClient(const QString &oldexten, const QString &newexten);
+	void                 removeClient(const QString &exten);
+	void                 notifyServer(const QString &data);
 
     ///////////////////////////////////////////////////////////////////////////
     // CTI Status change request
-    void                    ctiPauseIn(ClientManager *cl);
-    void                    ctiPauseOut(ClientManager *cl);
-    void                    ctiLogin(ClientManager *cl);
-    void                    ctiLogoff(ClientManager *cl);
-
+	void                 ctiPauseIn(ClientManager *cl);
+	void                 ctiPauseOut(ClientManager *cl);
+	void                 ctiLogin(ClientManager *cl);
+	void                 ctiLogoff(ClientManager *cl);
 
 private:
-    QAstCTIClientState      state;
-    QAstCTIConfiguration    *config;
-    QAstCTIOperator         *activeOperator;
-    QAstCTISeat             *activeSeat;
-    QHash<QString, int>     commandsList;
-    QSemaphore              waitBeforeQuit;
-    QMutex                  mutex;
-    QString                 clientOperatingSystem;
-    QString                 ctiUserName;
-    QString                 localIdentifier;
-    bool                    authenticated;
-    bool                    ctiLogoffOnClose;
-    int                     socketDescriptor;
-    int                     compressionLevel;
-    int                     retries;
-    quint16                 blockSize;
+	AstCTIConfiguration *config;
+	QAstCTIOperator     *activeOperator;
+	QAstCTISeat         *activeSeat;
+	AstCTIClientState    state;
+	QHash<QString, int>  commandsList;
+	QSemaphore           waitBeforeQuit;
+	QString              clientOperatingSystem;
+	QString              ctiUserName;
+	QString              localIdentifier;
+	//bool                 isRunning;
+	bool                 authenticated;
+	bool                 ctiLogoffOnClose;
+	int                  socketDescriptor;
+	int                  compressionLevel;
+	int                  retries;
+	quint16              blockSize;
 
-    QAstCTICommand          parseCommand(const QString &command);
-    void                    initParserCommands();
+	AstCTICommand        parseCommand(const QString &command);
+	void                 initParserCommands();
 
-
-
-protected:
-    QTcpSocket              *localSocket;
-
+	QTcpSocket          *localSocket;
 };
 
 #endif // CLIENTMANAGER_H

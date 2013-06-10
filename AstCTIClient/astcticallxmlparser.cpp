@@ -52,7 +52,8 @@ AstCTICallXMLParser::AstCTICallXMLParser(AstCTICall *call)
     this->inVariables = false;
 }
 
-bool AstCTICallXMLParser::startElement(const QString &, const QString &, const QString &name, const QXmlAttributes &attrs)
+bool AstCTICallXMLParser::startElement(const QString &, const QString &,
+									   const QString &name, const QXmlAttributes &attrs)
 {
     if (name == "Variables") {
         this->inVariables = true;
@@ -106,7 +107,8 @@ bool AstCTICallXMLParser::endElement(const QString &, const QString &, const QSt
         bool ok;
         this->currentAction->port = this->currentText.toUShort(&ok);
         if (!ok)
-            qCritical() << "Wrong value received from server for Server Port:" << this->currentText;
+			qCritical() << "Wrong value received from server for Server Port:"
+						<< this->currentText;
     } else if (name == "Parameters" ||
                name == "Url" ||
                name == "Message") {

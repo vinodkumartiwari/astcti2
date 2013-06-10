@@ -65,10 +65,12 @@ private slots:
     void handleUnsupportedContent(QNetworkReply *reply);
 
 protected:
-    bool acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type);
+	bool acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request,
+								 NavigationType type);
 //    QWebPage *createWindow(QWebPage::WebWindowType type);
 #if !defined(QT_NO_UITOOLS)
-    QObject *createPlugin(const QString &classId, const QUrl &url, const QStringList &paramNames, const QStringList &paramValues);
+	QObject *createPlugin(const QString &classId, const QUrl &url,
+						  const QStringList &paramNames, const QStringList &paramValues);
 #endif
 
 private:

@@ -40,24 +40,21 @@
 #define QASTCTIACTION_H
 
 #include <QObject>
-#include <QDomDocument>
 #include <QHash>
 
 enum QAstCTIActionType {
-    ActionNotDefined,
     ActionApplication,
     ActionBrowser,
     ActionInternalBrowser,
     ActionTcpMessage,
-    ActionUdpMessage,
-    ActionEndList
+	ActionUdpMessage
 };
 
 enum QAstCTIActionOsType {
     ActionOsAll,
     ActionOsLinux,
     ActionOsMacintosh,
-    ActionOsEndList
+	ActionOsWindows
 };
 
 class QAstCTIAction : public QObject
@@ -67,16 +64,16 @@ class QAstCTIAction : public QObject
 public:
     QAstCTIAction(const int &id, QObject *parent);
     ~QAstCTIAction();
-    int getIdAction();
+
+	int     getIdAction();
     QString getActionOsType();
     QString getActionType();
     QString getActionDestination();
     QString getActionParameters();
     QString getActionMessageEncoding();
+	void    setActionParameters(QString newParameters);
 
-    void setActionParameters(QString newParameters);    
-    static QHash<QString, int> getActionTypes();
-
+	static QHash<QString, int> getActionTypes();
 
 public slots:
     bool load();
@@ -85,7 +82,7 @@ signals:
     void loadComplete(const bool &result);
 
 private:
-    int idAction;
+	int     idAction;
     QString actionOsType;
     QString actionType;
     QString actionDestination;

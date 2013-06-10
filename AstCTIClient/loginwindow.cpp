@@ -45,21 +45,22 @@
 #include "loginwindow.h"
 #include "ui_loginwindow.h"
 
-LoginWindow::LoginWindow(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::LoginWindow)
+LoginWindow::LoginWindow(QWidget *parent) : QDialog(parent), ui(new Ui::LoginWindow)
 {
     ui->setupUi(this);
 
-    ui->dialogButtonBox->buttons().at(0)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
-    ui->dialogButtonBox->buttons().at(1)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
+	ui->dialogButtonBox->buttons().at(0)->setIcon(
+				QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
+	ui->dialogButtonBox->buttons().at(1)->setIcon(
+				QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
 
     connect(this->ui->dialogButtonBox, SIGNAL(accepted()), this, SLOT(accepting()));
     connect(this->ui->dialogButtonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));
 
-    //TEMP
+	/* CODE TESTING START */
     ui->usernameLineEdit->setText("oper1");
     ui->passwordLineEdit->setText("pass");
+	/* CODE TESTING END */
 }
 
 LoginWindow::~LoginWindow()
@@ -88,7 +89,8 @@ void LoginWindow::showMessage(const QString message, bool connectionLost)
 void LoginWindow::accepting()
 {
     if (this->ui->usernameLineEdit->text().isEmpty()) {
-        this->showMessage(trUtf8("Username is required to continue. Please enter your username."), false);
+		this->showMessage(trUtf8("Username is required to continue. Please enter your username."),
+						  false);
         this->ui->usernameLineEdit->setFocus();
     } else {
         this->hide();

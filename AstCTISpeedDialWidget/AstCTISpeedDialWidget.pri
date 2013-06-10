@@ -5,3 +5,6 @@ HEADERS +=    astctispeeddialwidget.h
 SOURCES +=    astctispeeddialwidget.cpp
 FORMS +=      astctispeeddialwidget.ui
 RESOURCES +=  astctispeeddialwidget.qrc
+
+DEFINES +=    ASTCTISPEEDDIALWIDGET_LIBRARY
+

@@ -35,9 +35,9 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#include <QtSql>
 #include <QDebug>
 
+#include "db.h"
 #include "qastctivariable.h"
 
 QAstCTIVariable::QAstCTIVariable(const int &id, QObject *parent) :
@@ -53,31 +53,18 @@ QAstCTIVariable::~QAstCTIVariable()
 
 bool QAstCTIVariable::load()
 {
-    bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
+	bool ok;
+	QVariantList params;
+	params.append(this->idVariable);
+	const QVariantList varData =
+		  DB::readRow("SELECT * FROM services_variables WHERE ID_VARIABLE=?", params, &ok);
+	if (ok) {
+		this->idService = varData.at(1).toInt();
+		this->varName = varData.at(2).toString();
     }
-    QSqlQuery query(db);
 
-    QString sql = "SELECT * FROM services_variables WHERE ID_VARIABLE=:id";
-    if (!query.prepare(sql)) {
-        qCritical("Prepare failed in QAstCTIVariable::load() %s:%d",  __FILE__ , __LINE__);
-    } else {
-        query.bindValue(":id", this->idVariable);
-        if (!query.exec()) {
-            qCritical("Query execution failed in QAstCTIVariable::load() %s:%d",  __FILE__ , __LINE__);
-        } else {
-            retVal = query.first();
-            this->idService = query.value(1).toInt(0);
-            this->varName = query.value(2).toString();
-            query.finish();
-        }
-    }
-    query.clear();
-
-    emit this->loadComplete(retVal);
-    return retVal;
+	emit this->loadComplete(ok);
+	return ok;
 }
 
 int QAstCTIVariable::getIdVariable()

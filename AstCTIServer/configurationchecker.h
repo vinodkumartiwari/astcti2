@@ -38,32 +38,31 @@
 #ifndef CONFIGURATIONCHECKER_H
 #define CONFIGURATIONCHECKER_H
 
-
 #include <QObject>
 #include <QThread>
-#include <QtSql>
 #include <QDebug>
 
-class ConfigurationChecker : public  QThread
+class ConfigurationChecker : public QObject
 {
     Q_OBJECT
 
 public:
-    ConfigurationChecker(QObject *parent);
+	explicit ConfigurationChecker(const bool &debug);
     ~ConfigurationChecker();
-    void                run();
-    int                 getLastModified();
-    void                startConfigurationCheckerThread();
-    void                stopConfigurationCheckerThread();
+	void                stop();
+
+public slots:
+	void                run();
 
 signals:
     void newConfiguration();
 
 private:
-    QString             readIfConfigurationIsModified();    
     int                 readLastModified();
-    int                 lastTimeStamp;
-    bool                running;
+	void                delay(const int secs);
+	int                 lastTimeStamp;
+	bool                isRunning;
+	bool                debug;
 };
 
 #endif // CONFIGURATIONCHECKER_H

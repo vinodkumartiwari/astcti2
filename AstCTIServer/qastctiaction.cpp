@@ -35,12 +35,12 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#include <QtSql>
 #include <QDebug>
 
+#include "db.h"
 #include "qastctiaction.h"
 
-QAstCTIAction::QAstCTIAction(const int& id, QObject* parent) :
+QAstCTIAction::QAstCTIAction(const int &id, QObject *parent) :
         QObject(parent), idAction(id), actionOsType(""), actionType(""),
         actionDestination(""), actionParameters(""), actionMessageEncoding("")
 {
@@ -53,39 +53,32 @@ QAstCTIAction::~QAstCTIAction()
 
 bool QAstCTIAction::load()
 {
-    bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-    query.prepare("SELECT * FROM actions WHERE ID_ACTION=:id");
-    query.bindValue(":id", this->idAction);
-    retVal = query.exec();
-    if ( (retVal) & (query.first()) ) {
-        this->actionOsType = query.value(1).toString();
-        this->actionType = query.value(2).toString();
-        this->actionDestination = query.value(3).toString();
-        this->actionParameters = query.value(4).toString();
-        this->actionMessageEncoding = query.value(5).toString();
+	bool ok;
+	QVariantList params;
+	params.append(this->idAction);
+	const QVariantList actionData =
+		  DB::readRow("SELECT * FROM actions WHERE ID_ACTION=?", params, &ok);
+	if (ok) {
+		this->actionOsType = actionData.at(1).toString();
+		this->actionType = actionData.at(2).toString();
+		this->actionDestination = actionData.at(3).toString();
+		this->actionParameters = actionData.at(4).toString();
+		this->actionMessageEncoding = actionData.at(5).toString();
+	}
 
-        query.finish();
-    }
-    query.clear();
-
-    emit this->loadComplete(retVal);
-    return retVal;
+	emit this->loadComplete(ok);
+	return ok;
 }
 
 QHash<QString, int> QAstCTIAction::getActionTypes() {
-        QHash<QString, int> actionTypes;
-        actionTypes.insert("APPLICATION",       ActionApplication);
-        actionTypes.insert("BROWSER",           ActionBrowser);
-        actionTypes.insert("INTERNAL_BROWSER",  ActionInternalBrowser);
-        actionTypes.insert("TCP_MESSAGE",       ActionTcpMessage);
-        actionTypes.insert("UDP_MESSAGE",       ActionUdpMessage);
-        return actionTypes;
-    }
+	QHash<QString, int> actionTypes;
+	actionTypes.insert("APPLICATION",      ActionApplication);
+	actionTypes.insert("BROWSER",          ActionBrowser);
+	actionTypes.insert("INTERNAL_BROWSER", ActionInternalBrowser);
+	actionTypes.insert("TCP_MESSAGE",      ActionTcpMessage);
+	actionTypes.insert("UDP_MESSAGE",      ActionUdpMessage);
+	return actionTypes;
+}
 
 int QAstCTIAction::getIdAction()
 {

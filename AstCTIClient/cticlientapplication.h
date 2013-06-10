@@ -47,11 +47,9 @@
 #include <QtCore/QUrl>
 #include <QtCore/QPointer>
 #include <QTcpSocket>
-#include <QHostAddress>
 #include <QStringList>
 #include <QHash>
 #include <QTimer>
-#include <QDebug>
 
 #include <QtSingleApplication>
 
@@ -63,6 +61,7 @@
 #include "loginwindow.h"
 #include "passwordwindow.h"
 #include "compactwindow.h"
+#include "managerwindow.h"
 #include "browserwindow.h"
 
 #ifdef Q_WS_WIN
@@ -83,6 +82,11 @@ const QString defaultServerPort = "5000";
 const QString defaultConnectTimeout = "2000";
 const QString defaultConnectRetryInterval = "2";
 const int defaultKeepAliveInterval = 5000;
+
+enum CTIClientType {
+    CTIClientCallCenter,
+    CTIClientPhoneManager
+};
 
 enum AstCTIResponseCodes {
     RspOK = 100,
@@ -156,12 +160,13 @@ private:
         StopServerError
     };
 
-    bool                    canStart;
-    ServerConnectionStatus  connectionStatus;
-    quint16                 blockSize;
-    QString                 macAddress;
-    bool                    reconnectNotify;
-    QString                 newPassword;
+	bool                     canStart;
+	CTIClientType            clientType;
+	ServerConnectionStatus   connectionStatus;
+	quint16                  blockSize;
+	QString                  macAddress;
+	bool                     reconnectNotify;
+	QString                  newPassword;
     AstCTIConfiguration     *config;
     AstCTICommand           *lastCTICommand;
     QHash<int, QString>     *commandsList;
@@ -171,33 +176,34 @@ private:
     QTimer                  *connectTimer;
     QTcpSocket              *localSocket;
     LoginWindow             *loginWindow;
-    QWidget                 *mainWindow;
-    QList<BrowserWindow*>   browserWindows;
-    QList<QProcess*>        applications;
+    CTIClientWindow         *mainWindow;
+	QList<BrowserWindow*>    browserWindows;
+	QList<QProcess*>         applications;
 
-    void                    connectSocket();
-    void                    abortConnection(StopReason stopReason, const QString &message);
-    void                    connectionLost();
-    void                    resetLastCTICommand();
-    AstCTIResponse          parseResponse(const QString &response);
-    void                    parseDataReceivedFromServer(const QString &message);
-    void                    processResponse(AstCTIResponse &response);
-    void                    processEvent(const QString &eventData);
-    QByteArray              convertDataForSending(const QString &data);
-    void                    sendDataToServer(const QString &data);
-    void                    sendCommandToServer(const AstCTICommands command);
-    void                    sendCommandToServer(const AstCTICommands command, const QString &parameters);
-    void                    showMainWindow(const QString &extension);
-    void                    newApplication(const QString &path, const QString &parameters);
+	void                     connectSocket();
+	void                     abortConnection(StopReason stopReason, const QString &message);
+	void                     connectionLost();
+	void                     resetLastCTICommand();
+	AstCTIResponse           parseResponse(const QString &response);
+	void                     parseDataReceivedFromServer(const QString &message);
+	void                     processResponse(AstCTIResponse &response);
+	void                     processEvent(const QString &eventData);
+	QByteArray               convertDataForSending(const QString &data);
+	void                     sendDataToServer(const QString &data);
+	void                     sendCommandToServer(const AstCTICommands command);
+	void                     sendCommandToServer(const AstCTICommands command,
+												 const QString &parameters);
+	void                     showMainWindow(const QString &extension);
+	void                     newApplication(const QString &path, const QString &parameters);
 
 private slots:
-    void                    socketConnected();
-    void                    socketDisconnected();
-    void                    socketStateChanged(QAbstractSocket::SocketState socketState);
-    void                    socketError(QAbstractSocket::SocketError socketError);
-    void                    receiveData();
-    void                    idleTimerElapsed();
-    void                    connectTimerElapsed();
+	void                     socketConnected();
+	void                     socketDisconnected();
+	void                     socketStateChanged(QAbstractSocket::SocketState socketState);
+	void                     socketError(QAbstractSocket::SocketError socketError);
+	void                     receiveData();
+	void                     idleTimerElapsed();
+	void                     connectTimerElapsed();
 };
 
 #endif // CTICLIENTAPPLICATION_H
