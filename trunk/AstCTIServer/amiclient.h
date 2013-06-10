@@ -40,110 +40,93 @@
 #define AMICLIENT_H
 
 #include <QObject>
-#include <QThread>
-#include <QAbstractSocket>
 #include <QTcpSocket>
-#include <QHostAddress>
-#include <QStringList>
-#include <QDebug>
-#include <QSettings>
 #include <QHash>
-#include <QStack>
 
-#include <QStringList>
-
-#include "main.h"
+#include "cticonfig.h"
+#include "amicommand.h"
 #include "qastctiservice.h"
 #include "qastctiservices.h"
 #include "qastcticall.h"
 
-struct AsteriskCommand
-{
-    QString commandName;
-    QString command;
-    QString channel;
-    int actionId;
-    QString responseString;
-    QString responseMessage;
-};
-
-enum AMIClientStatus {
-    AmiStatusNotDefined,
-    AmiStatusLoggingIn,
-    AmiStatusLoggedIn,
+enum AmiClientStatus {
+	AmiStatusLoggedOff,
+	AmiStatusLoggingIn,
+	AmiStatusLoggedIn,
     AmiStatusRequestingExtensions,
     AmiStatusRequestingSip,
-    AmiStatusRequestingQueues,
-    AmiStatusEndList
+	AmiStatusRequestingQueues
 };
 
-enum AMIEvent {
-    AmiEventUndefined, // 1
-    AmiEventShutdown, // 2
-    AmiEventNewChannel,// 3
-    AmiEventHangup, // 4
-    AmiEventNewExten, // 5
-    AmiEventVarSet, // 6
-    AmiEventJoin, // 7
-    AmiEventBridge, // 8
-    AmiEventEndList // 9
+enum AmiEvent {
+	AmiEventFullyBooted,
+	AmiEventShutdown,
+	AmiEventNewchannel,
+	AmiEventNewexten,
+	AmiEventNewstate,
+	AmiEventHangup,
+	AmiEventVarSet,
+	AmiEventJoin,
+	AmiEventBridge,
+	AmiEventExtensionStatus,
+	AmiEventPeerStatus
 };
 
-enum AMIConnectionStatus {
+enum AmiConnectionStatus {
     AmiConnectionStatusDisconnected,
-    AmiConnectionStatusConnected,
-    AmiConnectionStatusEndList
+	AmiConnectionStatusConnected
 };
 
-class AMIClient : public  QThread
+class AmiClient : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(AMIClientStatus);
-    Q_ENUMS(AMIEvent);
-    Q_ENUMS(AMIConnectionStatus);
+	Q_ENUMS(AmiClientStatus)
+	Q_ENUMS(AmiEvent)
+	Q_ENUMS(AmiConnectionStatus)
 
 public:
-    AMIClient(QAstCTIConfiguration *config, QObject *parent);
-    ~AMIClient();
-    void                            run();
-    bool                            isConnected();
+	explicit AmiClient(AstCTIConfiguration *config);
+	~AmiClient();
+	QString                         getActionName(const AmiAction action);
+	QString                         getEventName(const AmiEvent event);
+	void                            stop();
 
 public slots:
-    void                            sendDataToAsterisk(const QString &data);
-    void                            sendCommandToAsterisk(const int &actionId, const QString &commandName, const QString &data, const QString &channel);
+	void                            run();
+	void                            sendCommandToAsterisk(AmiCommand *command);
 
 signals:
-    void                            error(int socketError, const QString &message);
-    void                            receiveDataFromAsterisk(const QString &data);
-    void                            threadStopped();    
-    void                            ctiEvent(const AMIEvent &eventId, QAstCTICall *theCall);
-    void                            ctiResponse(const int &actionId, AsteriskCommand *theCommand);
-    void                            amiConnectionStatusChange(AMIConnectionStatus status);
+	//void                            error(int socketError, const QString &message);
+	//void                            receiveDataFromAsterisk(const QString &data);
+	void                            ctiEvent(const AmiEvent &eventId, QAstCTICall *call);
+	void                            ctiResponse(AmiCommand *command);
+	void                            amiConnectionStatusChange(const AmiConnectionStatus status);
 
 private:
-    QAstCTIConfiguration            *config;
-    int                             socketDescriptor;
-    bool                            quit;
-    bool                            emitStoppedSignalOnQuit;
+	AstCTIConfiguration            *config;
+	QHash<QString, QAstCTICall*>   *activeCalls;
+	QHash<int, AmiCommand*>        *pendingAmiCommands;
+	int                             currentActionId;
+	bool                            isRunning;
     QString                         dataBuffer;
-    AMIClientStatus                 amiClientStatus;
-    int                             retries;
-    QHash<QString, QAstCTICall*>    *activeCalls;
-    QHash<int, AsteriskCommand*>    *commandsHashtable;
+	AmiClientStatus                 amiClientStatus;
+	bool                            sendDataToAsterisk(const QString &data);
+	void                            buildSocket();
+	void                            parseDataReceivedFromAsterisk();
+	void                            performLogin();
+	void                            performLogoff();
+	QHash<QString, QString>*        hashFromMessage(QString data);
+	void                            evaluateEvent(QHash<QString, QString> *event);
+	void                            evaluateResponse(QHash<QString, QString> *response);
+	void							delay(const int secs);
 
 private slots:
-    void                            buildTheSocket();
-    void                            parseDataReceivedFromAsterisk(const QString& message);
-    void                            performLogin();
-    void                            executeActions();
-    QHash<QString, QString>*        hashFromMessage(QString data);
-    void                            evaluateEvent(QHash<QString, QString> *event);
-    void                            evaluateResponse(QHash<QString, QString> *response);
     void                            socketStateChanged(QAbstractSocket::SocketState socketState);
     void                            socketError(QAbstractSocket::SocketError socketError);
     void                            socketDisconnected();
+
 protected:
-    QTcpSocket*                     localSocket;
+	QTcpSocket                     *localSocket;
 };
 
 #endif // AMICLIENT_H

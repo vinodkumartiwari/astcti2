@@ -45,12 +45,19 @@
 #include <QWidget>
 #include <QResizeEvent>
 #include <QStylePainter>
+#include <QtDesigner/QDesignerExportWidget>
+
+#if defined(ASTCTISPEEDDIALWIDGET_LIBRARY)
+#  define ASTCTISPEEDDIALWIDGET_EXPORT Q_DECL_EXPORT
+#else
+#  define ASTCTISPEEDDIALWIDGET_EXPORT Q_DECL_IMPORT
+#endif
 
 namespace Ui {
     class AstCTISpeedDialWidget;
 }
 
-class AstCTISpeedDialWidget : public QWidget
+class ASTCTISPEEDDIALWIDGET_EXPORT AstCTISpeedDialWidget : public QWidget
 {
     Q_DISABLE_COPY(AstCTISpeedDialWidget)
     Q_OBJECT

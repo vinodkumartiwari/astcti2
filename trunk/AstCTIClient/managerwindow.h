@@ -42,9 +42,12 @@
 #ifndef MANAGERWINDOW_H
 #define MANAGERWINDOW_H
 
-#include <QtGui/QFrame>
 #include <QtGui/QHBoxLayout>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QStackedLayout>
 #include <QtGui/QTabBar>
+
+#include "cticlientwindow.h"
 
 const int borderWidth = 5;
 
@@ -52,22 +55,19 @@ namespace Ui {
     class ManagerWindow;
 }
 
-class ManagerWindow : public QWidget
+class ManagerWindow : public CTIClientWindow
 {
     Q_OBJECT
 
 public:
-    explicit ManagerWindow(QWidget *parent = 0);
+    explicit ManagerWindow(const QString &userName);
     ~ManagerWindow();
 
 public slots:
-    void about();
     void showHelp();
     void showMaxRestore();
 
 protected:
-//    void keyPressEvent(QKeyEvent *e);
-//    void closeEvent(QCloseEvent *e);
     void changeEvent(QEvent *e);
     void resizeEvent(QResizeEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
@@ -77,18 +77,21 @@ protected:
 
 private:
     Ui::ManagerWindow *ui;
-    QHBoxLayout *accountsLayout;
-    QTabBar *accountsTabBar;
+    QVBoxLayout *mainLayout;
+    QWidget *titleDummyWidget;
+    QStackedLayout *titleStackedLayout;
+//    QHBoxLayout *accountsLayout;
+//    QTabBar *accountsTabBar;
 
     void connectSlots();
-    bool isValidDrag(QMouseEvent *mouseEvent) const;
+    void enableControls(bool enable);
+    void writeSettings();
+    void readSettings();
 
     bool resizeLeft;
     bool resizeRight;
     bool resizeUp;
     bool resizeDown;
-    bool canClose;
-    QPoint dragOrigin;
 };
 
 #endif // MANAGERWINDOW_H

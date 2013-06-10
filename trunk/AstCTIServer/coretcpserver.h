@@ -40,9 +40,9 @@
 #define CORETCPSERVER_H
 
 #include <QObject>
+#include <QThread>
 #include <QMutex>
 #include <QtNetwork>
-#include <QSettings>
 #include <QHash>
 #include <QList>
 
@@ -55,26 +55,30 @@ class CoreTcpServer : public QTcpServer
     Q_OBJECT
 
 public:
-    CoreTcpServer(QAstCTIConfiguration *config, QObject *parent=0);
+	CoreTcpServer(AstCTIConfiguration *config, QObject *parent = 0);
     ~CoreTcpServer();
-    bool                            containsUser(const QString &username);
+	bool  containsUser(const QString &username);
 
 public slots:
-    void                            addUser(const QString &username);
-    void                            removeUser(const QString &username);
+	void  addUser(const QString &username);
+	void  removeUser(const QString &username);
 
 signals:
-    void                            sendDataFromServer(const QString &data);
-    void                            serverIsClosing();
-    void                            amiClientDisconnected();
-    void                            amiClientPauseIn(ClientManager *cl);
-    void                            amiClientPauseOut(ClientManager *cl);
-    void                            amiClientLogin(ClientManager *cl);
-    void                            amiClientLogoff(ClientManager *cl);
-    void                            ctiClientLogoffSent();
-    void                            ctiClientPauseInResult(const QString &identifier, const bool &result, const QString &reason);
-    void                            ctiClientPauseOutResult(const QString &identifier, const bool &result, const QString &reason);
-    void                            ctiResponse(const QString &identifier, const int actionId, const QString &commandName, const QString &responseString, const QString &responseMessage);
+	void  sendDataFromServer(const QString &data);
+	void  serverIsClosing();
+	void  newAmiCommand(AmiCommand *command);
+	void  amiClientDisconnected();
+	void  amiClientPauseIn(ClientManager *cl);
+	void  amiClientPauseOut(ClientManager *cl);
+	void  amiClientLogin(ClientManager *cl);
+	void  amiClientLogoff(ClientManager *cl);
+	void  ctiClientLogoffSent();
+	void  ctiClientPauseInResult(const QString &identifier, const bool &result,
+								 const QString &reason);
+	void  ctiClientPauseOutResult(const QString &identifier, const bool &result,
+								  const QString &reason);
+	void  ctiResponse(const QString &identifier, const QString &actionName,
+					  const QString &responseString, const QString &responseMessage);
 
 protected:
     QHash<QString, ClientManager*>  *clients;
@@ -87,10 +91,10 @@ protected slots:
     void                            changeClient(const QString &oldexten, const QString &newexten);
     void                            removeClient(const QString &exten);
     void                            notifyClient(const QString &data);
-    void                            stopTheServer(bool closeTheSocket);
-    void                            amiConnectionStatusChange(AMIConnectionStatus status);
-    void                            receiveCtiEvent(const AMIEvent &eventid, QAstCTICall *the_call);
-    void                            receiveCtiResponse(const int &actionId, AsteriskCommand *the_command);
+	void                            stopServer(bool closeSocket);
+	void                            amiConnectionStatusChange(const AmiConnectionStatus status);
+	void                            receiveCtiEvent(const AmiEvent &eventid, QAstCTICall *call);
+	void                            receiveCtiResponse(AmiCommand *command);
     // Slots to receive CTI Client events
     void                            ctiClientPauseIn(ClientManager *cl);
     void                            ctiClientPauseOut(ClientManager *cl);
@@ -98,17 +102,11 @@ protected slots:
     void                            ctiClientLogoff(ClientManager *cl);
 
 private:
-    QSettings               settings;
-    QAstCTIConfiguration*   config;
-    QMutex                  mutexClientList;
-    QMutex                  mutexUsersList;
-    bool                    isClosing;
-    AMIClient*              amiClient;
-    int                     actionId;
-    int                     incrementAndGetActionId();
-
-
+	AstCTIConfiguration  *config;
+	AmiClient            *amiClient;
+	QMutex                mutexClientList;
+	QMutex                mutexUsersList;
+	bool                  isClosing;
 };
-
 
 #endif // CORETCPSERVER_H

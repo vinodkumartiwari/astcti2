@@ -36,9 +36,9 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include <QtSql>
 #include <QDebug>
 
+#include "db.h"
 #include "qastctioperatorservices.h"
 
 QAstCTIOperatorServices::QAstCTIOperatorServices(QObject *parent)
@@ -75,35 +75,21 @@ QHash<QString,int> *QAstCTIOperatorServices::getServicesList()
 
 void QAstCTIOperatorServices::fillList()
 {
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-
-    QString sql = "SELECT s.SERVICE_NAME, s.SERVICE_IS_QUEUE, s.SERVICE_QUEUE_NAME,";
-            sql +="so.PENALTY FROM services_operators so ";
-            sql +="JOIN services s ON so.ID_SERVICE=s.ID_SERVICE ";
-            sql +="WHERE s.SERVICE_IS_QUEUE=1 AND so.ID_OPERATOR=:id";
-
-    if (!query.prepare(sql)) {
-        qCritical("Prepare failed in QAstCTIOperatorServices::fillList() %s:%d",  __FILE__ , __LINE__);
-    } else {
-        query.bindValue(":id", this->idOperator);
-        if (!query.exec()) {
-            qCritical("Query execution failed in QAstCTIOperatorServices::fillList() %s:%d",  __FILE__ , __LINE__);
-        } else {
-            this->servicesList.clear();
-            while(query.next()) {
-                QString serviceName = query.value(0).toString();
-                int penalty = query.value(1).toInt(0);
-                if (!this->servicesList.contains(serviceName)) {
-                    this->servicesList.insert(serviceName, penalty);
-                }
-            }
-            query.finish();
-        }
-    }
-
-    query.clear();
+	bool ok;
+	QString sql = "SELECT s.SERVICE_NAME,so.PENALTY,s.SERVICE_IS_QUEUE,s.SERVICE_QUEUE_NAME "
+				  "FROM services_operators so INNER JOIN services s ON so.ID_SERVICE=s.ID_SERVICE "
+				  "WHERE s.SERVICE_IS_QUEUE=1 AND so.ID_OPERATOR=?";
+	QVariantList params;
+	params.append(this->idOperator);
+	const QList<QVariantList> services = DB::readTable(sql, params, &ok);
+	if (ok) {
+		this->servicesList.clear();
+		const int listSize = services.size();
+		for (int i = 0; i < listSize; i++) {
+			const QVariantList service = services.at(i);
+			const QString serviceName = service.at(0).toString();
+			const int penalty = service.at(1).toInt();
+			this->servicesList.insert(serviceName, penalty);
+		}
+	}
 }

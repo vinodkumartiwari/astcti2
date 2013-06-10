@@ -35,15 +35,17 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#include <QtSql>
+
 #include <QDebug>
+
+#include "db.h"
 #include "qastctiservices.h"
 #include "qastctiservice.h"
 
-QAstCTIServices::QAstCTIServices(QAstCTIActions *theActionsList, QObject* parent) :
+QAstCTIServices::QAstCTIServices(QAstCTIActions *actions, QObject* parent) :
         QObject(parent)
 {
-    this->actionsList = theActionsList;
+	this->actionsList = actions;
     this->fill_services();
 }
 
@@ -66,55 +68,37 @@ void QAstCTIServices::add_service(QAstCTIService *service)
 
 void QAstCTIServices::remove_service(const QString &key)
 {
-    if (this->services.contains(key))
-    {
-        QAstCTIService *service = this->services[key];
-        delete(service);
+	if (this->services.contains(key)) {
+		delete this->services[key];
         this->services.remove(key);
     }
 }
+
 int QAstCTIServices::count()
 {
-    // Count how many elements we have
     return this->services.count();
 }
 
 void QAstCTIServices::clear()
 {
-    // Do a clear only if really needed
-    if (this->services.count() > 0) {
-        QMutableHashIterator<QString, QAstCTIService*> i(this->services);
-        while (i.hasNext()) {
-            i.next();
-            delete(i.value());
-        }
-        this->services.clear();
-    }
+	qDeleteAll(this->services);
+	this->services.clear();
 }
 
 void QAstCTIServices::fill_services()
 {
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-    if (!query.exec("SELECT ID_SERVICE FROM services ORDER BY ID_SERVICE ASC")) {
-        qCritical("Query failed in QAstCTIServices::fill_services() %s:%d",  __FILE__ , __LINE__);
-    } else {
-        while(query.next()) {
-            QAstCTIService *service = new QAstCTIService(query.value(0).toInt(0),this->actionsList,  this);
-            if (service->load())
-            {
-                QString serviceName = service->getServiceName();
-
-                // Remove service if exists before load
-                this->remove_service(serviceName);
-                this->add_service(service);
-
-            }
-        }
-        query.finish();
-    }
-    query.clear();
+	bool ok;
+	const QVariantList serviceIds =
+		  DB::readList("SELECT ID_SERVICE FROM services ORDER BY ID_SERVICE ASC", &ok);
+	if (ok) {
+		const int listSize = serviceIds.size();
+		for (int i = 0; i < listSize; i++) {
+			QAstCTIService *service = new QAstCTIService(serviceIds.at(i).toInt(), this->actionsList,  this);
+			if (service->load()) {
+				// Remove item if it exists
+				this->remove_service(service->getServiceName());
+				this->add_service(service);
+			}
+		}
+	}
 }

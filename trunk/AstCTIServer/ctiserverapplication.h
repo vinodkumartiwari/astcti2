@@ -90,33 +90,34 @@ public:
     CtiServerApplication(const QString &appId, int &argc, char **argv);
     ~CtiServerApplication();
     static CtiServerApplication *instance();
-    QAstCTIOperator         *getOperatorByUsername(const QString &username);
-    QAstCTIServices         *getServices();
-    QAstCTIActions          *getActions();
-    bool                    containsUser(const QString &username);
-    QAstCTIConfiguration    config; // Main configuration struct
+
+	QAstCTIOperator      *getOperatorByUsername(const QString &username);
+	QAstCTIServices      *getServices();
+	QAstCTIActions       *getActions();
+	bool                  containsUser(const QString &username);
+	AstCTIConfiguration   config; // Main configuration struct
 
 public slots:
-    CoreTcpServer           *buildNewCoreTcpServer();
-    void                    reloadSettings();
-    void                    addUser(const QString &username);
-    void                    removeUser(const QString &username);
+	CoreTcpServer        *buildNewCoreTcpServer();
+	void                  reloadSettings();
+	void                  addUser(const QString &username);
+	void                  removeUser(const QString &username);
 
 private:
-    bool                    canStart;
-    CoreTcpServer           *coreTcpServer;
-    ConfigurationChecker    *configChecker;
-    bool                    isConfigLoading;
-    QString                 readDatabaseVersion();
-    void                    readSettingsFromFile(const QString configFile, QAstCTIConfiguration *config);
-    void                    readSettingsFromDatabase(QAstCTIConfiguration *config);
-    QVariant                readSettingFromDatabase(const QString &name, const QVariant &defaultValue);
-    QMutex                  configMutex;
+	CoreTcpServer        *coreTcpServer;
+	ConfigurationChecker *configChecker;
+	bool                  canStart;
+	bool                  isConfigLoading;
+	QString               readDatabaseVersion();
+	void                  readSettingsFromFile(const QString path);
+	void                  readSettingsFromDatabase();
+	QVariant              readSetting(const QString &name, const QVariant &defaultValue);
+	QMutex                configMutex;
 
 protected:
-    QAstCTIActions          *actions;
-    QAstCTIServices         *services;
-    QAstCTIOperators        *ctiOperators;
+	QAstCTIActions       *actions;
+	QAstCTIServices      *services;
+	QAstCTIOperators     *ctiOperators;
 };
 
 #endif // CTISERVERAPPLICATION_H

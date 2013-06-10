@@ -39,38 +39,60 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef COMPACTWINDOW_H
-#define COMPACTWINDOW_H
+#ifndef CTICLIENTWINDOW_H
+#define CTICLIENTWINDOW_H
 
-#include "cticlientwindow.h"
+#include <QtGui/QWidget>
+#include <QSystemTrayIcon>
 
-namespace Ui {
-    class CompactWindow;
-}
+#include "coreconstants.h"
+#include "aboutdialog.h"
+#include "browserwindow.h"
 
-class CompactWindow : public CTIClientWindow {
+const QString statusMessageOK = "Conection to server OK";
+const QString statusMessageNotOK = "Conection to server has been lost. Trying to reconnect...";
+const QString pauseErrorMessage = "There was an error with pause operation:";
+
+class CTIClientWindow : public QWidget
+{
     Q_OBJECT
 public:
-    explicit CompactWindow(const QString &userName);
-    virtual ~CompactWindow();
+    explicit CTIClientWindow(const QString &userName);
 
 public slots:
-    void setStatus(bool status);
-    void pause(bool paused);
-    void pauseAccepted();
-    void pauseError(const QString &message);
+    virtual void showMessage(const QString &message, QSystemTrayIcon::MessageIcon severity);
+    virtual void setStatus(bool status);
+    virtual void about();
+    virtual void minimizeToTray();
+    virtual void placeCall();
+    virtual void pause(bool paused);
+    virtual void pauseAccepted();
+    virtual void pauseError(const QString &message);
+    virtual void quit(bool skipCheck);
+
+signals:
+    void pauseRequest(bool paused);
+    void changePassword();
+    void logOff();
 
 protected:
-    void changeEvent(QEvent *e);
-    bool eventFilter(QObject *object, QEvent *e);
+    void closeEvent(QCloseEvent *e);
 
-private:
-    Ui::CompactWindow *ui;
+    bool canClose;
+    bool paused;
+    QPoint dragOrigin;
+    QString userName;
+    QSystemTrayIcon *trayIcon;
 
-    void connectSlots();
-    void enableControls(bool enable);
-    void writeSettings();
-    void readSettings();
+    virtual bool isValidDrag(QMouseEvent *mouseEvent) const;
+    virtual void createTrayIcon();
+    virtual void connectSlots() = 0;
+    virtual void enableControls(bool enable) = 0;
+    virtual void writeSettings() = 0;
+    virtual void readSettings() = 0;
+
+protected slots:
+    virtual void iconActivated(QSystemTrayIcon::ActivationReason reason);
 };
 
-#endif // COMPACTWINDOW_H
+#endif // CTICLIENTWINDOW_H

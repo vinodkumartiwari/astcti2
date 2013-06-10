@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2013 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2013 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,31 +39,15 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef CTICONFIG_H
-#define CTICONFIG_H
+#include "amicommand.h"
 
-//#include <QSqlDatabase>
-
-struct AstCTIConfiguration
+AmiCommand::AmiCommand(QObject *parent) :
+	QObject(parent), exten(""), parameters(0), variables(0)
 {
-	bool            debug;
-	//QString         runtimeConfiguration; //UNKNOWN PURPOSE
-    quint16         ctiServerPort;
-    quint16         ctiConnectTimeout;
-    quint16         ctiReadTimeout;
-    quint16         ctiSocketCompressionLevel;
-    QString         amiHost;
-    quint16         amiPort;
-    QString         amiUser;
-    QString         amiSecret;
-    quint16         amiConnectTimeout;
-    quint16         amiReadTimeout;
-    quint16         amiConnectRetryAfter;
-    QString         sqlHost;
-    QString         sqlUserName;
-    QString         sqlPassWord;
-    quint16         sqlPort;
-    QString         sqlDatabase;
+}
 
-};
-#endif
+AmiCommand::~AmiCommand()
+{
+	delete this->parameters;
+	delete this->variables;
+}

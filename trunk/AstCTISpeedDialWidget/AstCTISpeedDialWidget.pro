@@ -7,14 +7,15 @@ SOURCES     = astctispeeddialwidgetplugin.cpp
 RESOURCES   = icons.qrc
 LIBS        += -L. 
 
-# Slash before path is necessary, otherwise qmake treats it as relative path
-PLUGINDIR   = /$(HOME)/.qt/plugins/designer
-win32:      DLLDESTDIR = $$PLUGINDIR
-else:       DESTDIR = $$PLUGINDIR
+win32 {
+    PLUGINDIR   = $$(APPDATA)/Qt/plugins/designer
+    DLLDESTDIR = $$PLUGINDIR
+} else {
+    PLUGINDIR   = $$(HOME)/.qt/plugins/designer
+    DESTDIR = $$PLUGINDIR
+}
 target.path += $$PLUGINDIR
 
 INSTALLS    += target
 
 include(AstCTISpeedDialWidget.pri)
-
-FORMS +=

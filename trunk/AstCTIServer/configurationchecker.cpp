@@ -35,64 +35,63 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
+
 #include "configurationchecker.h"
+#include "db.h"
 
-ConfigurationChecker::ConfigurationChecker(QObject *parent) :
-        QThread(parent), lastTimeStamp(0)
+ConfigurationChecker::ConfigurationChecker(const bool &debug) :
+		QObject()
 {
-
+	this->debug = debug;
+	this->isRunning = true;
 }
 
 ConfigurationChecker::~ConfigurationChecker()
 {
-    qDebug() << "In ConfigurationChecker::~ConfigurationChecker()";
-
-}
-
-void ConfigurationChecker::startConfigurationCheckerThread()
-{
-    this->running = true;
-    this->start();
-}
-
-void ConfigurationChecker::stopConfigurationCheckerThread()
-{
-    this->running = false;
-
-}
-
-int ConfigurationChecker::getLastModified()
-{
-    return this->lastTimeStamp;
+	if (this->debug)
+		qDebug() << "In ConfigurationChecker::~ConfigurationChecker()";
+	this->isRunning = false;
 }
 
 void ConfigurationChecker::run()
 {
-    long modified = 0;
-    while(this->running) {
-        modified = readLastModified();
+	// Initialize lastTimeStamp before first use
+	this->lastTimeStamp = readLastModified();
+
+	long modified;
+	while (this->isRunning) {
+		modified = readLastModified();
         if (modified > this->lastTimeStamp) {
-            this->lastTimeStamp = modified;
+			if (this->debug)
+				qDebug() << "Configuration has changed on" << modified;
+			this->lastTimeStamp = modified;
             emit this->newConfiguration();
         }
-        this->sleep(30);
+		this->delay(30);
     }
 }
 
+void ConfigurationChecker::stop()
+{
+	// Even if this function is called from another thread,
+	// mutex should not be necessary as it is bool variable, and its value
+	// should be changed atomically, and even if the write itself is not atomic
+	// and the variable can have an inconsistent value, it can be either
+	// false or true, and it will eventually be read as false
+	// (since the only value that is written there is false)
+	this->isRunning = false;
+}
 
 int ConfigurationChecker::readLastModified()
 {
-    int result = 0;
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-    if (query.exec("SELECT LAST_UPDATE FROM dbversion LIMIT 1")) {
-        query.first();
-        result = query.value(0).toInt();
-        query.finish();
-    }
-    query.clear();
-    return result;
+	bool ok;
+	QVariant result = DB::readScalar("SELECT LAST_UPDATE FROM dbversion LIMIT 1", &ok);
+	return ok ? result.toInt() : 0;
+}
+
+void ConfigurationChecker::delay(const int secs)
+{
+	QTime endTime = QTime::currentTime().addSecs(secs);
+	while (QTime::currentTime() < endTime && this->isRunning)
+		QCoreApplication::processEvents(QEventLoop::AllEvents, 1000);
 }

@@ -66,7 +66,7 @@ private:
     void setUpInfoLabel();
 
 private slots:
-    void on_btnShowLicence_clicked();
+    void on_btnShowLicense_clicked();
     void on_btnClose_clicked();
     void on_btnAboutQt_clicked();
 };

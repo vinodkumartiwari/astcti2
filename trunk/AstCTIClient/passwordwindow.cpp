@@ -52,11 +52,15 @@ PasswordWindow::PasswordWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->dialogButtonBox->buttons().at(0)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
-    ui->dialogButtonBox->buttons().at(1)->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
+	ui->dialogButtonBox->buttons().at(0)->setIcon(
+			QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
+	ui->dialogButtonBox->buttons().at(1)->setIcon(
+			QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
 
-    connect(this->ui->dialogButtonBox, SIGNAL(accepted()), this, SLOT(accepting()));
-    connect(this->ui->dialogButtonBox, SIGNAL(rejected()), this, SLOT(rejecting()));
+	connect(this->ui->dialogButtonBox, SIGNAL(accepted()),
+			this, SLOT(accepting()));
+	connect(this->ui->dialogButtonBox, SIGNAL(rejected()),
+			this, SLOT(rejecting()));
 }
 
 PasswordWindow::~PasswordWindow()

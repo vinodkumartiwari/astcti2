@@ -36,9 +36,9 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include <QtSql>
 #include <QDebug>
 
+#include "db.h"
 #include "qastctioperators.h"
 #include "qastctioperator.h"
 
@@ -48,20 +48,16 @@ QAstCTIOperators::QAstCTIOperators(QObject *parent)
     this->fillOperators();
 }
 
-
-
 QAstCTIOperators::~QAstCTIOperators()
 {
     qDebug() << "In QAstCTIOperators::~QAstCTIOperators()";
     this->clear();
 }
 
-
 QAstCTIOperator *QAstCTIOperators::operator[](const QString &key)
 {
     return (this->operators.contains(key)) ? this->operators[key] : 0;
 }
-
 
 void QAstCTIOperators::addOperator(QAstCTIOperator *oper)
 {
@@ -71,13 +67,11 @@ void QAstCTIOperators::addOperator(QAstCTIOperator *oper)
 void QAstCTIOperators::removeOperator(const QString &key)
 {
     if (this->operators.contains(key)) {
-        QAstCTIOperator *oper = this->operators[key];
-        if (oper != 0) {
-            delete(oper);
-        }
+		delete this->operators[key];
         this->operators.remove(key);
     }
 }
+
 int QAstCTIOperators::count()
 {
     // Count how many elements we have
@@ -86,41 +80,24 @@ int QAstCTIOperators::count()
 
 void QAstCTIOperators::clear()
 {
-    // Do a clear only if really needed
-    if (this->operators.count() > 0) {
-        QMutableHashIterator<QString, QAstCTIOperator *> i(this->operators);
-        while (i.hasNext()) {
-            i.next();
-            delete(i.value());
-        }
-        this->operators.clear();
-    }
+	qDeleteAll(this->operators);
+	this->operators.clear();
 }
 
 void QAstCTIOperators::fillOperators()
 {
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");    
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-    QString sql = "SELECT ID_OPERATOR FROM operators ORDER BY ID_OPERATOR ASC";
-
-    if (!query.exec(sql)) {
-        qCritical("Query execution failed in QAstCTIOperators::fillOperators() %s:%d",  __FILE__ , __LINE__);
-    } else {
-        while(query.next()) {
-            QAstCTIOperator *oper = new QAstCTIOperator(query.value(0).toInt(0), this);
-            if (oper->load()) {
-                QString operName = oper->getUserName();
-
-                // Remove service if exists before load
-                this->removeOperator(operName);
-                this->addOperator(oper);
-            }
-        }
-        query.finish();
-    }
-
-    query.clear();
+	bool ok;
+	const QVariantList operatorIds =
+		  DB::readList("SELECT ID_OPERATOR FROM operators ORDER BY ID_OPERATOR ASC", &ok);
+	if (ok) {
+		const int listSize = operatorIds.size();
+		for (int i = 0; i < listSize; i++) {
+			QAstCTIOperator *oper = new QAstCTIOperator(operatorIds.at(i).toInt(), this);
+			if (oper->load()) {
+				// Remove item if it exists
+				this->removeOperator(oper->getUserName());
+				this->addOperator(oper);
+			}
+		}
+	}
 }

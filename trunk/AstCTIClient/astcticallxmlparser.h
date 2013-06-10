@@ -51,15 +51,16 @@ class AstCTICallXMLParser: public QXmlDefaultHandler
 public:
     AstCTICallXMLParser(AstCTICall *call);
 
-    bool startElement(const QString &, const QString &, const QString &name, const QXmlAttributes &);
+	bool startElement(const QString &, const QString &,
+					  const QString &name, const QXmlAttributes &);
     bool characters(const QString &ch);
     bool endElement(const QString &, const QString &, const QString &name);
 
 private:
-    AstCTICall *call;
-    AstCTIAction *currentAction;
-    QString currentText;
-    bool inVariables;
+	AstCTICall    *call;
+	AstCTIAction  *currentAction;
+	QString        currentText;
+	bool           inVariables;
 };
 
 #endif // ASTCTICALLXMLPARSER_H

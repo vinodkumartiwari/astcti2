@@ -1,5 +1,8 @@
-/* Copyright (C) 2007-2009 Bruno Salzano
+/* Copyright (C) 2007-2013 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
+ *
+ * Copyright (C) 2007-2013 Lumiss d.o.o.
+ * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,31 +39,36 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef CTICONFIG_H
-#define CTICONFIG_H
+#ifndef AMICOMMAND_H
+#define AMICOMMAND_H
 
-//#include <QSqlDatabase>
+#include <QObject>
+#include <QHash>
 
-struct AstCTIConfiguration
-{
-	bool            debug;
-	//QString         runtimeConfiguration; //UNKNOWN PURPOSE
-    quint16         ctiServerPort;
-    quint16         ctiConnectTimeout;
-    quint16         ctiReadTimeout;
-    quint16         ctiSocketCompressionLevel;
-    QString         amiHost;
-    quint16         amiPort;
-    QString         amiUser;
-    QString         amiSecret;
-    quint16         amiConnectTimeout;
-    quint16         amiReadTimeout;
-    quint16         amiConnectRetryAfter;
-    QString         sqlHost;
-    QString         sqlUserName;
-    QString         sqlPassWord;
-    quint16         sqlPort;
-    QString         sqlDatabase;
-
+enum AmiAction {
+	AmiActionLogin,
+	AmiActionLogoff,
+	AmiActionOriginate,
+	AmiActionQueueAdd,
+	AmiActionQueuePause,
+	AmiActionQueueRemove
 };
-#endif
+
+class AmiCommand : public QObject
+{
+	Q_OBJECT
+	Q_ENUMS(AmiAction)
+
+public:
+	explicit AmiCommand(QObject *parent = 0);
+	~AmiCommand();
+
+	AmiAction                 action;
+	QString                   exten;
+	QHash<QString, QString>  *parameters;
+	QHash<QString, QString>  *variables;
+	QString                   responseString;
+	QString                   responseMessage;
+};
+
+#endif // AMICOMMAND_H

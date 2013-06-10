@@ -50,7 +50,7 @@ class QAstCTIService : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIService(const int& id, QAstCTIActions *theActionsList, QObject* parent);
+	QAstCTIService(const int& id, QAstCTIActions *actions, QObject* parent);
     ~QAstCTIService();
 
     int                         getIdService();
@@ -61,31 +61,29 @@ public:
     bool                        getEnabled();
     QAstCTIServicesOperators    *getOperators();
     QAstCTIServicesVariables    *getVariables();
-    QHash<int, QAstCTIAction *> *getActions();
+	QHash<int, QAstCTIAction*>  *getActions();
 
 public slots:
-    bool        load();
-    void        loadOperators(const bool &bMayLoad);
-    void        loadVariables(const bool &bMayLoad);
-    void        loadActions(const bool &bMayLoad);
+	bool      load();
+	void      loadOperators(const bool &bMayLoad);
+	void      loadVariables(const bool &bMayLoad);
+	void      loadActions(const bool &bMayLoad);
 
 signals:
-    void        loadComplete(const bool &result);
+	void      loadComplete(const bool &result);
 
 private:
-    int         idService;
-    QString     serviceName;
-    QString     serviceContextType;
-    bool        serviceIsQueue;
-    QString     serviceQueueName;    
-    bool        enabled;
+	int       idService;
+	QString   serviceName;
+	QString   serviceContextType;
+	bool      serviceIsQueue;
+	QString   serviceQueueName;
+	bool      enabled;
 
-
-
-    QAstCTIServicesOperators        *operators;
-    QAstCTIServicesVariables        *variables;
-    QAstCTIActions                  *actionsList;
-    QHash<int, QAstCTIAction *>     actions;
+	QAstCTIServicesOperators    *operators;
+	QAstCTIServicesVariables    *variables;
+	QAstCTIActions              *actionsList;
+	QHash<int, QAstCTIAction*>  actions;
 };
 
 #endif // QASTCTISERVICE_H

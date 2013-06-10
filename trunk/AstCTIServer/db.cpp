@@ -41,76 +41,158 @@
 
 #include "db.h"
 
+//Define static variables
+QSqlDatabase *DB::connection;
+bool DB::supportsTransactions;
+bool DB::inTransaction;
+
 //Creates a database connection and adds it to the list of connections for later use
-bool DB::buildSqlDatabase(const QString &host, quint16 &port, const QString &user, const QString &pass, const QString &database)
+bool DB::buildConnection(const QString &host, quint16 &port,
+						 const QString &user, const QString &pass, const QString &database)
 {
-    QSqlDatabase db  = QSqlDatabase::database("mysqldb");
-    if (db.isValid()) {
-        destroySqlDatabase();
-    }
+	connection = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL", dbConnectionName));
 
-    db = QSqlDatabase::addDatabase("QMYSQL", "mysqldb");
-    db.setHostName(host);
-    db.setPort(port);
-    db.setUserName(user);
-    db.setPassword(pass);
-    db.setDatabaseName(database);
+	if(connection->isValid()) {
+		connection->setHostName(host);
+		connection->setPort(port);
+		connection->setUserName(user);
+		connection->setPassword(pass);
+		connection->setDatabaseName(database);
 
-    if(!db.open()) {
-        qCritical() << "Unable to open MySQL database: " << db.lastError() << "\n";
+		supportsTransactions = connection->driver()->hasFeature(QSqlDriver::Transactions);
+		inTransaction = false;
 
-        return false;
-    }
+		return true;
+	} else {
+		return false;
+	}
+}
 
-    return true;
+//Opens the database connection
+bool DB::openConnection()
+{
+	if (!connection->isOpen())
+		if (!connection->open())
+			qCritical() << "Unable to open MySQL database: " << connection->lastError() << "\n";
+
+	return connection->isOpen();
+}
+
+//Closes the database connection
+void DB::closeConnection()
+{
+	if (inTransaction)
+		return;
+
+	if (connection->isValid())
+		if (connection->isOpen())
+			connection->close();
 }
 
 //Closes the database connection and removes it from the list of connections
-void DB::destroySqlDatabase()
+void DB::destroyConnection()
 {
-    if (QSqlDatabase::contains("mysqldb")) {
-        QSqlDatabase db = QSqlDatabase::database("mysqldb");
-
-        if (db.isValid()) {
-            if (db.isOpen())
-                db.close();
-            QSqlDatabase::removeDatabase("mysqldb");
-        }
-    }
+	closeConnection();
+	delete connection;
+	QSqlDatabase::removeDatabase(dbConnectionName);
 }
 
-//Executes SQL command with optional list of parameters and returns QSqlQuery object
-QSqlQuery DB::execSQL(const QString &sql, const QVariantList &parameters, bool *ok)
+bool DB::beginTransaction()
 {
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
-    query.setForwardOnly(true);
-    if (query.prepare(sql)) {
-        for (int i = 0; i < parameters.size(); ++i) {
-            query.addBindValue(parameters.at(i));
-        }
-        if (query.exec()) {
-            *ok = true;
-        } else {
-            if (query.lastError().isValid()) {
-                QString params = "";
-                for (int i = 0; i < parameters.size(); ++i) {
-                    params += parameters.at(i).toString() + "|";
-                }
-                if (params.length() > 0)
-                    params.remove(params.length() - 1, 1);
+	if (supportsTransactions) {
+		if (connection->transaction()) {
+			inTransaction = true;
+		} else {
+			QString logMsg = "Error while opening transaction:\n";
+			if (connection->lastError().isValid())
+				logMsg.append("Error message: ").append(connection->lastError().text());
+			else
+				logMsg.append("No error information available.");
 
-                qDebug() << "Error while executing SQL query:\n" << query.executedQuery() <<
-                            "\nParameters: " << params << "\n" << query.lastError();
-            }
-            *ok = false;
-        }
-    }
+			qDebug() << logMsg;
+		}
+	}
 
-    return query;
+	return inTransaction;
+}
+
+bool DB::commitTransaction()
+{
+	if (inTransaction) {
+		if (connection->commit()) {
+			inTransaction = false;
+			closeConnection();
+		} else {
+			QString logMsg = "Error while committing transaction:\n";
+			if (connection->lastError().isValid())
+				logMsg.append("Error message: ").append(connection->lastError().text());
+			else
+				logMsg.append("No error information available.");
+
+			qDebug() << logMsg;
+		}
+	}
+
+	return !inTransaction;
+}
+
+bool DB::rollbackTransaction()
+{
+	if (inTransaction) {
+		if (connection->rollback()) {
+			inTransaction = false;
+			closeConnection();
+		} else {
+			QString logMsg = "Error while rolling back transaction:\n";
+			if (connection->lastError().isValid())
+				logMsg.append("Error message: ").append(connection->lastError().text());
+			else
+				logMsg.append("No error information available.");
+
+			qDebug() << logMsg;
+		}
+	}
+
+	return !inTransaction;
+}
+
+//Executes SQL command with optional list of parameters
+//Returns QSqlQuery object
+QSqlQuery *DB::execSQL(const QString &sql, const QVariantList &params, bool *ok)
+{
+	QSqlQuery *query = new QSqlQuery(*connection);
+	if (!openConnection()) {
+		*ok = false;
+		return query;
+	}
+	query->setForwardOnly(true);
+	if (query->prepare(sql)) {
+		for (int i = 0; i < params.size(); ++i) {
+			query->addBindValue(params.at(i));
+        }
+		*ok = query->exec();
+	} else {
+		*ok = false;
+	}
+
+	if (!*ok) {
+		QString logMsg = "Error while executing SQL query: ";
+		logMsg.append(query->executedQuery());
+		if (params.size() > 0) {
+			logMsg.append("\nParameters: ");
+			for (int i = 0; i < params.size(); ++i) {
+				logMsg.append(params.at(i).toString()).append("|");
+			}
+		}
+		if (query->lastError().isValid())
+			logMsg.append("\nError message: ").append(query->lastError().text());
+		else
+			logMsg.append("\nNo error information available.");
+
+		qDebug() << logMsg;
+	}
+
+	return query;
 }
 
 //Executes SQL command and returns a single value
@@ -120,15 +202,23 @@ QVariant DB::readScalar(const QString &sql, bool *ok)
 }
 
 //Executes SQL command with parameters and returns a single value
-QVariant DB::readScalar(const QString &sql, const QVariantList &parameters, bool *ok)
+QVariant DB::readScalar(const QString &sql, const QVariantList &params, bool *ok)
 {
-    QSqlQuery query = execSQL(sql, parameters, ok);
+	QVariant result;
 
-    if (*ok && query.first()) {
-        return query.value(0);
-    } else {
-        return QVariant();
-    }
+	QSqlQuery *query = execSQL(sql, params, ok);
+
+	if (*ok) {
+		if (query->first())
+			result = query->value(0);
+		else
+			//No error, but record was not found, so we set ok to false
+			*ok = false;
+	}
+
+	delete query;
+	closeConnection();
+	return result;
 }
 
 //Executes SQL command and returns a list of values
@@ -138,18 +228,47 @@ QVariantList DB::readList(const QString &sql, bool *ok)
 }
 
 //Executes SQL command with parameters and returns a list of values
-QVariantList DB::readList(const QString &sql, const QVariantList &parameters, bool *ok)
+QVariantList DB::readList(const QString &sql, const QVariantList &params, bool *ok)
 {
-    QVariantList result;
+	QVariantList result;
 
-    QSqlQuery query = execSQL(sql, parameters, ok);
+	QSqlQuery *query = execSQL(sql, params, ok);
 
-    if (*ok) {
-        while (query.next())
-            result.append(query.value(0));
-    }
+	if (*ok)
+		while (query->next())
+			result.append(query->value(0));
 
-    return result;
+	delete query;
+	closeConnection();
+	return result;
+}
+
+//Executes SQL command and returns a single row as QVariantList
+QVariantList DB::readRow(const QString &sql, bool *ok)
+{
+	return readRow(sql, QVariantList(), ok);
+}
+
+//Executes SQL command and returns a single row as QVariantList
+QVariantList DB::readRow(const QString &sql, const QVariantList &params, bool *ok)
+{
+	QVariantList result;
+
+	QSqlQuery *query = execSQL(sql, params, ok);
+
+	if (*ok) {
+		*ok = query->first();
+		if (*ok) {
+			const int columnCount = query->record().count();
+			for (int column = 0; column < columnCount; column++) {
+				result.append(query->value(column));
+			}
+		}
+	}
+
+	delete query;
+	closeConnection();
+	return result;
 }
 
 //Executes SQL command and returns values in a form of a table
@@ -159,43 +278,50 @@ QList<QVariantList> DB::readTable(const QString &sql, bool *ok)
 }
 
 //Executes SQL command with parameters and returns values in form of a table
-QList<QVariantList> DB::readTable(const QString &sql, const QVariantList &parameters, bool *ok)
+QList<QVariantList> DB::readTable(const QString &sql, const QVariantList &params, bool *ok)
 {
-    QList<QVariantList> result;
+	QList<QVariantList> result;
 
-    QSqlQuery query = execSQL(sql, parameters, ok);
+	QSqlQuery *query = execSQL(sql, params, ok);
 
-    if (*ok) {
-        int columnCount = query.record().count();
-        QVariantList rowData;
-        for (int column = 0; column < columnCount; ++column) {
-            rowData.append(QVariant());
-        }
-        while (query.next()) {
-            for (int column = 0; column < columnCount; ++column) {
-                rowData[column] = query.value(column);
-            }
-            result.append(rowData);
-        }
-    }
+	if (*ok) {
+		const int columnCount = query->record().count();
+		QVariantList rowData;
+		for (int column = 0; column < columnCount; column++) {
+			rowData.append(QVariant());
+		}
+		while (query->next()) {
+			for (int column = 0; column < columnCount; column++) {
+				rowData[column] = query->value(column);
+			}
+			result.append(rowData);
+		}
+	}
 
-    return result;
+	delete query;
+	closeConnection();
+	return result;
 }
 
-//Executes SQL command and returns the number of affected rows
-int DB::executeNonQuery(const QString &sql, bool *ok)
+//Executes SQL command
+//Returns the number of affected rows on success or -1 on failure
+int DB::executeNonQuery(const QString &sql)
 {
-    return executeNonQuery(sql, QVariantList(), ok);
+	return executeNonQuery(sql, QVariantList());
 }
 
-//Executes SQL command with parameters and returns the number of affected rows
-int DB::executeNonQuery(const QString &sql, const QVariantList &parameters, bool *ok)
+//Executes SQL command with parameters
+//Returns the number of affected rows on success or -1 on failure
+int DB::executeNonQuery(const QString &sql, const QVariantList &params)
 {
-    QSqlQuery query = execSQL(sql, parameters, ok);
+	int result = -1;
 
-    if (*ok) {
-        return query.numRowsAffected();
-    } else {
-        return -1;
-    }
+	bool ok;
+	QSqlQuery *query = execSQL(sql, params, &ok);
+	if (ok)
+		result = query->numRowsAffected();
+
+	delete query;
+	closeConnection();
+	return result;
 }

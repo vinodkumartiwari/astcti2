@@ -131,7 +131,7 @@ void AstCTISpeedDialWidget::setBusyLampField(const bool blf)
     if (blf) {
         this->ui->doNotDisturbLabel->setVisible(this->m_doNotDisturb);
         this->ui->callWaitingLabel->setVisible(this->m_callWaiting);
-        this->ui->callForwardLabel->setVisible(this->m_callForward == AstCTISpeedDialWidget::CallForwardNone);
+        this->ui->callForwardLabel->setVisible(this->m_callForward != AstCTISpeedDialWidget::CallForwardNone);
         this->ui->voicemailLabel->setVisible(this->m_voicemail > 0);
     } else {
         this->ui->doNotDisturbLabel->setVisible(false);

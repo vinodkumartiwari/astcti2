@@ -57,8 +57,7 @@ enum AstCTICommands {
     CmdQueues,
     CmdPause,
     CmdOrig,
-    CmdStop,
-    CmdEndList
+	CmdStop
 };
 
 struct AstCTICommand

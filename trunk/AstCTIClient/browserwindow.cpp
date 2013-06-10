@@ -60,17 +60,27 @@ BrowserWindow::BrowserWindow(const QString &userName, QUrl url, QWidget *parent)
     this->currentHistoryItem = -1;
     historySetEnabled();
 
-    connect(this->ui->prevButton, SIGNAL(clicked()), this, SLOT(prevButton_clicked()));
-    connect(this->ui->nextButton, SIGNAL(clicked()), this, SLOT(nextButton_clicked()));
-    connect(this->ui->reloadButton, SIGNAL(clicked()), this, SLOT(reloadButton_clicked()));
-    connect(this->ui->stopButton, SIGNAL(clicked()), this, SLOT(stopButton_clicked()));
-    connect(this->ui->goButton, SIGNAL(clicked()), this, SLOT(goButton_clicked()));
+	connect(this->ui->prevButton, SIGNAL(clicked()),
+			this, SLOT(prevButton_clicked()));
+	connect(this->ui->nextButton, SIGNAL(clicked()),
+			this, SLOT(nextButton_clicked()));
+	connect(this->ui->reloadButton, SIGNAL(clicked()),
+			this, SLOT(reloadButton_clicked()));
+	connect(this->ui->stopButton, SIGNAL(clicked()),
+			this, SLOT(stopButton_clicked()));
+	connect(this->ui->goButton, SIGNAL(clicked()),
+			this, SLOT(goButton_clicked()));
 
-    connect(webView, SIGNAL(loadStarted()), this, SLOT(webView_loadStarted()));
-    connect(webView, SIGNAL(loadProgress(int)), this, SLOT(webView_loadProgress(int)));
-    connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(webView_loadFinished(bool)));
-    connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(webView_titleChanged(QString)));
-    connect(webView, SIGNAL(linkClicked(QUrl)), this, SLOT(webView_linkClicked(QUrl)));
+	connect(webView, SIGNAL(loadStarted()),
+			this, SLOT(webView_loadStarted()));
+	connect(webView, SIGNAL(loadProgress(int)),
+			this, SLOT(webView_loadProgress(int)));
+	connect(webView, SIGNAL(loadFinished(bool)),
+			this, SLOT(webView_loadFinished(bool)));
+	connect(webView, SIGNAL(titleChanged(QString)),
+			this, SLOT(webView_titleChanged(QString)));
+	connect(webView, SIGNAL(linkClicked(QUrl)),
+			this, SLOT(webView_linkClicked(QUrl)));
 
     this->userName = userName;
 
@@ -222,7 +232,7 @@ void BrowserWindow::readSettings()
     settings.beginGroup("BrowserWindow." + this->userName + "." + this->currentUrl.host());
     //TODO
     //On X11, restoreGeometry cannot account for non-client area because the window is not shown yet
-    //So, the window will shift toward bottom right corner depending on the size of window decoration
+	//The window will shift toward bottom right corner depending on the size of window decoration
     //Currently (Qt 4.6), there doesn't appear to be a workaround for this
     //A possible workaround would be to create borderless window and implement moving and sizing
     this->restoreGeometry(settings.value("geometry").toByteArray());

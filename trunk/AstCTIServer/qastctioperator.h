@@ -40,7 +40,6 @@
 #define QASTCTIOPERATOR_H
 
 #include <QObject>
-#include <QCryptographicHash>
 #include <QHash>
 
 #include "qastctiseat.h"
@@ -78,7 +77,6 @@ public slots:
 signals:
     void loadComplete(const bool &result);
     void updateComplete(const bool &result);
-
 
 private:    
     int idOperator;

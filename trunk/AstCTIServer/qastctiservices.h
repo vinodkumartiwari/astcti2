@@ -51,19 +51,19 @@ class QAstCTIServices : public QObject
     Q_OBJECT
 
 public:
-    QAstCTIServices(QAstCTIActions *theActionsList, QObject *parent);
+	QAstCTIServices(QAstCTIActions *actions, QObject *parent);
     ~QAstCTIServices();
-    QAstCTIService *operator[](const QString &key);
+
+	QAstCTIService *operator[](const QString &key);
     int count();
 
 private:
-    QAstCTIActions *actionsList;
+	QAstCTIActions                  *actionsList;
 
-    QHash<QString, QAstCTIService *> services;
-    void add_service(QAstCTIService *service);
-    void remove_service(const QString &key);
-    void fill_services();
-    void clear();
-
+	QHash<QString, QAstCTIService*> services;
+	void                            add_service(QAstCTIService *service);
+	void                            remove_service(const QString &key);
+	void                            fill_services();
+	void                            clear();
 };
 #endif // QASTCTISERVICES_H

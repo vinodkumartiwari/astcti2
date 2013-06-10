@@ -40,19 +40,16 @@
 
 QAstCTICall::QAstCTICall(QObject *parent)
         : QObject(parent), channel(""), parsedChannel(""),
-        callerIdNum(""), callerIdName(""),
-        uniqueId(""), context(""), state("")
+		callerIdNum(""), callerIdName(""), uniqueId(""),
+		context(""), state(""), exten(""), accountCode("")
 {
     this->variables = new QHash <QString,QString>;
-
 }
 
 QAstCTICall::~QAstCTICall()
 {
     qDebug() << "In QAstCTICall::~QAstCTICall()";
-    if (this->variables != 0) delete(this->variables);
-
-
+	delete this->variables;
 }
 
 QString &QAstCTICall::getChannel()
@@ -62,7 +59,7 @@ QString &QAstCTICall::getChannel()
 void QAstCTICall::setChannel(QString channel)
 {
     this->channel = channel;
-    this->parseChannel();
+	this->setParsedChannel(this->parseChannel(channel));
 }
 
 QString &QAstCTICall::getParsedChannel()
@@ -83,7 +80,7 @@ QString &QAstCTICall::getDestChannel()
 void QAstCTICall::setDestChannel(QString channel)
 {
     this->destChannel = channel;
-    this->parseDestChannel();
+	this->setParsedDestChannel(this->parseChannel(channel));
 }
 
 QString &QAstCTICall::getParsedDestChannel()
@@ -106,19 +103,23 @@ void QAstCTICall::setCalleridNum(QString callerIdNum)
     this->addVariable("CALLERID", callerIdNum);
     this->callerIdNum = callerIdNum;
 }
+
 QString &QAstCTICall::getCalleridName()
 {
     return this->callerIdName;
 }
+
 void QAstCTICall::setCalleridName(QString callerIdName)
 {
     this->addVariable("CALLERIDNAME", callerIdName);
     this->callerIdName = callerIdName;
 }
+
 QString &QAstCTICall::getUniqueId()
 {
     return this->uniqueId;
 }
+
 void QAstCTICall::setUniqueId(QString uniqueId)
 {
     this->uniqueId = uniqueId;
@@ -128,6 +129,7 @@ QString &QAstCTICall::getDestUniqueId()
 {
     return this->destUniqueId;
 }
+
 void QAstCTICall::setDestUniqueId(QString uniqueId)
 {
     this->destUniqueId = uniqueId;
@@ -137,55 +139,64 @@ QString &QAstCTICall::getContext()
 {
     return this->context;
 }
+
 void QAstCTICall::setContext(QString context)
 {
     this->context = context;
 }
+
 QString &QAstCTICall::getState()
 {
     return this->state;
 }
+
 void QAstCTICall::setState(QString state)
 {
     this->state = state;
 }
 
+QString &QAstCTICall::getExten()
+{
+	return this->exten;
+}
+
+void QAstCTICall::setExten(QString exten)
+{
+	this->exten = exten;
+}
+
+QString &QAstCTICall::getAccountCode()
+{
+	return this->accountCode;
+}
+
+void QAstCTICall::setAccountCode(QString accountCode)
+{
+	this->accountCode = accountCode;
+}
+
 void QAstCTICall::addVariable(QString key, QString value)
 {
-    // We need only one variable with the same name..
-    if (this->variables->contains(key)) {
-        this->variables->remove(key);
-    }
+	//There is no need to remove existing item,
+	//insert will replace value if the key already exists
     this->variables->insert(key, value);
 }
 
-void QAstCTICall::parseChannel()
+QString QAstCTICall::parseChannel(const QString &channel)
 {
     // Channels are usually built like SIP/200-0899e2c8
     // So we need to extract channel by split the string
-    if (this->channel.contains('-')) {
-        QStringList parts = this->channel.split('-');
-        if (parts.count() == 2) {
-            QString parsedChan = parts.at(0);
-            this->setParsedChannel(parsedChan);
+	if (channel.contains('-')) {
+		QStringList parts = channel.split('-');
+		if (parts.count() > 0) {
+			return parts.at(0);
         }
     }
+
+	return "";
 }
 
-void QAstCTICall::parseDestChannel()
-{
-    // Channels are usually built like SIP/200-0899e2c8
-    // So we need to extract channel by split the string
-    if (this->destChannel.contains('-')) {
-        QStringList parts = this->destChannel.split('-');
-        if (parts.count() == 2) {
-            QString parsedChan = parts.at(0);
-            this->setParsedDestChannel(parsedChan);
-        }
-    }
-}
-
-void QAstCTICall::setActions(QHash<int, QAstCTIAction *> *callActions) {
+void QAstCTICall::setActions(QHash<int, QAstCTIAction*> *callActions) {
 
     this->actions = callActions;
 }
@@ -198,18 +209,18 @@ void QAstCTICall::setOperatingSystem(QString operatingSystem)
 
 void QAstCTICall::parseActionsParameters()
 {
-    if ( (this->actions != 0) && (this->variables->count() > 0) ) {
-        QHash<int, QAstCTIAction *>::const_iterator actionList = this->actions->constBegin();
+	if ((this->actions != 0) && (this->variables->count() > 0) ) {
+		QHash<int, QAstCTIAction*>::const_iterator actionList = this->actions->constBegin();
         while (actionList != this->actions->constEnd()) {
-            QString parameters = ((QAstCTIAction *)actionList.value())->getActionParameters();
+			QString parameters = ((QAstCTIAction*)actionList.value())->getActionParameters();
             QHash<QString, QString>::const_iterator varList = this->variables->constBegin();
             while (varList != this->variables->constEnd()) {
-                QString theKey = QString("{%1}").arg( ((QString)varList.key()).toUpper());
+				QString theKey = QString("{%1}").arg(((QString)varList.key()).toUpper());
                 parameters = parameters.replace(theKey, varList.value());
 
                 varList++;
             }
-            ((QAstCTIAction *)actionList.value())->setActionParameters(parameters);
+			((QAstCTIAction*)actionList.value())->setActionParameters(parameters);
             actionList++;
         }
     }
@@ -289,6 +300,22 @@ QString QAstCTICall::toXml()
         tag.appendChild(t);
     }
 
+	// Exten
+	if (this->exten.length() > 0) {
+		QDomElement tag = doc.createElement("Exten");
+		root.appendChild(tag);
+		QDomText t = doc.createTextNode(this->exten);
+		tag.appendChild(t);
+	}
+
+	// Account code
+	if (this->accountCode.length() > 0) {
+		QDomElement tag = doc.createElement("AccountCode");
+		root.appendChild(tag);
+		QDomText t = doc.createTextNode(this->accountCode);
+		tag.appendChild(t);
+	}
+
     if (this->variables->count() > 0) {
         QDomElement xmlVars = doc.createElement("Variables");
         xmlVars.setAttribute("count", this->variables->count());
@@ -304,10 +331,9 @@ QString QAstCTICall::toXml()
         }
     }
 
-     if ( (this->actions != 0) && (this->actions->count() > 0) ){
+	 if ((this->actions != 0) && (this->actions->count() > 0) ){
         int actionsCount = 0;
         QDomElement xmlActions = doc.createElement("Actions");
-
 
         QHash<int, QAstCTIAction *>::const_iterator actionsList = this->actions->constBegin();
         while (actionsList != this->actions->constEnd()) {
@@ -438,5 +464,4 @@ QString QAstCTICall::toXml()
         }
     }
     return doc.toString();
-
 }

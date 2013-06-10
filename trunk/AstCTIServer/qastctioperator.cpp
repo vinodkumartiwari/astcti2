@@ -36,66 +36,55 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include <QtSql>
 #include <QDebug>
-#include "qastctioperator.h"
 
+#include "db.h"
+#include "qastctioperator.h"
 
 QAstCTIOperator::QAstCTIOperator(const int &id, QObject *parent)
         : QObject(parent), idOperator(id), fullName(""), userName(""),
         passWord(""), lastSeatId(0), beginInPause(false),
         enabled(false), lastSeat(0), listOfServices(0)
 {
-    // Let's connect our signals
-    connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadSeat(const bool&)));
-    connect(this, SIGNAL(loadComplete(const bool&)), this, SLOT(loadListOfServices()));
-    connect(this, SIGNAL(updateComplete(const bool&)), this, SLOT(loadSeat(const bool&)));
+	connect(this, SIGNAL(loadComplete(const bool&)),
+			this, SLOT(loadSeat(const bool&)));
+	connect(this, SIGNAL(loadComplete(const bool&)),
+			this, SLOT(loadListOfServices()));
+	connect(this, SIGNAL(updateComplete(const bool&)),
+			this, SLOT(loadSeat(const bool&)));
 }
 
 QAstCTIOperator::~QAstCTIOperator()
 {
     qDebug() << "In QAstCTIOperator::~QAstCTIOperator()";
-    if (this->lastSeat != 0) {
-        delete(this->lastSeat);
-    }
-    if (this->listOfServices != 0) {
-        delete (this->listOfServices);
-    }
+	delete this->lastSeat;
+	delete this->listOfServices;
 }
-
 
 bool QAstCTIOperator::load()
 {
-    bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    QSqlQuery query(db);
-    if (!query.prepare("SELECT * FROM operators WHERE ID_OPERATOR=:id")) {
-        qCritical("Query prepare failed in QAstCTIOperator::load() %s:%d",  __FILE__ , __LINE__);
-    } else {
-        query.bindValue(":id", this->idOperator);
-        if (!query.exec()) {
-            qCritical("Query execution failed in QAstCTIOperator::load() %s:%d",  __FILE__ , __LINE__);
-        } else {
-            retVal = query.first();
-            this->fullName = query.value(1).toString();
-            this->userName = query.value(2).toString();
-            this->passWord = query.value(3).toString();
-            this->lastSeatId = query.value(4).toInt(0);
-            this->beginInPause = query.value(5).toBool();
-            this->enabled = query.value(6).toBool();
+	bool ok;
+	QVariantList params;
+	params.append(this->idOperator);
+	const QVariantList operatorData =
+		  DB::readRow("SELECT * FROM operators WHERE ID_OPERATOR=?", params, &ok);
+	if (ok) {
+		this->fullName = operatorData.at(1).toString();
+		this->userName = operatorData.at(2).toString();
+		this->passWord = operatorData.at(3).toString();
+		this->lastSeatId = operatorData.at(4).toInt();
+		this->beginInPause = operatorData.at(5).toBool();
+		this->enabled = operatorData.at(6).toBool();
+	}
 
-            query.finish();
-        }
-    }
-    query.clear();
-
-    emit this->loadComplete(retVal);
-    return retVal;
+	emit this->loadComplete(ok);
+	return ok;
 }
 
 void QAstCTIOperator::loadSeat(const bool &bMayLoad)
 {
-    if (!bMayLoad) return;
+	if (!bMayLoad)
+		return;
 
     if (this->lastSeatId > 0) {
         this->lastSeat = new QAstCTISeat(this->lastSeatId, this);
@@ -115,68 +104,40 @@ void QAstCTIOperator::loadListOfServices()
 
 bool QAstCTIOperator::save()
 {
-    bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    if (db.driver()->hasFeature(QSqlDriver::Transactions)) {
-        db.transaction();
-    }
-    QSqlQuery query(db);
-
     // For now we need to update just only the field last_seat in the operators table
-    query.prepare("UPDATE operators SET LAST_SEAT=:seat WHERE ID_OPERATOR=:id");
-    query.bindValue(":seat", this->lastSeatId);
-    query.bindValue(":id", this->idOperator);
-    retVal = query.exec();
+	QVariantList params;
+	params.append(this->lastSeat->getIdSeat());
+	params.append(this->idOperator);
+	const int result =
+		  DB::executeNonQuery("UPDATE operators SET LAST_SEAT=? WHERE ID_OPERATOR=?", params);
+	const bool ok = result > 0;
 
-    if (db.driver()->hasFeature(QSqlDriver::Transactions)) {
-        retVal ? db.commit() :  db.rollback();
-    }
-    query.clear();
-
-    emit this->updateComplete(retVal);
-    return retVal;
+	emit this->updateComplete(ok);
+	return ok;
 }
 
 bool QAstCTIOperator::changePassword(QString &newPassword)
 {
-    bool retVal = false;
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    if (db.driver()->hasFeature(QSqlDriver::Transactions)) {
-        db.transaction();
-    }
-    QSqlQuery query(db);
-
-    // For now we need to update just only the field last_seat in the operators table
-    query.prepare("UPDATE operators SET PASS_WORD=:newpass WHERE ID_OPERATOR=:id");
-    query.bindValue(":newpass", newPassword);
-    query.bindValue(":id", this->idOperator);
-    retVal = query.exec();
-
-    if (db.driver()->hasFeature(QSqlDriver::Transactions)) {
-        retVal ? db.commit() :  db.rollback();
-    }
-    query.clear();
-    if (retVal) {
+	QVariantList params;
+	params.append(newPassword);
+	params.append(this->idOperator);
+	const int result =
+		  DB::executeNonQuery("UPDATE operators SET PASS_WORD=? WHERE ID_OPERATOR=?", params);
+	const bool ok = result > 0;
+	if (ok)
         this->passWord = newPassword;
-    }
-    emit this->updateComplete(retVal);
-    return retVal;
+
+	emit this->updateComplete(ok);
+	return ok;
 }
 
 bool QAstCTIOperator::checkPassword(const QString& password)
 {
-
     /*QCryptographicHash md5(QCryptographicHash::Md5);
     md5.addData(QByteArray(password.toUtf8()));
     QByteArray result = md5.result();*/
 
-    return (password.compare(this->passWord) == 0);
+	return password.compare(this->passWord) == 0;
 }
 
 int  QAstCTIOperator::getIdOperator()

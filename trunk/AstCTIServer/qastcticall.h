@@ -70,21 +70,28 @@ public:
     void                    setCalleridNum(QString callerIdNum);
     QString                 &getCalleridName();
     void                    setCalleridName(QString callerIdName);
-    QString                 &getUniqueId();
-    void                    setUniqueId(QString uniqueId);
 
+	QString                 &getUniqueId();
+    void                    setUniqueId(QString uniqueId);
     QString                 &getDestUniqueId();
     void                    setDestUniqueId(QString uniqueId);
 
     QString                 &getContext();
     void                    setContext(QString context);
-    QString                 &getState();
+
+	QString                 &getState();
     void                    setState(QString state);
+
+	QString                 &getExten();
+	void                    setExten(QString exten);
+
+	QString                 &getAccountCode();
+	void                    setAccountCode(QString accountCode);
+
     void                    addVariable(QString key, QString value);
 
-    void                    setActions(QHash<int, QAstCTIAction *> *callActions);
+	void                    setActions(QHash<int, QAstCTIAction*> *callActions);
     void                    setOperatingSystem(QString operatingSystem);
-
 
     QString                 toXml();
     
@@ -98,14 +105,15 @@ private:
     QString                         uniqueId;
     QString                         destUniqueId;
     QString                         context;
-    QString                         state;
-    QString                         clientOperatingSystem;
+	QString                         state;
+	QString                         exten;
+	QString                         accountCode;
+	QString                         clientOperatingSystem;
 
     QHash<QString, QString>         *variables;
-    QHash<int, QAstCTIAction *>     *actions;
+	QHash<int, QAstCTIAction*>      *actions;
 
-    void                            parseChannel();
-    void                            parseDestChannel();    
+	QString                         parseChannel(const QString &channel);
     void                            parseActionsParameters();
 
 };

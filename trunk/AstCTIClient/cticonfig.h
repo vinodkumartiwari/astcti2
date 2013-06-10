@@ -44,14 +44,14 @@
 
 struct AstCTIConfiguration
 {
-    bool            qDebug;
-    int             keepAliveInterval;
-    int             compressionLevel;
-    QString         serverHost;
-    quint16         serverPort;
-    int             connectTimeout;
-    quint32         connectRetryInterval;
-    QString         user;
-    QString         pass;
+	bool     debug;
+	int      keepAliveInterval;
+	int      compressionLevel;
+	QString  serverHost;
+	quint16  serverPort;
+	int      connectTimeout;
+	quint32  connectRetryInterval;
+	QString  username;
+	QString  password;
 };
 #endif

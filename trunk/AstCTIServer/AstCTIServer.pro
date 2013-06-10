@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2008-12-27T09:05:04
 # -------------------------------------------------
-include(../../qtsingleapplication-2.6_1-opensource/src/qtsinglecoreapplication.pri)
+include(../../qtsingleapplication-2.6-opensource/src/qtsinglecoreapplication.pri)
 
 QT += sql \
     xml \
@@ -31,7 +31,8 @@ SOURCES += main.cpp \
     qastcticall.cpp \
     qastctioperatorservices.cpp \
     qastctiactions.cpp \
-    db.cpp
+    db.cpp \
+    amicommand.cpp
 HEADERS += clientmanager.h \
     cticonfig.h \
     logger.h \
@@ -53,18 +54,19 @@ HEADERS += clientmanager.h \
     qastcticall.h \
     qastctioperatorservices.h \
     qastctiactions.h \
-    db.h
+    db.h \
+    amicommand.h
 
 !equals($${PWD}, $${OUT_PWD}) {
     # Shadow building is enabled
     # Specify files for copying
-    SETTINGS_SOURCE = $${PWD}/settings.ini.dist
-    SETTINGS_DEST = $${OUT_PWD}/settings.ini
+    SETTINGS_SOURCE = $${PWD}/settings.ini
+    SETTINGS_DEST = $${OUT_PWD}
 
     # Replace '/' with '\' in Windows paths
     win32 {
-        SETTINGS_SOURCE = $${replace(SETTINGS_SOURCE, /, \)}
-        SETTINGS_DEST = $${replace(SETTINGS_DEST, /, \)}
+        SETTINGS_SOURCE = $${replace(SETTINGS_SOURCE, /, \\)}
+        SETTINGS_DEST = $${replace(SETTINGS_DEST, /, \\)}
     }
 
     # COPY_FILE is a variable that qmake automatically creates in Makefile

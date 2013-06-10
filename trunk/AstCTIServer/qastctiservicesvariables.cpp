@@ -35,9 +35,9 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#include <QtSql>
 #include <QDebug>
 
+#include "db.h"
 #include "qastctiservicesvariables.h"
 #include "qastctivariable.h"
 
@@ -61,7 +61,6 @@ QAstCTIServicesVariables::~QAstCTIServicesVariables()
 QAstCTIVariable *QAstCTIServicesVariables::operator[](const QString &key)
 {
     return (this->variables.contains(key)) ? this->variables[key] : 0;
-
 }
 
 void QAstCTIServicesVariables::setIdService(const int &idService)
@@ -69,6 +68,7 @@ void QAstCTIServicesVariables::setIdService(const int &idService)
     this->idService = idService;
     this->fillVariables();
 }
+
 void QAstCTIServicesVariables::addVariable(QAstCTIVariable *var)
 {
     this->variables.insert(var->getVarName(), var);
@@ -82,63 +82,40 @@ bool QAstCTIServicesVariables::contains(const QString &key)
 void QAstCTIServicesVariables::removeVariable(const QString &key)
 {
     if (this->variables.contains(key)) {
-        QAstCTIVariable *var = this->variables[key];
-        if (var != 0) {
-            delete(var);
-        }
+		delete this->variables[key];
         this->variables.remove(key);
     }
 }
+
 int QAstCTIServicesVariables::count()
 {
-    // Count how many elements we have
     return this->variables.count();
 }
 
 void QAstCTIServicesVariables::clear()
 {
-    // Do a clear only if really needed
-    if (this->variables.count() > 0)
-    {
-        QMutableHashIterator<QString, QAstCTIVariable *> i(this->variables);
-        while (i.hasNext()) {
-            i.next();
-            delete(i.value());
-        }
-        this->variables.clear();
-    }
+	qDeleteAll(this->variables);
+	this->variables.clear();
 }
 
 void QAstCTIServicesVariables::fillVariables()
 {
-    QSqlDatabase db = QSqlDatabase::database("mysqldb");
-    if (!db.isOpen()) {
-        db.open();
-    }
-    QSqlQuery query(db);
+	bool ok;
+	QVariantList params;
+	params.append(this->idService);
+	const QVariantList variableIds =
+		  DB::readList("SELECT ID_VARIABLE FROM services_variables WHERE ID_SERVICE=? "
+					   "ORDER BY ID_VARIABLE ASC", params, &ok);
+	if (ok) {
+		const int listSize = variableIds.size();
+		for (int i = 0; i < listSize; i++) {
+			QAstCTIVariable *var = new QAstCTIVariable(variableIds.at(i).toInt(), this);
 
-    QString sql = "SELECT ID_VARIABLE FROM services_variables WHERE ID_SERVICE=:id ORDER BY ID_VARIABLE ASC";
-    if (!query.prepare(sql)) {
-        qCritical("Prepare failed in QAstCTIServicesVariables::fillVariables() %s:%d",  __FILE__ , __LINE__);
-    } else {
-        query.bindValue(":id", this->idService);
-        if (!query.exec()) {
-            qCritical("Query execution failed in QAstCTIServicesVariables::fillVariables() %s:%d",  __FILE__ , __LINE__);
-        } else {
-            while(query.next()) {
-                QAstCTIVariable *var = new QAstCTIVariable(query.value(0).toInt(0), this);
-
-                if (var->load()) {
-                    QString varName = var->getVarName();
-
-                    // Remove service if exists before load
-                    this->removeVariable(varName);
-                    this->addVariable(var);
-
-                }
-            }
-            query.finish();
-        }
-    }
-    query.clear();
+			if (var->load()) {
+				// Remove item if it exists
+				this->removeVariable(var->getVarName());
+				this->addVariable(var);
+			}
+		}
+	}
 }
