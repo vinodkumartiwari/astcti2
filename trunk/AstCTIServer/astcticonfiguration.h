@@ -36,68 +36,45 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include <QDebug>
+#ifndef ASTCTICONFIGURATION_H
+#define ASTCTICONFIGURATION_H
 
-#include "db.h"
-#include "qastctioperators.h"
-#include "qastctioperator.h"
+#include <QObject>
+#include <QHash>
 
-QAstCTIOperators::QAstCTIOperators(QObject *parent)
-        : QObject(parent)
+#include "astctiaction.h"
+#include "astctiservice.h"
+#include "astctiseat.h"
+#include "astctioperator.h"
+
+class AstCtiConfiguration : public QObject
 {
-    this->fillOperators();
-}
+	Q_OBJECT
 
-QAstCTIOperators::~QAstCTIOperators()
-{
-    qDebug() << "In QAstCTIOperators::~QAstCTIOperators()";
-    this->clear();
-}
+public:
+	explicit AstCtiConfiguration();
+	~AstCtiConfiguration();
 
-QAstCTIOperator *QAstCTIOperators::operator[](const QString &key)
-{
-    return (this->operators.contains(key)) ? this->operators[key] : 0;
-}
+	//QString         runtimeConfiguration; //UNKNOWN PURPOSE
+	QString         ctiServerAddress;
+	quint16         ctiServerPort;
+    quint16         ctiConnectTimeout;
+    quint16         ctiReadTimeout;
+    quint16         ctiSocketCompressionLevel;
+    QString         amiHost;
+    quint16         amiPort;
+    QString         amiUser;
+    QString         amiSecret;
+    quint16         amiConnectTimeout;
+    quint16         amiReadTimeout;
+    quint16         amiConnectRetryAfter;
 
-void QAstCTIOperators::addOperator(QAstCTIOperator *oper)
-{
-    this->operators.insert(oper->getUserName(), oper);
-}
+	QHash<int, AstCtiAction*>        actions;
+	QHash<int, AstCtiService*>       services;
+	QHash<QString, AstCtiSeat*>      seats;
+	QHash<QString, AstCtiOperator*>  operators;
 
-void QAstCTIOperators::removeOperator(const QString &key)
-{
-    if (this->operators.contains(key)) {
-		delete this->operators[key];
-        this->operators.remove(key);
-    }
-}
-
-int QAstCTIOperators::count()
-{
-    // Count how many elements we have
-    return this->operators.count();
-}
-
-void QAstCTIOperators::clear()
-{
-	qDeleteAll(this->operators);
-	this->operators.clear();
-}
-
-void QAstCTIOperators::fillOperators()
-{
-	bool ok;
-	const QVariantList operatorIds =
-		  DB::readList("SELECT ID_OPERATOR FROM operators ORDER BY ID_OPERATOR ASC", &ok);
-	if (ok) {
-		const int listSize = operatorIds.size();
-		for (int i = 0; i < listSize; i++) {
-			QAstCTIOperator *oper = new QAstCTIOperator(operatorIds.at(i).toInt(), this);
-			if (oper->load()) {
-				// Remove item if it exists
-				this->removeOperator(oper->getUserName());
-				this->addOperator(oper);
-			}
-		}
-	}
-}
+	AstCtiService    *getServiceByName(const QString &serviceName);
+	AstCtiSeat       *getSeatByMac(const QString &mac);
+};
+#endif

@@ -52,6 +52,7 @@ enum AstCTICommands {
     CmdPass,
     CmdChangePassword,
     CmdMac,
+	CmdExten,
     CmdOsType,
     CmdServices,
     CmdQueues,

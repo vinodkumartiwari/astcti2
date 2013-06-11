@@ -35,81 +35,102 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#include <QDebug>
 
 #include "db.h"
-#include "qastctiaction.h"
+#include "astctioperator.h"
 
-QAstCTIAction::QAstCTIAction(const int &id, QObject *parent) :
-        QObject(parent), idAction(id), actionOsType(""), actionType(""),
-        actionDestination(""), actionParameters(""), actionMessageEncoding("")
+AstCtiOperator::AstCtiOperator(const int &id, const QString &fullName, const QString &username,
+								 const QString &password, bool beginInPause, bool isCallCenter,
+								 QObject *parent) : QObject(parent)
+{
+	this->operatorId = id;
+	this->fullName = fullName;
+	this->username = username;
+	this->password = password;
+	this->beginInPause = beginInPause;
+	this->isCallCenter = isCallCenter;
+}
+
+AstCtiOperator::~AstCtiOperator()
 {
 }
 
-QAstCTIAction::~QAstCTIAction()
+bool AstCtiOperator::loadServices(QHash<int, AstCtiService*> *serviceList)
 {
-    qDebug() << "In QAstCTIAction::~QAstCTIAction()";
-}
+	this->services.clear();
 
-bool QAstCTIAction::load()
-{
 	bool ok;
 	QVariantList params;
-	params.append(this->idAction);
-	const QVariantList actionData =
-		  DB::readRow("SELECT * FROM actions WHERE ID_ACTION=?", params, &ok);
+	params.append(this->operatorId);
+	const QList<QVariantList> serviceData =	DB::readTable("SELECT ID_SERVICE,PENALTY "
+														  "FROM services_operators "
+														  "WHERE ID_OPERATOR=?", params, &ok);
 	if (ok) {
-		this->actionOsType = actionData.at(1).toString();
-		this->actionType = actionData.at(2).toString();
-		this->actionDestination = actionData.at(3).toString();
-		this->actionParameters = actionData.at(4).toString();
-		this->actionMessageEncoding = actionData.at(5).toString();
+		const int listSize = serviceData.size();
+		for (int i = 0; i < listSize; i++) {
+			const QVariantList serviceRow = serviceData.at(i);
+			const int serviceId = serviceRow.at(0).toInt();
+			const int penalty = serviceRow.at(1).toInt();
+			AstCtiService *service = serviceList->value(serviceId);
+			if (service != 0) {
+				this->services.insert(service, penalty);
+			}
+		}
 	}
 
-	emit this->loadComplete(ok);
 	return ok;
 }
 
-QHash<QString, int> QAstCTIAction::getActionTypes() {
-	QHash<QString, int> actionTypes;
-	actionTypes.insert("APPLICATION",      ActionApplication);
-	actionTypes.insert("BROWSER",          ActionBrowser);
-	actionTypes.insert("INTERNAL_BROWSER", ActionInternalBrowser);
-	actionTypes.insert("TCP_MESSAGE",      ActionTcpMessage);
-	actionTypes.insert("UDP_MESSAGE",      ActionUdpMessage);
-	return actionTypes;
-}
-
-int QAstCTIAction::getIdAction()
+bool AstCtiOperator::changePassword(QString &newPassword)
 {
-    return this->idAction;
+	QVariantList params;
+	params.append(newPassword);
+	params.append(this->operatorId);
+	const int result =
+		  DB::executeNonQuery("UPDATE operators SET PASS_WORD=? WHERE ID_OPERATOR=?", params);
+	const bool ok = result > 0;
+	if (ok)
+		this->password = newPassword;
+
+	return ok;
 }
 
-QString QAstCTIAction::getActionType()
+bool AstCtiOperator::checkPassword(const QString &password)
 {
-    return this->actionType;
+	return password.compare(this->password) == 0;
 }
 
-QString QAstCTIAction::getActionOsType()
+int  AstCtiOperator::getId()
 {
-    return this->actionOsType;
+    return this->operatorId;
 }
 
-QString QAstCTIAction::getActionDestination()
+QString  AstCtiOperator::getFullName()
 {
-    return this->actionDestination;
+	return this->fullName;
 }
 
-QString QAstCTIAction::getActionParameters()
+QString  AstCtiOperator::getUsername()
 {
-    return this->actionParameters;
+	return this->username;
 }
 
-void QAstCTIAction::setActionParameters(QString newParameters)
+QString  AstCtiOperator::getPassword()
 {
-    this->actionParameters = newParameters;
+	return this->password;
 }
 
-QString QAstCTIAction::getActionMessageEncoding() {
-    return this->actionMessageEncoding;
+bool AstCtiOperator::getBeginInPause()
+{
+    return this->beginInPause;
+}
+
+bool AstCtiOperator::getIsCallCenter()
+{
+	return this->isCallCenter;
+}
+
+QHash<AstCtiService*, int> *AstCtiOperator::getServices()
+{
+	return &(this->services);
 }

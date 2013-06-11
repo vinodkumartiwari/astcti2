@@ -56,9 +56,8 @@ int main(int argc, char *argv[])
     //QApplication::setStyle(new AstCTIDefaultStyle);
 
     //If application encounters any error in constructor, showLoginWindow() will return false
-    if (!application.showLoginWindow()) {
+	if (!application.showLoginWindow())
         return 1;
-    }
 
     return application.exec();
 }

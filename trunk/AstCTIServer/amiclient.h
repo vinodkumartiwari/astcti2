@@ -43,11 +43,9 @@
 #include <QTcpSocket>
 #include <QHash>
 
-#include "cticonfig.h"
+#include "astcticonfiguration.h"
 #include "amicommand.h"
-#include "qastctiservice.h"
-#include "qastctiservices.h"
-#include "qastcticall.h"
+#include "astcticall.h"
 
 enum AmiClientStatus {
 	AmiStatusLoggedOff,
@@ -85,7 +83,7 @@ class AmiClient : public QObject
 	Q_ENUMS(AmiConnectionStatus)
 
 public:
-	explicit AmiClient(AstCTIConfiguration *config);
+	explicit AmiClient(bool debug, AstCtiConfiguration *config);
 	~AmiClient();
 	QString                         getActionName(const AmiAction action);
 	QString                         getEventName(const AmiEvent event);
@@ -98,14 +96,16 @@ public slots:
 signals:
 	//void                            error(int socketError, const QString &message);
 	//void                            receiveDataFromAsterisk(const QString &data);
-	void                            ctiEvent(const AmiEvent &eventId, QAstCTICall *call);
+	void                            ctiEvent(const AmiEvent &eventId, AstCtiCall *call);
 	void                            ctiResponse(AmiCommand *command);
 	void                            amiConnectionStatusChange(const AmiConnectionStatus status);
 
 private:
-	AstCTIConfiguration            *config;
-	QHash<QString, QAstCTICall*>   *activeCalls;
+	AstCtiConfiguration            *config;
+	QHash<QString, AstCtiCall*>    *activeCalls;
 	QHash<int, AmiCommand*>        *pendingAmiCommands;
+	QTcpSocket                     *localSocket;
+	bool                            debug;
 	int                             currentActionId;
 	bool                            isRunning;
     QString                         dataBuffer;
@@ -124,9 +124,6 @@ private slots:
     void                            socketStateChanged(QAbstractSocket::SocketState socketState);
     void                            socketError(QAbstractSocket::SocketError socketError);
     void                            socketDisconnected();
-
-protected:
-	QTcpSocket                     *localSocket;
 };
 
 #endif // AMICLIENT_H

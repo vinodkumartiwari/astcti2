@@ -36,30 +36,47 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTIACTIONS_H
-#define QASTCTIACTIONS_H
+#ifndef ASTCTIOPERATOR_H
+#define ASTCTIOPERATOR_H
 
 #include <QObject>
 #include <QHash>
 
-#include "qastctiaction.h"
+#include "astctiservice.h"
 
-class QAstCTIActions : public QObject
+class AstCtiOperator : public QObject
 {
+
     Q_OBJECT
 
 public:
-    QAstCTIActions (QObject *parent);
-    ~QAstCTIActions ();
-    QAstCTIAction *operator[](const int &key);
-    int count();
+	AstCtiOperator(const int &id, const QString &fullName, const QString &username,
+				   const QString &password, bool beginInPause, bool isCallCenter,
+				   QObject *parent=0);
+	~AstCtiOperator();
 
-private:
-	QHash<int, QAstCTIAction*> actions;
-	void addAction(QAstCTIAction *action);
-    void removeAction(const int &key);
-    void fillActions();
-    void clear();
+	int                           getId();
+	QString                       getFullName();
+	QString                       getUsername();
+	QString                       getPassword();
+	bool                          getBeginInPause();
+	bool                          getIsCallCenter();
+
+	bool                          changePassword(QString &newPassword);
+	bool                          checkPassword(const QString &password);
+
+	bool                          loadServices(QHash<int, AstCtiService*> *serviceList);
+	QHash<AstCtiService*, int>   *getServices();
+
+private:    
+	int      operatorId;
+	QString  fullName;
+	QString  username;
+	QString  password;
+	bool     beginInPause;
+	bool     isCallCenter;
+
+	QHash<AstCtiService*, int> services;
 };
 
-#endif // QASTCTIACTIONS_H
+#endif // ASTCTIOPERATOR_H

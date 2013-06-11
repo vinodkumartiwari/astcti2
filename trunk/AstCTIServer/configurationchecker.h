@@ -39,8 +39,22 @@
 #define CONFIGURATIONCHECKER_H
 
 #include <QObject>
-#include <QThread>
-#include <QDebug>
+
+#include "astcticonfiguration.h"
+
+#define defaultCtiServerAddress             "0.0.0.0"
+#define defaultCtiServerPort                5000
+#define defaultCtiConnectTimeout            1500
+#define defaultCtiReadTimeout               15000
+#define defaultCtiSocketCompressionLevel    7
+
+#define defaultAmiHost                      "localhost"
+#define defaultAmiPort                      5038
+#define defaultAmiUser                      "manager"
+#define defaultAmiSecret                    "password"
+#define defaultAmiConnectTimeout            1500
+#define defaultAmiReadTimeout               1500
+#define defaultAmiConnectRetryAfter         30
 
 class ConfigurationChecker : public QObject
 {
@@ -55,10 +69,12 @@ public slots:
 	void                run();
 
 signals:
-    void newConfiguration();
+	void				newConfiguration(AstCtiConfiguration *newConfig);
 
 private:
     int                 readLastModified();
+	QVariant            readSetting(const QString &name, const QVariant &defaultValue);
+	void                readConfiguration();
 	void                delay(const int secs);
 	int                 lastTimeStamp;
 	bool                isRunning;

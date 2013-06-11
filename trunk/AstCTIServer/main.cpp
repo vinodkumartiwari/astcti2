@@ -59,8 +59,11 @@ int main(int argc, char *argv[])
     if (application.isRunning()) {
          //Wake up running instance and exit
         application.sendMessage(QString(), 4000);
-        return 0;
+		return exitCodeSuccess;
      } else {
+		if (!application.getCanStart())
+			return exitCodeFailure;
+
 		QString logo =
 		"            '.~.-'                                              \n"
 		"           -.~~~~~.-'                                           \n"
@@ -98,10 +101,6 @@ int main(int argc, char *argv[])
 
         qInstallMsgHandler(logHandler);
 
-        if (application.buildNewCoreTcpServer() == 0) {
-            return 1;
-        }
         return application.exec();
     }
 }
-

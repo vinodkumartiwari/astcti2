@@ -36,58 +36,27 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTIACTION_H
-#define QASTCTIACTION_H
+#ifndef ASTCTISEAT_H
+#define ASTCTISEAT_H
 
 #include <QObject>
-#include <QHash>
 
-enum QAstCTIActionType {
-    ActionApplication,
-    ActionBrowser,
-    ActionInternalBrowser,
-    ActionTcpMessage,
-	ActionUdpMessage
-};
-
-enum QAstCTIActionOsType {
-    ActionOsAll,
-    ActionOsLinux,
-    ActionOsMacintosh,
-	ActionOsWindows
-};
-
-class QAstCTIAction : public QObject
+class AstCtiSeat : public QObject
 {
     Q_OBJECT
 
 public:
-    QAstCTIAction(const int &id, QObject *parent);
-    ~QAstCTIAction();
-
-	int     getIdAction();
-    QString getActionOsType();
-    QString getActionType();
-    QString getActionDestination();
-    QString getActionParameters();
-    QString getActionMessageEncoding();
-	void    setActionParameters(QString newParameters);
-
-	static QHash<QString, int> getActionTypes();
-
-public slots:
-    bool load();
-
-signals:
-    void loadComplete(const bool &result);
+	AstCtiSeat(const QString &mac, const QString &exten,
+				const QString &description, QObject *parent=0);
+	~AstCtiSeat();
+	QString getMac();
+	QString getExten();
+    QString getDescription();
 
 private:
-	int     idAction;
-    QString actionOsType;
-    QString actionType;
-    QString actionDestination;
-    QString actionParameters;    
-    QString actionMessageEncoding;
+	QString mac;
+	QString exten;
+    QString description;
 };
 
-#endif // QASTCTIACTION_H
+#endif // ASTCTISEAT_H

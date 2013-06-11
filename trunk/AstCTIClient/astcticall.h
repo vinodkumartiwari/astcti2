@@ -45,7 +45,7 @@
 #include <QHash>
 #include <QList>
 
-enum AstCTIActionType {
+enum AstCtiActionType {
     ActionTypeApplication,
     ActionTypeInternalBrowser,
     ActionTypeExternalBrowser,
@@ -55,7 +55,7 @@ enum AstCTIActionType {
 
 struct AstCTIAction
 {
-    AstCTIActionType type;
+    AstCtiActionType type;
     QString path;
     QString server;
     quint16 port;

@@ -36,6 +36,8 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include <QDebug>
+
 #include "configurationchecker.h"
 #include "db.h"
 
@@ -56,16 +58,20 @@ ConfigurationChecker::~ConfigurationChecker()
 void ConfigurationChecker::run()
 {
 	// Initialize lastTimeStamp before first use
-	this->lastTimeStamp = readLastModified();
+	this->lastTimeStamp = 0;
 
 	long modified;
 	while (this->isRunning) {
 		modified = readLastModified();
         if (modified > this->lastTimeStamp) {
-			if (this->debug)
-				qDebug() << "Configuration has changed on" << modified;
+			if (this->debug) {
+				QDateTime timeStamp;
+				timeStamp.setTime_t(modified);
+				qDebug() << "Configuration has changed on"
+						 << timeStamp.toString(Qt::SystemLocaleShortDate);
+			}
 			this->lastTimeStamp = modified;
-            emit this->newConfiguration();
+			this->readConfiguration();
         }
 		this->delay(30);
     }
@@ -87,6 +93,146 @@ int ConfigurationChecker::readLastModified()
 	bool ok;
 	QVariant result = DB::readScalar("SELECT LAST_UPDATE FROM dbversion LIMIT 1", &ok);
 	return ok ? result.toInt() : 0;
+}
+
+void ConfigurationChecker::readConfiguration()
+{
+	if (this->debug)
+		qDebug() << "Reading configuration settings from database";
+
+	AstCtiConfiguration *config = new AstCtiConfiguration();
+
+	config->amiHost =
+			readSetting("ami_host",                     defaultAmiHost).toString();
+	config->amiPort =
+			readSetting("ami_port",                     defaultAmiPort).toInt();
+	config->amiUser =
+			readSetting("ami_user",                     defaultAmiUser).toString();
+	config->amiSecret =
+			readSetting("ami_secret",                   defaultAmiSecret).toString();
+	config->amiConnectTimeout =
+			readSetting("ami_connect_timeout",          defaultAmiConnectTimeout).toInt();
+	config->amiReadTimeout =
+			readSetting("ami_read_timeout",             defaultAmiReadTimeout).toInt();
+	config->amiConnectRetryAfter =
+			readSetting("ami_connect_retry_after",      defaultAmiConnectRetryAfter).toInt();
+	config->ctiServerAddress =
+			readSetting("cti_server_address",           defaultCtiServerAddress).toString();
+	config->ctiServerPort =
+			readSetting("cti_server_port",              defaultCtiServerPort).toInt();
+	config->ctiConnectTimeout =
+			readSetting("cti_connect_timeout",          defaultCtiConnectTimeout).toInt();
+	config->ctiReadTimeout =
+			readSetting("cti_read_timeout",             defaultCtiReadTimeout).toInt();
+	config->ctiSocketCompressionLevel =
+			readSetting("cti_socket_compression_level", defaultCtiSocketCompressionLevel).toInt();
+
+	bool ok;
+
+	const QList<QVariantList> seatData = DB::readTable("SELECT SEAT_MAC,SEAT_EXTEN,DESCRIPTION "
+													   "FROM seats WHERE ENABLED=1", &ok);
+	if (ok) {
+		const int listSize = seatData.size();
+		for (int i = 0; i < listSize; i++) {
+			const QVariantList seatRow = seatData.at(i);
+			const QString exten = seatRow.at(0).toString();
+			AstCtiSeat *seat = new AstCtiSeat(exten, seatRow.at(1).toString(),
+											  seatRow.at(2).toString());
+			config->seats.insert(exten, seat);
+		}
+	}
+
+	if (ok) {
+		const QList<QVariantList> actionData =
+				DB::readTable("SELECT ID_ACTION,ACTION_OS_TYPE,ACTION_TYPE,ACTION_DESTINATION,"
+							  "PARAMETERS,ENCODING FROM actions", &ok);
+		if (ok) {
+			const int listSize = actionData.size();
+			for (int i = 0; i < listSize; i++) {
+				const QVariantList actionRow = actionData.at(i);
+				const int id = actionRow.at(0).toInt();
+				AstCtiAction *action =
+						new AstCtiAction(id, actionRow.at(1).toString(),
+										 actionRow.at(2).toString(), actionRow.at(3).toString(),
+										 actionRow.at(4).toString(), actionRow.at(5).toString());
+				config->actions.insert(id, action);
+			}
+		}
+	}
+
+	if (ok) {
+		const QList<QVariantList> serviceData =
+				DB::readTable("SELECT ID_SERVICE,SERVICE_NAME,SERVICE_CONTEXT_TYPE,"
+							  "SERVICE_QUEUE_NAME FROM services WHERE ENABLED=1", &ok);
+		if (ok) {
+			const int listSize = serviceData.size();
+			for (int i = 0; i < listSize; i++) {
+				const QVariantList serviceRow = serviceData.at(i);
+				const int id = serviceRow.at(0).toInt();
+				AstCtiService *service =
+						new AstCtiService(id, serviceRow.at(1).toString(),
+										  serviceRow.at(2).toString(), serviceRow.at(3).toString());
+				ok = service->loadVariables();
+				if (ok)
+					ok = service->loadActions(&(config->actions));
+				if (!ok){
+					break;
+				}
+
+				config->services.insert(id, service);
+			}
+		}
+	}
+
+	if (ok) {
+		const QList<QVariantList> operatorData =
+				DB::readTable("SELECT ID_OPERATOR,FULL_NAME,USERNAME,PASS_WORD,"
+							  "BEGIN_IN_PAUSE,IS_CALL_CENTER "
+							  "FROM operators WHERE ENABLED=1", &ok);
+		if (ok) {
+			const int listSize = operatorData.size();
+			for (int i = 0; i < listSize; i++) {
+				const QVariantList operatorRow = operatorData.at(i);
+				const QString username = operatorRow.at(2).toString();
+				AstCtiOperator *op =
+						new AstCtiOperator(operatorRow.at(0).toInt(), operatorRow.at(1).toString(),
+										   username, operatorRow.at(3).toString(),
+										   operatorRow.at(4).toBool(), operatorRow.at(5).toBool());
+				ok = op->loadServices(&(config->services));
+				if (!ok){
+					break;
+				}
+
+				config->operators.insert(username, op);
+			}
+		}
+	}
+
+	if (ok) {
+		//Move config object to main thread so it can be deleted there
+		config->moveToThread(QCoreApplication::instance()->thread());
+		emit this->newConfiguration(config);
+	} else {
+		delete config;
+		if (this->debug)
+			qDebug() << "Reading configuration failed.";
+		//Let the main thread know that reading configuration has failed
+		emit this->newConfiguration(0);
+	}
+}
+
+QVariant ConfigurationChecker::readSetting(const QString &name, const QVariant &defaultValue)
+{
+	QVariantList params;
+	params.append(name);
+	bool ok;
+	QVariant value = DB::readScalar("SELECT val FROM server_settings WHERE name=?", params, &ok);
+	if (ok)
+		return value;
+	else
+		//TODO: We return the default value in case of an error.
+		//TODO: Perhaps execution should be stopped in that case
+		return defaultValue;
 }
 
 void ConfigurationChecker::delay(const int secs)

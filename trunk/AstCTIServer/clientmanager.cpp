@@ -45,10 +45,11 @@
 /*!
     ClientManager Constructor
 */
-ClientManager::ClientManager(AstCTIConfiguration *config, int socketDescriptor)
+ClientManager::ClientManager(bool debug, AstCtiConfiguration *config, int socketDescriptor)
 	: QObject(), waitBeforeQuit()
 {
     // Initialize private variables
+	this->debug                 = debug;
 	this->state                 = StateLoggedOff;
     this->socketDescriptor      = socketDescriptor;
     this->config                = config;
@@ -62,7 +63,7 @@ ClientManager::ClientManager(AstCTIConfiguration *config, int socketDescriptor)
     this->ctiLogoffOnClose      = true;
 	//this->isRunning             = true;
     this->retries               = 3;
-	if (config->debug)
+	if (this->debug)
 		qDebug() << "In ClientManager::ClientManager";
 
     // We need to initialize our parser
@@ -74,7 +75,7 @@ ClientManager::ClientManager(AstCTIConfiguration *config, int socketDescriptor)
 
 ClientManager::~ClientManager()
 {
-	if (config->debug)
+	if (this->debug)
 		qDebug() << "ClientManager terminated";
 
 	//this->isRunning = false;
@@ -89,7 +90,7 @@ ClientManager::~ClientManager()
 */
 void ClientManager::initParserCommands()
 {
-	if (config->debug)
+	if (this->debug)
 		qDebug() << "In ClientManager::initParserCommands()";
 
     this->commandsList.insert("QUIT",       CmdQuit);
@@ -107,6 +108,7 @@ void ClientManager::initParserCommands()
     this->commandsList.insert("ORIG",       CmdOrig);
     this->commandsList.insert("STOP",       CmdStop);
     this->commandsList.insert("MAC",        CmdMac);
+	this->commandsList.insert("EXTEN",      CmdExten);
 }
 
 void ClientManager::socketDisconnected() {
@@ -125,14 +127,14 @@ void ClientManager::socketDisconnected() {
 
 void ClientManager::run()
 {
-	if (config->debug)
+	if (this->debug)
 		qDebug() << "In ClientManager::run";
 
     // We need to build the socket to manage client connection
 	this->localSocket = new QTcpSocket();
 
     if (!this->localSocket->setSocketDescriptor(socketDescriptor)) {
-		if (config->debug)
+		if (this->debug)
 			qDebug() << "Error in socket:" << this->localSocket->errorString();
 		this->deleteLater();
         return;
@@ -149,17 +151,11 @@ void ClientManager::run()
     this->localIdentifier = QString("client-%1-%2").arg(remoteAddr.toString()).arg(remotePort);
     emit this->addClient(this->localIdentifier, this);
 
-	if (config->debug)
+	if (this->debug)
 		qDebug() << "Incoming Connection from" << remoteAddr.toString() << ":" << remotePort;
 
     // Let's say Welcome to our client!
     this->sendDataToClient("100 OK Welcome to AstCTIServer");
-
-	// TODO : Should we have a loop here?
-	// CODE TESTING START
-	//while (true)
-	//	QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-	// CODE TESTING END
 }
 
 //void ClientManager::stop()
@@ -177,8 +173,6 @@ void ClientManager::socketDataReceived()
 {
     QDataStream in(this->localSocket);
 	//in.setVersion(QDataStream::Qt_4_5);
-
-	qDebug() << "Receiving data start";
 
 	while (!in.atEnd()) {
 		if (this->blockSize == 0) {
@@ -215,13 +209,11 @@ void ClientManager::socketDataReceived()
 			emit this->dataReceived(receivedString);
 		}
 	}
-
-	qDebug() << "Receiving data end";
 }
 
 void ClientManager::parseReceivedData(const QString &data)
 {
-	if (config->debug)
+	if (this->debug)
 		qDebug() << "Received signal dataReceived in parseDataReceived:" << data;
 
     QString parm;
@@ -243,8 +235,7 @@ void ClientManager::parseReceivedData(const QString &data)
             this->ctiUserName = cmd.parameters.at(0);
 
             // Avoid duplicate logins
-			QAstCTIOperator *ctiOperator =
-					CtiServerApplication::instance()->getOperatorByUsername(this->ctiUserName);
+			AstCtiOperator *ctiOperator = config->operators.value(this->ctiUserName);
 			if (ctiOperator != 0) {
 				if (!CtiServerApplication::instance()->containsUser(this->ctiUserName)) {
                     this->sendDataToClient("100 OK Send Password Now");
@@ -268,8 +259,7 @@ void ClientManager::parseReceivedData(const QString &data)
             }
 
             {
-				QAstCTIOperator *ctiOperator =
-						CtiServerApplication::instance()->getOperatorByUsername(this->ctiUserName);
+				AstCtiOperator *ctiOperator = config->operators.value(this->ctiUserName);
 				if (ctiOperator == 0) {
                     this->sendDataToClient("101 KO Operator Not Found");
                     this->ctiUserName = "";
@@ -322,20 +312,21 @@ void ClientManager::parseReceivedData(const QString &data)
             this->sendDataToClient("101 KO Not authenticated");
             break;
         }
+		if (this->activeSeat != 0) {
+			this->sendDataToClient("101 KO Seat already set");
+			break;
+		}
 
         if (cmd.parameters.count() < 1) {
 			this->sendDataToClient("101 KO No MAC given");
             break;
         } else {
             QString mac = cmd.parameters.at(0).toLower();
-			QAstCTISeat *seat = new QAstCTISeat(mac, 0);
-			if (seat->loadFromMac()) {
-				delete this->activeSeat;
+			AstCtiSeat *seat = config->getSeatByMac(mac);
+			if (seat != 0) {
 				this->activeSeat = seat;
                 if (this->activeOperator != 0) {
-					this->activeOperator->setLastSeatId(seat->getIdSeat());
-                    this->activeOperator->save();
-					QString newIdentifier = QString("exten-%1").arg(seat->getSeatExten());
+					QString newIdentifier = QString("exten-%1").arg(seat->getExten());
                     emit this->changeClient(this->localIdentifier, newIdentifier);
                     this->localIdentifier = newIdentifier;
 
@@ -348,8 +339,41 @@ void ClientManager::parseReceivedData(const QString &data)
 				this->sendDataToClient("101 KO MAC address unknown");
 			}
         }
-        break;
-    case CmdKeep:
+		break;
+	case CmdExten:
+		if (!authenticated) {
+			this->sendDataToClient("101 KO Not authenticated");
+			break;
+		}
+		if (this->activeSeat != 0) {
+			this->sendDataToClient("101 KO Seat already set");
+			break;
+		}
+
+		if (cmd.parameters.count() < 1) {
+			this->sendDataToClient("101 KO No extension given");
+			break;
+		} else {
+			QString exten = cmd.parameters.at(0).toLower();
+			AstCtiSeat *seat = config->seats.value(exten);
+			if (seat != 0) {
+				this->activeSeat = seat;
+				if (this->activeOperator != 0) {
+					QString newIdentifier = QString("exten-%1").arg(seat->getExten());
+					emit this->changeClient(this->localIdentifier, newIdentifier);
+					this->localIdentifier = newIdentifier;
+
+					// We can do a successful cti login only after the seat is known
+					emit this->ctiLogin(this);
+					this->sendDataToClient("100 OK");
+				}
+			} else {
+				delete seat;
+				this->sendDataToClient("101 KO Extension unknown");
+			}
+		}
+		break;
+	case CmdKeep:
         this->sendDataToClient(QString("104 OK %1").arg(config->ctiReadTimeout));
         break;
     case CmdIden:
@@ -469,9 +493,14 @@ void ClientManager::unlockAfterSuccessfullLogoff() {
 	this->waitBeforeQuit.release();
 }
 
-QAstCTIOperator *ClientManager::getActiveOperator()
+AstCtiOperator *ClientManager::getActiveOperator()
 {
     return this->activeOperator;
+}
+
+AstCtiSeat *ClientManager::getActiveSeat()
+{
+	return this->activeSeat;
 }
 
 QString ClientManager::getClientOperatingSystem()
@@ -513,7 +542,7 @@ void ClientManager::sendDataToClient(const QString &data)
 	if (!this->localSocket->state() == QAbstractSocket::ConnectedState)
 		return;
 
-	if (config->debug)
+	if (this->debug)
 		qDebug() << "In ClientManager::sendDataToClient(" << data << ")";
 
     QByteArray block;

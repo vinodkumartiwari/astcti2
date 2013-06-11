@@ -36,153 +36,154 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include "qastcticall.h"
+#include <QStringList>
+#include <QDomDocument>
 
-QAstCTICall::QAstCTICall(QObject *parent)
-        : QObject(parent), channel(""), parsedChannel(""),
-		callerIdNum(""), callerIdName(""), uniqueId(""),
-		context(""), state(""), exten(""), accountCode("")
+#include "astcticall.h"
+
+AstCtiCall::AstCtiCall(QObject *parent)
+		: QObject(parent), channel(""), parsedChannel(""), callerIdNum(""), callerIdName(""),
+		  uniqueId(""), context(""), state(""), exten(""), accountCode("")
 {
     this->variables = new QHash <QString,QString>;
 }
 
-QAstCTICall::~QAstCTICall()
+AstCtiCall::~AstCtiCall()
 {
-    qDebug() << "In QAstCTICall::~QAstCTICall()";
 	delete this->variables;
 }
 
-QString &QAstCTICall::getChannel()
+QString &AstCtiCall::getChannel()
 {
     return this->channel;
 }
-void QAstCTICall::setChannel(QString channel)
+void AstCtiCall::setChannel(QString channel)
 {
     this->channel = channel;
 	this->setParsedChannel(this->parseChannel(channel));
 }
 
-QString &QAstCTICall::getParsedChannel()
+QString &AstCtiCall::getParsedChannel()
 {
     return this->parsedChannel;
 }
 
-void QAstCTICall::setParsedChannel(QString parsedChannel)
+void AstCtiCall::setParsedChannel(QString parsedChannel)
 {
     this->parsedChannel = parsedChannel;
 }
 
-QString &QAstCTICall::getDestChannel()
+QString &AstCtiCall::getDestChannel()
 {
     return this->destChannel;
 }
 
-void QAstCTICall::setDestChannel(QString channel)
+void AstCtiCall::setDestChannel(QString channel)
 {
     this->destChannel = channel;
 	this->setParsedDestChannel(this->parseChannel(channel));
 }
 
-QString &QAstCTICall::getParsedDestChannel()
+QString &AstCtiCall::getParsedDestChannel()
 {
     return this->parsedDestChannel;
 }
 
-void QAstCTICall::setParsedDestChannel(QString parsedChannel)
+void AstCtiCall::setParsedDestChannel(QString parsedChannel)
 {
     this->parsedDestChannel = parsedChannel;
 }
 
-QString &QAstCTICall::getCalleridNum()
+QString &AstCtiCall::getCalleridNum()
 {
     return this->callerIdNum;
 }
 
-void QAstCTICall::setCalleridNum(QString callerIdNum)
+void AstCtiCall::setCalleridNum(QString callerIdNum)
 {
     this->addVariable("CALLERID", callerIdNum);
     this->callerIdNum = callerIdNum;
 }
 
-QString &QAstCTICall::getCalleridName()
+QString &AstCtiCall::getCalleridName()
 {
     return this->callerIdName;
 }
 
-void QAstCTICall::setCalleridName(QString callerIdName)
+void AstCtiCall::setCalleridName(QString callerIdName)
 {
     this->addVariable("CALLERIDNAME", callerIdName);
     this->callerIdName = callerIdName;
 }
 
-QString &QAstCTICall::getUniqueId()
+QString &AstCtiCall::getUniqueId()
 {
     return this->uniqueId;
 }
 
-void QAstCTICall::setUniqueId(QString uniqueId)
+void AstCtiCall::setUniqueId(QString uniqueId)
 {
     this->uniqueId = uniqueId;
 }
 
-QString &QAstCTICall::getDestUniqueId()
+QString &AstCtiCall::getDestUniqueId()
 {
     return this->destUniqueId;
 }
 
-void QAstCTICall::setDestUniqueId(QString uniqueId)
+void AstCtiCall::setDestUniqueId(QString uniqueId)
 {
     this->destUniqueId = uniqueId;
 }
 
-QString &QAstCTICall::getContext()
+QString &AstCtiCall::getContext()
 {
     return this->context;
 }
 
-void QAstCTICall::setContext(QString context)
+void AstCtiCall::setContext(QString context)
 {
     this->context = context;
 }
 
-QString &QAstCTICall::getState()
+QString &AstCtiCall::getState()
 {
     return this->state;
 }
 
-void QAstCTICall::setState(QString state)
+void AstCtiCall::setState(QString state)
 {
     this->state = state;
 }
 
-QString &QAstCTICall::getExten()
+QString &AstCtiCall::getExten()
 {
 	return this->exten;
 }
 
-void QAstCTICall::setExten(QString exten)
+void AstCtiCall::setExten(QString exten)
 {
 	this->exten = exten;
 }
 
-QString &QAstCTICall::getAccountCode()
+QString &AstCtiCall::getAccountCode()
 {
 	return this->accountCode;
 }
 
-void QAstCTICall::setAccountCode(QString accountCode)
+void AstCtiCall::setAccountCode(QString accountCode)
 {
 	this->accountCode = accountCode;
 }
 
-void QAstCTICall::addVariable(QString key, QString value)
+void AstCtiCall::addVariable(QString key, QString value)
 {
 	//There is no need to remove existing item,
 	//insert will replace value if the key already exists
     this->variables->insert(key, value);
 }
 
-QString QAstCTICall::parseChannel(const QString &channel)
+QString AstCtiCall::parseChannel(const QString &channel)
 {
     // Channels are usually built like SIP/200-0899e2c8
     // So we need to extract channel by split the string
@@ -196,23 +197,22 @@ QString QAstCTICall::parseChannel(const QString &channel)
 	return "";
 }
 
-void QAstCTICall::setActions(QHash<int, QAstCTIAction*> *callActions) {
+void AstCtiCall::setActions(QMap<int, AstCtiAction*> *callActions) {
 
     this->actions = callActions;
 }
 
-void QAstCTICall::setOperatingSystem(QString operatingSystem)
+void AstCtiCall::setOperatingSystem(QString operatingSystem)
 {
-    this->clientOperatingSystem = operatingSystem;
-
+	this->clientOperatingSystem = AstCtiAction::parseOsType(operatingSystem);
 }
 
-void QAstCTICall::parseActionsParameters()
+void AstCtiCall::parseActionsParameters()
 {
 	if ((this->actions != 0) && (this->variables->count() > 0) ) {
-		QHash<int, QAstCTIAction*>::const_iterator actionList = this->actions->constBegin();
+		QMap<int, AstCtiAction*>::const_iterator actionList = this->actions->constBegin();
         while (actionList != this->actions->constEnd()) {
-			QString parameters = ((QAstCTIAction*)actionList.value())->getActionParameters();
+			QString parameters = ((AstCtiAction*)actionList.value())->getParameters();
             QHash<QString, QString>::const_iterator varList = this->variables->constBegin();
             while (varList != this->variables->constEnd()) {
 				QString theKey = QString("{%1}").arg(((QString)varList.key()).toUpper());
@@ -220,13 +220,13 @@ void QAstCTICall::parseActionsParameters()
 
                 varList++;
             }
-			((QAstCTIAction*)actionList.value())->setActionParameters(parameters);
+			((AstCtiAction*)actionList.value())->setParameters(parameters);
             actionList++;
         }
     }
 }
 
-QString QAstCTICall::toXml()
+QString AstCtiCall::toXml()
 {
     // Here we go for parameter substitution
     this->parseActionsParameters();
@@ -335,13 +335,13 @@ QString QAstCTICall::toXml()
         int actionsCount = 0;
         QDomElement xmlActions = doc.createElement("Actions");
 
-        QHash<int, QAstCTIAction *>::const_iterator actionsList = this->actions->constBegin();
+		QMap<int, AstCtiAction*>::const_iterator actionsList = this->actions->constBegin();
         while (actionsList != this->actions->constEnd()) {
-            QAstCTIAction *activeAction = (QAstCTIAction *)actionsList.value();
-            if ( (activeAction->getActionOsType() == "ALL") ||
-                 (activeAction->getActionOsType() == this->clientOperatingSystem) ) {
+            AstCtiAction *activeAction = (AstCtiAction *)actionsList.value();
+			if (activeAction->getOsType() == ActionOsAll ||
+				activeAction->getOsType() == this->clientOperatingSystem) {
                 actionsCount++;
-                switch(QAstCTIAction::getActionTypes()[activeAction->getActionType()]) {
+				switch(activeAction->getActionType()) {
                 case ActionApplication:
                     {
                         QDomElement xmlApplication = doc.createElement("Application");
@@ -349,13 +349,13 @@ QString QAstCTICall::toXml()
                         // What's the path?
                         QDomElement xmlAppPath = doc.createElement("Path");
                         xmlApplication.appendChild(xmlAppPath);
-                        QDomText xmlAppPathVal = doc.createTextNode(activeAction->getActionDestination());
+						QDomText xmlAppPathVal = doc.createTextNode(activeAction->getDestination());
                         xmlAppPath.appendChild(xmlAppPathVal);
 
                         // What are the parameters?
                         QDomElement xmlAppParams = doc.createElement("Parameters");
                         xmlApplication.appendChild(xmlAppParams);
-                        QDomText xmlAppPathParmVal = doc.createTextNode(activeAction->getActionParameters());
+						QDomText xmlAppPathParmVal = doc.createTextNode(activeAction->getParameters());
                         xmlAppParams.appendChild(xmlAppPathParmVal);
 
                         // Append all to xmlAction
@@ -369,7 +369,7 @@ QString QAstCTICall::toXml()
                         // What are the parameters?
                         QDomElement xmlAppParams = doc.createElement("Url");
                         xmlApplication.appendChild(xmlAppParams);
-                        QDomText xmlAppPathParmVal = doc.createTextNode(activeAction->getActionParameters());
+						QDomText xmlAppPathParmVal = doc.createTextNode(activeAction->getParameters());
                         xmlAppParams.appendChild(xmlAppPathParmVal);
 
                         // Append all to xmlAction
@@ -383,7 +383,7 @@ QString QAstCTICall::toXml()
                         // What are the parameters?
                         QDomElement xmlAppParams = doc.createElement("Url");
                         xmlApplication.appendChild(xmlAppParams);
-                        QDomText xmlAppPathParmVal = doc.createTextNode(activeAction->getActionParameters());
+						QDomText xmlAppPathParmVal = doc.createTextNode(activeAction->getParameters());
                         xmlAppParams.appendChild(xmlAppPathParmVal);
 
                         // Append all to xmlAction
@@ -392,7 +392,7 @@ QString QAstCTICall::toXml()
                     break;
                 case ActionTcpMessage:
                     {
-                        QStringList serverInfo = activeAction->getActionDestination().split(':');
+						QStringList serverInfo = activeAction->getDestination().split(':');
                         if (serverInfo.length() == 2) {
                             QDomElement xmlApplication = doc.createElement("TcpMessage");
 
@@ -409,12 +409,12 @@ QString QAstCTICall::toXml()
 
                             QDomElement xmlAppMessage = doc.createElement("Message");
                             xmlApplication.appendChild(xmlAppMessage);
-                            QDomText xmlAppMessageVal = doc.createTextNode(activeAction->getActionParameters());
+							QDomText xmlAppMessageVal = doc.createTextNode(activeAction->getParameters());
                             xmlAppMessage.appendChild(xmlAppMessageVal);
 
                             QDomElement xmlAppEncoding = doc.createElement("Encoding");
                             xmlApplication.appendChild(xmlAppEncoding);
-                            QDomText xmlAppEncodingVal = doc.createTextNode(activeAction->getActionMessageEncoding());
+							QDomText xmlAppEncodingVal = doc.createTextNode(activeAction->getMessageEncoding());
                             xmlAppEncoding.appendChild(xmlAppEncodingVal);
 
                             // Append all to xmlAction
@@ -424,7 +424,7 @@ QString QAstCTICall::toXml()
                     break;
                 case ActionUdpMessage:
                     {
-                        QStringList serverInfo = activeAction->getActionDestination().split(':');
+						QStringList serverInfo = activeAction->getDestination().split(':');
                         if (serverInfo.length() == 2) {
                             QDomElement xmlApplication = doc.createElement("UdpMessage");
 
@@ -441,12 +441,12 @@ QString QAstCTICall::toXml()
 
                             QDomElement xmlAppMessage = doc.createElement("Message");
                             xmlApplication.appendChild(xmlAppMessage);
-                            QDomText xmlAppMessageVal = doc.createTextNode(activeAction->getActionParameters());
+							QDomText xmlAppMessageVal = doc.createTextNode(activeAction->getParameters());
                             xmlAppMessage.appendChild(xmlAppMessageVal);
 
                             QDomElement xmlAppEncoding = doc.createElement("Encoding");
                             xmlApplication.appendChild(xmlAppEncoding);
-                            QDomText xmlAppEncodingVal = doc.createTextNode(activeAction->getActionMessageEncoding());
+							QDomText xmlAppEncodingVal = doc.createTextNode(activeAction->getMessageEncoding());
                             xmlAppEncoding.appendChild(xmlAppEncodingVal);
 
                             // Append all to xmlAction

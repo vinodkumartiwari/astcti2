@@ -47,7 +47,7 @@
 #include <QList>
 
 #include "clientmanager.h"
-#include "cticonfig.h"
+#include "astcticonfiguration.h"
 #include "amiclient.h"
 
 class CoreTcpServer : public QTcpServer
@@ -55,7 +55,7 @@ class CoreTcpServer : public QTcpServer
     Q_OBJECT
 
 public:
-	CoreTcpServer(AstCTIConfiguration *config, QObject *parent = 0);
+	CoreTcpServer(bool debug, AstCtiConfiguration *config, QObject *parent = 0);
     ~CoreTcpServer();
 	bool  containsUser(const QString &username);
 
@@ -93,7 +93,7 @@ protected slots:
     void                            notifyClient(const QString &data);
 	void                            stopServer(bool closeSocket);
 	void                            amiConnectionStatusChange(const AmiConnectionStatus status);
-	void                            receiveCtiEvent(const AmiEvent &eventid, QAstCTICall *call);
+	void                            receiveCtiEvent(const AmiEvent &eventid, AstCtiCall *call);
 	void                            receiveCtiResponse(AmiCommand *command);
     // Slots to receive CTI Client events
     void                            ctiClientPauseIn(ClientManager *cl);
@@ -102,8 +102,9 @@ protected slots:
     void                            ctiClientLogoff(ClientManager *cl);
 
 private:
-	AstCTIConfiguration  *config;
+	AstCtiConfiguration  *config;
 	AmiClient            *amiClient;
+	bool                  debug;
 	QMutex                mutexClientList;
 	QMutex                mutexUsersList;
 	bool                  isClosing;

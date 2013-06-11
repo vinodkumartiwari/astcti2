@@ -36,55 +36,34 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include <QFile>
+#include <QFileInfo>
+#include <QDebug>
+#include <QSettings>
+
 #include "ctiserverapplication.h"
 #include "db.h"
 
 CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char **argv)
-        : QtSingleCoreApplication(appId, argc, argv), coreTcpServer(0)
+		: QtSingleCoreApplication(appId, argc, argv)
 {
-    this->services = 0;
-    this->ctiOperators = 0;
-    this->configChecker = 0;
-    isConfigLoading = false;
-    canStart = false;
-    if (!this->isRunning()) {
+	this->canStart = false;
+
+	if (!this->isRunning()) {
+		this->config = 0;
+
 		QArgumentList args(argc, argv);
-        config.debug = args.getSwitch("--debug") | args.getSwitch("-d");
+		this->debug = args.getSwitch("--debug") | args.getSwitch("-d");
         QString configFile = args.getSwitchArg("-c", "settings.ini");
 
-		if (config.debug)
-			qDebug("Reading Configuration");
-
-        // Read default settings for database connection from file
-		readSettingsFromFile(configFile);
-		if (config.debug)
-			qDebug() << "Reading first runtime configuration from database";
-		if (!DB::buildConnection(config.sqlHost, config.sqlPort, config.sqlUserName,
-								 config.sqlPassWord, config.sqlDatabase)) {
-            return;
-        }
-
-		QString dbVersion = this->readDatabaseVersion();
-		if (dbVersion.startsWith("Error")) {
+		// Read settings for database connection from file and create connection
+		if (!createDatabaseConnection(configFile))
 			return;
-		}
-		if (config.debug) {
-			qDebug() << "Database connection successfully created";
-			qDebug() << "Database version" << dbVersion;
-		}
-
-		readSettingsFromDatabase();
-
-		// This will build all services list
-		// actions should always be loaded before services
-		this->actions = new QAstCTIActions(this);
-		this->services = new QAstCTIServices(this->actions, this);
-		this->ctiOperators = new QAstCTIOperators(this);
 
 		// ConfigurationChecker will check if database configuration will change
-		this->configChecker = new ConfigurationChecker(config.debug);
-		connect(this->configChecker, SIGNAL(newConfiguration()),
-				this, SLOT(reloadSettings()));
+		this->configChecker = new ConfigurationChecker(this->debug);
+		connect(this->configChecker, SIGNAL(newConfiguration(AstCtiConfiguration*)),
+				this, SLOT(reloadSettings(AstCtiConfiguration*)));
 
 		QThread *configThread = new QThread(this);
 		this->configChecker->moveToThread(configThread);
@@ -94,15 +73,20 @@ CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char
 				this->configChecker, SLOT(deleteLater()));
 		configThread->start();
 
-        canStart = true;
+		//Configuration checker thread will read configuration from database
+		//And fire newConfiguration signal, which we will catch in reloadSettings slot
+
+		this->canStart = true;
     }
 }
 
 CtiServerApplication::~CtiServerApplication()
 {
     if (!this->isRunning()) {
-		if (config.debug)
-			qDebug() << "In CtiServerApplication::~CtiServerApplication()";
+		if (this->debug)
+			qDebug() << "CtiServerApplication closing";
+
+		//CoreTcpServer object will be deleted automatically as this object is its parent
 
 		this->configChecker->stop();
 		// configChecker will be deleted automatically because the thread's
@@ -112,48 +96,44 @@ CtiServerApplication::~CtiServerApplication()
 		configThread->wait();
 		delete configThread;
 
-		delete this->coreTcpServer;
-		delete this->ctiOperators;
-		delete this->services;
-		delete this->actions;
-
-		if (config.debug)
-			qDebug() << "CtiServerApplication closing";
-
 		DB::destroyConnection();
 
-		if (config.debug) {
+		if (this->debug) {
 			qDebug() << "Database connection closed";
 			qDebug() << "Stopped";
 		}
+
+		delete this->config;
 
         // Remove msg handler to avoid access to this QApplication
         qInstallMsgHandler(0);
     }
 }
 
-void  CtiServerApplication::reloadSettings()
+bool CtiServerApplication::getCanStart() {
+	return this->canStart;
+}
+
+void  CtiServerApplication::reloadSettings(AstCtiConfiguration *newConfig)
 {
-    // TODO : About race condition, you could add all the data (services, actions...) to the
-    // TODO : main configuration struct. Then, when database is changed, you could read the
-    // TODO : data from within the configurationchecker thread and put it in a temporary
-    // TODO : config struct. Once you are sure that you read all the data, you can pass the
-    // TODO : temporary struct to the main thread within newConfiguration signal, and make
-    // TODO : it active (and delete the old one, of course).
+	if (this->config == 0) {
+		//Configuration has been read for the first time
+		this->config = newConfig;
+		//This will create CoreTcpServer object which will initiate AMI connection
+		//and start acccepting client connections
+		if (!this->buildCoreTcpServer()) {
+			this->exit(exitCodeFailure);
+		}
+	} else {
+		// TODO : Compare old and new configurations and act accordingly
+		// TODO : If AMI parameters are changed, AMI connection should be dropped and reestablished
+		// TODO : If CTI server address or port are changed, all clients should be disconnected
+		// TODO : If operators or seats are changed, some clients may have to be disconnected
 
-	// TODO : This mutex currently has no purpose
-	configMutex.lock();
-
-	delete this->actions;
-	this->actions = new QAstCTIActions(this);
-
-	delete this->services;
-	this->services = new QAstCTIServices(this->actions, this);
-
-	delete this->ctiOperators;
-	this->ctiOperators = new QAstCTIOperators(this);
-
-	configMutex.unlock();
+		AstCtiConfiguration *tempConfig = this->config;
+		this->config = newConfig;
+		delete tempConfig;
+	}
 }
 
 CtiServerApplication *CtiServerApplication::instance()
@@ -161,20 +141,12 @@ CtiServerApplication *CtiServerApplication::instance()
     return (static_cast<CtiServerApplication*>(QCoreApplication::instance()));
 }
 
-QAstCTIServices *CtiServerApplication::getServices()
+bool CtiServerApplication::buildCoreTcpServer()
 {
-    return this->services;
-}
-
-CoreTcpServer *CtiServerApplication::buildNewCoreTcpServer()
-{
-	if (!canStart)
-		return 0;
-
-    this->coreTcpServer = new CoreTcpServer(&this->config, this);
+	this->coreTcpServer = new CoreTcpServer(this->debug, this->config, this);
 //	connect(this->coreTcpServer, SIGNAL(destroyed()),
 //			this, SLOT(quit()));
-    return this->coreTcpServer;
+	return true;
 }
 
 QString CtiServerApplication::readDatabaseVersion()
@@ -187,84 +159,55 @@ QString CtiServerApplication::readDatabaseVersion()
     return result.toString();
 }
 
-void CtiServerApplication::readSettingsFromFile(const QString path)
+bool CtiServerApplication::createDatabaseConnection(const QString &iniFilePath)
 {
-	if (config.debug)
-		qDebug() << "Reading settings from file" << path;
+	if (this->debug)
+		qDebug() << "Reading settings from file" << iniFilePath;
+
+	QString sqlHost;
+	QString sqlUserName;
+	QString sqlPassWord;
+	quint16 sqlPort;
+	QString sqlDatabase;
 
 	// Check that the config file exists
-	QFile cfile(path);
+	QFile cfile(iniFilePath);
 	if (cfile.exists() && cfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         cfile.close();
 
         // Instantiate a QSettings object for read/write from/to ini file
-		QSettings settings(path, QSettings::IniFormat);
+		QSettings settings(iniFilePath, QSettings::IniFormat);
 
         settings.beginGroup("RuntimeDb");
-		config.sqlHost     = settings.value("host",     defaultSqlHost ).toString();
-		config.sqlUserName = settings.value("user",     defaultSqlUser).toString();
-		config.sqlPassWord = settings.value("password", defaultSqlPassWord).toString();
-		config.sqlPort     = settings.value("port",     defaultSqlPort).toInt();
-		config.sqlDatabase = settings.value("database", defaultSqlDatabase).toString();
+		sqlHost     = settings.value("host",     defaultSqlHost ).toString();
+		sqlUserName = settings.value("user",     defaultSqlUser).toString();
+		sqlPassWord = settings.value("password", defaultSqlPassWord).toString();
+		sqlPort     = settings.value("port",     defaultSqlPort).toInt();
+		sqlDatabase = settings.value("database", defaultSqlDatabase).toString();
         settings.endGroup();
     } else {
-		config.sqlHost     = defaultSqlHost;
-		config.sqlUserName = defaultSqlUser;
-		config.sqlPassWord = defaultSqlPassWord;
-		config.sqlPort     = defaultSqlPort;
-		config.sqlDatabase = defaultSqlDatabase;
+		sqlHost     = defaultSqlHost;
+		sqlUserName = defaultSqlUser;
+		sqlPassWord = defaultSqlPassWord;
+		sqlPort     = defaultSqlPort;
+		sqlDatabase = defaultSqlDatabase;
     }
-}
 
-void CtiServerApplication::readSettingsFromDatabase()
-{
-	if (config.debug)
-		qDebug() << "Reading settings from database";
+	DB::debug = this->debug;
+	if (!DB::buildConnection(sqlHost, sqlPort, sqlUserName, sqlPassWord, sqlDatabase)) {
+		return false;
+	}
 
-	config.amiHost =
-			readSetting("ami_host",                     defaultAmiHost).toString();
-	config.amiPort =
-			readSetting("ami_port",                     defaultAmiPort).toInt();
-	config.amiUser =
-			readSetting("ami_user",                     defaultAmiUser).toString();
-	config.amiSecret =
-			readSetting("ami_secret",                   defaultAmiSecret).toString();
-	config.amiConnectTimeout =
-			readSetting("ami_connect_timeout",          defaultAmiConnectTimeout).toInt();
-	config.amiReadTimeout =
-			readSetting("ami_read_timeout",             defaultAmiReadTimeout).toInt();
-	config.amiConnectRetryAfter =
-			readSetting("ami_connect_retry_after",      defaultAmiConnectRetryAfter).toInt();
-	config.ctiServerPort =
-			readSetting("cti_server_port",              defaultCtiServerPort).toInt();
-	config.ctiConnectTimeout =
-			readSetting("cti_connect_timeout",          defaultCtiConnectTimeout).toInt();
-	config.ctiReadTimeout =
-			readSetting("cti_read_timeout",             defaultCtiReadTimeout).toInt();
-	config.ctiSocketCompressionLevel =
-			readSetting("cti_socket_compression_level", defaultCtiSocketCompressionLevel).toInt();
-}
+	QString dbVersion = this->readDatabaseVersion();
+	if (dbVersion.startsWith("Error")) {
+		return false;
+	}
 
-QVariant CtiServerApplication::readSetting(const QString &name, const QVariant &defaultValue)
-{
-	QVariantList params;
-	params.append(name);
-    bool ok;
-	QVariant value = DB::readScalar("SELECT val FROM server_settings WHERE name=?", params, &ok);
-    if (ok)
-		return value;
-    else
-        //TODO: We return the default value in case of an error.
-        //TODO: Perhaps execution should be stopped in that case
-        return defaultValue;
-}
-
-QAstCTIOperator *CtiServerApplication::getOperatorByUsername(const QString& username)
-{
-	if (this->ctiOperators != 0)
-		return this->ctiOperators->operator [](username);
-
-	return 0;
+	if (this->debug) {
+		qDebug() << "Database connection successfully created";
+		qDebug() << "Database version" << dbVersion;
+	}
+	return true;
 }
 
 bool CtiServerApplication::containsUser(const QString &username)

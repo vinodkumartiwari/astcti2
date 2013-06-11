@@ -48,7 +48,6 @@
 
 class DB
 {
-
 public:
 	static bool buildConnection(const QString &host, quint16 &port,
 								const QString &user, const QString &pass, const QString &database);
@@ -68,6 +67,8 @@ public:
 	static QList<QVariantList> readTable(const QString &sql, const QVariantList &params, bool *ok);
 	static int executeNonQuery(const QString &sql);
 	static int executeNonQuery(const QString &sql, const QVariantList &params);
+
+	static bool debug;
 
 private:
 	static QSqlQuery     *execSQL(const QString &sql, const QVariantList &params, bool *ok);
