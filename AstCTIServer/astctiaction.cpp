@@ -36,33 +36,78 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTIVARIABLE_H
-#define QASTCTIVARIABLE_H
+#include "astctiaction.h"
 
-#include <QObject>
-
-class QAstCTIVariable : public QObject
+AstCtiAction::AstCtiAction(const int &id, const QString &osType, const QString &actionType,
+						   const QString &destination, const QString &parameters,
+						   const QString &messageEncoding, QObject *parent) :	QObject(parent)
 {
+	this->actionId = id;
+	this->osType = parseOsType(osType);
+	this->actionType = parseActionType(actionType);
+	this->destination = destination;
+	this->parameters = parameters;
+	this->messageEncoding = messageEncoding;
+}
 
-    Q_OBJECT
+AstCtiAction::~AstCtiAction()
+{
+}
 
-public:
-    QAstCTIVariable(const int &id, QObject *parent);
-    ~QAstCTIVariable();
-    int getIdVariable();
-    int getIdService();
-    QString getVarName();
+AstCtiActionType AstCtiAction::parseActionType(const QString &actionTypeString) {
+	if (actionTypeString == "APPLICATION")
+		return ActionApplication;
+	else if (actionTypeString == "BROWSER")
+		return ActionBrowser;
+	else if (actionTypeString == "INTERNAL_BROWSER")
+		return ActionInternalBrowser;
+	else if (actionTypeString == "TCP_MESSAGE")
+		return ActionTcpMessage;
+	else
+		return ActionUdpMessage;
+}
 
-public slots:
-    bool load();
+AstCtiActionOsType AstCtiAction::parseOsType(const QString &osTypeString) {
+	if (osTypeString == "LINUX")
+		return ActionOsLinux;
+	else if (osTypeString == "MACINTOSH")
+		return ActionOsMacintosh;
+	else if (osTypeString == "WINDOWS")
+		return ActionOsWindows;
+	else
+		return ActionOsAll;
+}
 
-signals:
-    void loadComplete(const bool &result);
+int AstCtiAction::getId()
+{
+	return this->actionId;
+}
 
-private:
-    int idVariable;
-    int idService;
-    QString varName;
-};
+AstCtiActionType AstCtiAction::getActionType()
+{
+    return this->actionType;
+}
 
-#endif // QASTCTIVARIABLE_H
+AstCtiActionOsType AstCtiAction::getOsType()
+{
+	return this->osType;
+}
+
+QString AstCtiAction::getDestination()
+{
+	return this->destination;
+}
+
+QString AstCtiAction::getParameters()
+{
+	return this->parameters;
+}
+
+void AstCtiAction::setParameters(const QString &newParameters)
+{
+	this->parameters = newParameters;
+}
+
+QString AstCtiAction::getMessageEncoding() {
+	return this->messageEncoding;
+}

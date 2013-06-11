@@ -36,36 +36,56 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTISEAT_H
-#define QASTCTISEAT_H
+#ifndef ASTCTIACTION_H
+#define ASTCTIACTION_H
 
 #include <QObject>
 
-class QAstCTISeat : public QObject
-{
-    Q_OBJECT
-
-public:
-    QAstCTISeat(const int &id, QObject *parent);
-    QAstCTISeat(const QString &mac, QObject *parent);
-    ~QAstCTISeat();
-    int getIdSeat();
-    QString getSeatMac();
-    QString getSeatExten();
-    QString getDescription();
-
-public slots:
-    bool load();
-    bool loadFromMac();
-
-signals:
-    void loadComplete(const bool &result);
-
-private:
-    int idSeat;
-    QString seatMac;
-    QString seatExten;
-    QString description;
+enum AstCtiActionType {
+    ActionApplication,
+    ActionBrowser,
+    ActionInternalBrowser,
+    ActionTcpMessage,
+	ActionUdpMessage
 };
 
-#endif // QASTCTISEAT_H
+enum AstCtiActionOsType {
+    ActionOsAll,
+    ActionOsLinux,
+    ActionOsMacintosh,
+	ActionOsWindows
+};
+
+class AstCtiAction : public QObject
+{
+    Q_OBJECT
+	Q_ENUMS(AstCtiActionType)
+	Q_ENUMS(AstCtiActionOsType)
+
+public:
+	AstCtiAction(const int &id, const QString &osType, const QString &actionType,
+				 const QString &destination, const QString &parameters,
+				 const QString &messageEncoding, QObject *parent=0);
+	~AstCtiAction();
+
+	int                 getId();
+	AstCtiActionOsType  getOsType();
+	AstCtiActionType    getActionType();
+	QString             getDestination();
+	QString             getParameters();
+	QString             getMessageEncoding();
+	void                setParameters(const QString &newParameters);
+
+	static AstCtiActionType   parseActionType(const QString &actionTypeString);
+	static AstCtiActionOsType parseOsType(const QString &osTypeString);
+
+private:
+	int                 actionId;
+	AstCtiActionOsType  osType;
+	AstCtiActionType    actionType;
+	QString             destination;
+	QString             parameters;
+	QString             messageEncoding;
+};
+
+#endif // ASTCTIACTION_H

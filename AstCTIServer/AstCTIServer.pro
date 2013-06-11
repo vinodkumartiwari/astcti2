@@ -17,45 +17,32 @@ SOURCES += main.cpp \
     amiclient.cpp \
     argumentlist.cpp \
     ctiserverapplication.cpp \
-    qastctioperator.cpp \
-    qastctiseat.cpp \
-    qastctiservice.cpp \
-    qastctivariable.cpp \
-    qastctiaction.cpp \
-    qastctiservices.cpp \
-    qastctiservicesoperators.cpp \
-    qastctiservicesvariables.cpp \
     configurationchecker.cpp \
     coretcpserver.cpp \
-    qastctioperators.cpp \
-    qastcticall.cpp \
-    qastctioperatorservices.cpp \
-    qastctiactions.cpp \
     db.cpp \
-    amicommand.cpp
+    amicommand.cpp \
+    astcticonfiguration.cpp \
+    astctiaction.cpp \
+    astcticall.cpp \
+    astctioperator.cpp \
+    astctiseat.cpp \
+    astctiservice.cpp
 HEADERS += clientmanager.h \
-    cticonfig.h \
     logger.h \
     amiclient.h \
     coreconstants.h \
     argumentlist.h \
     ctiserverapplication.h \
-    qastctioperator.h \
-    qastctiseat.h \
-    qastctiservice.h \
-    qastctivariable.h \
-    qastctiaction.h \
-    qastctiservices.h \
-    qastctiservicesoperators.h \
-    qastctiservicesvariables.h \
     configurationchecker.h \
     coretcpserver.h \
-    qastctioperators.h \
-    qastcticall.h \
-    qastctioperatorservices.h \
-    qastctiactions.h \
     db.h \
-    amicommand.h
+    amicommand.h \
+    astcticonfiguration.h \
+    astctiaction.h \
+    astcticall.h \
+    astctioperator.h \
+    astctiseat.h \
+    astctiservice.h
 
 !equals($${PWD}, $${OUT_PWD}) {
     # Shadow building is enabled

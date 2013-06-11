@@ -41,9 +41,9 @@ UNLOCK TABLES;
 
 LOCK TABLES `operators` WRITE;
 
-insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`LAST_SEAT`,`BEGIN_IN_PAUSE`,`ENABLED`) values (1,'Operator 1','oper1','5ebe2294ecd0e0f08eab7690d2a6ee69',1,0,0);
-insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`LAST_SEAT`,`BEGIN_IN_PAUSE`,`ENABLED`) values (2,'Operator 2','oper2','5ebe2294ecd0e0f08eab7690d2a6ee69',2,0,0);
-insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`LAST_SEAT`,`BEGIN_IN_PAUSE`,`ENABLED`) values (3,'Operator 3','oper3','5ebe2294ecd0e0f08eab7690d2a6ee69',NULL,0,0);
+insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`BEGIN_IN_PAUSE`,`ENABLED`) values (1,'Operator 1','oper1','1a1dc91c907325c69271ddf0c944bc72',0,1);
+insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`BEGIN_IN_PAUSE`,`ENABLED`) values (2,'Operator 2','oper2','1a1dc91c907325c69271ddf0c944bc72',0,1);
+insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`BEGIN_IN_PAUSE`,`ENABLED`) values (3,'Operator 3','oper3','1a1dc91c907325c69271ddf0c944bc72',0,0);
 
 UNLOCK TABLES;
 
@@ -51,8 +51,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `seats` WRITE;
 
-insert  into `seats`(`ID_SEAT`,`SEAT_MAC`,`SEAT_EXTEN`,`DESCRIPTION`) values (1,'00:1c:bf:37:53:ba','SIP/311','Seat 0/0');
-insert  into `seats`(`ID_SEAT`,`SEAT_MAC`,`SEAT_EXTEN`,`DESCRIPTION`) values (2,'00:21:9b:d7:7a:bb','SIP/310','Seat 0/1');
+insert  into `seats`(`ID_SEAT`,`SEAT_MAC`,`SEAT_EXTEN`,`DESCRIPTION`,`ENABLED`) values (1,'00:1c:bf:37:53:ba','SIP/311','Seat 0/0',1);
+insert  into `seats`(`ID_SEAT`,`SEAT_MAC`,`SEAT_EXTEN`,`DESCRIPTION`,`ENABLED`) values (2,'00:21:9b:d7:7a:bb','SIP/310','Seat 0/1',1);
 
 UNLOCK TABLES;
 
@@ -67,6 +67,7 @@ insert  into `server_settings`(`name`,`val`) values ('ami_secret','ctiserver');
 insert  into `server_settings`(`name`,`val`) values ('ami_connect_timeout','1500');
 insert  into `server_settings`(`name`,`val`) values ('ami_read_timeout','1500');
 insert  into `server_settings`(`name`,`val`) values ('ami_connect_retry_after','30');
+insert  into `server_settings`(`name`,`val`) values ('cti_server_address','0.0.0.0');
 insert  into `server_settings`(`name`,`val`) values ('cti_server_port','5000');
 insert  into `server_settings`(`name`,`val`) values ('cti_connect_timeout','1500');
 insert  into `server_settings`(`name`,`val`) values ('cti_read_timeout','30000');

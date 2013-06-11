@@ -165,9 +165,10 @@ private:
 	ServerConnectionStatus   connectionStatus;
 	quint16                  blockSize;
 	QString                  macAddress;
+	QString                  extension;
 	bool                     reconnectNotify;
 	QString                  newPassword;
-    AstCTIConfiguration     *config;
+    AstCtiConfiguration     *config;
     AstCTICommand           *lastCTICommand;
     QHash<int, QString>     *commandsList;
     QHash<QString, QString> *servicesList;

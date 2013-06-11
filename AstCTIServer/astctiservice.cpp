@@ -35,76 +35,100 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
-#include <QDebug>
 
 #include "db.h"
-#include "qastctiseat.h"
+#include "astctiservice.h"
 
-QAstCTISeat::QAstCTISeat(const int &id, QObject *parent)
-        : QObject(parent),  idSeat(id), seatMac("00:00:00:00:00:00"),
-        seatExten(""), description("")
+AstCtiService::AstCtiService(const int &id, const QString &name, const QString &contextType,
+							   const QString &queueName, QObject *parent) : QObject(parent)
 {
-
+	this->serviceId = id;
+	this->name = name;
+	this->contextType = contextType == "INBOUND" ? ServiceTypeInbound : ServiceTypeOutbound;
+	this->queueName = queueName;
 }
 
-QAstCTISeat::QAstCTISeat(const QString &mac, QObject *parent)
-        : QObject(parent),  idSeat(0), seatMac(mac),
-        seatExten(""), description("")
+AstCtiService::~AstCtiService()
 {
 }
 
-QAstCTISeat::~QAstCTISeat()
+bool AstCtiService::loadVariables()
 {
-    qDebug() << "In QAstCTISeat::~QAstCTISeat()";
-}
+	this->variables.clear();
 
-bool QAstCTISeat::load()
-{
 	bool ok;
 	QVariantList params;
-	params.append(this->idSeat);
-	const QVariantList seatData = DB::readRow("SELECT * FROM seats WHERE ID_SEAT=?", params, &ok);
+	params.append(this->serviceId);
+	const QVariantList variableData =
+			DB::readList("SELECT VARNAME FROM services_variables WHERE ID_SERVICE=?", params, &ok);
 	if (ok) {
-		this->seatMac = seatData.at(1).toString();
-		this->seatExten  = seatData.at(2).toString();
-		this->description = seatData.at(3).toString();
+		const int listSize = variableData.size();
+		for (int i = 0; i < listSize; i++) {
+			this->variables.append(variableData.at(i).toString());
+		}
 	}
 
-	emit this->loadComplete(ok);
 	return ok;
 }
 
-bool QAstCTISeat::loadFromMac() {
+bool AstCtiService::loadActions(QHash<int, AstCtiAction*> *actionList)
+{
+	this->actions.clear();
+
 	bool ok;
 	QVariantList params;
-	params.append(this->seatMac);
-	const QVariantList seatData = DB::readRow("SELECT * FROM seats WHERE SEAT_MAC=?", params, &ok);
+	params.append(this->serviceId);
+	const QList<QVariantList> actionData =
+			DB::readTable("SELECT ID_ACTION,ACTION_ORDER FROM services_actions WHERE ID_SERVICE=? "
+						  "ORDER BY ACTION_ORDER ASC, ID_ACTION ASC", params, &ok);
 	if (ok) {
-		this->idSeat = seatData.at(0).toInt();
-		this->seatExten  = seatData.at(2).toString();
-		this->description = seatData.at(3).toString();
+		const int listSize = actionData.size();
+		for (int i = 0; i < listSize; i++) {
+			const QVariantList actionRow = actionData.at(i);
+			const int actionId = actionRow.at(0).toInt();
+			const int actionOrder = actionRow.at(1).toInt();
+			AstCtiAction *action = actionList->value(actionId);
+			if (action != 0) {
+				//There may be actions with same order number, so we use insertMulti()
+				this->actions.insertMulti(actionOrder, action);
+			}
+		}
 	}
 
-	emit this->loadComplete(ok);
 	return ok;
 }
 
-int  QAstCTISeat::getIdSeat()
+int AstCtiService::getId()
 {
-    return this->idSeat;
+    return this->serviceId;
 }
 
-QString  QAstCTISeat::getSeatMac()
+QString AstCtiService::getName()
 {
-    return this->seatMac;
+    return this->name;
 }
 
-QString  QAstCTISeat::getSeatExten()
+AstCtiServiceType AstCtiService::getContextType()
 {
-    return this->seatExten;
+    return this->contextType;
 }
 
-QString  QAstCTISeat::getDescription()
+bool AstCtiService::getServiceIsQueue()
 {
-    return this->description;
+	return !this->queueName.isEmpty();
+}
+
+QString AstCtiService::getQueueName()
+{
+    return this->queueName;
+}
+
+bool AstCtiService::hasVariable(const QString &variableName)
+{
+	return this->variables.contains(variableName);
+}
+
+QMap<int, AstCtiAction*> *AstCtiService::getActions()
+{
+    return &this->actions;
 }

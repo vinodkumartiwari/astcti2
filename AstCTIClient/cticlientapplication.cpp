@@ -68,7 +68,7 @@ CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char
 //#endif
 
     //Create configuration object
-    this->config = new AstCTIConfiguration();
+    this->config = new AstCtiConfiguration();
 
     //Process command-line arguments
     QArgumentList args(argc, argv);
@@ -76,33 +76,41 @@ CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char
 
     this->config->serverHost = args.getSwitchArg("-h", defaultServerHost);
     if (config->serverHost.isEmpty()) {
-		qFatal("No value given for Server Host (-h). "
-			   "If you want to use default host, don't include the command line switch.");
+		qCritical() << "No value given for Server Host (-h). If you want to use default host, "
+					   "don't include the command line switch.";
         return;
     }
     bool ok;
     this->config->serverPort = args.getSwitchArg("-p", defaultServerPort).toUShort(&ok);
     if (!ok) {
-        qFatal("Wrong value given for Server Port (-p). Expected number from 0 to 65535.");
+		qCritical() << "Wrong value given for Server Port (-p). Expected number from 0 to 65535.";
         return;
     }
     this->config->connectTimeout = args.getSwitchArg("-t", defaultConnectTimeout).toInt(&ok);
     if (!ok || this->config->connectTimeout < -1) {
-		qFatal("Wrong value given for Connect Timeout (-t). "
-			   "Expected number from -1 to 2147483647.");
+		qCritical() << "Wrong value given for Connect Timeout (-t). "
+					   "Expected number from -1 to 2147483647.";
         return;
     }
 	this->config->connectRetryInterval =
 			args.getSwitchArg("-r", defaultConnectRetryInterval).toUInt(&ok);
     if (!ok) {
-		qFatal("Wrong value given for Connect Retry Interval (-r). "
-			   "Expected number from 0 to 4294967295.");
+		qCritical() << "Wrong value given for Connect Retry Interval (-r). "
+					   "Expected number from 0 to 4294967295.";
         return;
     }
-    if (args.getSwitch("--manager"))
-        this->clientType = CTIClientPhoneManager;
-    else
-        this->clientType = CTIClientCallCenter;
+	if (args.getSwitch("--callcenter")) {
+		this->clientType = CTIClientCallCenter;
+	} else {
+		this->clientType = CTIClientPhoneManager;
+		//Extension must be defined for phone manager
+		this->extension = args.getSwitchArg("-e", "");
+		if (this->extension.isEmpty()) {
+			qCritical() << "Extension was not specified. "
+						   "You must provide extension using '-e'' switch.";
+			return;
+		}
+	}
 
     //Set defaults
 	//No compression initially. Compression level will be received from server.
@@ -146,6 +154,7 @@ CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char
     this->commandsList->insert(CmdOrig,             "ORIG");
     this->commandsList->insert(CmdStop,             "STOP");
     this->commandsList->insert(CmdMac,              "MAC");
+	this->commandsList->insert(CmdExten,            "EXTEN");
 
     //Create socket for communication with server
     this->localSocket = new QTcpSocket();
@@ -190,7 +199,8 @@ CtiClientApplication::~CtiClientApplication()
 bool CtiClientApplication::showLoginWindow()
 {
     //If error is encountered in constructor, we tell main() to abort
-    if (!canStart) return false;
+	if (!canStart)
+		return false;
 
     //Create only if it doesn't exist
     if (this->loginWindow == 0) {
@@ -453,7 +463,15 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
         else
             this->config->keepAliveInterval /= 2;
         resetLastCTICommand();
-        sendCommandToServer(CmdMac, this->macAddress);
+		switch (this->clientType) {
+		case CTIClientCallCenter:
+			sendCommandToServer(CmdMac, this->macAddress);
+			break;
+		case CTIClientPhoneManager:
+			sendCommandToServer(CmdExten, this->extension);
+			break;
+		}
+
         break;
     case RspOK:
         if (this->lastCTICommand != 0) {
@@ -474,7 +492,8 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
 								 QSystemTrayIcon::Information);
                 break;
             case CmdMac:
-                resetLastCTICommand();
+			case CmdExten:
+				resetLastCTICommand();
                 sendCommandToServer(CmdOsType, osType);
                 break;
             case CmdOsType:

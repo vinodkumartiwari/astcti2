@@ -42,7 +42,7 @@
 #ifndef CTICONFIG_H
 #define CTICONFIG_H
 
-struct AstCTIConfiguration
+struct AstCtiConfiguration
 {
 	bool     debug;
 	int      keepAliveInterval;

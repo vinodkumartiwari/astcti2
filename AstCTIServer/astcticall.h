@@ -36,25 +36,23 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTICALL_H
-#define QASTCTICALL_H
+#ifndef ASTCTICALL_H
+#define ASTCTICALL_H
 
 #include <QObject>
-#include <QDebug>
-#include <QStringList>
-#include <QDomDocument>
 #include <QHash>
+#include <QMap>
 
-#include "qastctiaction.h"
+#include "astctiaction.h"
 
-class QAstCTICall : public QObject
+class AstCtiCall : public QObject
 {
     
     Q_OBJECT
 
 public:
-    QAstCTICall(QObject *parent=0);
-    ~QAstCTICall();
+	AstCtiCall(QObject *parent=0);
+	~AstCtiCall();
 
     QString                 &getChannel();
     void                    setChannel(QString channel);
@@ -90,7 +88,7 @@ public:
 
     void                    addVariable(QString key, QString value);
 
-	void                    setActions(QHash<int, QAstCTIAction*> *callActions);
+	void                    setActions(QMap<int, AstCtiAction*> *callActions);
     void                    setOperatingSystem(QString operatingSystem);
 
     QString                 toXml();
@@ -108,14 +106,13 @@ private:
 	QString                         state;
 	QString                         exten;
 	QString                         accountCode;
-	QString                         clientOperatingSystem;
+	AstCtiActionOsType              clientOperatingSystem;
 
-    QHash<QString, QString>         *variables;
-	QHash<int, QAstCTIAction*>      *actions;
+	QHash<QString, QString>        *variables;
+	QMap<int, AstCtiAction*>       *actions;
 
 	QString                         parseChannel(const QString &channel);
     void                            parseActionsParameters();
-
 };
 
-#endif // QASTCTICALL_H
+#endif // ASTCTICALL_H

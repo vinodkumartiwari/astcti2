@@ -39,32 +39,17 @@
 #ifndef CTISERVERAPPLICATION_H
 #define CTISERVERAPPLICATION_H
 
-#include <QFile>
-#include <QtDebug>
-#include <QSettings>
 #include <QtCore>
 #include <QtCore/QCoreApplication>
-#include <QFileInfo>
-#include <QMutexLocker>
-#include <QMutex>
 
 #include "coretcpserver.h"
-#include "cticonfig.h"
+#include "astcticonfiguration.h"
 #include "logger.h"
 #include "argumentlist.h"
 #include "configurationchecker.h"
-#include "qastctiaction.h"
-#include "qastctiactions.h"
-#include "qastctioperators.h"
-#include "qastctiservicesoperators.h"
-#include "qastctiservice.h"
-#include "qastctiservices.h"
+#include "astctiaction.h"
+#include "astctiservice.h"
 #include "qtsinglecoreapplication.h"
-
-#define defaultCtiServerPort                5000
-#define defaultCtiConnectTimeout            1500
-#define defaultCtiReadTimeout               15000
-#define defaultCtiSocketCompressionLevel    7
 
 #define defaultSqlHost                      "localhost"
 #define defaultSqlUser                      "asteriskcti"
@@ -72,15 +57,8 @@
 #define defaultSqlPort                      3306
 #define defaultSqlDatabase                  "asteriskcti"
 
-#define defaultAmiHost                      "localhost"
-#define defaultAmiPort                      5038
-#define defaultAmiUser                      "manager"
-#define defaultAmiSecret                    "password"
-#define defaultAmiConnectTimeout            1500
-#define defaultAmiReadTimeout               1500
-#define defaultAmiConnectRetryAfter         30
-
 #define exitCodeSuccess                     0
+#define exitCodeFailure                     1
 
 class CtiServerApplication : public QtSingleCoreApplication
 {
@@ -91,33 +69,23 @@ public:
     ~CtiServerApplication();
     static CtiServerApplication *instance();
 
-	QAstCTIOperator      *getOperatorByUsername(const QString &username);
-	QAstCTIServices      *getServices();
-	QAstCTIActions       *getActions();
+	bool                  getCanStart();
 	bool                  containsUser(const QString &username);
-	AstCTIConfiguration   config; // Main configuration struct
+	AstCtiConfiguration  *config; // Main configuration struct
 
 public slots:
-	CoreTcpServer        *buildNewCoreTcpServer();
-	void                  reloadSettings();
+	void                  reloadSettings(AstCtiConfiguration *newConfig);
 	void                  addUser(const QString &username);
 	void                  removeUser(const QString &username);
 
 private:
+	bool                  debug;
+	bool                  canStart;
 	CoreTcpServer        *coreTcpServer;
 	ConfigurationChecker *configChecker;
-	bool                  canStart;
-	bool                  isConfigLoading;
+	bool                  buildCoreTcpServer();
 	QString               readDatabaseVersion();
-	void                  readSettingsFromFile(const QString path);
-	void                  readSettingsFromDatabase();
-	QVariant              readSetting(const QString &name, const QVariant &defaultValue);
-	QMutex                configMutex;
-
-protected:
-	QAstCTIActions       *actions;
-	QAstCTIServices      *services;
-	QAstCTIOperators     *ctiOperators;
+	bool                  createDatabaseConnection(const QString &iniFilePath);
 };
 
 #endif // CTISERVERAPPLICATION_H

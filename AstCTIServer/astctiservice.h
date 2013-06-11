@@ -36,34 +36,51 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef QASTCTISERVICESOPERATORS_H
-#define QASTCTISERVICESOPERATORS_H
+#ifndef ASTCTISERVICE_H
+#define ASTCTISERVICE_H
 
 #include <QObject>
-#include <QHash>
+#include <QMap>
+#include <QStringList>
 
-class QAstCTIOperator;
+#include "astctiaction.h"
 
-class QAstCTIServicesOperators : public QObject
-{
-    Q_OBJECT
-
-public:
-    QAstCTIServicesOperators(QObject *parent);
-    QAstCTIServicesOperators(const int &idservice, QObject *parent);
-    ~QAstCTIServicesOperators();
-    QAstCTIOperator *operator[](const QString& key);
-    int count();
-    void setIdService(const int &idService);
-
-private:
-    QHash<QString, QAstCTIOperator *> operators;
-    void addOperator(QAstCTIOperator *oper);
-    void removeOperator(const QString &key);
-    void fillOperators();
-    void clear();
-
-    int idService;
+enum AstCtiServiceType {
+	ServiceTypeInbound,
+	ServiceTypeOutbound
 };
 
-#endif // QASTCTISERVICESOPERATORS_H
+class AstCtiService : public QObject
+{
+    Q_OBJECT
+	Q_ENUMS(AstCtiServiceType)
+
+public:
+	AstCtiService(const int &id, const QString &name, const QString &contextType,
+				   const QString &queueName, QObject *parent=0);
+	~AstCtiService();
+
+	int                          getId();
+	QString                      getName();
+	AstCtiServiceType            getContextType();
+	bool                         getServiceIsQueue();
+	QString                      getQueueName();
+
+	bool                         hasVariable(const QString &variableName);
+	QMap<int, AstCtiAction*>  *getActions();
+
+	bool                         loadVariables();
+	bool                         loadActions(QHash<int, AstCtiAction*> *actionList);
+
+private:
+	int                         serviceId;
+	QString                     name;
+	AstCtiServiceType           contextType;
+	QString                     queueName;
+
+	QStringList                 variables;
+	//QMap is needed for storing ordered items
+	QMap<int, AstCtiAction*>   actions;
+};
+
+#endif // ASTCTISERVICE_H

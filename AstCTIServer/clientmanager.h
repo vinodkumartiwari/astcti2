@@ -45,9 +45,9 @@
 #include <QStringList>
 #include <QHash>
 
-#include "cticonfig.h"
-#include "qastctioperator.h"
-#include "qastctiseat.h"
+#include "astcticonfiguration.h"
+#include "astctioperator.h"
+#include "astctiseat.h"
 
 struct AstCTICommand
 {
@@ -64,6 +64,7 @@ enum AstCTICommands {
     CmdPass,
     CmdChangePassword,
     CmdMac,
+	CmdExten,
     CmdKeep,
     CmdOsType,
     CmdIden,
@@ -87,9 +88,10 @@ class ClientManager : public  QObject
     Q_OBJECT
 
 public:
-	ClientManager(AstCTIConfiguration *config, int socketDescriptor);
+	ClientManager(bool debug, AstCtiConfiguration *config, int socketDescriptor);
     ~ClientManager();
-	QAstCTIOperator     *getActiveOperator();
+	AstCtiOperator      *getActiveOperator();
+	AstCtiSeat          *getActiveSeat();
 	AstCTIClientState    getState();
 	QString              getClientOperatingSystem();
 	QString              getLocalIdentifier();
@@ -135,9 +137,10 @@ signals:
 	void                 ctiLogoff(ClientManager *cl);
 
 private:
-	AstCTIConfiguration *config;
-	QAstCTIOperator     *activeOperator;
-	QAstCTISeat         *activeSeat;
+	AstCtiConfiguration *config;
+	AstCtiOperator      *activeOperator;
+	AstCtiSeat          *activeSeat;
+	bool                 debug;
 	AstCTIClientState    state;
 	QHash<QString, int>  commandsList;
 	QSemaphore           waitBeforeQuit;

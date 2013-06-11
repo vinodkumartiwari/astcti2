@@ -45,6 +45,7 @@
 QSqlDatabase *DB::connection;
 bool DB::supportsTransactions;
 bool DB::inTransaction;
+bool DB::debug = false;
 
 //Creates a database connection and adds it to the list of connections for later use
 bool DB::buildConnection(const QString &host, quint16 &port,
@@ -64,6 +65,8 @@ bool DB::buildConnection(const QString &host, quint16 &port,
 
 		return true;
 	} else {
+		if (debug)
+			qDebug() << "Unable to create database connection.";
 		return false;
 	}
 }
@@ -109,7 +112,8 @@ bool DB::beginTransaction()
 			else
 				logMsg.append("No error information available.");
 
-			qDebug() << logMsg;
+			if (debug)
+				qDebug() << logMsg;
 		}
 	}
 
@@ -129,7 +133,8 @@ bool DB::commitTransaction()
 			else
 				logMsg.append("No error information available.");
 
-			qDebug() << logMsg;
+			if (debug)
+				qDebug() << logMsg;
 		}
 	}
 
@@ -149,7 +154,8 @@ bool DB::rollbackTransaction()
 			else
 				logMsg.append("No error information available.");
 
-			qDebug() << logMsg;
+			if (debug)
+				qDebug() << logMsg;
 		}
 	}
 
@@ -189,7 +195,8 @@ QSqlQuery *DB::execSQL(const QString &sql, const QVariantList &params, bool *ok)
 		else
 			logMsg.append("\nNo error information available.");
 
-		qDebug() << logMsg;
+		if (debug)
+			qDebug() << logMsg;
 	}
 
 	return query;

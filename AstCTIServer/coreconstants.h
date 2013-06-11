@@ -38,7 +38,6 @@
 #ifndef CORECONSTANTS_H
 #define CORECONSTANTS_H
 
-
 #define APP_VERSION_MAJOR 0
 #define APP_VERSION_MINOR 0
 #define APP_VERSION_RELEASE 1
@@ -57,6 +56,5 @@ const char * const APP_YEAR              = "2009";
 #undef APP_VERSION
 #undef STRINGIFY
 #undef STRINGIFY_INTERNAL
-
 
 #endif // CORECONSTANTS_H
