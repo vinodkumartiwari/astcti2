@@ -46,8 +46,8 @@
 #define STRINGIFY(x) STRINGIFY_INTERNAL(x)
 
 #define APP_VERSION STRINGIFY(APP_VERSION_MAJOR) \
-    "." STRINGIFY(APP_VERSION_MINOR) \
-    "." STRINGIFY(APP_VERSION_RELEASE)
+				"." STRINGIFY(APP_VERSION_MINOR) \
+				"." STRINGIFY(APP_VERSION_RELEASE)
 
 const char * const APP_VERSION_LONG      = APP_VERSION;
 const char * const APP_AUTHOR            = "centralino-voip";

@@ -1,7 +1,8 @@
 # -------------------------------------------------
 # Project created by QtCreator 2008-12-27T09:05:04
 # -------------------------------------------------
-include(../../qtsingleapplication-2.6-opensource/src/qtsinglecoreapplication.pri)
+include(../QtSingleApplication/qtsinglecoreapplication.pri)
+include(../QsLog/QsLog.pri)
 
 QT += sql \
     xml \
@@ -13,7 +14,6 @@ CONFIG -= app_bundle
 TEMPLATE = app
 SOURCES += main.cpp \
     clientmanager.cpp \
-    logger.cpp \
     amiclient.cpp \
     argumentlist.cpp \
     ctiserverapplication.cpp \
@@ -28,7 +28,6 @@ SOURCES += main.cpp \
     astctiseat.cpp \
     astctiservice.cpp
 HEADERS += clientmanager.h \
-    logger.h \
     amiclient.h \
     coreconstants.h \
     argumentlist.h \
@@ -47,17 +46,34 @@ HEADERS += clientmanager.h \
 !equals($${PWD}, $${OUT_PWD}) {
     # Shadow building is enabled
     # Specify files for copying
-    SETTINGS_SOURCE = $${PWD}/settings.ini
-    SETTINGS_DEST = $${OUT_PWD}
+	LICENSE_SOURCE = $${PWD}/../LICENSE.txt
+	LICENSE_QSLOG_SOURCE = $${PWD}/../QsLog/LICENSE.txt
+	build_pass:CONFIG(debug, debug|release) {
+		SETTINGS_SOURCE = $${PWD}/settings.ini
+		SETTINGS_DEST = $${OUT_PWD}/debug
+		LICENSE_DEST = $${OUT_PWD}/debug
+		LICENSE_QSLOG_DEST = $${OUT_PWD}/debug/LICENSE_QSLOG.txt
+	} else:build_pass {
+		SETTINGS_SOURCE = $${PWD}/settings.ini.dist
+		SETTINGS_DEST = $${OUT_PWD}/release/settings.ini
+		LICENSE_DEST = $${OUT_PWD}/release
+		LICENSE_QSLOG_DEST = $${OUT_PWD}/release/LICENSE_QSLOG.txt
+	}
 
     # Replace '/' with '\' in Windows paths
     win32 {
-        SETTINGS_SOURCE = $${replace(SETTINGS_SOURCE, /, \\)}
-        SETTINGS_DEST = $${replace(SETTINGS_DEST, /, \\)}
-    }
+		SETTINGS_SOURCE = $${replace(SETTINGS_SOURCE, /, \\)}
+		SETTINGS_DEST = $${replace(SETTINGS_DEST, /, \\)}
+		LICENSE_SOURCE = $${replace(LICENSE_SOURCE, /, \\)}
+		LICENSE_DEST = $${replace(LICENSE_DEST, /, \\)}
+		LICENSE_QSLOG_SOURCE = $${replace(LICENSE_QSLOG_SOURCE, /, \\)}
+		LICENSE_QSLOG_DEST = $${replace(LICENSE_QSLOG_DEST, /, \\)}
+	}
 
     # COPY_FILE is a variable that qmake automatically creates in Makefile
-    COPY_SETTINGS = $(COPY_FILE) $$quote($$SETTINGS_SOURCE) $$quote($$SETTINGS_DEST)
+	COPY_FILES = $(COPY_FILE) $$quote($$SETTINGS_SOURCE) $$quote($$SETTINGS_DEST) && \
+				 $(COPY_FILE) $$quote($$LICENSE_SOURCE) $$quote($$LICENSE_DEST) && \
+				 $(COPY_FILE) $$quote($$LICENSE_QSLOG_SOURCE) $$quote($$LICENSE_QSLOG_DEST)
 
-    QMAKE_PRE_LINK += $$COPY_SETTINGS
+	QMAKE_PRE_LINK += $$COPY_FILES
 }

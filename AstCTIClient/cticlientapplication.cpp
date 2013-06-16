@@ -71,7 +71,7 @@ CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char
     this->config = new AstCtiConfiguration();
 
     //Process command-line arguments
-    QArgumentList args(argc, argv);
+    ArgumentList args(argc, argv);
     this->config->debug = args.getSwitch("--debug") | args.getSwitch("-d");
 
     this->config->serverHost = args.getSwitchArg("-h", defaultServerHost);
@@ -493,6 +493,7 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
                 break;
             case CmdMac:
 			case CmdExten:
+				this->extension = response.data.last();
 				resetLastCTICommand();
                 sendCommandToServer(CmdOsType, osType);
                 break;
@@ -813,9 +814,9 @@ void CtiClientApplication::socketStateChanged(QAbstractSocket::SocketState socke
 }
 
 //Slot which receives socket's error signal
-void CtiClientApplication::socketError(QAbstractSocket::SocketError socketError)
+void CtiClientApplication::socketError(QAbstractSocket::SocketError error)
 {
-    if (socketError == QAbstractSocket::SocketTimeoutError) {
+	if (error == QAbstractSocket::SocketTimeoutError) {
         if (this->connectionStatus == ConnStatusConnecting) {
             //Notify user only about first reconnect attempt
             if (this->reconnectNotify) {
@@ -823,7 +824,7 @@ void CtiClientApplication::socketError(QAbstractSocket::SocketError socketError)
 					qDebug() << "Unable to connect to server. I will keep trying to connect at"
 							 << this->config->connectRetryInterval << "second intervals.";
 
-                connectionLost();
+				this->connectionLost();
 
                 this->reconnectNotify = false;
             }
@@ -837,7 +838,7 @@ void CtiClientApplication::socketError(QAbstractSocket::SocketError socketError)
         this->connectTimer->start(this->config->connectRetryInterval);
     } else {
 		if (config->debug)
-			qDebug() << "Socket Error:" << socketError << this->localSocket->errorString();
+			qDebug() << "Socket Error:" << error << this->localSocket->errorString();
     }
 }
 

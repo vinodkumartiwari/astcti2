@@ -44,7 +44,6 @@
 
 #include "coretcpserver.h"
 #include "astcticonfiguration.h"
-#include "logger.h"
 #include "argumentlist.h"
 #include "configurationchecker.h"
 #include "astctiaction.h"
@@ -70,20 +69,17 @@ public:
     static CtiServerApplication *instance();
 
 	bool                  getCanStart();
-	bool                  containsUser(const QString &username);
-	AstCtiConfiguration  *config; // Main configuration struct
+	bool                  start();
 
 public slots:
 	void                  reloadSettings(AstCtiConfiguration *newConfig);
-	void                  addUser(const QString &username);
-	void                  removeUser(const QString &username);
 
 private:
-	bool                  debug;
+	Q_DISABLE_COPY(CtiServerApplication)
 	bool                  canStart;
 	CoreTcpServer        *coreTcpServer;
 	ConfigurationChecker *configChecker;
-	bool                  buildCoreTcpServer();
+	bool                  buildCoreTcpServer(AstCtiConfiguration *config);
 	QString               readDatabaseVersion();
 	bool                  createDatabaseConnection(const QString &iniFilePath);
 };

@@ -41,9 +41,11 @@
 
 #include "amicommand.h"
 
-AmiCommand::AmiCommand(QObject *parent) :
-	QObject(parent), exten(""), parameters(0), variables(0)
+AmiCommand::AmiCommand(QObject *parent) : QObject(parent)
 {
+	this->exten = "";
+	this->parameters = 0;
+	this->variables = 0;
 }
 
 AmiCommand::~AmiCommand()

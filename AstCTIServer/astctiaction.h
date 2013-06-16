@@ -63,9 +63,9 @@ class AstCtiAction : public QObject
 	Q_ENUMS(AstCtiActionOsType)
 
 public:
-	AstCtiAction(const int &id, const QString &osType, const QString &actionType,
-				 const QString &destination, const QString &parameters,
-				 const QString &messageEncoding, QObject *parent=0);
+	explicit AstCtiAction(const int &id, const QString &osType, const QString &actionType,
+						  const QString &destination, const QString &parameters,
+						  const QString &messageEncoding, QObject *parent=0);
 	~AstCtiAction();
 
 	int                 getId();
@@ -80,6 +80,7 @@ public:
 	static AstCtiActionOsType parseOsType(const QString &osTypeString);
 
 private:
+	Q_DISABLE_COPY(AstCtiAction)
 	int                 actionId;
 	AstCtiActionOsType  osType;
 	AstCtiActionType    actionType;

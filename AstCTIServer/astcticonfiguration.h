@@ -41,6 +41,7 @@
 
 #include <QObject>
 #include <QHash>
+#include <QMetaType>
 
 #include "astctiaction.h"
 #include "astctiservice.h"
@@ -52,7 +53,7 @@ class AstCtiConfiguration : public QObject
 	Q_OBJECT
 
 public:
-	explicit AstCtiConfiguration();
+	explicit AstCtiConfiguration(QObject *parent=0);
 	~AstCtiConfiguration();
 
 	//QString         runtimeConfiguration; //UNKNOWN PURPOSE
@@ -60,7 +61,7 @@ public:
 	quint16         ctiServerPort;
     quint16         ctiConnectTimeout;
     quint16         ctiReadTimeout;
-    quint16         ctiSocketCompressionLevel;
+    quint16         ctiCompressionLevel;
     QString         amiHost;
     quint16         amiPort;
     QString         amiUser;
@@ -76,5 +77,10 @@ public:
 
 	AstCtiService    *getServiceByName(const QString &serviceName);
 	AstCtiSeat       *getSeatByMac(const QString &mac);
+
+private:
+	Q_DISABLE_COPY(AstCtiConfiguration)
 };
+Q_DECLARE_METATYPE(AstCtiConfiguration*)
+
 #endif

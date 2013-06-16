@@ -44,6 +44,7 @@
 
 #include <QObject>
 #include <QHash>
+#include <QMetaType>
 
 enum AmiAction {
 	AmiActionLogin,
@@ -53,6 +54,7 @@ enum AmiAction {
 	AmiActionQueuePause,
 	AmiActionQueueRemove
 };
+Q_DECLARE_METATYPE(AmiAction)
 
 class AmiCommand : public QObject
 {
@@ -70,5 +72,6 @@ public:
 	QString                   responseString;
 	QString                   responseMessage;
 };
+Q_DECLARE_METATYPE(AmiCommand*)
 
 #endif // AMICOMMAND_H

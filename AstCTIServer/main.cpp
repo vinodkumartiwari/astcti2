@@ -44,16 +44,9 @@
 // DOCS STYLE COMMENTS:
 // http://www.ph.unimelb.edu.au/~ssk/kde/kdoc/
 
-AsteriskCTILogger logger; // Our logger object
-
-void logHandler(QtMsgType type, const char *msg)
-{
-    logger.writeToLog(type, msg);
-}
-
 int main(int argc, char *argv[])
 {
-    // QCoreApplication needs to be initialized here
+	// QCoreApplication needs to be initialized here
     CtiServerApplication application("AsteriskCTIServer", argc, argv);
 
     if (application.isRunning()) {
@@ -99,8 +92,6 @@ int main(int argc, char *argv[])
         qDebug() << "KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY";
         qDebug() << "AND FITNESS FOR A PARTICULAR PURPOSE.";
 
-        qInstallMsgHandler(logHandler);
-
-        return application.exec();
+		return application.start();
     }
 }

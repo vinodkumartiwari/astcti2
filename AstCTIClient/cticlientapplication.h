@@ -201,7 +201,7 @@ private slots:
 	void                     socketConnected();
 	void                     socketDisconnected();
 	void                     socketStateChanged(QAbstractSocket::SocketState socketState);
-	void                     socketError(QAbstractSocket::SocketError socketError);
+	void                     socketError(QAbstractSocket::SocketError error);
 	void                     receiveData();
 	void                     idleTimerElapsed();
 	void                     connectTimerElapsed();

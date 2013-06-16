@@ -38,9 +38,10 @@
 
 #include <QFile>
 #include <QFileInfo>
-#include <QDebug>
 #include <QSettings>
 
+#include "QsLog.h"
+#include "QsLogDest.h"
 #include "ctiserverapplication.h"
 #include "db.h"
 
@@ -50,31 +51,62 @@ CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char
 	this->canStart = false;
 
 	if (!this->isRunning()) {
-		this->config = 0;
+		this->coreTcpServer = 0;
+		this->configChecker = 0;
 
-		QArgumentList args(argc, argv);
-		this->debug = args.getSwitch("--debug") | args.getSwitch("-d");
-        QString configFile = args.getSwitchArg("-c", "settings.ini");
+		ArgumentList args(argc, argv);
+		int verbosity = args.getSwitchMulti("v");
+		QString configFileName = args.getSwitchArg("c", "settings.ini");
+		QString logFileName = args.getSwitchArg("l", "");
+		if (logFileName.isEmpty())
+			if (args.getSwitch("l")) {
+				//The switch can be specified without argument,
+				//in which case default filename is used
+				logFileName = QCoreApplication::applicationDirPath();
+				logFileName.append("/logs/astctiserver.log");
+			}
+
+		// Init the logging mechanism
+		QsLogging::Logger &logger = QsLogging::Logger::instance();
+
+		QsLogging::Level loggingLevel;
+		switch (verbosity) {
+		case 0:
+			loggingLevel = QsLogging::FatalLevel;
+			break;
+		case 1:
+			loggingLevel = QsLogging::ErrorLevel;
+			break;
+		case 2:
+			loggingLevel = QsLogging::WarnLevel;
+			break;
+		case 3:
+			loggingLevel = QsLogging::InfoLevel;
+			break;
+		case 4:
+			loggingLevel = QsLogging::DebugLevel;
+			break;
+		default:
+			loggingLevel = QsLogging::TraceLevel;
+			break;
+		}
+		logger.setLoggingLevel(loggingLevel);
+
+		//Debug destination is always active
+		logger.addDestination(QsLogging::DestinationFactory::MakeDebugOutputDestination());
+		if (!logFileName.isEmpty()) {
+			QFileInfo logFileInfo(logFileName);
+			QDir logDir = logFileInfo.absoluteDir();
+			if (logDir.exists() || logDir.mkdir(logDir.absolutePath()))
+				logger.addDestination(
+						QsLogging::DestinationFactory::MakeFileDestination(logFileName));
+			else
+				QLOG_ERROR() << "Unable to create log directory" << logDir.absolutePath();
+		}
 
 		// Read settings for database connection from file and create connection
-		if (!createDatabaseConnection(configFile))
+		if (!createDatabaseConnection(configFileName))
 			return;
-
-		// ConfigurationChecker will check if database configuration will change
-		this->configChecker = new ConfigurationChecker(this->debug);
-		connect(this->configChecker, SIGNAL(newConfiguration(AstCtiConfiguration*)),
-				this, SLOT(reloadSettings(AstCtiConfiguration*)));
-
-		QThread *configThread = new QThread(this);
-		this->configChecker->moveToThread(configThread);
-		connect(configThread, SIGNAL(started()),
-				this->configChecker, SLOT(run()));
-		connect(configThread, SIGNAL(finished()),
-				this->configChecker, SLOT(deleteLater()));
-		configThread->start();
-
-		//Configuration checker thread will read configuration from database
-		//And fire newConfiguration signal, which we will catch in reloadSettings slot
 
 		this->canStart = true;
     }
@@ -83,30 +115,24 @@ CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char
 CtiServerApplication::~CtiServerApplication()
 {
     if (!this->isRunning()) {
-		if (this->debug)
-			qDebug() << "CtiServerApplication closing";
+		QLOG_INFO() << "CtiServerApplication closing";
 
 		//CoreTcpServer object will be deleted automatically as this object is its parent
 
-		this->configChecker->stop();
-		// configChecker will be deleted automatically because the thread's
-		// finished() signal is connected to configChecker's deleteLater() slot
-		QThread *configThread = this->configChecker->thread();
-		configThread->quit();
-		configThread->wait();
-		delete configThread;
-
-		DB::destroyConnection();
-
-		if (this->debug) {
-			qDebug() << "Database connection closed";
-			qDebug() << "Stopped";
+		if (this->configChecker != 0) {
+			this->configChecker->stop();
+			// configChecker will be deleted automatically because the thread's
+			// finished() signal is connected to configChecker's deleteLater() slot
+			QThread *configThread = this->configChecker->thread();
+			configThread->quit();
+			configThread->wait();
+			delete configThread;
 		}
 
-		delete this->config;
+		DB::destroyConnection();
+		QLOG_INFO() << "Database connection closed";
 
-        // Remove msg handler to avoid access to this QApplication
-        qInstallMsgHandler(0);
+		QLOG_INFO() << "Stopped";
     }
 }
 
@@ -114,25 +140,52 @@ bool CtiServerApplication::getCanStart() {
 	return this->canStart;
 }
 
+bool CtiServerApplication::start()
+{
+	// ConfigurationChecker will check if database configuration will change
+	this->configChecker = new ConfigurationChecker();
+	connect(this->configChecker, SIGNAL(newConfiguration(AstCtiConfiguration*)),
+			this, SLOT(reloadSettings(AstCtiConfiguration*)));
+
+	QThread *configThread = new QThread(this);
+	this->configChecker->moveToThread(configThread);
+	connect(configThread, SIGNAL(started()),
+			this->configChecker, SLOT(run()));
+	connect(configThread, SIGNAL(finished()),
+			this->configChecker, SLOT(deleteLater()));
+	configThread->start();
+
+	//Configuration checker thread will read configuration from database
+	//And fire newConfiguration signal, which we will catch in reloadSettings slot
+
+	return this->exec();
+}
+
 void  CtiServerApplication::reloadSettings(AstCtiConfiguration *newConfig)
 {
-	if (this->config == 0) {
-		//Configuration has been read for the first time
-		this->config = newConfig;
+	if (this->coreTcpServer == 0) {
+		//Configuration has not been read before
+
+		if (newConfig == 0) {
+			//Reading configuration has failed, exit the application
+			this->exit(exitCodeFailure);
+			return;
+		}
+
 		//This will create CoreTcpServer object which will initiate AMI connection
 		//and start acccepting client connections
-		if (!this->buildCoreTcpServer()) {
+		if (!this->buildCoreTcpServer(newConfig)) {
 			this->exit(exitCodeFailure);
 		}
 	} else {
-		// TODO : Compare old and new configurations and act accordingly
-		// TODO : If AMI parameters are changed, AMI connection should be dropped and reestablished
-		// TODO : If CTI server address or port are changed, all clients should be disconnected
-		// TODO : If operators or seats are changed, some clients may have to be disconnected
+		if (newConfig == 0) {
+			//Reading configuration has failed, we keep the current configuration
+			//Config checker will try to read configuration again
+			return;
+		}
 
-		AstCtiConfiguration *tempConfig = this->config;
-		this->config = newConfig;
-		delete tempConfig;
+		//CoreTcpServer will apply new configuration
+		this->coreTcpServer->setConfig(newConfig);
 	}
 }
 
@@ -141,9 +194,9 @@ CtiServerApplication *CtiServerApplication::instance()
     return (static_cast<CtiServerApplication*>(QCoreApplication::instance()));
 }
 
-bool CtiServerApplication::buildCoreTcpServer()
+bool CtiServerApplication::buildCoreTcpServer(AstCtiConfiguration *config)
 {
-	this->coreTcpServer = new CoreTcpServer(this->debug, this->config, this);
+	this->coreTcpServer = new CoreTcpServer(config, this);
 //	connect(this->coreTcpServer, SIGNAL(destroyed()),
 //			this, SLOT(quit()));
 	return true;
@@ -161,8 +214,7 @@ QString CtiServerApplication::readDatabaseVersion()
 
 bool CtiServerApplication::createDatabaseConnection(const QString &iniFilePath)
 {
-	if (this->debug)
-		qDebug() << "Reading settings from file" << iniFilePath;
+	QLOG_INFO() << "Reading settings from file" << iniFilePath;
 
 	QString sqlHost;
 	QString sqlUserName;
@@ -170,10 +222,12 @@ bool CtiServerApplication::createDatabaseConnection(const QString &iniFilePath)
 	quint16 sqlPort;
 	QString sqlDatabase;
 
+	QFile configFile(iniFilePath);
+	// Make sure we are in application's directory if relative path was given
+	QDir::setCurrent(CtiServerApplication::instance()->applicationDirPath());
 	// Check that the config file exists
-	QFile cfile(iniFilePath);
-	if (cfile.exists() && cfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        cfile.close();
+	if (configFile.exists() && configFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		configFile.close();
 
         // Instantiate a QSettings object for read/write from/to ini file
 		QSettings settings(iniFilePath, QSettings::IniFormat);
@@ -193,7 +247,6 @@ bool CtiServerApplication::createDatabaseConnection(const QString &iniFilePath)
 		sqlDatabase = defaultSqlDatabase;
     }
 
-	DB::debug = this->debug;
 	if (!DB::buildConnection(sqlHost, sqlPort, sqlUserName, sqlPassWord, sqlDatabase)) {
 		return false;
 	}
@@ -203,24 +256,8 @@ bool CtiServerApplication::createDatabaseConnection(const QString &iniFilePath)
 		return false;
 	}
 
-	if (this->debug) {
-		qDebug() << "Database connection successfully created";
-		qDebug() << "Database version" << dbVersion;
-	}
+	QLOG_INFO() << "Database connection successfully created";
+	QLOG_INFO() << "Database version" << dbVersion;
+
 	return true;
-}
-
-bool CtiServerApplication::containsUser(const QString &username)
-{
-    return this->coreTcpServer->containsUser(username);
-}
-
-void CtiServerApplication::addUser(const QString &username)
-{
-    this->coreTcpServer->addUser(username);
-}
-
-void CtiServerApplication::removeUser(const QString &username)
-{
-    this->coreTcpServer->removeUser(username);
 }

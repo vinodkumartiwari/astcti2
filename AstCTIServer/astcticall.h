@@ -42,51 +42,52 @@
 #include <QObject>
 #include <QHash>
 #include <QMap>
+#include <QMetaType>
 
 #include "astctiaction.h"
 
 class AstCtiCall : public QObject
 {
-    
     Q_OBJECT
 
 public:
-	AstCtiCall(QObject *parent=0);
+	explicit AstCtiCall(QObject *parent=0);
 	~AstCtiCall();
 
     QString                 &getChannel();
-    void                    setChannel(QString channel);
+	void                    setChannel(const QString &channel);
     QString                 &getParsedChannel();
-    void                    setParsedChannel(QString parsedChannel);
+	void                    setParsedChannel(const QString &parsedChannel);
 
     QString                 &getDestChannel();
-    void                    setDestChannel(QString channel);
+	void                    setDestChannel(const QString &channel);
     QString                 &getParsedDestChannel();
-    void                    setParsedDestChannel(QString parsedChannel);
+	void                    setParsedDestChannel(const QString &parsedChannel);
 
     QString                 &getCalleridNum();
-    void                    setCalleridNum(QString callerIdNum);
+	void                    setCalleridNum(const QString &callerIdNum);
     QString                 &getCalleridName();
-    void                    setCalleridName(QString callerIdName);
+	void                    setCalleridName(const QString &callerIdName);
 
 	QString                 &getUniqueId();
-    void                    setUniqueId(QString uniqueId);
+	void                    setUniqueId(const QString &uniqueId);
     QString                 &getDestUniqueId();
-    void                    setDestUniqueId(QString uniqueId);
+	void                    setDestUniqueId(const QString &uniqueId);
 
     QString                 &getContext();
-    void                    setContext(QString context);
+	void                    setContext(const QString &context);
 
 	QString                 &getState();
-    void                    setState(QString state);
+	void                    setState(const QString &state);
 
 	QString                 &getExten();
-	void                    setExten(QString exten);
+	void                    setExten(const QString &exten);
 
 	QString                 &getAccountCode();
-	void                    setAccountCode(QString accountCode);
+	void                    setAccountCode(const QString &accountCode);
 
-    void                    addVariable(QString key, QString value);
+	void                    addVariable(const QString &name, const QString &value);
+	void                    setVariable(const QString &name, const QString &value);
 
 	void                    setActions(QMap<int, AstCtiAction*> *callActions);
     void                    setOperatingSystem(QString operatingSystem);
@@ -94,7 +95,8 @@ public:
     QString                 toXml();
     
 private:
-    QString                         channel;
+	Q_DISABLE_COPY(AstCtiCall)
+	QString                         channel;
     QString                         parsedChannel;
     QString                         destChannel;
     QString                         parsedDestChannel;
@@ -108,11 +110,12 @@ private:
 	QString                         accountCode;
 	AstCtiActionOsType              clientOperatingSystem;
 
-	QHash<QString, QString>        *variables;
+	QHash<QString, QString>         variables;
 	QMap<int, AstCtiAction*>       *actions;
 
 	QString                         parseChannel(const QString &channel);
     void                            parseActionsParameters();
 };
+Q_DECLARE_METATYPE(AstCtiCall*)
 
 #endif // ASTCTICALL_H

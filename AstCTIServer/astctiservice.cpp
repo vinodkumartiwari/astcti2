@@ -123,12 +123,12 @@ QString AstCtiService::getQueueName()
     return this->queueName;
 }
 
-bool AstCtiService::hasVariable(const QString &variableName)
+QStringList *AstCtiService::getVariables()
 {
-	return this->variables.contains(variableName);
+	return &(this->variables);
 }
 
 QMap<int, AstCtiAction*> *AstCtiService::getActions()
 {
-    return &this->actions;
+	return &(this->actions);
 }

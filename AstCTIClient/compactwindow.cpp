@@ -92,7 +92,7 @@ bool CompactWindow::eventFilter(QObject *object, QEvent *e)
 
     QEvent::Type type = e->type();
 
-    QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(e);
+	QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(e);
 
     if (isValidDrag(mouseEvent)) {
         this->dragOrigin = mouseEvent->globalPos();

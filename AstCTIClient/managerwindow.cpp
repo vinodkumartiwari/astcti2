@@ -381,7 +381,7 @@ bool ManagerWindow::eventFilter(QObject *object, QEvent *e)
     QEvent::Type type = e->type();
 
     if (object == this->ui->captionLabel) {
-        QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(e);
+		QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(e);
 
         if (isValidDrag(mouseEvent)) {
             this->dragOrigin = mouseEvent->globalPos();

@@ -49,7 +49,7 @@
   Obtain the command line arguments from the currently
   running QApplication */
 
-QArgumentList::QArgumentList()
+ArgumentList::ArgumentList()
 {
     if (qApp != NULL) {
         /* a global pointer to the current qApplication */
@@ -57,19 +57,19 @@ QArgumentList::QArgumentList()
     }
 }
 
-void QArgumentList::argsToStringlist(int argc, char * argv [])
+void ArgumentList::argsToStringlist(int argc, char * argv [])
 {
     for (int i=0; i < argc; ++i) {
         *this += argv[i];
     }
 }
 
-bool QArgumentList::isSwitch(QString arg) const
+bool ArgumentList::isSwitch(QString arg) const
 {
     return arg.startsWith('-');
 }
 
-bool QArgumentList::getSwitch (QString option)
+bool ArgumentList::getSwitch (QString option)
 {
     QMutableStringListIterator itr(*this);
     while (itr.hasNext()) {
@@ -81,7 +81,7 @@ bool QArgumentList::getSwitch (QString option)
     return false;
 }
 
-QString QArgumentList::getSwitchArg(QString option, QString defaultValue)
+QString ArgumentList::getSwitchArg(QString option, QString defaultValue)
 {
     if (isEmpty()) {
         return defaultValue;

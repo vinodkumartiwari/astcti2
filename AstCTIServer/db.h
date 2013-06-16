@@ -68,8 +68,6 @@ public:
 	static int executeNonQuery(const QString &sql);
 	static int executeNonQuery(const QString &sql, const QVariantList &params);
 
-	static bool debug;
-
 private:
 	static QSqlQuery     *execSQL(const QString &sql, const QVariantList &params, bool *ok);
 	static QSqlDatabase  *connection;
