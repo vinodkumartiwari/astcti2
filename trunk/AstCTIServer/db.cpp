@@ -39,13 +39,13 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include "QsLog.h"
 #include "db.h"
 
 //Define static variables
 QSqlDatabase *DB::connection;
 bool DB::supportsTransactions;
 bool DB::inTransaction;
-bool DB::debug = false;
 
 //Creates a database connection and adds it to the list of connections for later use
 bool DB::buildConnection(const QString &host, quint16 &port,
@@ -65,8 +65,7 @@ bool DB::buildConnection(const QString &host, quint16 &port,
 
 		return true;
 	} else {
-		if (debug)
-			qDebug() << "Unable to create database connection.";
+		QLOG_ERROR() << "Unable to create database connection:" << connection->lastError();
 		return false;
 	}
 }
@@ -75,8 +74,9 @@ bool DB::buildConnection(const QString &host, quint16 &port,
 bool DB::openConnection()
 {
 	if (!connection->isOpen())
-		if (!connection->open())
-			qCritical() << "Unable to open MySQL database: " << connection->lastError() << "\n";
+		if (!connection->open()) {
+			QLOG_ERROR() << "Unable to open MySQL database:" << connection->lastError();
+		}
 
 	return connection->isOpen();
 }
@@ -112,8 +112,7 @@ bool DB::beginTransaction()
 			else
 				logMsg.append("No error information available.");
 
-			if (debug)
-				qDebug() << logMsg;
+			QLOG_ERROR() << logMsg;
 		}
 	}
 
@@ -133,8 +132,7 @@ bool DB::commitTransaction()
 			else
 				logMsg.append("No error information available.");
 
-			if (debug)
-				qDebug() << logMsg;
+			QLOG_ERROR() << logMsg;
 		}
 	}
 
@@ -154,8 +152,7 @@ bool DB::rollbackTransaction()
 			else
 				logMsg.append("No error information available.");
 
-			if (debug)
-				qDebug() << logMsg;
+			QLOG_ERROR() << logMsg;
 		}
 	}
 
@@ -195,8 +192,7 @@ QSqlQuery *DB::execSQL(const QString &sql, const QVariantList &params, bool *ok)
 		else
 			logMsg.append("\nNo error information available.");
 
-		if (debug)
-			qDebug() << logMsg;
+		QLOG_ERROR() << logMsg;
 	}
 
 	return query;
@@ -267,9 +263,8 @@ QVariantList DB::readRow(const QString &sql, const QVariantList &params, bool *o
 		*ok = query->first();
 		if (*ok) {
 			const int columnCount = query->record().count();
-			for (int column = 0; column < columnCount; column++) {
+			for (int column = 0; column < columnCount; column++)
 				result.append(query->value(column));
-			}
 		}
 	}
 
@@ -294,13 +289,11 @@ QList<QVariantList> DB::readTable(const QString &sql, const QVariantList &params
 	if (*ok) {
 		const int columnCount = query->record().count();
 		QVariantList rowData;
-		for (int column = 0; column < columnCount; column++) {
+		for (int column = 0; column < columnCount; column++)
 			rowData.append(QVariant());
-		}
 		while (query->next()) {
-			for (int column = 0; column < columnCount; column++) {
+			for (int column = 0; column < columnCount; column++)
 				rowData[column] = query->value(column);
-			}
 			result.append(rowData);
 		}
 	}

@@ -61,7 +61,7 @@ class ConfigurationChecker : public QObject
     Q_OBJECT
 
 public:
-	explicit ConfigurationChecker(const bool &debug);
+	explicit ConfigurationChecker(QObject *parent=0);
     ~ConfigurationChecker();
 	void                stop();
 
@@ -72,13 +72,14 @@ signals:
 	void				newConfiguration(AstCtiConfiguration *newConfig);
 
 private:
-    int                 readLastModified();
+	Q_DISABLE_COPY(ConfigurationChecker)
+	int                 readLastModified();
 	QVariant            readSetting(const QString &name, const QVariant &defaultValue);
-	void                readConfiguration();
+	bool                readConfiguration();
+	QString             timestampToString(const long timestamp);
 	void                delay(const int secs);
 	int                 lastTimeStamp;
 	bool                isRunning;
-	bool                debug;
 };
 
 #endif // CONFIGURATIONCHECKER_H

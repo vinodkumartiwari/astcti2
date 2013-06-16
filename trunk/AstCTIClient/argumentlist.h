@@ -85,14 +85,14 @@ someObject.processEveryFile(args);
 
 */
 
-class QArgumentList : public QStringList
+class ArgumentList : public QStringList
 {
   public:
     /**
     retrieve argument list from the qApp->argc() and argv() methods.
     Only works if a @ref QApplication(argc, argv) was already created.
     */
-    QArgumentList();
+    ArgumentList();
 
     /**
      @param argc number of arguments
@@ -101,11 +101,11 @@ class QArgumentList : public QStringList
        @see argsToStringList()
      */
      
-    QArgumentList(int argc, char* argv[]) {
+    ArgumentList(int argc, char* argv[]) {
         argsToStringlist(argc, argv);
     }
 
-    QArgumentList(const QStringList& argumentList):
+    ArgumentList(const QStringList& argumentList):
        QStringList(argumentList) {}
 
 

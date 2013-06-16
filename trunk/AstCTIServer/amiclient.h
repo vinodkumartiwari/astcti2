@@ -55,6 +55,7 @@ enum AmiClientStatus {
     AmiStatusRequestingSip,
 	AmiStatusRequestingQueues
 };
+Q_DECLARE_METATYPE(AmiClientStatus)
 
 enum AmiEvent {
 	AmiEventFullyBooted,
@@ -69,11 +70,13 @@ enum AmiEvent {
 	AmiEventExtensionStatus,
 	AmiEventPeerStatus
 };
+Q_DECLARE_METATYPE(AmiEvent)
 
 enum AmiConnectionStatus {
     AmiConnectionStatusDisconnected,
 	AmiConnectionStatusConnected
 };
+Q_DECLARE_METATYPE(AmiConnectionStatus)
 
 class AmiClient : public QObject
 {
@@ -83,7 +86,7 @@ class AmiClient : public QObject
 	Q_ENUMS(AmiConnectionStatus)
 
 public:
-	explicit AmiClient(bool debug, AstCtiConfiguration *config);
+	explicit AmiClient();
 	~AmiClient();
 	QString                         getActionName(const AmiAction action);
 	QString                         getEventName(const AmiEvent event);
@@ -91,21 +94,27 @@ public:
 
 public slots:
 	void                            run();
+	void                            setParameters(AstCtiConfiguration *config);
 	void                            sendCommandToAsterisk(AmiCommand *command);
 
 signals:
-	//void                            error(int socketError, const QString &message);
-	//void                            receiveDataFromAsterisk(const QString &data);
-	void                            ctiEvent(const AmiEvent &eventId, AstCtiCall *call);
-	void                            ctiResponse(AmiCommand *command);
+	void                            asteriskEvent(const AmiEvent &eventId, AstCtiCall *call);
+	void                            asteriskResponse(AmiCommand *command);
 	void                            amiConnectionStatusChange(const AmiConnectionStatus status);
 
 private:
-	AstCtiConfiguration            *config;
-	QHash<QString, AstCtiCall*>    *activeCalls;
-	QHash<int, AmiCommand*>        *pendingAmiCommands;
+	Q_DISABLE_COPY(AmiClient)
+	QString                         amiHost;
+	quint16                         amiPort;
+	QString                         amiUser;
+	QString                         amiSecret;
+	quint16                         amiConnectTimeout;
+	quint16                         amiReadTimeout;
+	quint16                         amiConnectRetryAfter;
+
 	QTcpSocket                     *localSocket;
-	bool                            debug;
+	QHash<QString, AstCtiCall*>     activeCalls;
+	QHash<int, AmiCommand*>         pendingAmiCommands;
 	int                             currentActionId;
 	bool                            isRunning;
     QString                         dataBuffer;
@@ -118,11 +127,13 @@ private:
 	QHash<QString, QString>*        hashFromMessage(QString data);
 	void                            evaluateEvent(QHash<QString, QString> *event);
 	void                            evaluateResponse(QHash<QString, QString> *response);
+	QString                         socketStateToString(QAbstractSocket::SocketState socketState);
+	QString							eventToString(QHash<QString, QString> *event);
 	void							delay(const int secs);
 
 private slots:
     void                            socketStateChanged(QAbstractSocket::SocketState socketState);
-    void                            socketError(QAbstractSocket::SocketError socketError);
+	void                            socketError(QAbstractSocket::SocketError error);
     void                            socketDisconnected();
 };
 

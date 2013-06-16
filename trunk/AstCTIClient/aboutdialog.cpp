@@ -128,7 +128,7 @@ void AboutDialog::on_btnShowLicense_clicked()
     layout->addWidget(buttonBox);
 
     QString appPath = QCoreApplication::applicationDirPath();
-    QString fileName = appPath + "/license.txt";
+	QString fileName = appPath + "/LICENSE.txt";
     QFile file(fileName);
 
     QString licenseText;

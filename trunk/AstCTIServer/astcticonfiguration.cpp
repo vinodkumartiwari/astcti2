@@ -41,7 +41,7 @@
 
 #include "astcticonfiguration.h"
 
-AstCtiConfiguration::AstCtiConfiguration()
+AstCtiConfiguration::AstCtiConfiguration(QObject *parent) : QObject(parent)
 {
 }
 

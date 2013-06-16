@@ -56,8 +56,8 @@ class AstCtiService : public QObject
 	Q_ENUMS(AstCtiServiceType)
 
 public:
-	AstCtiService(const int &id, const QString &name, const QString &contextType,
-				   const QString &queueName, QObject *parent=0);
+	explicit AstCtiService(const int &id, const QString &name, const QString &contextType,
+						   const QString &queueName, QObject *parent=0);
 	~AstCtiService();
 
 	int                          getId();
@@ -66,21 +66,22 @@ public:
 	bool                         getServiceIsQueue();
 	QString                      getQueueName();
 
-	bool                         hasVariable(const QString &variableName);
-	QMap<int, AstCtiAction*>  *getActions();
+	QStringList                 *getVariables();
+	QMap<int, AstCtiAction*>    *getActions();
 
 	bool                         loadVariables();
 	bool                         loadActions(QHash<int, AstCtiAction*> *actionList);
 
 private:
-	int                         serviceId;
-	QString                     name;
-	AstCtiServiceType           contextType;
-	QString                     queueName;
+	Q_DISABLE_COPY(AstCtiService)
+	int                          serviceId;
+	QString                      name;
+	AstCtiServiceType            contextType;
+	QString                      queueName;
 
-	QStringList                 variables;
+	QStringList                  variables;
 	//QMap is needed for storing ordered items
-	QMap<int, AstCtiAction*>   actions;
+	QMap<int, AstCtiAction*>     actions;
 };
 
 #endif // ASTCTISERVICE_H

@@ -46,14 +46,15 @@ class AstCtiSeat : public QObject
     Q_OBJECT
 
 public:
-	AstCtiSeat(const QString &mac, const QString &exten,
-				const QString &description, QObject *parent=0);
+	explicit AstCtiSeat(const QString &mac, const QString &exten,
+						const QString &description, QObject *parent=0);
 	~AstCtiSeat();
 	QString getMac();
 	QString getExten();
     QString getDescription();
 
 private:
+	Q_DISABLE_COPY(AstCtiSeat)
 	QString mac;
 	QString exten;
     QString description;

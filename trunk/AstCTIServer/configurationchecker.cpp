@@ -36,22 +36,19 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include <QDebug>
-
+#include "QsLog.h"
 #include "configurationchecker.h"
 #include "db.h"
 
-ConfigurationChecker::ConfigurationChecker(const bool &debug) :
-		QObject()
+ConfigurationChecker::ConfigurationChecker(QObject *parent) : QObject(parent)
 {
-	this->debug = debug;
+	QLOG_INFO() << "Creating ConfigurationChecker";
 	this->isRunning = true;
 }
 
 ConfigurationChecker::~ConfigurationChecker()
 {
-	if (this->debug)
-		qDebug() << "In ConfigurationChecker::~ConfigurationChecker()";
+	QLOG_INFO() << "Closing ConfigurationChecker";
 	this->isRunning = false;
 }
 
@@ -64,14 +61,10 @@ void ConfigurationChecker::run()
 	while (this->isRunning) {
 		modified = readLastModified();
         if (modified > this->lastTimeStamp) {
-			if (this->debug) {
-				QDateTime timeStamp;
-				timeStamp.setTime_t(modified);
-				qDebug() << "Configuration has changed on"
-						 << timeStamp.toString(Qt::SystemLocaleShortDate);
-			}
-			this->lastTimeStamp = modified;
-			this->readConfiguration();
+			QLOG_INFO() << "Configuration has changed on" << this->timestampToString(modified);
+
+			if (this->readConfiguration())
+				this->lastTimeStamp = modified;
         }
 		this->delay(30);
     }
@@ -95,10 +88,9 @@ int ConfigurationChecker::readLastModified()
 	return ok ? result.toInt() : 0;
 }
 
-void ConfigurationChecker::readConfiguration()
+bool ConfigurationChecker::readConfiguration()
 {
-	if (this->debug)
-		qDebug() << "Reading configuration settings from database";
+	QLOG_INFO() << "Reading configuration settings from database";
 
 	AstCtiConfiguration *config = new AstCtiConfiguration();
 
@@ -124,7 +116,7 @@ void ConfigurationChecker::readConfiguration()
 			readSetting("cti_connect_timeout",          defaultCtiConnectTimeout).toInt();
 	config->ctiReadTimeout =
 			readSetting("cti_read_timeout",             defaultCtiReadTimeout).toInt();
-	config->ctiSocketCompressionLevel =
+	config->ctiCompressionLevel =
 			readSetting("cti_socket_compression_level", defaultCtiSocketCompressionLevel).toInt();
 
 	bool ok;
@@ -214,11 +206,12 @@ void ConfigurationChecker::readConfiguration()
 		emit this->newConfiguration(config);
 	} else {
 		delete config;
-		if (this->debug)
-			qDebug() << "Reading configuration failed.";
+		QLOG_ERROR() << "Reading configuration failed.";
 		//Let the main thread know that reading configuration has failed
 		emit this->newConfiguration(0);
 	}
+
+	return ok;
 }
 
 QVariant ConfigurationChecker::readSetting(const QString &name, const QVariant &defaultValue)
@@ -233,6 +226,12 @@ QVariant ConfigurationChecker::readSetting(const QString &name, const QVariant &
 		//TODO: We return the default value in case of an error.
 		//TODO: Perhaps execution should be stopped in that case
 		return defaultValue;
+}
+
+QString ConfigurationChecker::timestampToString(const long timestamp) {
+	QDateTime datetime;
+	datetime.setTime_t(timestamp);
+	return datetime.toString(Qt::SystemLocaleShortDate);
 }
 
 void ConfigurationChecker::delay(const int secs)

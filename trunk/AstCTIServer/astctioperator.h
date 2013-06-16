@@ -50,9 +50,9 @@ class AstCtiOperator : public QObject
     Q_OBJECT
 
 public:
-	AstCtiOperator(const int &id, const QString &fullName, const QString &username,
-				   const QString &password, bool beginInPause, bool isCallCenter,
-				   QObject *parent=0);
+	explicit AstCtiOperator(const int &id, const QString &fullName, const QString &username,
+							const QString &password, bool beginInPause, bool isCallCenter,
+							QObject *parent=0);
 	~AstCtiOperator();
 
 	int                           getId();
@@ -68,7 +68,8 @@ public:
 	bool                          loadServices(QHash<int, AstCtiService*> *serviceList);
 	QHash<AstCtiService*, int>   *getServices();
 
-private:    
+private:
+	Q_DISABLE_COPY(AstCtiOperator)
 	int      operatorId;
 	QString  fullName;
 	QString  username;

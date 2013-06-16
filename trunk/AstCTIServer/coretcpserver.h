@@ -41,73 +41,112 @@
 
 #include <QObject>
 #include <QThread>
-#include <QMutex>
 #include <QtNetwork>
 #include <QHash>
-#include <QList>
+#include <QStringList>
 
 #include "clientmanager.h"
 #include "astcticonfiguration.h"
 #include "amiclient.h"
 
+struct AstCTICommand
+{
+	QString command;
+	QStringList parameters;
+};
+
+enum AstCTICommands {
+	CmdNotDefined,
+	CmdNoOp,
+	CmdQuit,
+	CmdCompression,
+	CmdUser,
+	CmdPass,
+	CmdChangePassword,
+	CmdMac,
+	CmdExten,
+	CmdKeep,
+	CmdOsType,
+	CmdIden,
+	CmdServices,
+	CmdQueues,
+	CmdPause,
+	CmdOrig,
+	CmdStop
+};
+
 class CoreTcpServer : public QTcpServer
 {
     Q_OBJECT
+	Q_ENUMS(AstCTICommands)
 
 public:
-	CoreTcpServer(bool debug, AstCtiConfiguration *config, QObject *parent = 0);
+	explicit CoreTcpServer(AstCtiConfiguration *config, QObject *parent=0);
     ~CoreTcpServer();
-	bool  containsUser(const QString &username);
+	AstCtiConfiguration *getConfig();
+	void setConfig(AstCtiConfiguration *newConfig);
 
 public slots:
-	void  addUser(const QString &username);
-	void  removeUser(const QString &username);
+	void stopServer();
 
 signals:
-	void  sendDataFromServer(const QString &data);
-	void  serverIsClosing();
-	void  newAmiCommand(AmiCommand *command);
-	void  amiClientDisconnected();
-	void  amiClientPauseIn(ClientManager *cl);
-	void  amiClientPauseOut(ClientManager *cl);
-	void  amiClientLogin(ClientManager *cl);
-	void  amiClientLogoff(ClientManager *cl);
-	void  ctiClientLogoffSent();
-	void  ctiClientPauseInResult(const QString &identifier, const bool &result,
-								 const QString &reason);
-	void  ctiClientPauseOutResult(const QString &identifier, const bool &result,
-								  const QString &reason);
-	void  ctiResponse(const QString &identifier, const QString &actionName,
-					  const QString &responseString, const QString &responseMessage);
+	//AmiClient
+	void newAmiConfiguration(AstCtiConfiguration *config);
+	void newAmiCommand(AmiCommand *command);
 
-protected:
-    QHash<QString, ClientManager*>  *clients;
-    QList<QString>                  *users;
-    void                            incomingConnection(int socketDescriptor);    
-    bool                            containsClient(const QString &exten);
+	//TODO
+	void serverIsClosing();
 
-protected slots:
-    void                            addClient(const QString &exten, ClientManager *cl);
-    void                            changeClient(const QString &oldexten, const QString &newexten);
-    void                            removeClient(const QString &exten);
-    void                            notifyClient(const QString &data);
-	void                            stopServer(bool closeSocket);
-	void                            amiConnectionStatusChange(const AmiConnectionStatus status);
-	void                            receiveCtiEvent(const AmiEvent &eventid, AstCtiCall *call);
-	void                            receiveCtiResponse(AmiCommand *command);
-    // Slots to receive CTI Client events
-    void                            ctiClientPauseIn(ClientManager *cl);
-    void                            ctiClientPauseOut(ClientManager *cl);
-    void                            ctiClientLogin(ClientManager *cl);
-    void                            ctiClientLogoff(ClientManager *cl);
+//	void amiClientDisconnected();
+//	void amiClientPauseIn(ClientManager *cl);
+//	void amiClientPauseOut(ClientManager *cl);
+//	void amiClientLogin(ClientManager *cl);
+//	void amiClientLogoff(ClientManager *cl);
 
 private:
-	AstCtiConfiguration  *config;
-	AmiClient            *amiClient;
-	bool                  debug;
-	QMutex                mutexClientList;
-	QMutex                mutexUsersList;
-	bool                  isClosing;
+	Q_DISABLE_COPY(CoreTcpServer)
+	AstCtiConfiguration                 *config;
+	AmiClient                           *amiClient;
+	QHash<QTcpSocket*, ClientManager*>   clients;
+	QStringList                          users;
+	QHash<QString, int>                  commandsList;
+	bool                                 isClosing;
+	AmiConnectionStatus                  amiStatus;
+	AstCTICommand                        parseCommand(const QString &command);
+	bool                                 startListening();
+	void                                 stopListening();
+	bool                                 containsUser(const QString &username);
+	void                                 addUser(const QString &username);
+	void                                 removeUser(const QString &username);
+	void                                 processClientData(QTcpSocket *socket, const QString &data);
+	void                                 sendDataToClient(QTcpSocket *socket, const QString &data);
+	void                                 addClient(QTcpSocket *socket, ClientManager *cm);
+	void                                 removeClient(QTcpSocket *socket);
+	void                                 disconnectClients();
+	ClientManager                       *getClientByExten(const QString &exten);
+	void                                 ctiClientLogin(ClientManager *cm);
+	void                                 ctiClientLogoff(ClientManager *cm);
+	void                                 ctiClientPauseIn(ClientManager *cm);
+	void                                 ctiClientPauseOut(ClientManager *cm);
+	void                                 pauseInResult(ClientManager *cm, bool result,
+													   const QString &reason);
+	void                                 pauseOutResult(ClientManager *cm, bool result,
+														const QString &reason);
+	void                                 ctiResponse(ClientManager *cm, const QString &actionName,
+													 const QString &responseString,
+													 const QString &responseMessage);
+
+private slots:
+	//QTcpSocket
+	void                            newConnection();
+	void                            socketDataReceived();
+	void                            socketDisconnected();
+	void                            socketError(QAbstractSocket::SocketError error);
+
+	//AmiClient
+	void                            amiConnectionStatusChange(const AmiConnectionStatus status);
+	void                            receiveAsteriskEvent(const AmiEvent &eventid, AstCtiCall *call);
+	void                            processAsteriskResponse(AmiCommand *command);
 };
 
 #endif // CORETCPSERVER_H
