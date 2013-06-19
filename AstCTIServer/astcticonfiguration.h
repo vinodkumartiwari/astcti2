@@ -72,7 +72,7 @@ public:
 
 	QHash<int, AstCtiAction*>        actions;
 	QHash<int, AstCtiService*>       services;
-	QHash<QString, AstCtiSeat*>      seats;
+	QHash<int, AstCtiSeat*>          seats;
 	QHash<QString, AstCtiOperator*>  operators;
 
 	AstCtiService    *getServiceByName(const QString &serviceName);

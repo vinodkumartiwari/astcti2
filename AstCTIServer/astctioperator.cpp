@@ -39,8 +39,8 @@
 #include "db.h"
 #include "astctioperator.h"
 
-AstCtiOperator::AstCtiOperator(const int &id, const QString &fullName, const QString &username,
-								 const QString &password, bool beginInPause, bool isCallCenter,
+AstCtiOperator::AstCtiOperator(int id, const QString &fullName, const QString &username,
+								 const QString &password, bool beginInPause, int seatID,
 								 QObject *parent) : QObject(parent)
 {
 	this->operatorId = id;
@@ -48,7 +48,7 @@ AstCtiOperator::AstCtiOperator(const int &id, const QString &fullName, const QSt
 	this->username = username;
 	this->password = password;
 	this->beginInPause = beginInPause;
-	this->isCallCenter = isCallCenter;
+	this->seatId = seatID;
 }
 
 AstCtiOperator::~AstCtiOperator()
@@ -62,9 +62,9 @@ bool AstCtiOperator::loadServices(QHash<int, AstCtiService*> *serviceList)
 	bool ok;
 	QVariantList params;
 	params.append(this->operatorId);
-	const QList<QVariantList> serviceData =	DB::readTable("SELECT ID_SERVICE,PENALTY "
-														  "FROM services_operators "
-														  "WHERE ID_OPERATOR=?", params, &ok);
+	const QList<QVariantList> serviceData =
+			DB::readTable("SELECT ID_SERVICE,PENALTY FROM services_operators "
+						  "WHERE ID_OPERATOR=? AND ENABLED=1", params, &ok);
 	if (ok) {
 		const int listSize = serviceData.size();
 		for (int i = 0; i < listSize; i++) {
@@ -72,9 +72,8 @@ bool AstCtiOperator::loadServices(QHash<int, AstCtiService*> *serviceList)
 			const int serviceId = serviceRow.at(0).toInt();
 			const int penalty = serviceRow.at(1).toInt();
 			AstCtiService *service = serviceList->value(serviceId);
-			if (service != 0) {
+			if (service != 0)
 				this->services.insert(service, penalty);
-			}
 		}
 	}
 
@@ -125,9 +124,15 @@ bool AstCtiOperator::getBeginInPause()
     return this->beginInPause;
 }
 
-bool AstCtiOperator::getIsCallCenter()
+int AstCtiOperator::getSeatId()
 {
-	return this->isCallCenter;
+	return this->seatId;
+}
+
+bool AstCtiOperator::isCallCenter()
+{
+	//Opeartors that don't have associated seat are considered call-center operators
+	return this->seatId == 0;
 }
 
 QHash<AstCtiService*, int> *AstCtiOperator::getServices()

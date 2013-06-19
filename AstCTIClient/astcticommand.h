@@ -52,13 +52,11 @@ enum AstCTICommands {
     CmdPass,
     CmdChangePassword,
     CmdMac,
-	CmdExten,
     CmdOsType,
     CmdServices,
     CmdQueues,
     CmdPause,
-    CmdOrig,
-	CmdStop
+	CmdOrig
 };
 
 struct AstCTICommand

@@ -68,10 +68,10 @@ ClientManager::~ClientManager()
 	// this->activeOperator does not need to be deleted as it is not allocated in this class
 }
 
-QString ClientManager::getExten()
+QStringList ClientManager::getExtensions()
 {
 	if (this->activeSeat == 0)
-		return "";
+		return QStringList();
 	else
-		return this->activeSeat->getExten();
+		return this->activeSeat->getExtensions();
 }

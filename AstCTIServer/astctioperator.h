@@ -50,8 +50,8 @@ class AstCtiOperator : public QObject
     Q_OBJECT
 
 public:
-	explicit AstCtiOperator(const int &id, const QString &fullName, const QString &username,
-							const QString &password, bool beginInPause, bool isCallCenter,
+	explicit AstCtiOperator(int id, const QString &fullName, const QString &username,
+							const QString &password, bool beginInPause, int seatID,
 							QObject *parent=0);
 	~AstCtiOperator();
 
@@ -60,7 +60,8 @@ public:
 	QString                       getUsername();
 	QString                       getPassword();
 	bool                          getBeginInPause();
-	bool                          getIsCallCenter();
+	int                           getSeatId();
+	bool                          isCallCenter();
 
 	bool                          changePassword(QString &newPassword);
 	bool                          checkPassword(const QString &password);
@@ -75,7 +76,7 @@ private:
 	QString  username;
 	QString  password;
 	bool     beginInPause;
-	bool     isCallCenter;
+	int      seatId;
 
 	QHash<AstCtiService*, int> services;
 };

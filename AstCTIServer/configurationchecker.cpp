@@ -57,9 +57,8 @@ void ConfigurationChecker::run()
 	// Initialize lastTimeStamp before first use
 	this->lastTimeStamp = 0;
 
-	long modified;
 	while (this->isRunning) {
-		modified = readLastModified();
+		long modified = this->readLastModified();
         if (modified > this->lastTimeStamp) {
 			QLOG_INFO() << "Configuration has changed on" << this->timestampToString(modified);
 
@@ -81,11 +80,10 @@ void ConfigurationChecker::stop()
 	this->isRunning = false;
 }
 
-int ConfigurationChecker::readLastModified()
+long ConfigurationChecker::readLastModified()
 {
-	bool ok;
-	QVariant result = DB::readScalar("SELECT LAST_UPDATE FROM dbversion LIMIT 1", &ok);
-	return ok ? result.toInt() : 0;
+	//If the conversion fails, toLongLong() returns 0, which is what we want
+	return this->readSetting("last_update", 0).toLongLong();
 }
 
 bool ConfigurationChecker::readConfiguration()
@@ -121,23 +119,34 @@ bool ConfigurationChecker::readConfiguration()
 
 	bool ok;
 
-	const QList<QVariantList> seatData = DB::readTable("SELECT SEAT_MAC,SEAT_EXTEN,DESCRIPTION "
+	const QList<QVariantList> seatData = DB::readTable("SELECT ID_SEAT,SEAT_MAC,DESCRIPTION "
 													   "FROM seats WHERE ENABLED=1", &ok);
 	if (ok) {
 		const int listSize = seatData.size();
 		for (int i = 0; i < listSize; i++) {
 			const QVariantList seatRow = seatData.at(i);
-			const QString exten = seatRow.at(0).toString();
-			AstCtiSeat *seat = new AstCtiSeat(exten, seatRow.at(1).toString(),
+			const int id = seatRow.at(0).toInt();
+			AstCtiSeat *seat = new AstCtiSeat(id, seatRow.at(1).toString(),
 											  seatRow.at(2).toString());
-			config->seats.insert(exten, seat);
+			ok = seat->loadExtensions();
+			if (!ok) {
+				delete seat;
+				break;
+			}
+
+			if (seat->getExtensions().size() > 0) {
+				config->seats.insert(id, seat);
+			} else {
+				QLOG_WARN() << "Seat ID" << id << "does not have any extensions.";
+				delete seat;
+			}
 		}
 	}
 
 	if (ok) {
 		const QList<QVariantList> actionData =
 				DB::readTable("SELECT ID_ACTION,ACTION_OS_TYPE,ACTION_TYPE,ACTION_DESTINATION,"
-							  "PARAMETERS,ENCODING FROM actions", &ok);
+							  "PARAMETERS,ENCODING FROM actions WHERE ENABLED=1", &ok);
 		if (ok) {
 			const int listSize = actionData.size();
 			for (int i = 0; i < listSize; i++) {
@@ -167,7 +176,8 @@ bool ConfigurationChecker::readConfiguration()
 				ok = service->loadVariables();
 				if (ok)
 					ok = service->loadActions(&(config->actions));
-				if (!ok){
+				if (!ok) {
+					delete service;
 					break;
 				}
 
@@ -179,7 +189,7 @@ bool ConfigurationChecker::readConfiguration()
 	if (ok) {
 		const QList<QVariantList> operatorData =
 				DB::readTable("SELECT ID_OPERATOR,FULL_NAME,USERNAME,PASS_WORD,"
-							  "BEGIN_IN_PAUSE,IS_CALL_CENTER "
+							  "BEGIN_IN_PAUSE,ID_SEAT "
 							  "FROM operators WHERE ENABLED=1", &ok);
 		if (ok) {
 			const int listSize = operatorData.size();
@@ -189,9 +199,10 @@ bool ConfigurationChecker::readConfiguration()
 				AstCtiOperator *op =
 						new AstCtiOperator(operatorRow.at(0).toInt(), operatorRow.at(1).toString(),
 										   username, operatorRow.at(3).toString(),
-										   operatorRow.at(4).toBool(), operatorRow.at(5).toBool());
+										   operatorRow.at(4).toBool(), operatorRow.at(5).toInt());
 				ok = op->loadServices(&(config->services));
-				if (!ok){
+				if (!ok) {
+					delete op;
 					break;
 				}
 
@@ -238,5 +249,5 @@ void ConfigurationChecker::delay(const int secs)
 {
 	QTime endTime = QTime::currentTime().addSecs(secs);
 	while (QTime::currentTime() < endTime && this->isRunning)
-		QCoreApplication::processEvents(QEventLoop::AllEvents, 1000);
+		QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }

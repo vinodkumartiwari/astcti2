@@ -1,8 +1,5 @@
-/* Copyright (C) 2007-2010 Bruno Salzano
+/* Copyright (C) 2007-2009 Bruno Salzano
  * http://centralino-voip.brunosalzano.com
- *
- * Copyright (C) 2007-2010 Lumiss d.o.o.
- * http://www.lumiss.hr
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +35,8 @@
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  *
- * Author: S. Alan Ezust sae@mcs.suffolk.edu
- * Code taken from: http://cartan.cas.suffolk.edu/oopdocbook/opensource/argumentlist.html
+ * Based on example by S. Alan Ezust (sae@mcs.suffolk.edu)
+ * http://cartan.cas.suffolk.edu/~zxu/teaching/F-12/C331/slides/argumentlist.html
  */
 
 #ifndef ARGUMENTLIST_H
@@ -47,99 +44,108 @@
 
 #include <QStringList>
 
+/** @short Interface for processing command line arguments
 
-/** @short a simple interface for processing command line arguments
+An object which provides an interface to the command line arguments of a program. The methods
+@ref getSwitch(QString), @ref getSwitchMulti(QString) and @ref getSwitchArg(QString, QString, bool)
+allow you to process <b>and remove</b> the switches and switched arguments in the command line,
+so that the remaining entries in the string list can be processed as a uniform list.
+<br>
+Arguments to getSwitch functions are passed without dashes
+(e.g "d" instead of "-d" or "debug" instead of "--debug")
+<br>
+Multiple short switches (single dash) can be grouped together (e.g. -dvt).
+For getSwitchArg function, if you set acceptArgWithoutSpace to true,
+argument can be provided without space (e.g. -e3 instead of -e 3).
+It is not recommended to use this for non-numeric arguments.
+Long switches (double dash) must be stand-alone and space is required.
+<br>
+It also happens to be derived from QStringList,
+so you can use any of those methods on this object too.
+<br>
+This helps you avoid entirely using the C arrays in your application.
 
-  An object which provides a simple interface to the command
-  line arguments of a program. The methods
-  @ref getSwitch(QString) and @ref getSwitchArg(QString)
-  allow you to process <b>and remove</b> the switches and switched
-  arguments in the command line, so that the remaining
-  entries in the stringlist can be processed as a
-  uniform list.
-<br>
-  It also happens to be derived from
-  QStringList, so you can use any of those
-  methods on this object too.
-<br>
-This helps you avoid entirely using the C arrays
-in your application.
- 
 <br />
 Usage.:
 <br />
 <pre>
 int main(int argc, char** argv) {
-ArgumentList args(argc, argv);
-bool verbose = args.getSwitch("-v");
-// get all other switches
-QString outputfile = args.getSwitchArg("-o", "default.out");
-qout << args[0];  // prints the name of the executable
-qout << args[1]; // prints the first unswitched argument
-someObject.processEveryFile(args);
+	ArgumentList args(argc, argv);
+	bool verbose = args.getSwitch("-v");
+	int logLevel = args.getSwitchMulti("-d");
+	QString outputfile = args.getSwitchArg("-o", "default.out");
+	qout << args[0]; // prints the name of the executable
+	qout << args[1]; // prints the first argument
 }
 </pre>
- 
-@author S. Alan Ezust sae@mcs.suffolk.edu
-@since qt 3.2.1
+
+@author Niksa Baldun (niksa.baldun@gmail.com)
+@since qt 4.8.4
 
 */
 
 class ArgumentList : public QStringList
 {
   public:
-    /**
-    retrieve argument list from the qApp->argc() and argv() methods.
-    Only works if a @ref QApplication(argc, argv) was already created.
-    */
-    ArgumentList();
+	/**
+	Constructs an argument list from the qApp argc() and argv() methods.
+	Only works if a @ref QApplication(argc, argv) was already created.
+	*/
+	ArgumentList();
 
-    /**
-     @param argc number of arguments
-     @param argv an array of command line arguments, as supplied
-       to main().
-       @see argsToStringList()
-     */
-     
-    ArgumentList(int argc, char* argv[]) {
-        argsToStringlist(argc, argv);
-    }
+	/**
+	Constructs an argument list from the argc and argv[] parameters.
+	@param argc number of arguments
+	@param argv an array of command line arguments, as supplied to main().
+	@see argsToStringList()
+	*/
+	ArgumentList(int argc, char *argv[]);
 
-    ArgumentList(const QStringList& argumentList):
-       QStringList(argumentList) {}
+	/**
+	Finds <b>and removes</b> a switch from the list, if it exists.
+	@param option the switch to search for without dash(es)
+	@return true if the switch was found
+	*/
+	bool getSwitch(const QString &option);
 
+	/**
+	Finds <b>and removes</b> all instances of the switch from the list, if it exists.
+	@param option the switch to search for without dash(es)
+	@return number of occurences of the switch
+	*/
+	int getSwitchMulti(const QString &option);
 
-    /**
-      finds <b>and removes</b> a switch from the string list, if it exists.
-      @param option the switch to search for
-      @return true if the switch was found
-      */
-    bool getSwitch(QString option);
+	/**
+	Finds/removes a switch <b>and its accompanying argument</b>
+	from the string list, if the switch is found.
+	@param option the switch to search for without dash(es)
+	@param defaultValue the return value if option is not found in the stringlist
+	@param acceptArgWithoutSpace true if argument can be provided without space, default false
+	@return the argument following option, or defaultValue if the option is not found.
+	*/
+	QString getSwitchArg(const QString &option, const QString &defaultValue=QString(),
+						 bool acceptArgWithoutSpace=false);
 
-    /**
-    finds/removes a switch <b>and its accompanying argument</b>
-    from the string list, if the switch is found. Does nothing if the
-    switch is not found.
-    @param option the switch to search for
-    @param defaultReturnValue the return value if option is not found in the stringlist
-    @return the argument following option, or defaultValue if the option
-    is not found.
-    */
-    QString getSwitchArg(QString option, 
-                         QString defaultRetVal=QString());
   private:
-    /**
-    (Re)loads argument lists into this object. This function is private because
-    it is part of the implementation of the class and not intended to be used by
-    client code.
-    */
-    void argsToStringlist(int argc,  char* argv[]);
+	/**
+	(Re)loads list of arguments into this object.
+	@param argc number of arguments
+	@param argv an array of command line arguments, as supplied to main().
+	*/
+	void argsToStringlist(int argc,  char *argv[]);
 
-    /**
-      Checks whether a given argument is a switch
-      @param argument to check
-      @return true if the argument is a switch
-    */
-    bool isSwitch(QString arg) const;
+	/**
+	  Checks whether a given argument is a switch
+	  @param argument to check
+	  @return true if the argument is a switch
+	*/
+	bool isSwitch(const QString &arg) const;
+
+	/**
+	  Checks whether a given argument is a long switch (with double dash)
+	  @param argument to check
+	  @return true if the argument is a short switch
+	*/
+	bool isLongSwitch(const QString &arg) const;
 };
 #endif

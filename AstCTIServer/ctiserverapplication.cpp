@@ -204,9 +204,11 @@ bool CtiServerApplication::buildCoreTcpServer(AstCtiConfiguration *config)
 
 QString CtiServerApplication::readDatabaseVersion()
 {
-    bool ok;
-    QVariant result = DB::readScalar("SELECT VERSION FROM dbversion LIMIT 1", &ok);
-    if (!ok)
+	QVariantList params;
+	params.append("db_version");
+	bool ok;
+	QVariant result = DB::readScalar("SELECT val FROM server_settings WHERE name=?", params, &ok);
+	if (!ok)
         result = "Error reading database version";
 
     return result.toString();
