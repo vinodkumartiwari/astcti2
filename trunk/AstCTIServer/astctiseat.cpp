@@ -36,13 +36,16 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include <QVariantList>
+
+#include "db.h"
 #include "astctiseat.h"
 
-AstCtiSeat::AstCtiSeat(const QString &mac, const QString &exten,
-						 const QString &description, QObject *parent) : QObject(parent)
+AstCtiSeat::AstCtiSeat(int id, const QString &mac, const QString &description, QObject *parent)
+	: QObject(parent)
 {
+	this->seatId = id;
 	this->mac = mac;
-	this->exten = exten;
 	this->description = description;
 }
 
@@ -50,17 +53,41 @@ AstCtiSeat::~AstCtiSeat()
 {
 }
 
-QString  AstCtiSeat::getMac()
+bool AstCtiSeat::loadExtensions()
+{
+	this->extensions.clear();
+
+	bool ok;
+	QVariantList params;
+	params.append(this->seatId);
+	const QVariantList extenData =
+			DB::readList("SELECT EXTEN FROM extensions "
+						  "WHERE ID_SEAT=? AND ENABLED=1", params, &ok);
+	if (ok) {
+		const int listSize = extenData.size();
+		for (int i = 0; i < listSize; i++)
+			this->extensions.append(extenData.at(i).toString());
+	}
+
+	return ok;
+}
+
+int AstCtiSeat::getId()
+{
+	return this->seatId;
+}
+
+QString AstCtiSeat::getMac()
 {
 	return this->mac;
 }
 
-QString  AstCtiSeat::getExten()
-{
-	return this->exten;
-}
-
-QString  AstCtiSeat::getDescription()
+QString AstCtiSeat::getDescription()
 {
     return this->description;
+}
+
+QStringList AstCtiSeat::getExtensions()
+{
+	return this->extensions;
 }

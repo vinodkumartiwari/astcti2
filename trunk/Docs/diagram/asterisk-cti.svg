@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="51cm" height="43cm" viewBox="-10 -12 51 43">
+  <rect style="fill: #ffffff" x="19.1" y="6.35" width="9.1" height="2.25"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="19.1" y="6.35" width="9.1" height="2.25"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 5.07 cm; font-family: sans; font-style: normal; font-weight: normal" x="21.115" y="7.7525">Asterisk Server</text>
+  <rect style="fill: #ffffff" x="19.15" y="4.4" width="9" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="19.15" y="4.4" width="9" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 5.48 cm; font-family: sans; font-style: normal; font-weight: normal" x="20.91" y="5.6275">IAX / SIP Stacks</text>
+  <rect style="fill: #ffffff" x="7.5125" y="13.45" width="7.375" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="7.5125" y="13.45" width="7.375" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 6.275 cm; font-family: sans; font-style: normal; font-weight: normal" x="8.0625" y="14.6775">AsteriskCTI Server</text>
+  <rect style="fill: #ffffff" x="18.7788" y="8.6" width="5.5425" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="18.7788" y="8.6" width="5.5425" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 4.4425 cm; font-family: sans; font-style: normal; font-weight: normal" x="19.3288" y="9.8275">AMI Interface</text>
+  <path style="fill: #ffffff" d="M 9.1977 17.7024 C 9.99862,17.1006 10.3991,16.9 11.2,16.9 C 12.0009,16.9 12.4014,17.1006 13.2023,17.7024 L 13.2023,20.9118 C 12.4014,21.5136 12.0009,21.7142 11.2,21.7142 C 10.3991,21.7142 9.99862,21.5136 9.1977,20.9118 L 9.1977,17.7024z"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" d="M 9.1977 17.7024 C 9.99862,17.1006 10.3991,16.9 11.2,16.9 C 12.0009,16.9 12.4014,17.1006 13.2023,17.7024 L 13.2023,20.9118 C 12.4014,21.5136 12.0009,21.7142 11.2,21.7142 C 10.3991,21.7142 9.99862,21.5136 9.1977,20.9118 L 9.1977,17.7024"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" d="M 9.1977 17.7024 C 9.99862,18.3041 10.3991,18.5047 11.2,18.5047 C 12.0009,18.5047 12.4014,18.3041 13.2023,17.7024"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 3.1975 cm; font-family: sans; font-style: normal; font-weight: normal" x="9.60125" y="19.5858">Database</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.365 cm; font-family: sans; font-style: normal; font-weight: normal" x="10.0175" y="20.3858">Config.</text>
+  <rect style="fill: #ffffff" x="-2.9675" y="18.2" width="7.375" height="3.4"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="-2.9675" y="18.2" width="7.375" height="3.4"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 6.275 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.4175" y="19.7775">AsteriskCTI Server</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 4.11 cm; font-family: sans; font-style: normal; font-weight: normal" x="-1.335" y="20.5775">Configurator</text>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="14.6,14.4 21.55,14.4 21.55,10.9868 "/>
+  <polygon style="fill: #000000" points="21.55,10.6118 21.8,11.1118 21.55,10.9868 21.3,11.1118 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="21.55,10.6118 21.8,11.1118 21.55,10.9868 21.3,11.1118 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="4.4075,19.9 6.8026,19.9 6.8026,19.9089 8.7109,19.9089 "/>
+  <polygon style="fill: #000000" points="9.0859,19.9089 8.5859,20.1589 8.7109,19.9089 8.5859,19.6589 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="9.0859,19.9089 8.5859,20.1589 8.7109,19.9089 8.5859,19.6589 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="11.2,15.35 11.2,16.125 11.2,16.125 11.2,16.4132 "/>
+  <polygon style="fill: #000000" points="11.2,16.7882 10.95,16.2882 11.2,16.4132 11.45,16.2882 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="11.2,16.7882 10.95,16.2882 11.2,16.4132 11.45,16.2882 "/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 7.77 cm; font-family: sans; font-style: normal; font-weight: normal" x="7.5001" y="8.1">The AsteriskCTI Server</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 8.3875 cm; font-family: sans; font-style: normal; font-weight: normal" x="7.5001" y="8.9">use AMI Interface to read</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 8.535 cm; font-family: sans; font-style: normal; font-weight: normal" x="7.5001" y="9.7">asterisk' events and issue</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 9.765 cm; font-family: sans; font-style: normal; font-weight: normal" x="7.5001" y="10.5">commands to asterisk server.</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 9.38 cm; font-family: sans; font-style: normal; font-weight: normal" x="7.5001" y="11.3">It should be able to intercept</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 9.1325 cm; font-family: sans; font-style: normal; font-weight: normal" x="7.5001" y="12.1">incoming calls for clients on</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 9.88 cm; font-family: sans; font-style: normal; font-weight: normal" x="7.5001" y="12.9">queues and notify the clients. </text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 8.39 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="22.6">Asterisk CTI Configurator</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 9.0525 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="23.4">uses a SQLite database for</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 10.67 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="24.2">writing CTI Server configuration.</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 11.12 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="25">The SQLite database file will then</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 9.7575 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="25.8">made avaiable to AsteriskCTI</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 11.1275 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="26.6">server: this will make possible not</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 11.9575 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="27.4">to open tcp/ip database connections</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 10.54 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="28.2">that can be potentially a point of</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 7.1 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="29">failure of the system. </text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 10.6325 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="29.8">AsteriskCTI Configurator can be</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 5.1475 cm; font-family: sans; font-style: normal; font-weight: normal" x="-2.93" y="30.6">a web frontend.</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 9.0925 cm; font-family: sans; font-style: normal; font-weight: normal" x="13.62" y="18.5">Persistency is implemented</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 9.2975 cm; font-family: sans; font-style: normal; font-weight: normal" x="13.62" y="19.3">using SQLite database files.</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 11.125 cm; font-family: sans; font-style: normal; font-weight: normal" x="13.62" y="20.1">These configuration will be stored</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 13.165 cm; font-family: sans; font-style: normal; font-weight: normal" x="13.62" y="20.9">on the filesystem where the AsteriskCTI</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 14.2825 cm; font-family: sans; font-style: normal; font-weight: normal" x="13.62" y="21.7">server reside. It can be useful to implement</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 14.1625 cm; font-family: sans; font-style: normal; font-weight: normal" x="13.62" y="22.5">a file watcher to check when new versions </text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 12.8675 cm; font-family: sans; font-style: normal; font-weight: normal" x="13.62" y="23.3">of configuration database are avaiable.</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 6.89 cm; font-family: sans; font-style: normal; font-weight: normal" x="22.32" y="11.45">AMI Interface is well </text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 8.135 cm; font-family: sans; font-style: normal; font-weight: normal" x="22.32" y="12.25">documented onVoip-Info</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 18.8525 cm; font-family: sans; font-style: normal; font-weight: normal" x="22.32" y="13.05">http://www.voip-info.org/wiki/view/Asterisk+manager+API</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 0 cm; font-family: sans; font-style: normal; font-weight: normal" x="22.32" y="13.85"></text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 0 cm; font-family: sans; font-style: normal; font-weight: normal" x="22.32" y="14.65"></text>
+  <rect style="fill: #ffffff" x="31.6101" y="-11.9" width="9" height="11.23"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="31.6101" y="-11.9" width="9" height="11.23"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.865 cm; font-family: sans; font-style: normal; font-weight: normal" x="37.2951" y="-6.0075">Queue n</text>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="23.5701,4.2 23.5701,1.82 15.2901,1.82 15.2901,-0.0731966 "/>
+  <polygon style="fill: #000000" points="15.2901,-0.448197 15.5401,0.0518034 15.2901,-0.0731966 15.0401,0.0518034 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="15.2901,-0.448197 15.5401,0.0518034 15.2901,-0.0731966 15.0401,0.0518034 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="23.65,4.4 23.65,1.8 25.7901,1.8 25.7901,-0.0245666 "/>
+  <polygon style="fill: #000000" points="25.7901,-0.399567 26.0401,0.100433 25.7901,-0.0245666 25.5401,0.100433 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="25.7901,-0.399567 26.0401,0.100433 25.7901,-0.0245666 25.5401,0.100433 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="23.65,4.4 23.65,1.8 36.1101,1.8 36.1101,-0.183197 "/>
+  <polygon style="fill: #000000" points="36.1101,-0.558197 36.3601,-0.0581966 36.1101,-0.183197 35.8601,-0.0581966 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="36.1101,-0.558197 36.3601,-0.0581966 36.1101,-0.183197 35.8601,-0.0581966 "/>
+  <rect style="fill: #ffffff" x="31.8301" y="-11.38" width="4.58" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="31.8301" y="-11.38" width="4.58" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.655 cm; font-family: sans; font-style: normal; font-weight: normal" x="32.7926" y="-10.1525">SIP/200</text>
+  <rect style="fill: #ffffff" x="31.8901" y="-9.16" width="4.58" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="31.8901" y="-9.16" width="4.58" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.655 cm; font-family: sans; font-style: normal; font-weight: normal" x="32.8526" y="-7.9325">SIP/204</text>
+  <rect style="fill: #ffffff" x="31.9101" y="-6.97" width="4.58" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="31.9101" y="-6.97" width="4.58" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.655 cm; font-family: sans; font-style: normal; font-weight: normal" x="32.8726" y="-5.7425">SIP/205</text>
+  <rect style="fill: #ffffff" x="-0.3624" y="-8.1" width="4.965" height="3.5"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="-0.3624" y="-8.1" width="4.965" height="3.5"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 3.865 cm; font-family: sans; font-style: normal; font-weight: normal" x="0.1876" y="-6.4725">AsteriskCTI</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 1.9075 cm; font-family: sans; font-style: normal; font-weight: normal" x="1.16635" y="-5.6725">Client</text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="4.3701" y1="-6.55" x2="10.5621" y2="-9.21753"/>
+  <polygon style="fill: #000000" points="10.9065,-9.3659 10.5462,-8.93847 10.5621,-9.21753 10.3484,-9.39767 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="10.9065,-9.3659 10.5462,-8.93847 10.5621,-9.21753 10.3484,-9.39767 "/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="4.35769" y1="-6.69286" x2="10.4598" y2="-7.62786"/>
+  <polygon style="fill: #000000" points="10.8305,-7.68466 10.3741,-7.36181 10.4598,-7.62786 10.2984,-7.85604 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="10.8305,-7.68466 10.3741,-7.36181 10.4598,-7.62786 10.2984,-7.85604 "/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="4.5201" y1="-6.5" x2="10.4269" y2="-6.00607"/>
+  <polygon style="fill: #000000" points="10.8006,-5.97483 10.2815,-5.76736 10.4269,-6.00607 10.3232,-6.26562 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="10.8006,-5.97483 10.2815,-5.76736 10.4269,-6.00607 10.3232,-6.26562 "/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="4.3571" y1="-6.55889" x2="21.1254" y2="-8.12474"/>
+  <polygon style="fill: #000000" points="21.4988,-8.1596 21.0242,-7.8642 21.1254,-8.12474 20.9777,-8.36203 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="21.4988,-8.1596 21.0242,-7.8642 21.1254,-8.12474 20.9777,-8.36203 "/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="4.3572" y1="-6.47979" x2="31.3577" y2="-8.04625"/>
+  <polygon style="fill: #000000" points="31.7321,-8.06797 31.2474,-7.78943 31.3577,-8.04625 31.2184,-8.2886 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="31.7321,-8.06797 31.2474,-7.78943 31.3577,-8.04625 31.2184,-8.2886 "/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="4.4201" y1="-6.6" x2="31.3737" y2="-6.07505"/>
+  <polygon style="fill: #000000" points="31.7486,-6.06775 31.2438,-5.82753 31.3737,-6.07505 31.2536,-6.32744 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="31.7486,-6.06775 31.2438,-5.82753 31.3737,-6.07505 31.2536,-6.32744 "/>
+  <rect style="fill: #ffffff" x="21.2901" y="-11.9" width="9" height="11.34"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="21.2901" y="-11.9" width="9" height="11.34"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.6575 cm; font-family: sans; font-style: normal; font-weight: normal" x="27.1826" y="-5.9525">Queue2</text>
+  <rect style="fill: #ffffff" x="21.5901" y="-11.46" width="4.58" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="21.5901" y="-11.46" width="4.58" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.655 cm; font-family: sans; font-style: normal; font-weight: normal" x="22.5526" y="-10.2325">SIP/200</text>
+  <rect style="fill: #ffffff" x="21.6101" y="-9.12" width="4.58" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="21.6101" y="-9.12" width="4.58" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.655 cm; font-family: sans; font-style: normal; font-weight: normal" x="22.5726" y="-7.8925">SIP/203</text>
+  <rect style="fill: #ffffff" x="10.7901" y="-11.7" width="9" height="11.14"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="10.7901" y="-11.7" width="9" height="11.14"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.6575 cm; font-family: sans; font-style: normal; font-weight: normal" x="16.6826" y="-5.8525">Queue1</text>
+  <rect style="fill: #ffffff" x="11.0401" y="-11.36" width="4.58" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="11.0401" y="-11.36" width="4.58" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.655 cm; font-family: sans; font-style: normal; font-weight: normal" x="12.0026" y="-10.1325">SIP/200</text>
+  <rect style="fill: #ffffff" x="10.9901" y="-9.01" width="4.58" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="10.9901" y="-9.01" width="4.58" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.655 cm; font-family: sans; font-style: normal; font-weight: normal" x="11.9526" y="-7.7825">SIP/201</text>
+  <rect style="fill: #ffffff" x="10.9601" y="-6.72" width="4.58" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="10.9601" y="-6.72" width="4.58" height="1.9"/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 2.655 cm; font-family: sans; font-style: normal; font-weight: normal" x="11.9226" y="-5.4925">SIP/202</text>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="2.1201,-4.6 2.1201,13.925 7.3132,13.925 "/>
+  <polygon style="fill: #000000" points="7.6882,13.925 7.1882,14.175 7.3132,13.925 7.1882,13.675 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="7.6882,13.925 7.1882,14.175 7.3132,13.925 7.1882,13.675 "/>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 8.3875 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="-5.25">AsteriskCTI Client should</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 7.6425 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="-4.45">run on every PC where</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 6.1025 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="-3.65">the CTI is needed.</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 8.5175 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="-2.85">It connects to AsteriskCTI</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 10.755 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="-2.05">Server and receive configuration</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 10.5625 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="-1.25">about it's extension (SIP/200 for</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 3.28 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="-0.45">example).</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 11.8325 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="0.35">When a call on a configured service</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 11.3775 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="1.15">arrives (example a call on Queue1</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 9.3425 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="1.95">is answered by SIP/200), on</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 10.1275 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="2.75">the PC should be triggered the</text>
+  <text style="fill: #000000; font-size: 0.8 cm; length: 4.8575 cm; font-family: sans; font-style: normal; font-weight: normal" x="-9.16414" y="3.55">desired action.</text>
+</svg>

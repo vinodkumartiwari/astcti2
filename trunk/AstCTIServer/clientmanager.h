@@ -74,7 +74,7 @@ public:
 	int                  retries;
 	quint16              blockSize;
 	QString              localIdentifier;
-	QString              getExten();
+	QStringList          getExtensions();
 
 private:
 	Q_DISABLE_COPY(ClientManager)

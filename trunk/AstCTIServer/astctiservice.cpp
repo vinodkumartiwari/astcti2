@@ -60,7 +60,8 @@ bool AstCtiService::loadVariables()
 	QVariantList params;
 	params.append(this->serviceId);
 	const QVariantList variableData =
-			DB::readList("SELECT VARNAME FROM services_variables WHERE ID_SERVICE=?", params, &ok);
+			DB::readList("SELECT VARNAME FROM services_variables "
+						 "WHERE ID_SERVICE=? AND ENABLED=1", params, &ok);
 	if (ok) {
 		const int listSize = variableData.size();
 		for (int i = 0; i < listSize; i++) {
@@ -79,7 +80,8 @@ bool AstCtiService::loadActions(QHash<int, AstCtiAction*> *actionList)
 	QVariantList params;
 	params.append(this->serviceId);
 	const QList<QVariantList> actionData =
-			DB::readTable("SELECT ID_ACTION,ACTION_ORDER FROM services_actions WHERE ID_SERVICE=? "
+			DB::readTable("SELECT ID_ACTION,ACTION_ORDER FROM services_actions "
+						  "WHERE ID_SERVICE=? AND ENABLED=1 "
 						  "ORDER BY ACTION_ORDER ASC, ID_ACTION ASC", params, &ok);
 	if (ok) {
 		const int listSize = actionData.size();
@@ -88,10 +90,9 @@ bool AstCtiService::loadActions(QHash<int, AstCtiAction*> *actionList)
 			const int actionId = actionRow.at(0).toInt();
 			const int actionOrder = actionRow.at(1).toInt();
 			AstCtiAction *action = actionList->value(actionId);
-			if (action != 0) {
+			if (action != 0)
 				//There may be actions with same order number, so we use insertMulti()
 				this->actions.insertMulti(actionOrder, action);
-			}
 		}
 	}
 

@@ -1,4 +1,4 @@
-include(../../qtsingleapplication-2.6-opensource/src/qtsingleapplication.pri)
+include(../QtSingleApplication/qtsingleapplication.pri)
 include(../AstCTICallWidget/AstCTICallWidget.pri)
 include(../AstCTISpeedDialWidget/AstCTISpeedDialWidget.pri)
 
@@ -53,7 +53,6 @@ FORMS += \
 RESOURCES += mainresources.qrc
 TRANSLATIONS = AstCTIClient_en_US.ts \
     AstCTIClient_it_IT.ts
-OTHER_FILES += license.txt
 
 !equals($${PWD}, $${OUT_PWD}) {
     # Shadow building is enabled

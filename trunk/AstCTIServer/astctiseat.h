@@ -40,24 +40,27 @@
 #define ASTCTISEAT_H
 
 #include <QObject>
+#include <QStringList>
 
 class AstCtiSeat : public QObject
 {
     Q_OBJECT
 
 public:
-	explicit AstCtiSeat(const QString &mac, const QString &exten,
-						const QString &description, QObject *parent=0);
+	explicit AstCtiSeat(int id, const QString &mac,	const QString &description, QObject *parent=0);
 	~AstCtiSeat();
-	QString getMac();
-	QString getExten();
-    QString getDescription();
+	int          getId();
+	QString      getMac();
+	QString      getDescription();
+	QStringList  getExtensions();
+	bool         loadExtensions();
 
 private:
 	Q_DISABLE_COPY(AstCtiSeat)
-	QString mac;
-	QString exten;
-    QString description;
+	int         seatId;
+	QString     mac;
+	QString     description;
+	QStringList extensions;
 };
 
 #endif // ASTCTISEAT_H

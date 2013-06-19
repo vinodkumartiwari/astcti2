@@ -64,15 +64,12 @@ enum AstCTICommands {
 	CmdPass,
 	CmdChangePassword,
 	CmdMac,
-	CmdExten,
 	CmdKeep,
 	CmdOsType,
-	CmdIden,
 	CmdServices,
 	CmdQueues,
 	CmdPause,
-	CmdOrig,
-	CmdStop
+	CmdOrig
 };
 
 class CoreTcpServer : public QTcpServer

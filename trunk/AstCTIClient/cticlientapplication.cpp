@@ -99,18 +99,10 @@ CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char
 					   "Expected number from 0 to 4294967295.";
         return;
     }
-	if (args.getSwitch("--callcenter")) {
+	if (args.getSwitch("--callcenter"))
 		this->clientType = CTIClientCallCenter;
-	} else {
+	else
 		this->clientType = CTIClientPhoneManager;
-		//Extension must be defined for phone manager
-		this->extension = args.getSwitchArg("-e", "");
-		if (this->extension.isEmpty()) {
-			qCritical() << "Extension was not specified. "
-						   "You must provide extension using '-e'' switch.";
-			return;
-		}
-	}
 
     //Set defaults
 	//No compression initially. Compression level will be received from server.
@@ -137,24 +129,6 @@ CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char
     //Initialize lists
     this->servicesList = new QHash<QString, QString>;
     this->queuesList = new QStringList();
-    this->commandsList = new QHash<int, QString>;
-
-    //Commands that can be sent to CTI server
-    this->commandsList->insert(CmdQuit,             "QUIT");
-    this->commandsList->insert(CmdCompression,      "CMPR");
-    this->commandsList->insert(CmdKeepAlive,        "KEEP");
-    this->commandsList->insert(CmdNoOp,             "NOOP");
-    this->commandsList->insert(CmdUser,             "USER");
-    this->commandsList->insert(CmdPass,             "PASS");
-    this->commandsList->insert(CmdChangePassword,   "CHPW");
-    this->commandsList->insert(CmdOsType,           "OSTYPE");
-    this->commandsList->insert(CmdServices,         "SERVICES");
-    this->commandsList->insert(CmdQueues,           "QUEUES");
-    this->commandsList->insert(CmdPause,            "PAUSE");
-    this->commandsList->insert(CmdOrig,             "ORIG");
-    this->commandsList->insert(CmdStop,             "STOP");
-    this->commandsList->insert(CmdMac,              "MAC");
-	this->commandsList->insert(CmdExten,            "EXTEN");
 
     //Create socket for communication with server
     this->localSocket = new QTcpSocket();
@@ -186,7 +160,6 @@ CtiClientApplication::~CtiClientApplication()
 	delete this->connectTimer;
 	delete this->config;
 	delete this->localSocket;
-	delete this->commandsList;
 	delete this->servicesList;
 	delete this->queuesList;
 
@@ -233,6 +206,7 @@ void CtiClientApplication::loginAccept(const QString &username, const QString &p
 //Called when the user clicks Cancel in the login window
 void CtiClientApplication::loginReject()
 {
+	QApplication::processEvents(QEventLoop::AllEvents);
     //Close the application
     this->exit(0);
 }
@@ -312,7 +286,7 @@ void CtiClientApplication::connectSocket()
 }
 
 //Called when connection attempt is definitively aborted due to error or user disconnect
-void CtiClientApplication::abortConnection(StopReason stopReason, const QString &message) {
+void CtiClientApplication::abortConnection(const StopReason stopReason, const QString &message) {
     this->connectionStatus = ConnStatusDisconnected;
 
     this->localSocket->abort();
@@ -377,8 +351,12 @@ AstCTIResponse CtiClientApplication::parseResponse(const QString &response)
     QStringList data = response.split(" ");
     AstCTIResponse newResponse;
     newResponse.code = (AstCTIResponseCodes)(QString(data.at(0)).toInt());
+	// Remove response code
     data.removeFirst();
-    newResponse.data = data;
+	// Response code is usually followed by "OK" or "KO" which we don't care about
+	if (data.first() == "OK" || data.first() == "KO")
+		data.removeFirst();
+	newResponse.data = data;
     return newResponse;
 }
 
@@ -386,7 +364,8 @@ AstCTIResponse CtiClientApplication::parseResponse(const QString &response)
 void CtiClientApplication::parseDataReceivedFromServer(const QString &message)
 {
     if (message.isEmpty()) {
-        if (config->debug) qDebug() << "Received empty string from server.";
+		if (config->debug)
+			qWarning() << "Received empty string from server.";
         return;
     }
 
@@ -404,9 +383,9 @@ void CtiClientApplication::parseDataReceivedFromServer(const QString &message)
 //Analyzes server response and takes appropriate action
 //The handshake protocol is followed until authentication is complete or error occurs
 //If authentication is succesful, main window is displayed
-void CtiClientApplication::processResponse(AstCTIResponse &response) {
+void CtiClientApplication::processResponse(const AstCTIResponse &response) {
 	if (config->debug)
-		qDebug() << "Processing server response:" << response.code << response.data.join(" ");
+		qDebug() << "Processing response: <<" << response.code << response.data.join(" ");
 
     switch (response.code) {
     case RspAuthOK:
@@ -442,17 +421,17 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
                 break;
             default:
 				if (config->debug)
-					qDebug() << "Received unexpected response from server: \'"
+					qDebug() << "Received unexpected response from server:"
 							 << response.code << response.data.join(" ")
-							 << "\' to command" << this->lastCTICommand->command;
+							 << "to command" << this->lastCTICommand->command;
                 resetLastCTICommand();
                 break;
             }
         } else {
 			if (config->debug)
-				qDebug() << "Received unexpected response from server: \'"
+				qDebug() << "Received unexpected response from server:"
 						 << response.code << response.data.join(" ")
-						 << "\' to unknown command";
+						 << "to unknown command";
         }
         break;
     case RspKeepAlive:
@@ -465,10 +444,11 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
         resetLastCTICommand();
 		switch (this->clientType) {
 		case CTIClientCallCenter:
+			// Call center operators must authenticate with MAC address
 			sendCommandToServer(CmdMac, this->macAddress);
 			break;
 		case CTIClientPhoneManager:
-			sendCommandToServer(CmdExten, this->extension);
+			sendCommandToServer(CmdOsType, osType);
 			break;
 		}
 
@@ -482,7 +462,9 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
                 break;
             case CmdPass:
                 resetLastCTICommand();
-                sendCommandToServer(CmdKeepAlive);
+				if (this->clientType != CTIClientCallCenter)
+					this->extensions = response.data;
+				sendCommandToServer(CmdKeepAlive);
                 break;
             case CmdChangePassword:
                 resetLastCTICommand();
@@ -492,15 +474,14 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
 								 QSystemTrayIcon::Information);
                 break;
             case CmdMac:
-			case CmdExten:
-				this->extension = response.data.last();
+				this->extensions = response.data;
 				resetLastCTICommand();
                 sendCommandToServer(CmdOsType, osType);
                 break;
             case CmdOsType:
                 resetLastCTICommand();
                 this->connectionStatus = ConnStatusLoggedIn;
-                showMainWindow(response.data.last().split("-").last());
+				showMainWindow();
                 break;
             case CmdNoOp:
                 resetLastCTICommand();
@@ -510,9 +491,9 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
                 break;            
             default:
 				if (config->debug)
-					qDebug() << "Received unexpected response from server: \'"
+					qDebug() << "Received unexpected response from server:"
 							 << response.code << response.data.join(" ")
-							 << "\' to command" << this->lastCTICommand->command;
+							 << "to command" << this->lastCTICommand->command;
                 resetLastCTICommand();
                 break;
             }
@@ -522,9 +503,9 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
                     sendCommandToServer(CmdCompression);
             } else {
 				if (config->debug)
-					qDebug() << "Received unexpected response from server: \'"
+					qDebug() << "Received unexpected response from server:"
 							 << response.code << response.data.join(" ")
-							 << "\' to unknown command";
+							 << "to unknown command";
             }
         }
         break;
@@ -559,7 +540,8 @@ void CtiClientApplication::processResponse(AstCTIResponse &response) {
 
 //Creates AstCTICall object from XML using custom parser
 void CtiClientApplication::processEvent(const QString &eventData) {
-    if (config->debug) qDebug() << "Processing event: \n" << eventData;
+	if (config->debug)
+		qDebug() << "Processing event:" << eventData;
 
     AstCTICall call;
 
@@ -604,7 +586,8 @@ QByteArray CtiClientApplication::convertDataForSending(const QString &data)
 //Sends a block of data to server
 void CtiClientApplication::sendDataToServer(const QString &data)
 {
-    if (config->debug) qDebug() << "Sending data to server: " << data;
+	if (config->debug)
+		qDebug() << "Sending to server:   >>" << data.simplified();
 
     this->localSocket->write(convertDataForSending(data));
     this->localSocket->flush();
@@ -626,9 +609,9 @@ void CtiClientApplication::sendCommandToServer(const AstCTICommands command,
     if (this->lastCTICommand != 0) {
         //New command was requested before we received a response to last command
         //This should not happen, it could indicate a bug in the client or server
-		qCritical() << "New command ("  << this->commandsList->value(command)
+		qCritical() << "New command ("  << this->getCommandName(command)
 					<< ") requested before receiving response from server to command"
-					<< this->commandsList->value(this->lastCTICommand->command);
+					<< this->getCommandName(this->lastCTICommand->command);
 
         //We exit without sending the command
         return;
@@ -649,7 +632,7 @@ void CtiClientApplication::sendCommandToServer(const AstCTICommands command,
         this->queuesList->clear();
 
     //Convert command to string and send to server
-    QString data = this->commandsList->value(cmd->command);
+	QString data = this->getCommandName(cmd->command);
     if (!parameters.isEmpty())
 		data.append(" ").append(parameters);
 
@@ -657,7 +640,7 @@ void CtiClientApplication::sendCommandToServer(const AstCTICommands command,
 }
 
 //Displays the main window
-void CtiClientApplication::showMainWindow(const QString &extension)
+void CtiClientApplication::showMainWindow()
 {
     if (this->mainWindow == 0) {
         switch (this->clientType) {
@@ -697,7 +680,7 @@ void CtiClientApplication::showMainWindow(const QString &extension)
     }
 
     emit statusChange(true);
-    //TODO: Extension
+	//TODO: Extensions
 }
 
 //Displays the internal browser with the specified URL
@@ -894,8 +877,8 @@ void CtiClientApplication::idleTimerElapsed()
     if (this->lastCTICommand != 0) {
         //Idle timer elapsed before we received a response to last command
         //This should not happen, it probably indicates a bug in the server
-		qCritical() << "Idle timer elapsed before receiving response from server to command "
-					<< this->commandsList->value(this->lastCTICommand->command);
+		qCritical() << "Idle timer elapsed before receiving response from server to command"
+					<< this->getCommandName(this->lastCTICommand->command);
 
 		//We exit without sending keep-alive signal,
 		//this will probably result in server dropping the connection
@@ -921,4 +904,39 @@ void CtiClientApplication::connectTimerElapsed()
         //Retry connection
         connectSocket();
     }
+}
+
+//Returns a string representation of CTI command
+QString CtiClientApplication::getCommandName(const AstCTICommands command)
+{
+	switch (command) {
+	case CmdQuit:
+		return "QUIT";
+	case CmdCompression:
+		return "CMPR";
+	case CmdKeepAlive:
+		return "KEEP";
+	case CmdNoOp:
+		return "NOOP";
+	case CmdUser:
+		return "USER";
+	case CmdPass:
+		return "PASS";
+	case CmdChangePassword:
+		return "CHPW";
+	case CmdOsType:
+		return "OSTYPE";
+	case CmdServices:
+		return "SERVICES";
+	case CmdQueues:
+		return "QUEUES";
+	case CmdPause:
+		return "PAUSE";
+	case CmdOrig:
+		return "ORIG";
+	case CmdMac:
+		return "MAC";
+	default:
+		return "";
+	}
 }

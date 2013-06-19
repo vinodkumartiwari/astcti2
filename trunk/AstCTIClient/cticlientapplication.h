@@ -165,12 +165,11 @@ private:
 	ServerConnectionStatus   connectionStatus;
 	quint16                  blockSize;
 	QString                  macAddress;
-	QString                  extension;
+	QStringList              extensions;
 	bool                     reconnectNotify;
 	QString                  newPassword;
     AstCtiConfiguration     *config;
     AstCTICommand           *lastCTICommand;
-    QHash<int, QString>     *commandsList;
     QHash<QString, QString> *servicesList;
     QStringList             *queuesList;
     QTimer                  *idleTimer;
@@ -182,20 +181,21 @@ private:
 	QList<QProcess*>         applications;
 
 	void                     connectSocket();
-	void                     abortConnection(StopReason stopReason, const QString &message);
+	void                     abortConnection(const StopReason stopReason, const QString &message);
 	void                     connectionLost();
 	void                     resetLastCTICommand();
 	AstCTIResponse           parseResponse(const QString &response);
 	void                     parseDataReceivedFromServer(const QString &message);
-	void                     processResponse(AstCTIResponse &response);
+	void                     processResponse(const AstCTIResponse &response);
 	void                     processEvent(const QString &eventData);
 	QByteArray               convertDataForSending(const QString &data);
 	void                     sendDataToServer(const QString &data);
 	void                     sendCommandToServer(const AstCTICommands command);
 	void                     sendCommandToServer(const AstCTICommands command,
 												 const QString &parameters);
-	void                     showMainWindow(const QString &extension);
+	void                     showMainWindow();
 	void                     newApplication(const QString &path, const QString &parameters);
+	QString                  getCommandName(const AstCTICommands command);
 
 private slots:
 	void                     socketConnected();
