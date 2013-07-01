@@ -47,7 +47,11 @@
 class AstCTICallWidgetPlugin : public QObject, public QDesignerCustomWidgetInterface
 {
     Q_OBJECT
-    Q_INTERFACES(QDesignerCustomWidgetInterface)
+	Q_INTERFACES(QDesignerCustomWidgetInterface)
+#if QT_VERSION >= 0x050000
+	Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface"
+					  FILE "astcticallwidget.json")
+#endif // QT_VERSION >= 0x050000
 
 public:
     AstCTICallWidgetPlugin(QObject *parent = 0);
@@ -65,7 +69,7 @@ public:
     void initialize(QDesignerFormEditorInterface *core);
 
 private:
-    bool m_initialized;
+	bool initialized;
 };
 
 #endif

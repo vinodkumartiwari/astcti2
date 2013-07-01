@@ -42,16 +42,14 @@
 #ifndef ASTCTISPEEDDIALWIDGET_H
 #define ASTCTISPEEDDIALWIDGET_H
 
-#include <QWidget>
-#include <QResizeEvent>
-#include <QStylePainter>
-#include <QtDesigner/QDesignerExportWidget>
-
 #if defined(ASTCTISPEEDDIALWIDGET_LIBRARY)
 #  define ASTCTISPEEDDIALWIDGET_EXPORT Q_DECL_EXPORT
 #else
 #  define ASTCTISPEEDDIALWIDGET_EXPORT Q_DECL_IMPORT
 #endif
+
+#include <QtWidgets/QWidget>
+#include <QtDesigner/QDesignerExportWidget>
 
 namespace Ui {
     class AstCTISpeedDialWidget;

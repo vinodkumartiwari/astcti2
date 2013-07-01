@@ -39,6 +39,8 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include <QtWidgets/QStylePainter>
+
 #include "astctispeeddialwidget.h"
 #include "ui_astctispeeddialwidget.h"
 
@@ -131,7 +133,8 @@ void AstCTISpeedDialWidget::setBusyLampField(const bool blf)
     if (blf) {
         this->ui->doNotDisturbLabel->setVisible(this->m_doNotDisturb);
         this->ui->callWaitingLabel->setVisible(this->m_callWaiting);
-        this->ui->callForwardLabel->setVisible(this->m_callForward != AstCTISpeedDialWidget::CallForwardNone);
+		this->ui->callForwardLabel->setVisible(
+				this->m_callForward != AstCTISpeedDialWidget::CallForwardNone);
         this->ui->voicemailLabel->setVisible(this->m_voicemail > 0);
     } else {
         this->ui->doNotDisturbLabel->setVisible(false);
@@ -170,7 +173,7 @@ void AstCTISpeedDialWidget::setDoNotDisturb(const bool dnd)
 {
     this->m_doNotDisturb = dnd;
 
-    ui->doNotDisturbLabel->setVisible(dnd & this->m_busyLampField);
+	ui->doNotDisturbLabel->setVisible(dnd && this->m_busyLampField);
 
     setStatusText();
 }
@@ -184,7 +187,7 @@ void AstCTISpeedDialWidget::setCallWaiting(const bool cw)
 {
     this->m_callWaiting = cw;
 
-    ui->callWaitingLabel->setVisible(cw & this->m_busyLampField);
+	ui->callWaitingLabel->setVisible(cw && this->m_busyLampField);
 
     setStatusText();
 }
@@ -198,7 +201,8 @@ void AstCTISpeedDialWidget::setCallForward(const AstCTISpeedDialWidget::CallForw
 {
     this->m_callForward = cf;
 
-    ui->callForwardLabel->setVisible((cf != AstCTISpeedDialWidget::CallForwardNone) & this->m_busyLampField);
+	ui->callForwardLabel->setVisible(cf != AstCTISpeedDialWidget::CallForwardNone &&
+									 this->m_busyLampField);
 
     setStatusText();
 }
@@ -224,7 +228,7 @@ void AstCTISpeedDialWidget::setVoicemail(const int vm)
 {
     this->m_voicemail= vm;
 
-    ui->voicemailLabel->setVisible(vm & this->m_busyLampField);
+	ui->voicemailLabel->setVisible(vm && this->m_busyLampField);
 
     setStatusText();
 }
@@ -308,22 +312,23 @@ void AstCTISpeedDialWidget::setStatusText()
     if (this->m_number.length() > 0)
         status += "\n" + trUtf8("Number: ") + this->m_number;
     status += "\n" + trUtf8("Status: ") + extensionStateToString();
-    if (this->m_doNotDisturb & this->m_busyLampField) {
+	if (this->m_doNotDisturb && this->m_busyLampField) {
         s = trUtf8("Do not disturb: on");
         this->ui->doNotDisturbLabel->setToolTip(s);
         status += "\n" + s;
     }
-    if (this->m_callWaiting & this->m_busyLampField) {
+	if (this->m_callWaiting && this->m_busyLampField) {
         s = trUtf8("Call waiting: on");
         this->ui->callWaitingLabel->setToolTip(s);
         status += "\n" + s;
     }
-    if ((this->m_callForward != AstCTISpeedDialWidget::CallForwardNone) & this->m_busyLampField) {
-        s = trUtf8("Call forward ") + callForwardToString() + trUtf8(" to ") + this->m_CallForwardNumber;
+	if (this->m_callForward != AstCTISpeedDialWidget::CallForwardNone && this->m_busyLampField) {
+		s = trUtf8("Call forward ") + callForwardToString()
+		  + trUtf8(" to ") + this->m_CallForwardNumber;
         this->ui->callForwardLabel->setToolTip(s);
         status += "\n" + s;
     }
-    if ((this->m_voicemail > 0) & this->m_busyLampField) {
+	if (this->m_voicemail > 0 && this->m_busyLampField) {
         s = trUtf8("New voicemail messages: %1").arg(this->m_voicemail);
         this->ui->voicemailLabel->setToolTip(s);
         status += "\n" + s;
@@ -352,7 +357,8 @@ QString AstCTISpeedDialWidget::callForwardToString()
 {
     if (this->m_callForward & AstCTISpeedDialWidget::CallForwardUnconditional)
         return trUtf8("unconditional");
-    if (this->m_callForward & AstCTISpeedDialWidget::CallForwardOnBusy & AstCTISpeedDialWidget::CallForwardOnNoAnswer)
+	if (this->m_callForward & AstCTISpeedDialWidget::CallForwardOnBusy &&
+		AstCTISpeedDialWidget::CallForwardOnNoAnswer)
         return trUtf8("on busy and on no answer");
     if (this->m_callForward & AstCTISpeedDialWidget::CallForwardOnBusy)
         return trUtf8("on busy");

@@ -1,9 +1,4 @@
-INCLUDEPATH += $$PWD
-DEPENDPATH += $$PWD
-
-HEADERS +=    astcticallwidget.h
-SOURCES +=    astcticallwidget.cpp
-FORMS +=      astcticallwidget.ui
-RESOURCES +=  astcticallwidget.qrc
-
-DEFINES +=    ASTCTICALLWIDGET_LIBRARY
+HEADERS     += $$PWD/astcticallwidget.h
+SOURCES     += $$PWD/astcticallwidget.cpp
+FORMS       += $$PWD/astcticallwidget.ui
+RESOURCES   += $$PWD/astcticallwidget.qrc

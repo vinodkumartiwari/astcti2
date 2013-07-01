@@ -92,7 +92,8 @@ QString AstCTISpeedDialWidgetPlugin::toolTip() const
 
 QString AstCTISpeedDialWidgetPlugin::whatsThis() const
 {
-    return QLatin1String("The widget displays and represents a single speed dial or busy lamp field for AsteriskCTI");
+	return QLatin1String("The widget displays and represents a single "
+						 "speed dial or busy lamp field for AsteriskCTI");
 }
 
 bool AstCTISpeedDialWidgetPlugin::isContainer() const
@@ -102,22 +103,23 @@ bool AstCTISpeedDialWidgetPlugin::isContainer() const
 
 QString AstCTISpeedDialWidgetPlugin::domXml() const
 {
-    return QLatin1String("<ui language=\"c++\" displayname=\"Speed Dial\">\n"
-                         "  <widget class=\"AstCTISpeedDialWidget\" name=\"astCTISpeedDial\"/>\n"
-                         "  <customwidgets>\n"
-                         "    <customwidget>\n"
-                         "      <class>AstCTISpeedDialWidget</class>\n"
-                         "      <addpagemethod>addPage</addpagemethod>\n"
-                         "      <propertyspecifications>\n"
-                         "        <stringpropertyspecification name=\"text\" notr=\"true\" type=\"singleline\"/>\n"
-                         "        <stringpropertyspecification name=\"dialString\" notr=\"true\" type=\"singleline\"/>\n"
-                         "        <stringpropertyspecification name=\"callForwardUnconditional\" notr=\"true\" type=\"singleline\"/>\n"
-                         "        <stringpropertyspecification name=\"callForwardBusy\" notr=\"true\" type=\"singleline\"/>\n"
-                         "        <stringpropertyspecification name=\"callForwardNoAnswer\" notr=\"true\" type=\"singleline\"/>\n"
-                         "      </propertyspecifications>\n"
-                         "    </customwidget>\n"
-                         "  </customwidgets>\n"
-                         "</ui>\n");
+	return QLatin1String(
+		"<ui language=\"c++\" displayname=\"Speed Dial\">\n"
+		"  <widget class=\"AstCTISpeedDialWidget\" name=\"astCTISpeedDial\"/>\n"
+		"  <customwidgets>\n"
+		"    <customwidget>\n"
+		"      <class>AstCTISpeedDialWidget</class>\n"
+		"      <addpagemethod>addPage</addpagemethod>\n"
+		"      <propertyspecifications>\n"
+		"        <stringpropertyspecification name=\"text\" notr=\"true\" type=\"singleline\"/>\n"
+		"        <stringpropertyspecification name=\"dialString\" notr=\"true\" type=\"singleline\"/>\n"
+		"        <stringpropertyspecification name=\"callForwardUnconditional\" notr=\"true\" type=\"singleline\"/>\n"
+		"        <stringpropertyspecification name=\"callForwardBusy\" notr=\"true\" type=\"singleline\"/>\n"
+		"        <stringpropertyspecification name=\"callForwardNoAnswer\" notr=\"true\" type=\"singleline\"/>\n"
+		"      </propertyspecifications>\n"
+		"    </customwidget>\n"
+		"  </customwidgets>\n"
+		"</ui>\n");
 }
 
 QString AstCTISpeedDialWidgetPlugin::includeFile() const
@@ -125,4 +127,6 @@ QString AstCTISpeedDialWidgetPlugin::includeFile() const
     return QLatin1String("astctispeeddialwidget.h");
 }
 
-Q_EXPORT_PLUGIN2(AstCTISpeedDialWidgetPlugin, AstCTISpeedDialWidgetPlugin)
+#if QT_VERSION < 0x050000
+Q_EXPORT_PLUGIN2(AstCtiSpeedDialWidgetPlugin, AstCtiSpeedDialWidgetPlugin)
+#endif // QT_VERSION < 0x050000
