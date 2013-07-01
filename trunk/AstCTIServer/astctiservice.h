@@ -74,7 +74,7 @@ public:
 
 private:
 	Q_DISABLE_COPY(AstCtiService)
-	int                          serviceId;
+	int                          id;
 	QString                      name;
 	AstCtiServiceType            contextType;
 	QString                      queueName;

@@ -38,28 +38,34 @@
 
 #include <QVariantList>
 
+#include "QsLog.h"
 #include "db.h"
 #include "astctiseat.h"
 
 AstCtiSeat::AstCtiSeat(int id, const QString &mac, const QString &description, QObject *parent)
 	: QObject(parent)
 {
-	this->seatId = id;
+	QLOG_TRACE() << "Creating new AstCtiSeat" << id << description;
+
+	this->id = id;
 	this->mac = mac;
 	this->description = description;
 }
 
 AstCtiSeat::~AstCtiSeat()
 {
+	QLOG_TRACE() << "Destroying AstCtiSeat" << this->id << this->description;
 }
 
 bool AstCtiSeat::loadExtensions()
 {
+	QLOG_TRACE() << "Loading extensions for seat" << this->id << this->description;
+
 	this->extensions.clear();
 
 	bool ok;
 	QVariantList params;
-	params.append(this->seatId);
+	params.append(this->id);
 	const QVariantList extenData =
 			DB::readList("SELECT EXTEN FROM extensions "
 						  "WHERE ID_SEAT=? AND ENABLED=1", params, &ok);
@@ -67,6 +73,8 @@ bool AstCtiSeat::loadExtensions()
 		const int listSize = extenData.size();
 		for (int i = 0; i < listSize; i++)
 			this->extensions.append(extenData.at(i).toString());
+	} else {
+		QLOG_ERROR() << "Loading extensions failed for seat" << this->id << this->description;
 	}
 
 	return ok;
@@ -74,7 +82,7 @@ bool AstCtiSeat::loadExtensions()
 
 int AstCtiSeat::getId()
 {
-	return this->seatId;
+	return this->id;
 }
 
 QString AstCtiSeat::getMac()

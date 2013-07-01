@@ -21,11 +21,11 @@ USE `asteriskcti`;
 
 LOCK TABLES `actions` WRITE;
 
-insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`,`ENABLED`) values (1,'ALL','INTERNAL_BROWSER',NULL,'http://astcti2.googlecode.com',NULL),1;
-insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`,`ENABLED`) values (2,'LINUX','APPLICATION','/usr/bin/gedit',NULL,NULL,1);
-insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`,`ENABLED`) values (3,'WINDOWS','APPLICATION','notepad.exe',NULL,NULL,1);
-insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`,`ENABLED`) values (4,'LINUX','TCP_MESSAGE','192.168.0.2:2323','Caller: {CALLERID}','UTF8',1);
-insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`,`ENABLED`) values (5,'LINUX','UDP_MESSAGE','192.168.0.2:2323','Caller: {CALLERID}','UTF8',1);
+insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`,`ENABLED`) values (1,'All','InternalBrowser',NULL,'http://astcti2.googlecode.com',NULL,1);
+insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`,`ENABLED`) values (2,'Linux','Application','/usr/bin/gedit',NULL,NULL,1);
+insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`,`ENABLED`) values (3,'Windows','Application','notepad.exe',NULL,NULL,1);
+insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`,`ENABLED`) values (4,'Linux','TcpMessage','192.168.0.2:2323','Caller: {CALLERID}','UTF-8',1);
+insert  into `actions`(`ID_ACTION`,`ACTION_OS_TYPE`,`ACTION_TYPE`,`ACTION_DESTINATION`,`PARAMETERS`,`ENCODING`,`ENABLED`) values (5,'Linux','UdpMessage','192.168.0.2:2323','Caller: {CALLERID}','UTF-8',1);
 
 UNLOCK TABLES;
 
@@ -75,7 +75,8 @@ insert  into `server_settings`(`name`,`val`) values ('cti_server_port','5000');
 insert  into `server_settings`(`name`,`val`) values ('cti_connect_timeout','1500');
 insert  into `server_settings`(`name`,`val`) values ('cti_read_timeout','30000');
 insert  into `server_settings`(`name`,`val`) values ('cti_socket_compression_level','7');
-
+insert  into `server_settings`(`name`,`val`) values ('asterisk_version','1.8');
+insert  into `server_settings`(`name`,`val`) values ('auto_answer_context','cti-auto-answer');
 
 UNLOCK TABLES;
 

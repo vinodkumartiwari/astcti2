@@ -46,7 +46,9 @@
 CoreTcpServer::CoreTcpServer(AstCtiConfiguration *config, QObject *parent)
 	: QTcpServer(parent)
 {
-    this->isClosing = false;
+	QLOG_TRACE() << "Creating CoreTcpServer";
+
+	this->isClosing = false;
 	this->amiStatus = AmiConnectionStatusDisconnected;
     this->config = config;
 
@@ -96,6 +98,8 @@ CoreTcpServer::CoreTcpServer(AstCtiConfiguration *config, QObject *parent)
 
 CoreTcpServer::~CoreTcpServer()
 {
+	QLOG_TRACE() << "Destroying CoreTcpServer";
+
 	this->amiClient->stop();
 	// amiClient will be deleted automatically because the thread's
 	// finished() signal is connected to amiClient's deleteLater() slot
@@ -533,7 +537,7 @@ void CoreTcpServer::processClientData(QTcpSocket *socket, const QString &data)
 			this->sendDataToClient(socket, "101 KO Operating system not set");
 			break;
 		} else {
-			cm->clientOperatingSystem = cmd.parameters.at(0).toUpper();
+			cm->clientOperatingSystem = cmd.parameters.at(0);
 			this->sendDataToClient(socket, "100 OK Operating system set");
 		}
 		break;
@@ -767,7 +771,7 @@ void CoreTcpServer::receiveAsteriskEvent(const AmiEvent &eventId, AstCtiCall *ca
 		break;
 	}
 
-	QLOG_INFO() << "Received CTI Event" << this->amiClient->getEventName(eventId) << logMsg;
+	QLOG_INFO() << "Received CTI Event" << AmiClient::getEventName(eventId) << logMsg;
 }
 
 void CoreTcpServer::processAsteriskResponse(AmiCommand *cmd)
@@ -787,7 +791,7 @@ void CoreTcpServer::processAsteriskResponse(AmiCommand *cmd)
         } else {
 			QLOG_WARN() << ">> processAsteriskResponse << Client with exten" << cmd->exten
 						<< "not found in client list";
-			this->ctiResponse(cm, this->amiClient->getActionName(cmd->action),
+			this->ctiResponse(cm, AmiCommand::getActionName(cmd->action),
 							  responseString, responseMessage);
         }
     }
@@ -818,8 +822,7 @@ void CoreTcpServer::ctiClientLogin(ClientManager *cm)
 
 				const int listSize = interfaces.size();
 				for (int i = 0; i < listSize; i++) {
-					AmiCommand *cmd = new AmiCommand;
-					cmd->action = AmiActionQueueAdd;
+					AmiCommand *cmd = new AmiCommand(AmiActionQueueAdd);
 					cmd->exten = interfaces.at(i);
 					cmd->parameters = new QHash<QString, QString>;
 					cmd->parameters->insert("Queue", service->getQueueName());
@@ -851,8 +854,7 @@ void CoreTcpServer::ctiClientLogoff(ClientManager *cm)
 
 				const int listSize = interfaces.size();
 				for (int i = 0; i < listSize; i++) {
-					AmiCommand *cmd = new AmiCommand;
-					cmd->action = AmiActionQueueRemove;
+					AmiCommand *cmd = new AmiCommand(AmiActionQueueRemove);
 					cmd->exten = interfaces.at(i);
 					cmd->parameters = new QHash<QString, QString>;
 					cmd->parameters->insert("Queue", service->getQueueName());
@@ -874,8 +876,7 @@ void CoreTcpServer::ctiClientPauseIn(ClientManager *cm)
 
 		const int listSize = interfaces.size();
 		for (int i = 0; i < listSize; i++) {
-			AmiCommand *cmd = new AmiCommand;
-			cmd->action = AmiActionQueuePause;
+			AmiCommand *cmd = new AmiCommand(AmiActionQueuePause);
 			cmd->exten = interfaces.at(i);
 			cmd->parameters = new QHash<QString, QString>;
 			cmd->parameters->insert("Interface", interfaces.at(i));
@@ -895,8 +896,7 @@ void CoreTcpServer::ctiClientPauseOut(ClientManager *cm)
 
 		const int listSize = interfaces.size();
 		for (int i = 0; i < listSize; i++) {
-			AmiCommand *cmd = new AmiCommand;
-			cmd->action = AmiActionQueuePause;
+			AmiCommand *cmd = new AmiCommand(AmiActionQueuePause);
 			cmd->exten = interfaces.at(i);
 			cmd->parameters = new QHash<QString, QString>;
 			cmd->parameters->insert("Interface", interfaces.at(i));

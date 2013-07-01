@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/res">
-        <file>res/callforward.png</file>
-        <file>res/callwaiting.png</file>
-        <file>res/donotdisturb.png</file>
-        <file>res/voicemail.png</file>
-    </qresource>
-</RCC>

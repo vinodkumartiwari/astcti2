@@ -95,11 +95,10 @@ class ArgumentList : public QStringList
 
 	/**
 	Constructs an argument list from the argc and argv[] parameters.
-	@param argc number of arguments
-	@param argv an array of command line arguments, as supplied to main().
+	@param arguments list of command line arguments, as supplied to QCoreApplication.
 	@see argsToStringList()
 	*/
-	ArgumentList(int argc, char *argv[]);
+	ArgumentList(const QStringList &arguments);
 
 	/**
 	Finds <b>and removes</b> a switch from the list, if it exists.
@@ -129,10 +128,9 @@ class ArgumentList : public QStringList
   private:
 	/**
 	(Re)loads list of arguments into this object.
-	@param argc number of arguments
-	@param argv an array of command line arguments, as supplied to main().
+	@param arguments list of command line arguments, as supplied to QCoreApplication.
 	*/
-	void argsToStringlist(int argc,  char *argv[]);
+	void argsToStringlist(const QStringList &arguments);
 
 	/**
 	  Checks whether a given argument is a switch

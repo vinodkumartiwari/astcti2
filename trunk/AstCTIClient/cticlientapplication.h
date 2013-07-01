@@ -42,8 +42,8 @@
 #ifndef CTICLIENTAPPLICATION_H
 #define CTICLIENTAPPLICATION_H
 
-#include <QtGui/QApplication>
-#include <QtGui/QIcon>
+#include <QtWidgets/QApplication>
+#include <QIcon>
 #include <QtCore/QUrl>
 #include <QtCore/QPointer>
 #include <QTcpSocket>
@@ -64,17 +64,14 @@
 #include "managerwindow.h"
 #include "browserwindow.h"
 
-#ifdef Q_WS_WIN
-const QString osType = "WINDOWS";
+#ifdef Q_OS_WIN
+const QString osType = "Windows";
 #endif
-#ifdef Q_WS_MAC
-const QString osType = "MACINTOSH";
+#ifdef Q_OS_MAC
+const QString osType = "Macintosh";
 #endif
-#ifdef Q_WS_X11
-const QString osType = "LINUX";
-#endif
-#ifdef Q_WS_QWS
-const QString osType = "QWS";
+#ifdef Q_OS_LINUX
+const QString osType = "Linux";
 #endif
 
 const QString defaultServerHost = "localhost";

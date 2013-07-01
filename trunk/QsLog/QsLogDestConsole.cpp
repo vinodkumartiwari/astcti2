@@ -1,4 +1,4 @@
-// Copyright (c) 2010, Razvan Petru
+// Copyright (c) 2013, Razvan Petru
 // All rights reserved.
 
 // Redistribution and use in source and binary forms, with or without modification,
@@ -23,7 +23,7 @@
 // OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "QsDebugOutput.h"
+#include "QsLogDestConsole.h"
 #include <QString>
 #include <QtGlobal>
 
@@ -39,8 +39,21 @@ void QsDebugOutput::output( const QString& message )
 #include <e32debug.h>
 void QsDebugOutput::output( const QString& message )
 {
-   TPtrC8 symbianMessage(reinterpret_cast<const TUint8*>(qPrintable(message)));
-   RDebug::RawPrint(symbianMessage);
+    const int maxPrintSize = 256;
+    if (message.size() <= maxPrintSize) {
+        TPtrC16 symbianMessage(reinterpret_cast<const TUint16*>(message.utf16()));
+        RDebug::RawPrint(symbianMessage);
+    } else {
+        QString slicedMessage = message;
+        while (!slicedMessage.isEmpty()) {
+            const int sliceSize = qMin(maxPrintSize, slicedMessage.size());
+            const QString slice = slicedMessage.left(sliceSize);
+            slicedMessage.remove(0, sliceSize);
+
+            TPtrC16 symbianSlice(reinterpret_cast<const TUint16*>(slice.utf16()));
+            RDebug::RawPrint(symbianSlice);
+        }
+    }
 }
 #elif defined(Q_OS_UNIX)
 #include <cstdio>
@@ -50,3 +63,13 @@ void QsDebugOutput::output( const QString& message )
    fflush(stderr);
 }
 #endif
+
+void QsLogging::DebugOutputDestination::write(const QString& message, Level)
+{
+    QsDebugOutput::output(message);
+}
+
+bool QsLogging::DebugOutputDestination::isValid()
+{
+    return true;
+}

@@ -39,6 +39,8 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include <QtWidgets>
+
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 

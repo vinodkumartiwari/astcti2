@@ -39,14 +39,18 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include "QsLog.h"
 #include "astcticonfiguration.h"
 
 AstCtiConfiguration::AstCtiConfiguration(QObject *parent) : QObject(parent)
 {
+	QLOG_TRACE() << "Creating new AstCtiConfiguration";
 }
 
 AstCtiConfiguration::~AstCtiConfiguration()
 {
+	QLOG_TRACE() << "Destroying AstCtiConfiguration";
+
 	qDeleteAll(this->operators);
 	qDeleteAll(this->services);
 	qDeleteAll(this->actions);

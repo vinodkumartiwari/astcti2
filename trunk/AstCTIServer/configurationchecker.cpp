@@ -42,13 +42,13 @@
 
 ConfigurationChecker::ConfigurationChecker(QObject *parent) : QObject(parent)
 {
-	QLOG_INFO() << "Creating ConfigurationChecker";
+	QLOG_TRACE() << "Creating ConfigurationChecker";
 	this->isRunning = true;
 }
 
 ConfigurationChecker::~ConfigurationChecker()
 {
-	QLOG_INFO() << "Closing ConfigurationChecker";
+	QLOG_TRACE() << "Closing ConfigurationChecker";
 	this->isRunning = false;
 }
 
@@ -116,6 +116,10 @@ bool ConfigurationChecker::readConfiguration()
 			readSetting("cti_read_timeout",             defaultCtiReadTimeout).toInt();
 	config->ctiCompressionLevel =
 			readSetting("cti_socket_compression_level", defaultCtiSocketCompressionLevel).toInt();
+	config->asteriskVersion =
+			readSetting("asterisk_version",             defaultAsteriskVersion).toString();
+	config->autoAnswerContext =
+			readSetting("auto_answer_context",          defaultAutoAnswerContext).toString();
 
 	bool ok;
 

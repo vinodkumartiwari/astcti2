@@ -69,6 +69,8 @@ public:
     quint16         amiConnectTimeout;
     quint16         amiReadTimeout;
     quint16         amiConnectRetryAfter;
+	QString         asteriskVersion;
+	QString         autoAnswerContext;
 
 	QHash<int, AstCtiAction*>        actions;
 	QHash<int, AstCtiService*>       services;

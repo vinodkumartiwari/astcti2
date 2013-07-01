@@ -46,4 +46,22 @@
         <file>res/missed.png</file>
         <file>res/unanswered.png</file>
     </qresource>
+    <qresource prefix="/callwidget">
+        <file>res/callwidget/call-record.png</file>
+        <file>res/callwidget/call-start.png</file>
+        <file>res/callwidget/call-stop.png</file>
+        <file>res/callwidget/conference.png</file>
+        <file>res/callwidget/contact-new.png</file>
+        <file>res/callwidget/direction-incoming.png</file>
+        <file>res/callwidget/direction-outgoing.png</file>
+        <file>res/callwidget/hold.png</file>
+        <file>res/callwidget/person.png</file>
+        <file>res/callwidget/transfer.png</file>
+    </qresource>
+    <qresource prefix="/speeddialwidget">
+        <file>res/speeddialwidget/callforward.png</file>
+        <file>res/speeddialwidget/callwaiting.png</file>
+        <file>res/speeddialwidget/donotdisturb.png</file>
+        <file>res/speeddialwidget/voicemail.png</file>
+    </qresource>
 </RCC>

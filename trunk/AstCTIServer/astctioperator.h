@@ -71,7 +71,7 @@ public:
 
 private:
 	Q_DISABLE_COPY(AstCtiOperator)
-	int      operatorId;
+	int      id;
 	QString  fullName;
 	QString  username;
 	QString  password;

@@ -42,20 +42,13 @@
 #ifndef ASTCTISPEEDDIALWIDGET_H
 #define ASTCTISPEEDDIALWIDGET_H
 
-#if defined(ASTCTISPEEDDIALWIDGET_LIBRARY)
-#  define ASTCTISPEEDDIALWIDGET_EXPORT Q_DECL_EXPORT
-#else
-#  define ASTCTISPEEDDIALWIDGET_EXPORT Q_DECL_IMPORT
-#endif
-
 #include <QtWidgets/QWidget>
-#include <QtDesigner/QDesignerExportWidget>
 
 namespace Ui {
     class AstCTISpeedDialWidget;
 }
 
-class ASTCTISPEEDDIALWIDGET_EXPORT AstCTISpeedDialWidget : public QWidget
+class AstCTISpeedDialWidget : public QWidget
 {
     Q_DISABLE_COPY(AstCTISpeedDialWidget)
     Q_OBJECT

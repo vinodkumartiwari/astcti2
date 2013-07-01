@@ -1,4 +1,4 @@
-// Copyright (c) 2010, Razvan Petru
+// Copyright (c) 2013, Razvan Petru
 // All rights reserved.
 
 // Redistribution and use in source and binary forms, with or without modification,
@@ -26,7 +26,9 @@
 #ifndef QSLOGDEST_H
 #define QSLOGDEST_H
 
-#include <memory>
+#include "QsLogLevel.h"
+#include <QSharedPointer>
+#include <QtGlobal>
 class QString;
 
 namespace QsLogging
@@ -35,18 +37,19 @@ namespace QsLogging
 class Destination
 {
 public:
-   virtual ~Destination(){}
-   virtual void write(const QString& message) = 0;
+    virtual ~Destination(){}
+    virtual void write(const QString& message, Level level) = 0;
+    virtual bool isValid() = 0; // returns whether the destination was created correctly
 };
-typedef Destination* DestinationPtr;
+typedef QSharedPointer<Destination> DestinationPtr;
 
 //! Creates logging destinations/sinks. The caller will have ownership of 
 //! the newly created destinations.
 class DestinationFactory
 {
 public:
-   static DestinationPtr MakeFileDestination(const QString& filePath);
-   static DestinationPtr MakeDebugOutputDestination();
+    static DestinationPtr MakeFileDestination(const QString& filePath, bool enableRotation = false, qint64 sizeInBytesToRotateAfter = 0, int oldLogsToKeep = 0);
+    static DestinationPtr MakeDebugOutputDestination();
 };
 
 } // end namespace

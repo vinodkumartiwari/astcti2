@@ -56,6 +56,9 @@
 #define defaultAmiReadTimeout               1500
 #define defaultAmiConnectRetryAfter         30
 
+#define defaultAsteriskVersion              "1.8"
+#define defaultAutoAnswerContext            "cti-auto-answer"
+
 class ConfigurationChecker : public QObject
 {
     Q_OBJECT

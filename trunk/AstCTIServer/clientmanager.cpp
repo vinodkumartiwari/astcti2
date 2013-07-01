@@ -44,7 +44,7 @@
 */
 ClientManager::ClientManager(QObject *parent) : QObject(parent)
 {
-	QLOG_INFO() << "Creating new ClientManager";
+	QLOG_TRACE() << "Creating new ClientManager";
 
 	// Initialize private variables
 	this->state                 = StateLoggedOff;
@@ -62,7 +62,7 @@ ClientManager::ClientManager(QObject *parent) : QObject(parent)
 
 ClientManager::~ClientManager()
 {
-	QLOG_INFO() << "ClientManager" << this->localIdentifier << "terminated";
+	QLOG_TRACE() << "Destroying ClientManager" << this->localIdentifier;
 
 	// this->activeSeat does not need to be deleted as it is not allocated in this class
 	// this->activeOperator does not need to be deleted as it is not allocated in this class

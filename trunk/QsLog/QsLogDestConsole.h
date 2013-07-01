@@ -23,32 +23,30 @@
 // OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#ifndef QSLOGDESTCONSOLE_H
+#define QSLOGDESTCONSOLE_H
+
 #include "QsLogDest.h"
-#include "QsLogDestConsole.h"
-#include "QsLogDestFile.h"
-#include <QString>
+
+class QString;
+
+class QsDebugOutput
+{
+public:
+   static void output(const QString& a_message);
+};
 
 namespace QsLogging
 {
 
-//! destination factory
-DestinationPtr DestinationFactory::MakeFileDestination(const QString& filePath, bool enableRotation,
-                                                       qint64 sizeInBytesToRotateAfter, int oldLogsToKeep)
+// debugger sink
+class DebugOutputDestination : public Destination
 {
-    if (enableRotation) {
-        QScopedPointer<SizeRotationStrategy> logRotation(new SizeRotationStrategy);
-        logRotation->setMaximumSizeInBytes(sizeInBytesToRotateAfter);
-        logRotation->setBackupCount(oldLogsToKeep);
+public:
+    virtual void write(const QString& message, Level level);
+    virtual bool isValid();
+};
 
-        return DestinationPtr(new FileDestination(filePath, RotationStrategyPtr(logRotation.take())));
-    }
-
-    return DestinationPtr(new FileDestination(filePath, RotationStrategyPtr(new NullRotationStrategy)));
 }
 
-DestinationPtr DestinationFactory::MakeDebugOutputDestination()
-{
-    return DestinationPtr(new DebugOutputDestination);
-}
-
-} // end namespace
+#endif // QSLOGDESTCONSOLE_H
