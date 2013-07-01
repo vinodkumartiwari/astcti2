@@ -1,21 +1,23 @@
-CONFIG      += qt designer plugin debug_and_release
-TEMPLATE    = lib
-TARGET  = $$qtLibraryTarget(AstCTICallWidgetPlugin)
+QT          += widgets
+CONFIG      += plugin release
+TARGET       = $$qtLibraryTarget($$TARGET)
+TEMPLATE     = lib
 
-HEADERS     = astcticallwidgetplugin.h
-SOURCES     = astcticallwidgetplugin.cpp
-RESOURCES   = icons.qrc
-LIBS        += -L.
-
-win32 {
-    PLUGINDIR   = $$(APPDATA)/Qt/plugins/designer
-    DLLDESTDIR = $$PLUGINDIR
+greaterThan(QT_MAJOR_VERSION, 4) {
+	QT      += designer
 } else {
-    PLUGINDIR   = $$(HOME)/.qt/plugins/designer
-    DESTDIR = $$PLUGINDIR
+	CONFIG  += designer
 }
-target.path += $$PLUGINDIR
 
+target.path  = $$[QT_INSTALL_PLUGINS]/designer
 INSTALLS    += target
+
+DEFINES     += ASTCTICALLWIDGET_LIBRARY
+
+HEADERS      = astcticallwidgetplugin.h
+SOURCES      = astcticallwidgetplugin.cpp
+RESOURCES    = icons.qrc
+OTHER_FILES  = astcticallwidget.json
+LIBS        += -L.
 
 include(AstCTICallWidget.pri)

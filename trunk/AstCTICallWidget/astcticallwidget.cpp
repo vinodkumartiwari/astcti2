@@ -39,6 +39,9 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include <QtWidgets/QStyleOption>
+#include <QtGui/QPainter>
+
 #include "astcticallwidget.h"
 #include "ui_astcticallwidget.h"
 

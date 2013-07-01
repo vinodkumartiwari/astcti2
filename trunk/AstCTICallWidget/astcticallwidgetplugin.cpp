@@ -47,22 +47,22 @@
 AstCTICallWidgetPlugin::AstCTICallWidgetPlugin(QObject *parent)
     : QObject(parent)
 {
-    m_initialized = false;
+	initialized = false;
 }
 
 void AstCTICallWidgetPlugin::initialize(QDesignerFormEditorInterface * /* core */)
 {
-    if (m_initialized)
+	if (initialized)
         return;
 
     // Add extension registrations, etc. here
 
-    m_initialized = true;
+	initialized = true;
 }
 
 bool AstCTICallWidgetPlugin::isInitialized() const
 {
-    return m_initialized;
+	return initialized;
 }
 
 QWidget *AstCTICallWidgetPlugin::createWidget(QWidget *parent)
@@ -77,7 +77,7 @@ QString AstCTICallWidgetPlugin::name() const
 
 QString AstCTICallWidgetPlugin::group() const
 {
-    return QLatin1String("AsteriskCTI");
+	return QLatin1String("AsteriskCTI");
 }
 
 QIcon AstCTICallWidgetPlugin::icon() const
@@ -102,20 +102,21 @@ bool AstCTICallWidgetPlugin::isContainer() const
 
 QString AstCTICallWidgetPlugin::domXml() const
 {
-    return QLatin1String("<ui language=\"c++\" displayname=\"Telephone Call\">\n"
-                         "  <widget class=\"AstCTICallWidget\" name=\"astCTICall\"/>\n"
-                         "  <customwidgets>\n"
-                         "    <customwidget>\n"
-                         "      <class>AstCTICallWidget</class>\n"
-                         "      <addpagemethod>addPage</addpagemethod>\n"
-                         "      <propertyspecifications>\n"
-                         "        <stringpropertyspecification name=\"callerIdNumber\" notr=\"true\" type=\"singleline\"/>\n"
-                         "        <stringpropertyspecification name=\"callerIdName\" notr=\"true\" type=\"singleline\"/>\n"
-                         "        <stringpropertyspecification name=\"remarks\" notr=\"true\" type=\"singleline\"/>\n"
-                         "      </propertyspecifications>\n"
-                         "    </customwidget>\n"
-                         "  </customwidgets>\n"
-                         "</ui>\n");
+	return QLatin1String(
+		"<ui language=\"c++\" displayname=\"Telephone Call\">\n"
+		"  <widget class=\"AstCTICallWidget\" name=\"astCTICall\"/>\n"
+		"  <customwidgets>\n"
+		"    <customwidget>\n"
+		"      <class>AstCTICallWidget</class>\n"
+		"      <addpagemethod>addPage</addpagemethod>\n"
+		"      <propertyspecifications>\n"
+		"        <stringpropertyspecification name=\"callerIdNumber\" notr=\"true\" type=\"singleline\"/>\n"
+		"        <stringpropertyspecification name=\"callerIdName\" notr=\"true\" type=\"singleline\"/>\n"
+		"        <stringpropertyspecification name=\"remarks\" notr=\"true\" type=\"singleline\"/>\n"
+		"      </propertyspecifications>\n"
+		"    </customwidget>\n"
+		"  </customwidgets>\n"
+		"</ui>\n");
 }
 
 QString AstCTICallWidgetPlugin::includeFile() const
@@ -123,4 +124,6 @@ QString AstCTICallWidgetPlugin::includeFile() const
     return QLatin1String("astcticallwidget.h");
 }
 
-Q_EXPORT_PLUGIN2(AstCTICallWidgetPlugin, AstCTICallWidgetPlugin)
+#if QT_VERSION < 0x050000
+Q_EXPORT_PLUGIN2(AstCtiCallWidgetPlugin, AstCtiCallWidgetPlugin)
+#endif // QT_VERSION < 0x050000
