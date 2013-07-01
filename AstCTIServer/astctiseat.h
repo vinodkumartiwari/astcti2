@@ -57,7 +57,7 @@ public:
 
 private:
 	Q_DISABLE_COPY(AstCtiSeat)
-	int         seatId;
+	int         id;
 	QString     mac;
 	QString     description;
 	QStringList extensions;

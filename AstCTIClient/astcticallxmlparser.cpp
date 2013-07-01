@@ -99,19 +99,9 @@ bool AstCTICallXMLParser::endElement(const QString &, const QString &, const QSt
                name == "UdpMessage") {
         this->call->actions.append(this->currentAction);
         this->currentAction = 0;
-    } else if (name == "Path") {
-        this->currentAction->path = this->currentText;
-    } else if (name == "Server") {
-        this->currentAction->server = this->currentText;
-    } else if (name == "Port") {
-        bool ok;
-        this->currentAction->port = this->currentText.toUShort(&ok);
-        if (!ok)
-			qCritical() << "Wrong value received from server for Server Port:"
-						<< this->currentText;
-    } else if (name == "Parameters" ||
-               name == "Url" ||
-               name == "Message") {
+	} else if (name == "Destination") {
+		this->currentAction->destination = this->currentText;
+	} else if (name == "Parameters") {
         //Server will fill in the variable values, no need to do it here
 //        QHashIterator<QString, QString> i(this->call->variables);
 //        while (i.hasNext()) {

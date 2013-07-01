@@ -88,8 +88,7 @@ class AmiClient : public QObject
 public:
 	explicit AmiClient();
 	~AmiClient();
-	QString                         getActionName(const AmiAction action);
-	QString                         getEventName(const AmiEvent event);
+	static QString                  getEventName(const AmiEvent event);
 	void                            stop();
 
 public slots:

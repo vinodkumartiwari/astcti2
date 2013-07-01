@@ -39,10 +39,15 @@
 #include <QStringList>
 #include <QDomDocument>
 
+#include "QsLog.h"
 #include "astcticall.h"
 
-AstCtiCall::AstCtiCall(QObject *parent)	: QObject(parent)
+AstCtiCall::AstCtiCall(const QString &uniqueId, QObject *parent) : QObject(parent)
 {
+	QLOG_TRACE() << "Creating new AstCtiCall" << uniqueId;
+
+	this->uniqueId = uniqueId;
+	this->destUniqueId = "";
 	this->actions = 0;
 	this->channel = "";
 	this->parsedChannel = "";
@@ -50,8 +55,6 @@ AstCtiCall::AstCtiCall(QObject *parent)	: QObject(parent)
 	this->parsedDestChannel = "";
 	this->callerIdNum = "";
 	this->callerIdName = "";
-	this->uniqueId = "";
-	this->destUniqueId = "";
 	this->context = "";
 	this->state = "";
 	this->exten = "";
@@ -61,6 +64,7 @@ AstCtiCall::AstCtiCall(QObject *parent)	: QObject(parent)
 
 AstCtiCall::~AstCtiCall()
 {
+	QLOG_TRACE() << "Destroying AstCtiCall" << this->uniqueId;
 }
 
 QString &AstCtiCall::getChannel()
@@ -226,19 +230,20 @@ void AstCtiCall::setOperatingSystem(QString operatingSystem)
 
 void AstCtiCall::parseActionsParameters()
 {
-	if ((this->actions != 0) && (this->variables.count() > 0) ) {
-		QMap<int, AstCtiAction*>::const_iterator actionList = this->actions->constBegin();
-        while (actionList != this->actions->constEnd()) {
-			QString parameters = ((AstCtiAction*)actionList.value())->getParameters();
-			QHash<QString, QString>::const_iterator varList = this->variables.constBegin();
-			while (varList != this->variables.constEnd()) {
-				QString theKey = QString("{%1}").arg(((QString)varList.key()).toUpper());
-                parameters = parameters.replace(theKey, varList.value());
+	if (this->actions != 0 && this->variables.count() > 0) {
+		QMap<int, AstCtiAction*>::const_iterator actionIterator = this->actions->constBegin();
+		while (actionIterator != this->actions->constEnd()) {
+			QString parameters = ((AstCtiAction*)actionIterator.value())->getParameters();
+			QHash<QString, QString>::const_iterator varIterator = this->variables.constBegin();
+			while (varIterator != this->variables.constEnd()) {
+				QString varName = QString("{%1}").arg(varIterator.key());
+				parameters = parameters.replace(varName, varIterator.value());
 
-                varList++;
+				varIterator++;
             }
-			((AstCtiAction*)actionList.value())->setParameters(parameters);
-            actionList++;
+			((AstCtiAction*)actionIterator.value())->setParameters(parameters);
+
+			actionIterator++;
         }
     }
 }
@@ -338,155 +343,58 @@ QString AstCtiCall::toXml()
 		xmlVars.setAttribute("count", this->variables.count());
         root.appendChild(xmlVars);
 
-		QHash<QString, QString>::const_iterator varList = this->variables.constBegin();
-		while (varList != this->variables.constEnd()) {
-            QDomElement tag = doc.createElement(varList.key());
+		QHash<QString, QString>::const_iterator varIterator = this->variables.constBegin();
+		while (varIterator != this->variables.constEnd()) {
+			QDomElement tag = doc.createElement(varIterator.key());
             xmlVars.appendChild(tag);
-            QDomText t = doc.createTextNode(varList.value() );
+			QDomText t = doc.createTextNode(varIterator.value());
             tag.appendChild(t);
-            varList++;
+			varIterator++;
         }
     }
 
-	 if ((this->actions != 0) && (this->actions->count() > 0) ){
+	 if ((this->actions != 0) && (this->actions->count() > 0) ) {
         int actionsCount = 0;
         QDomElement xmlActions = doc.createElement("Actions");
 
-		QMap<int, AstCtiAction*>::const_iterator actionsList = this->actions->constBegin();
-        while (actionsList != this->actions->constEnd()) {
-            AstCtiAction *activeAction = (AstCtiAction *)actionsList.value();
-			if (activeAction->getOsType() == ActionOsAll ||
-				activeAction->getOsType() == this->clientOperatingSystem) {
+		QMap<int, AstCtiAction*>::const_iterator actionsIterator = this->actions->constBegin();
+		while (actionsIterator != this->actions->constEnd()) {
+			AstCtiAction *action = (AstCtiAction *)actionsIterator.value();
+			if (action->getOsType() == ActionOsAll ||
+				action->getOsType() == this->clientOperatingSystem) {
                 actionsCount++;
-				switch(activeAction->getActionType()) {
-                case ActionApplication:
-                    {
-                        QDomElement xmlApplication = doc.createElement("Application");
+				QString elementName = AstCtiAction::getActionName(action->getActionType());
 
-                        // What's the path?
-                        QDomElement xmlAppPath = doc.createElement("Path");
-                        xmlApplication.appendChild(xmlAppPath);
-						QDomText xmlAppPathVal =
-								doc.createTextNode(activeAction->getDestination());
-                        xmlAppPath.appendChild(xmlAppPathVal);
+				QDomElement xmlAction = doc.createElement(elementName);
 
-                        // What are the parameters?
-                        QDomElement xmlAppParams = doc.createElement("Parameters");
-                        xmlApplication.appendChild(xmlAppParams);
-						QDomText xmlAppPathParmVal =
-								doc.createTextNode(activeAction->getParameters());
-                        xmlAppParams.appendChild(xmlAppPathParmVal);
+				QDomElement xmlDestination = doc.createElement("Destination");
+				QDomText xmlDestinationVal = doc.createTextNode(action->getDestination());
+				xmlDestination.appendChild(xmlDestinationVal);
+				xmlAction.appendChild(xmlDestination);
 
-                        // Append all to xmlAction
-                        xmlActions.appendChild(xmlApplication);
-                    }
-                    break;
-                case ActionBrowser:
-                    {
-                        QDomElement xmlApplication = doc.createElement("Browser");
+				if (!action->getParameters().isEmpty()) {
+					QDomElement xmlParameters = doc.createElement("Parameters");
+					QDomText xmlParametersVal = doc.createTextNode(action->getParameters());
+					xmlParameters.appendChild(xmlParametersVal);
+					xmlAction.appendChild(xmlParameters);
+				}
 
-                        // What are the parameters?
-                        QDomElement xmlAppParams = doc.createElement("Url");
-                        xmlApplication.appendChild(xmlAppParams);
-						QDomText xmlAppPathParmVal =
-								doc.createTextNode(activeAction->getParameters());
-                        xmlAppParams.appendChild(xmlAppPathParmVal);
+				if (!action->getMessageEncoding().isEmpty()) {
+					QDomElement xmlEncoding = doc.createElement("Encoding");
+					QDomText xmlEncodingVal = doc.createTextNode(action->getMessageEncoding());
+					xmlEncoding.appendChild(xmlEncodingVal);
+					xmlAction.appendChild(xmlEncoding);
+				}
 
-                        // Append all to xmlAction
-                        xmlActions.appendChild(xmlApplication);
-                    }
-                    break;
-                case ActionInternalBrowser:
-                    {
-                        QDomElement xmlApplication = doc.createElement("InternalBrowser");
-
-                        // What are the parameters?
-                        QDomElement xmlAppParams = doc.createElement("Url");
-                        xmlApplication.appendChild(xmlAppParams);
-						QDomText xmlAppPathParmVal =
-								doc.createTextNode(activeAction->getParameters());
-                        xmlAppParams.appendChild(xmlAppPathParmVal);
-
-                        // Append all to xmlAction
-                        xmlActions.appendChild(xmlApplication);
-                    }
-                    break;
-                case ActionTcpMessage:
-                    {
-						QStringList serverInfo = activeAction->getDestination().split(':');
-                        if (serverInfo.length() == 2) {
-                            QDomElement xmlApplication = doc.createElement("TcpMessage");
-
-                            QDomElement xmlAppServer = doc.createElement("Server");
-                            xmlApplication.appendChild(xmlAppServer);
-                            QDomText xmlAppServerVal = doc.createTextNode(serverInfo.at(0));
-                            xmlAppServer.appendChild(xmlAppServerVal);
-
-                            QDomElement xmlAppServerPort = doc.createElement("Port");
-                            xmlApplication.appendChild(xmlAppServerPort);
-                            QDomText xmlAppServerPortVal = doc.createTextNode(serverInfo.at(1));
-                            xmlAppServerPort.appendChild(xmlAppServerPortVal);
-
-
-                            QDomElement xmlAppMessage = doc.createElement("Message");
-                            xmlApplication.appendChild(xmlAppMessage);
-							QDomText xmlAppMessageVal =
-									doc.createTextNode(activeAction->getParameters());
-                            xmlAppMessage.appendChild(xmlAppMessageVal);
-
-                            QDomElement xmlAppEncoding = doc.createElement("Encoding");
-                            xmlApplication.appendChild(xmlAppEncoding);
-							QDomText xmlAppEncodingVal =
-									doc.createTextNode(activeAction->getMessageEncoding());
-                            xmlAppEncoding.appendChild(xmlAppEncodingVal);
-
-                            // Append all to xmlAction
-                            xmlActions.appendChild(xmlApplication);
-                        }
-                    }
-                    break;
-                case ActionUdpMessage:
-                    {
-						QStringList serverInfo = activeAction->getDestination().split(':');
-                        if (serverInfo.length() == 2) {
-                            QDomElement xmlApplication = doc.createElement("UdpMessage");
-
-                            QDomElement xmlAppServer = doc.createElement("Server");
-                            xmlApplication.appendChild(xmlAppServer);
-                            QDomText xmlAppServerVal = doc.createTextNode(serverInfo.at(0));
-                            xmlAppServer.appendChild(xmlAppServerVal);
-
-                            QDomElement xmlAppServerPort = doc.createElement("Port");
-                            xmlApplication.appendChild(xmlAppServerPort);
-                            QDomText xmlAppServerPortVal = doc.createTextNode(serverInfo.at(1));
-                            xmlAppServerPort.appendChild(xmlAppServerPortVal);
-
-
-                            QDomElement xmlAppMessage = doc.createElement("Message");
-                            xmlApplication.appendChild(xmlAppMessage);
-							QDomText xmlAppMessageVal =
-									doc.createTextNode(activeAction->getParameters());
-                            xmlAppMessage.appendChild(xmlAppMessageVal);
-
-                            QDomElement xmlAppEncoding = doc.createElement("Encoding");
-                            xmlApplication.appendChild(xmlAppEncoding);
-							QDomText xmlAppEncodingVal =
-									doc.createTextNode(activeAction->getMessageEncoding());
-                            xmlAppEncoding.appendChild(xmlAppEncodingVal);
-
-                            // Append all to xmlAction
-                            xmlActions.appendChild(xmlApplication);
-                        }
-                    }
-                    break;
-                }
-
+				// Append all to xmlAction
+				xmlActions.appendChild(xmlAction);
             }
-            actionsList++;
-
-            xmlActions.setAttribute("count", QString("%1").arg((int)actionsCount));
-            root.appendChild(xmlActions);            
+			actionsIterator++;
         }
-    }
+
+		xmlActions.setAttribute("count", QString("%1").arg((int)actionsCount));
+		root.appendChild(xmlActions);
+	}
+
     return doc.toString();
 }

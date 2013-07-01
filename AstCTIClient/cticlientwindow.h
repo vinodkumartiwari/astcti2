@@ -42,7 +42,7 @@
 #ifndef CTICLIENTWINDOW_H
 #define CTICLIENTWINDOW_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets>
 #include <QSystemTrayIcon>
 
 #include "coreconstants.h"

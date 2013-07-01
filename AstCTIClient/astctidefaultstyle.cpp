@@ -39,11 +39,11 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include <QtGui/QStyleFactory>
-#include <QPushButton>
-#include <QToolButton>
+#include <QtWidgets/QStyleFactory>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QToolButton>
 #include <QPainter>
-#include <QComboBox>
+#include <QtWidgets/QComboBox>
 #include <QDebug>
 
 #include "astctidefaultstyle.h"

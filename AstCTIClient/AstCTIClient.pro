@@ -1,10 +1,8 @@
 include(../QtSingleApplication/qtsingleapplication.pri)
-include(../AstCTICallWidget/AstCTICallWidget.pri)
-include(../AstCTISpeedDialWidget/AstCTISpeedDialWidget.pri)
 
 TARGET = AstCTIClient
 TEMPLATE = app
-QT += webkit \
+QT += webkitwidgets \
     xml \
     network
 CONFIG += qt \
@@ -25,7 +23,9 @@ SOURCES += main.cpp \
     passwordwindow.cpp \
     managerwindow.cpp \
     cticlientwindow.cpp \
-    astctidefaultstyle.cpp
+    astctidefaultstyle.cpp \
+    astctispeeddialwidget.cpp \
+    astcticallwidget.cpp
 HEADERS += \
     aboutdialog.h \
     coreconstants.h \
@@ -42,14 +42,18 @@ HEADERS += \
     passwordwindow.h \
     managerwindow.h \
     cticlientwindow.h \
-    astctidefaultstyle.h
+    astctidefaultstyle.h \
+    astctispeeddialwidget.h \
+    astcticallwidget.h
 FORMS += \
     aboutdialog.ui \
     browserwindow.ui \
     loginwindow.ui \
     compactwindow.ui \
     passwordwindow.ui \
-    managerwindow.ui
+    managerwindow.ui \
+    astctispeeddialwidget.ui \
+    astcticallwidget.ui
 RESOURCES += mainresources.qrc
 TRANSLATIONS = AstCTIClient_en_US.ts \
     AstCTIClient_it_IT.ts

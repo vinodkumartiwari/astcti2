@@ -88,10 +88,10 @@ void PasswordWindow::accepting()
         this->ui->passwordLineEdit->selectAll();
     } else {
         QCryptographicHash md5(QCryptographicHash::Md5);
-        md5.addData(QByteArray(this->ui->oldPasswordLineEdit->text().toAscii()));
+		md5.addData(QByteArray(this->ui->oldPasswordLineEdit->text().toLatin1()));
         this->oldPass = QString(md5.result().toHex());
         md5.reset();
-        md5.addData(QByteArray(this->ui->passwordLineEdit->text().toAscii()));
+		md5.addData(QByteArray(this->ui->passwordLineEdit->text().toLatin1()));
         this->newPass = QString(md5.result().toHex());
 
         this->accept();

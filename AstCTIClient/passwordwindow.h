@@ -42,7 +42,7 @@
 #ifndef PASSWORDWINDOW_H
 #define PASSWORDWINDOW_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 
 #include "coreconstants.h"
 

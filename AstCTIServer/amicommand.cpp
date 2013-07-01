@@ -39,10 +39,14 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include "QsLog.h"
 #include "amicommand.h"
 
-AmiCommand::AmiCommand(QObject *parent) : QObject(parent)
+AmiCommand::AmiCommand(AmiAction action, QObject *parent) : QObject(parent)
 {
+	QLOG_TRACE() << "Creating new AMI command" << getActionName(action);
+
+	this->action = action;
 	this->exten = "";
 	this->parameters = 0;
 	this->variables = 0;
@@ -50,6 +54,27 @@ AmiCommand::AmiCommand(QObject *parent) : QObject(parent)
 
 AmiCommand::~AmiCommand()
 {
+	QLOG_TRACE() << "Destroying AMI command" << getActionName(this->action);
+
 	delete this->parameters;
 	delete this->variables;
+}
+
+QString AmiCommand::getActionName(const AmiAction action) {
+	switch (action) {
+	case AmiActionLogin:
+		return "Login";
+	case AmiActionLogoff:
+		return "Logoff";
+	case AmiActionOriginate:
+		return "Originate";
+	case AmiActionQueueAdd:
+		return "QueueAdd";
+	case AmiActionQueuePause:
+		return "QueuePause";
+	case AmiActionQueueRemove:
+		return "QueueRemove";
+	default:
+		return "";
+	}
 }

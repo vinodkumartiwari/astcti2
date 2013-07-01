@@ -36,6 +36,7 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include "QsLog.h"
 #include "db.h"
 #include "astctioperator.h"
 
@@ -43,7 +44,9 @@ AstCtiOperator::AstCtiOperator(int id, const QString &fullName, const QString &u
 								 const QString &password, bool beginInPause, int seatID,
 								 QObject *parent) : QObject(parent)
 {
-	this->operatorId = id;
+	QLOG_TRACE() << "Creating new AstCtiOperator" << id << username << fullName;
+
+	this->id = id;
 	this->fullName = fullName;
 	this->username = username;
 	this->password = password;
@@ -53,15 +56,18 @@ AstCtiOperator::AstCtiOperator(int id, const QString &fullName, const QString &u
 
 AstCtiOperator::~AstCtiOperator()
 {
+	QLOG_TRACE() << "Destroying AstCtiOperator" << this->id << this->username << this->fullName;
 }
 
 bool AstCtiOperator::loadServices(QHash<int, AstCtiService*> *serviceList)
 {
+	QLOG_TRACE() << "Loading services for operator" << this->id << this->username;
+
 	this->services.clear();
 
 	bool ok;
 	QVariantList params;
-	params.append(this->operatorId);
+	params.append(this->id);
 	const QList<QVariantList> serviceData =
 			DB::readTable("SELECT ID_SERVICE,PENALTY FROM services_operators "
 						  "WHERE ID_OPERATOR=? AND ENABLED=1", params, &ok);
@@ -75,6 +81,8 @@ bool AstCtiOperator::loadServices(QHash<int, AstCtiService*> *serviceList)
 			if (service != 0)
 				this->services.insert(service, penalty);
 		}
+	} else {
+		QLOG_ERROR() << "Loading services failed for operator" << this->id << this->username;
 	}
 
 	return ok;
@@ -84,12 +92,14 @@ bool AstCtiOperator::changePassword(QString &newPassword)
 {
 	QVariantList params;
 	params.append(newPassword);
-	params.append(this->operatorId);
+	params.append(this->id);
 	const int result =
 		  DB::executeNonQuery("UPDATE operators SET PASS_WORD=? WHERE ID_OPERATOR=?", params);
 	const bool ok = result > 0;
 	if (ok)
 		this->password = newPassword;
+	else
+		QLOG_ERROR() << "Changing password failed for operator" << this->id << this->username;
 
 	return ok;
 }
@@ -101,7 +111,7 @@ bool AstCtiOperator::checkPassword(const QString &password)
 
 int  AstCtiOperator::getId()
 {
-    return this->operatorId;
+	return this->id;
 }
 
 QString  AstCtiOperator::getFullName()

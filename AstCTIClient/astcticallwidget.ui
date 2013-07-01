@@ -104,7 +104,7 @@ QToolButton:pressed , QToolButton:checked {
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="astcticallwidget.qrc">:/res/res/direction-outgoing.png</pixmap>
+         <pixmap resource="mainresources.qrc">:/res/callwidget/direction-outgoing.png</pixmap>
         </property>
        </widget>
       </item>
@@ -143,8 +143,8 @@ QToolButton:pressed , QToolButton:checked {
          <string>...</string>
         </property>
         <property name="icon">
-         <iconset resource="astcticallwidget.qrc">
-          <normaloff>:/res/res/call-start.png</normaloff>:/res/res/call-start.png</iconset>
+         <iconset resource="mainresources.qrc">
+          <normaloff>:/res/callwidget/call-start.png</normaloff>:/res/res/call-start.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -163,8 +163,8 @@ QToolButton:pressed , QToolButton:checked {
          <string>...</string>
         </property>
         <property name="icon">
-         <iconset resource="astcticallwidget.qrc">
-          <normaloff>:/res/res/hold.png</normaloff>:/res/res/hold.png</iconset>
+         <iconset resource="mainresources.qrc">
+          <normaloff>:/res/callwidget/hold.png</normaloff>:/res/res/hold.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -183,8 +183,8 @@ QToolButton:pressed , QToolButton:checked {
          <string>...</string>
         </property>
         <property name="icon">
-         <iconset resource="astcticallwidget.qrc">
-          <normaloff>:/res/res/conference.png</normaloff>:/res/res/conference.png</iconset>
+         <iconset resource="mainresources.qrc">
+          <normaloff>:/res/callwidget/conference.png</normaloff>:/res/res/conference.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -203,8 +203,8 @@ QToolButton:pressed , QToolButton:checked {
          <string>...</string>
         </property>
         <property name="icon">
-         <iconset resource="astcticallwidget.qrc">
-          <normaloff>:/res/res/transfer.png</normaloff>:/res/res/transfer.png</iconset>
+         <iconset resource="mainresources.qrc">
+          <normaloff>:/res/callwidget/transfer.png</normaloff>:/res/res/transfer.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -223,8 +223,8 @@ QToolButton:pressed , QToolButton:checked {
          <string>...</string>
         </property>
         <property name="icon">
-         <iconset resource="astcticallwidget.qrc">
-          <normaloff>:/res/res/call-record.png</normaloff>:/res/res/call-record.png</iconset>
+         <iconset resource="mainresources.qrc">
+          <normaloff>:/res/callwidget/call-record.png</normaloff>:/res/res/call-record.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -243,8 +243,8 @@ QToolButton:pressed , QToolButton:checked {
          <string>...</string>
         </property>
         <property name="icon">
-         <iconset resource="astcticallwidget.qrc">
-          <normaloff>:/res/res/contact-new.png</normaloff>:/res/res/contact-new.png</iconset>
+         <iconset resource="mainresources.qrc">
+          <normaloff>:/res/callwidget/contact-new.png</normaloff>:/res/res/contact-new.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -272,7 +272,7 @@ QToolButton:pressed , QToolButton:checked {
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="astcticallwidget.qrc">:/res/res/person.png</pixmap>
+      <pixmap resource="mainresources.qrc">:/res/callwidget/person.png</pixmap>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -329,7 +329,7 @@ QToolButton:pressed , QToolButton:checked {
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="astcticallwidget.qrc"/>
+  <include location="mainresources.qrc"/>
  </resources>
  <connections/>
 </ui>

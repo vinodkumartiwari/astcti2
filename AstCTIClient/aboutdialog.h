@@ -42,7 +42,7 @@
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H
 
-#include <QtGui>
+#include <QDialog>
 #include "coreconstants.h"
 
 namespace Ui {

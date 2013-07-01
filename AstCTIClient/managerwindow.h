@@ -42,10 +42,10 @@
 #ifndef MANAGERWINDOW_H
 #define MANAGERWINDOW_H
 
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QStackedLayout>
-#include <QtGui/QTabBar>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QStackedLayout>
+#include <QtWidgets/QTabBar>
 
 #include "cticlientwindow.h"
 

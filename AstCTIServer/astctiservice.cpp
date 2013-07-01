@@ -36,13 +36,16 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include "QsLog.h"
 #include "db.h"
 #include "astctiservice.h"
 
 AstCtiService::AstCtiService(const int &id, const QString &name, const QString &contextType,
 							   const QString &queueName, QObject *parent) : QObject(parent)
 {
-	this->serviceId = id;
+	QLOG_TRACE() << "Creating new AstCtiService" << id << name;
+
+	this->id = id;
 	this->name = name;
 	this->contextType = contextType == "INBOUND" ? ServiceTypeInbound : ServiceTypeOutbound;
 	this->queueName = queueName;
@@ -50,15 +53,18 @@ AstCtiService::AstCtiService(const int &id, const QString &name, const QString &
 
 AstCtiService::~AstCtiService()
 {
+	QLOG_TRACE() << "Destroying AstCtiService" << this->id << this->name;
 }
 
 bool AstCtiService::loadVariables()
 {
+	QLOG_TRACE() << "Loading variables for service" << this->id << this->name;
+
 	this->variables.clear();
 
 	bool ok;
 	QVariantList params;
-	params.append(this->serviceId);
+	params.append(this->id);
 	const QVariantList variableData =
 			DB::readList("SELECT VARNAME FROM services_variables "
 						 "WHERE ID_SERVICE=? AND ENABLED=1", params, &ok);
@@ -67,6 +73,8 @@ bool AstCtiService::loadVariables()
 		for (int i = 0; i < listSize; i++) {
 			this->variables.append(variableData.at(i).toString());
 		}
+	} else {
+		QLOG_ERROR() << "Loading variables failed for service" << this->id << this->name;
 	}
 
 	return ok;
@@ -74,11 +82,13 @@ bool AstCtiService::loadVariables()
 
 bool AstCtiService::loadActions(QHash<int, AstCtiAction*> *actionList)
 {
+	QLOG_TRACE() << "Loading actions for service" << this->id << this->name;
+
 	this->actions.clear();
 
 	bool ok;
 	QVariantList params;
-	params.append(this->serviceId);
+	params.append(this->id);
 	const QList<QVariantList> actionData =
 			DB::readTable("SELECT ID_ACTION,ACTION_ORDER FROM services_actions "
 						  "WHERE ID_SERVICE=? AND ENABLED=1 "
@@ -94,6 +104,8 @@ bool AstCtiService::loadActions(QHash<int, AstCtiAction*> *actionList)
 				//There may be actions with same order number, so we use insertMulti()
 				this->actions.insertMulti(actionOrder, action);
 		}
+	} else {
+		QLOG_ERROR() << "Loading actions failed for service" << this->id << this->name;
 	}
 
 	return ok;
@@ -101,7 +113,7 @@ bool AstCtiService::loadActions(QHash<int, AstCtiAction*> *actionList)
 
 int AstCtiService::getId()
 {
-    return this->serviceId;
+	return this->id;
 }
 
 QString AstCtiService::getName()

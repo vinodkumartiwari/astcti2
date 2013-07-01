@@ -28,13 +28,13 @@
  * the GNU General Public License.
  *
  * This exception applies only to the code released under the name GNU
- * %PROJECTNAME%.  If you copy code from other releases into a copy of GNU
- * %PROJECTNAME%, as the General Public License permits, the exception does
+ * AstCTIClient.  If you copy code from other releases into a copy of GNU
+ * AstCTIClient, as the General Public License permits, the exception does
  * not apply to the code that you add in this way.  To avoid misleading
  * anyone as to the status of such modified files, you must delete
  * this exception notice from them.
  *
- * If you write modifications of your own for %PROJECTNAME%, it is your choice
+ * If you write modifications of your own for AstCTIClient, it is your choice
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
  */
@@ -53,8 +53,7 @@
 #include "ui_managerwindow.h"
 
 ManagerWindow::ManagerWindow(const QString &userName) :
-    CTIClientWindow(userName),
-    ui(new Ui::ManagerWindow)
+	CTIClientWindow(userName), ui(new Ui::ManagerWindow)
 {
     ui->setupUi(this);
 
@@ -124,7 +123,7 @@ ManagerWindow::ManagerWindow(const QString &userName) :
     newItem = new QTableWidgetItem(tr("987654321"));
     this->ui->contactsTableWidget->setItem(1, 1, newItem);
 	this->ui->callLogTableWidget->setHorizontalHeaderLabels(
-				QStringList() << "Number" << "Ring time" << "Ring duration" << "Call duration");
+			QStringList() << "Number" << "Ring time" << "Ring duration" << "Call duration");
     newItem = new QTableWidgetItem(tr("1234567890"));
     this->ui->callLogTableWidget->setItem(0, 0, newItem);
     newItem = new QTableWidgetItem(tr("Today 13:15"));

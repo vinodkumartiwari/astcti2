@@ -42,8 +42,8 @@
 #ifndef BROWSERWINDOW_H
 #define BROWSERWINDOW_H
 
-#include <QtGui>
-#include <QtGui/QMainWindow>
+#include <QtWidgets>
+#include <QtWidgets/QMainWindow>
 #include <QStringList>
 
 #include "coreconstants.h"

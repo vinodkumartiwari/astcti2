@@ -54,7 +54,7 @@ CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char
 		this->coreTcpServer = 0;
 		this->configChecker = 0;
 
-		ArgumentList args(argc, argv);
+		ArgumentList args(this->arguments());
 		int verbosity = args.getSwitchMulti("v");
 		QString configFileName = args.getSwitchArg("c", "settings.ini");
 		QString logFileName = args.getSwitchArg("l", "");
@@ -72,18 +72,21 @@ CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char
 		QsLogging::Level loggingLevel;
 		switch (verbosity) {
 		case 0:
-			loggingLevel = QsLogging::FatalLevel;
+			loggingLevel = QsLogging::OffLevel;
 			break;
 		case 1:
-			loggingLevel = QsLogging::ErrorLevel;
+			loggingLevel = QsLogging::FatalLevel;
 			break;
 		case 2:
-			loggingLevel = QsLogging::WarnLevel;
+			loggingLevel = QsLogging::ErrorLevel;
 			break;
 		case 3:
-			loggingLevel = QsLogging::InfoLevel;
+			loggingLevel = QsLogging::WarnLevel;
 			break;
 		case 4:
+			loggingLevel = QsLogging::InfoLevel;
+			break;
+		case 5:
 			loggingLevel = QsLogging::DebugLevel;
 			break;
 		default:
@@ -92,16 +95,17 @@ CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char
 		}
 		logger.setLoggingLevel(loggingLevel);
 
-		//Debug destination is always active
-		logger.addDestination(QsLogging::DestinationFactory::MakeDebugOutputDestination());
-		if (!logFileName.isEmpty()) {
-			QFileInfo logFileInfo(logFileName);
-			QDir logDir = logFileInfo.absoluteDir();
-			if (logDir.exists() || logDir.mkdir(logDir.absolutePath()))
-				logger.addDestination(
-						QsLogging::DestinationFactory::MakeFileDestination(logFileName));
-			else
-				QLOG_ERROR() << "Unable to create log directory" << logDir.absolutePath();
+		if (loggingLevel != QsLogging::OffLevel) {
+			logger.addDestination(QsLogging::DestinationFactory::MakeDebugOutputDestination());
+			if (!logFileName.isEmpty()) {
+				QFileInfo logFileInfo(logFileName);
+				QDir logDir = logFileInfo.absoluteDir();
+				if (logDir.exists() || logDir.mkdir(logDir.absolutePath()))
+					logger.addDestination(
+							QsLogging::DestinationFactory::MakeFileDestination(logFileName, true, 524288, 5));
+				else
+					QLOG_ERROR() << "Unable to create log directory" << logDir.absolutePath();
+			}
 		}
 
 		// Read settings for database connection from file and create connection
@@ -242,6 +246,8 @@ bool CtiServerApplication::createDatabaseConnection(const QString &iniFilePath)
 		sqlDatabase = settings.value("database", defaultSqlDatabase).toString();
         settings.endGroup();
     } else {
+		QLOG_WARN() << "File" << iniFilePath << "not found. Using defaults.";
+
 		sqlHost     = defaultSqlHost;
 		sqlUserName = defaultSqlUser;
 		sqlPassWord = defaultSqlPassWord;
@@ -249,17 +255,14 @@ bool CtiServerApplication::createDatabaseConnection(const QString &iniFilePath)
 		sqlDatabase = defaultSqlDatabase;
     }
 
-	if (!DB::buildConnection(sqlHost, sqlPort, sqlUserName, sqlPassWord, sqlDatabase)) {
+	if (!DB::buildConnection(sqlHost, sqlPort, sqlUserName, sqlPassWord, sqlDatabase))
 		return false;
-	}
 
 	QString dbVersion = this->readDatabaseVersion();
-	if (dbVersion.startsWith("Error")) {
+	if (dbVersion.startsWith("Error"))
 		return false;
-	}
 
-	QLOG_INFO() << "Database connection successfully created";
-	QLOG_INFO() << "Database version" << dbVersion;
+	QLOG_INFO() << "Database connection successfully created." << "Database version" << dbVersion;
 
 	return true;
 }

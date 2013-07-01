@@ -40,19 +40,20 @@
  */
 
 #include <QCoreApplication>
+
 #include "argumentlist.h"
 
 ArgumentList::ArgumentList()
 {
     if (qApp != NULL) {
 		// qApp is a global pointer to the current qApplication
-		this->argsToStringlist(qApp->argc(), qApp->argv());
+		this->argsToStringlist(qApp->arguments());
     }
 }
 
-ArgumentList::ArgumentList(int argc, char *argv[])
+ArgumentList::ArgumentList(const QStringList &arguments)
 {
-	this->argsToStringlist(argc, argv);
+	this->argsToStringlist(arguments);
 }
 
 bool ArgumentList::getSwitch(const QString &option)
@@ -172,12 +173,13 @@ QString ArgumentList::getSwitchArg(const QString &option, const QString &default
 	return retVal;
 }
 
-void ArgumentList::argsToStringlist(int argc, char *argv[])
+void ArgumentList::argsToStringlist(const QStringList &arguments)
 {
 	//We start at 1 because first argument is the path of application executable,
 	//which we don't care about
-	for (int i = 1; i < argc; i++)
-		this->append(argv[i]);
+	const int listSize = arguments.size();
+	for (int i = 1; i < listSize; i++)
+		this->append(arguments.at(i));
 }
 
 bool ArgumentList::isSwitch(const QString &arg) const

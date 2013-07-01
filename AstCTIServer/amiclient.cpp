@@ -50,7 +50,7 @@ AmiClient::AmiClient() : QObject()
 	qRegisterMetaType<AmiConnectionStatus>("AmiConnectionStatus");
 	qRegisterMetaType<AmiClientStatus>("AmiClientStatus");
 
-	QLOG_INFO() << "Creating AMIClient";
+	QLOG_TRACE() << "Creating AmiClient";
 
 	this->currentActionId = 0;
     this->localSocket = 0;
@@ -60,7 +60,7 @@ AmiClient::AmiClient() : QObject()
 
 AmiClient::~AmiClient()
 {
-	QLOG_INFO() << "Closing AMIClient";
+	QLOG_TRACE() << "Destroying AmiClient";
 
 	this->isRunning = false;
 	if (this->localSocket->state() == QAbstractSocket::ConnectedState) {
@@ -106,13 +106,14 @@ void AmiClient::run()
 		if (!this->localSocket->waitForConnected(this->amiConnectTimeout) ) {
 			this->amiClientStatus = AmiStatusLoggedOff;
 
-			QLOG_WARN() << "Unable to connect to" << this->amiHost
-						 << this->amiPort << ". AMI Client will retry in"
-						 << this->amiConnectRetryAfter << "seconds.";
+			QLOG_WARN() << "Unable to connect to"
+						<< QString("%1:%2.").arg(this->amiHost).arg(this->amiPort)
+						<< "AmiClient will retry in" << this->amiConnectRetryAfter << "seconds.";
 			this->delay(this->amiConnectRetryAfter);
 		} else {
 			while (this->isRunning) {
-                //http://qt.git orious.org/qt/miniak/blobs/6a994abef70012e2c0aa3d70253ef4b9985b2f20/src/corelib/kernel/qeventdispatcher_win.cpp
+				//http://qt.git orious.org/qt/miniak/blobs/6a994abef70012e2c0aa3d70253ef4b9985b2f20/
+				//src/corelib/kernel/qeventdispatcher_win.cpp
 				while (this->localSocket->waitForReadyRead(this->amiReadTimeout)) {
                     QByteArray dataFromSocket = localSocket->readAll();
                     QString receivedData = QString(dataFromSocket);
@@ -171,13 +172,13 @@ void AmiClient::setParameters(AstCtiConfiguration *config)
 
 void AmiClient::socketStateChanged(QAbstractSocket::SocketState socketState)
 {
-	QLOG_TRACE() << "AMIClient socket state changed:" << this->socketStateToString(socketState);
+	QLOG_TRACE() << "AmiClient socket state changed:" << this->socketStateToString(socketState);
 }
 
 void AmiClient::socketError(QAbstractSocket::SocketError error)
 {    
 	if (error != QAbstractSocket::SocketTimeoutError) {
-		QLOG_ERROR() << "AMIClient Socket Error:" << error << this->localSocket->errorString();
+		QLOG_ERROR() << "AmiClient Socket Error:" << error << this->localSocket->errorString();
 //		this->amiClientStatus = AmiStatusLoggedOff;
 //		emit this->amiConnectionStatusChange(AmiConnectionStatusDisconnected);
 	}
@@ -187,15 +188,14 @@ void AmiClient::socketDisconnected()
 {
 	this->amiClientStatus = AmiStatusLoggedOff;
     emit this->amiConnectionStatusChange(AmiConnectionStatusDisconnected);
-	QLOG_WARN() << "AMIClient Socket Disconnected";
+	QLOG_WARN() << "AmiClient Socket Disconnected";
 }
 
 void AmiClient::performLogin()
 {
 	this->amiClientStatus = AmiStatusLoggingIn;
 
-	AmiCommand *cmd = new AmiCommand;
-	cmd->action = AmiActionLogin;
+	AmiCommand *cmd = new AmiCommand(AmiActionLogin);
 	cmd->parameters = new QHash<QString, QString>;
 	cmd->parameters->insert("Username", this->amiUser);
 	cmd->parameters->insert("Secret", this->amiSecret);
@@ -204,8 +204,7 @@ void AmiClient::performLogin()
 
 void AmiClient::performLogoff()
 {
-	AmiCommand *cmd = new AmiCommand;
-	cmd->action = AmiActionLogoff;
+	AmiCommand *cmd = new AmiCommand(AmiActionLogoff);
 	this->sendCommandToAsterisk(cmd);
 }
 
@@ -292,15 +291,14 @@ void AmiClient::evaluateEvent(QHash<QString, QString> *event)
 		emit this->asteriskEvent(AmiEventShutdown, 0);
 	} else if (eventName == "Newchannel") {
 		// Build a new asterisk call object and add it to hashtable
-		AstCtiCall *newCall = new AstCtiCall();
-        QString uniqueId = event->value("Uniqueid");
+		QString uniqueId = event->value("Uniqueid");
+		AstCtiCall *newCall = new AstCtiCall(uniqueId);
         newCall->setChannel(event->value("Channel"));
         newCall->setCalleridNum(event->value("CallerIDNum"));
         newCall->setCalleridName(event->value("CallerIDName"));
         newCall->setState(event->value("ChannelStateDesc"));
 		newCall->setExten(event->value("Exten"));
 		newCall->setAccountCode(event->value("AccountCode"));
-		newCall->setUniqueId(uniqueId);
 
 		this->activeCalls.insert(uniqueId, newCall);
 
@@ -414,8 +412,8 @@ void AmiClient::evaluateResponse(QHash<QString, QString> *response)
 			QString responseString  = response->value("Response");
 			QString responseMessage = response->value("Message");
 
-			QLOG_DEBUG() << "Evaluated response" << responseString
-						 << "for action:" << getActionName(cmd->action)
+			QLOG_DEBUG() << "Received response" << responseString
+						 << "for action:" << AmiCommand::getActionName(cmd->action)
 						 << "and channel:" << cmd->exten
 						 << ". ActionId:"<< actionId
 						 << ". Message:"<< responseMessage;;
@@ -463,7 +461,7 @@ bool AmiClient::sendDataToAsterisk(const QString& data)
     QDataStream out(&block, QIODevice::WriteOnly);
 
     // We output simple ascii strings (no utf8)    
-    out.writeRawData(data.toAscii(), data.length());
+	out.writeRawData(data.toLatin1(), data.length());
 
 	if (this->localSocket->write(block) > -1 && this->localSocket->flush()) {
 		return true;
@@ -481,7 +479,7 @@ void AmiClient::sendCommandToAsterisk(AmiCommand *command)
 
 	QString data = "";
 	//Define action
-	data.append(QString("Action:%1\r\n").arg(this->getActionName(command->action)));
+	data.append(QString("Action:%1\r\n").arg(AmiCommand::getActionName(command->action)));
 	//Add action ID
 	data.append(QString("ActionId:%1\r\n").arg(this->currentActionId));
 	//Add parameters, if any
@@ -513,25 +511,6 @@ void AmiClient::sendCommandToAsterisk(AmiCommand *command)
 		command->responseMessage = "Command not sent";
 		emit this->asteriskResponse(command);
 		this->currentActionId--;
-	}
-}
-
-QString AmiClient::getActionName(const AmiAction action) {
-	switch (action) {
-	case AmiActionLogin:
-		return "Login";
-	case AmiActionLogoff:
-		return "Logoff";
-	case AmiActionOriginate:
-		return "Originate";
-	case AmiActionQueueAdd:
-		return "QueueAdd";
-	case AmiActionQueuePause:
-		return "QueuePause";
-	case AmiActionQueueRemove:
-		return "QueueRemove";
-	default:
-		return "";
 	}
 }
 

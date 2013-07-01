@@ -56,9 +56,7 @@ enum AstCtiActionType {
 struct AstCTIAction
 {
     AstCtiActionType type;
-    QString path;
-    QString server;
-    quint16 port;
+	QString destination;
     QString encoding;
     QString parameters;
 };

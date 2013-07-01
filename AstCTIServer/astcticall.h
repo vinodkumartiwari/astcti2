@@ -51,7 +51,7 @@ class AstCtiCall : public QObject
     Q_OBJECT
 
 public:
-	explicit AstCtiCall(QObject *parent=0);
+	explicit AstCtiCall(const QString &uniqueId, QObject *parent=0);
 	~AstCtiCall();
 
     QString                 &getChannel();

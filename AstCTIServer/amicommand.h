@@ -62,8 +62,9 @@ class AmiCommand : public QObject
 	Q_ENUMS(AmiAction)
 
 public:
-	explicit AmiCommand(QObject *parent = 0);
+	explicit AmiCommand(AmiAction action, QObject *parent = 0);
 	~AmiCommand();
+	static QString            getActionName(const AmiAction action);
 
 	AmiAction                 action;
 	QString                   exten;
@@ -71,6 +72,9 @@ public:
 	QHash<QString, QString>  *variables;
 	QString                   responseString;
 	QString                   responseMessage;
+
+private:
+	Q_DISABLE_COPY(AmiCommand)
 };
 Q_DECLARE_METATYPE(AmiCommand*)
 

@@ -41,13 +41,13 @@
 
 #include "webview.h"
 
-#include <QtGui/QClipboard>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QStyle>
+#include <QClipboard>
+#include <QMenu>
+#include <QMessageBox>
+#include <QMouseEvent>
+#include <QStyle>
 #include <QtNetwork/QNetworkRequest>
-#include <QtWebKit/QWebHitTestResult>
+#include <QtWebKitWidgets/QWebHitTestResult>
 #include <QtNetwork/QNetworkReply>
 #include <QtUiTools/QUiLoader>
 #include <QtCore/QFile>

@@ -71,7 +71,7 @@ CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char
     this->config = new AstCtiConfiguration();
 
     //Process command-line arguments
-    ArgumentList args(argc, argv);
+	ArgumentList args(this->arguments());
     this->config->debug = args.getSwitch("--debug") | args.getSwitch("-d");
 
     this->config->serverHost = args.getSwitchArg("-h", defaultServerHost);

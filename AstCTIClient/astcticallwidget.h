@@ -42,12 +42,6 @@
 #ifndef ASTCTICALLWIDGET_H
 #define ASTCTICALLWIDGET_H
 
-#if defined(ASTCTICALLWIDGET_LIBRARY)
-#  define ASTCTICALLWIDGET_EXPORT Q_DECL_EXPORT
-#else
-#  define ASTCTICALLWIDGET_EXPORT Q_DECL_IMPORT
-#endif
-
 #include <QtWidgets/QWidget>
 #include <QtDesigner/QDesignerExportWidget>
 
@@ -56,7 +50,7 @@ namespace Ui
     class AstCTICallWidget;
 }
 
-class ASTCTICALLWIDGET_EXPORT AstCTICallWidget : public QWidget
+class AstCTICallWidget : public QWidget
 {
     Q_DISABLE_COPY(AstCTICallWidget)
     Q_OBJECT

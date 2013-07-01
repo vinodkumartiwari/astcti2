@@ -98,7 +98,7 @@ void LoginWindow::accepting()
         QString pass = this->ui->passwordLineEdit->text();
         if (!pass.isEmpty()) {
             QCryptographicHash md5(QCryptographicHash::Md5);
-            md5.addData(QByteArray(pass.toAscii()));
+			md5.addData(QByteArray(pass.toLatin1()));
             pass = QString(md5.result().toHex());
         }
 

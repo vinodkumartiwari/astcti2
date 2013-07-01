@@ -36,13 +36,16 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include "QsLog.h"
 #include "astctiaction.h"
 
 AstCtiAction::AstCtiAction(const int &id, const QString &osType, const QString &actionType,
 						   const QString &destination, const QString &parameters,
 						   const QString &messageEncoding, QObject *parent) :	QObject(parent)
 {
-	this->actionId = id;
+	QLOG_TRACE() << "Creating new AstCtiAction" << id << actionType << destination;
+
+	this->id = id;
 	this->osType = parseOsType(osType);
 	this->actionType = parseActionType(actionType);
 	this->destination = destination;
@@ -52,27 +55,45 @@ AstCtiAction::AstCtiAction(const int &id, const QString &osType, const QString &
 
 AstCtiAction::~AstCtiAction()
 {
+	QLOG_TRACE() << "Destroying AstCtiAction" << this->id << getActionName(this->actionType)
+				 << this->destination;
+}
+
+QString AstCtiAction::getActionName(const AstCtiActionType actionType)
+{
+	switch(actionType) {
+	case ActionApplication:
+		return "Application";
+	case ActionBrowser:
+		return "Browser";
+	case ActionInternalBrowser:
+		return "InternalBrowser";
+	case ActionTcpMessage:
+		return "TcpMessage";
+	default:
+		return "UdpMessage";
+	}
 }
 
 AstCtiActionType AstCtiAction::parseActionType(const QString &actionTypeString) {
-	if (actionTypeString == "APPLICATION")
+	if (actionTypeString == "Application")
 		return ActionApplication;
-	else if (actionTypeString == "BROWSER")
+	else if (actionTypeString == "Browser")
 		return ActionBrowser;
-	else if (actionTypeString == "INTERNAL_BROWSER")
+	else if (actionTypeString == "InternalBrowser")
 		return ActionInternalBrowser;
-	else if (actionTypeString == "TCP_MESSAGE")
+	else if (actionTypeString == "TcpMessage")
 		return ActionTcpMessage;
 	else
 		return ActionUdpMessage;
 }
 
 AstCtiActionOsType AstCtiAction::parseOsType(const QString &osTypeString) {
-	if (osTypeString == "LINUX")
+	if (osTypeString == "Linux")
 		return ActionOsLinux;
-	else if (osTypeString == "MACINTOSH")
+	else if (osTypeString == "Macintosh")
 		return ActionOsMacintosh;
-	else if (osTypeString == "WINDOWS")
+	else if (osTypeString == "Windows")
 		return ActionOsWindows;
 	else
 		return ActionOsAll;
@@ -80,7 +101,7 @@ AstCtiActionOsType AstCtiAction::parseOsType(const QString &osTypeString) {
 
 int AstCtiAction::getId()
 {
-	return this->actionId;
+	return this->id;
 }
 
 AstCtiActionType AstCtiAction::getActionType()
