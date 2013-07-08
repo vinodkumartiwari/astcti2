@@ -51,9 +51,9 @@ UNLOCK TABLES;
 
 LOCK TABLES `operators` WRITE;
 
-insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`BEGIN_IN_PAUSE`,`ID_SEAT`,`ENABLED`) values (1,'Operator 1','oper1','1a1dc91c907325c69271ddf0c944bc72',0,NULL,1);
-insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`BEGIN_IN_PAUSE`,`ID_SEAT`,`ENABLED`) values (2,'Operator 2','oper2','1a1dc91c907325c69271ddf0c944bc72',0,NULL,1);
-insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`BEGIN_IN_PAUSE`,`ID_SEAT`,`ENABLED`) values (3,'Operator 3','oper3','1a1dc91c907325c69271ddf0c944bc72',0,1,0);
+insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`BEGIN_IN_PAUSE`,`ID_SEAT`,`CAN_MONITOR`,`ENABLED`) values (1,'Operator 1','oper1','1a1dc91c907325c69271ddf0c944bc72',0,NULL,1,1);
+insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`BEGIN_IN_PAUSE`,`ID_SEAT`,`CAN_MONITOR`,`ENABLED`) values (2,'Operator 2','oper2','1a1dc91c907325c69271ddf0c944bc72',0,NULL,0,1);
+insert  into `operators`(`ID_OPERATOR`,`FULL_NAME`,`USERNAME`,`PASS_WORD`,`BEGIN_IN_PAUSE`,`ID_SEAT`,`CAN_MONITOR`,`ENABLED`) values (3,'Operator 3','oper3','1a1dc91c907325c69271ddf0c944bc72',0,1,0,0);
 
 UNLOCK TABLES;
 

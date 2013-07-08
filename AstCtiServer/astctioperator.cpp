@@ -36,13 +36,16 @@
  * If you do not wish that, delete this exception notice.
  */
 
+#include <QDomDocument>
+
 #include "QsLog.h"
 #include "db.h"
 #include "astctioperator.h"
 
 AstCtiOperator::AstCtiOperator(int id, const QString &fullName, const QString &username,
-								 const QString &password, bool beginInPause, int seatID,
-								 QObject *parent) : QObject(parent)
+							   const QString &password, bool beginInPause, int seatID,
+							   bool canMonitor, bool canAlterSpeedDials,
+							   QObject *parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating new AstCtiOperator" << id << username << fullName;
 
@@ -52,11 +55,50 @@ AstCtiOperator::AstCtiOperator(int id, const QString &fullName, const QString &u
 	this->password = password;
 	this->beginInPause = beginInPause;
 	this->seatId = seatID;
+	this->canMonitor = canMonitor;
+	this->canAlterSpeedDials = canAlterSpeedDials;
 }
 
 AstCtiOperator::~AstCtiOperator()
 {
 	QLOG_TRACE() << "Destroying AstCtiOperator" << this->id << this->username << this->fullName;
+
+	qDeleteAll(this->speedDials);
+}
+
+bool AstCtiOperator::loadSpeedDials()
+{
+	QLOG_TRACE() << "Loading speed dials for operator" << this->id << this->username;
+
+	this->speedDials.clear();
+
+	bool ok;
+	QVariantList params;
+	params.append(this->id);
+	const QList<QVariantList> speedDialData =
+			DB::readTable("SELECT GROUP_NAME,NAME,NUM,BLF,ORDER_NUM FROM speeddials "
+						  "WHERE ID_OPERATOR=? ORDER BY GROUP_NAME,ORDER_NUM", params, &ok);
+	if (ok) {
+		const int listSize = speedDialData.size();
+		for (int i = 0; i < listSize; i++) {
+			const QVariantList speedDialRow = speedDialData.at(i);
+			AstCtiSpeedDial *speedDial = new AstCtiSpeedDial();
+			const QString groupName = speedDialRow.at(0).toString();
+			const quint8 orderNum = speedDialRow.at(4).value<quint8>();
+			speedDial->groupName = groupName;
+			speedDial->name = speedDialRow.at(1).toString();
+			speedDial->number = speedDialRow.at(2).toString();
+			speedDial->isBlf = speedDialRow.at(3).toBool();
+			speedDial->order = orderNum;
+			// For key, we use groupName:order, with order left padded with zeros
+			const QString key = QString("%1:%2").arg(groupName).arg(orderNum, 3, 10, QChar('0'));
+			this->speedDials.insert(key, speedDial);
+		}
+	} else {
+		QLOG_ERROR() << "Loading speed dials failed for operator" << this->id << this->username;
+	}
+
+	return ok;
 }
 
 bool AstCtiOperator::loadServices(QHash<int, AstCtiService*> *serviceList)
@@ -141,11 +183,123 @@ int AstCtiOperator::getSeatId()
 
 bool AstCtiOperator::isCallCenter()
 {
-	//Opeartors that don't have associated seat are considered call-center operators
+	//Operators that don't have associated seat are considered call-center operators
 	return this->seatId == 0;
 }
 
 QHash<AstCtiService*, int> *AstCtiOperator::getServices()
 {
 	return &(this->services);
+}
+
+QString AstCtiOperator::toXml()
+{
+	QDomDocument xmlDoc("AstCtiOperator");
+
+	QDomElement xmlOperator = xmlDoc.createElement("Operator");
+	xmlOperator.setAttribute("FullName", this->fullName);
+	xmlDoc.appendChild(xmlOperator);
+
+	QDomElement xmlElement;
+	QDomText xmlText;
+
+	xmlElement = xmlDoc.createElement("IsCallCenter");
+	xmlOperator.appendChild(xmlElement);
+	xmlText = xmlDoc.createTextNode(QString::number(this->isCallCenter()));
+	xmlElement.appendChild(xmlText);
+
+	xmlElement = xmlDoc.createElement("BeginInPause");
+	xmlOperator.appendChild(xmlElement);
+	xmlText = xmlDoc.createTextNode(QString::number(this->beginInPause));
+	xmlElement.appendChild(xmlText);
+
+	xmlElement = xmlDoc.createElement("CanMonitor");
+	xmlOperator.appendChild(xmlElement);
+	xmlText = xmlDoc.createTextNode(QString::number(this->canMonitor));
+	xmlElement.appendChild(xmlText);
+
+	xmlElement = xmlDoc.createElement("CanAlterSpeedDials");
+	xmlOperator.appendChild(xmlElement);
+	xmlText = xmlDoc.createTextNode(QString::number(this->canAlterSpeedDials));
+	xmlElement.appendChild(xmlText);
+
+	if (this->speedDials->size() > 0) {
+		QDomElement xmlSpeedDials = xmlDoc.createElement("SpeedDials");
+		xmlSpeedDials.setAttribute("Count", this->speedDials->size());
+		xmlOperator.appendChild(xmlSpeedDials);
+
+		QString lastGroup = "";
+		QDomElement xmlSpeedDialGroup;
+
+		QMap<QString, AstCtiSpeedDial*>::const_iterator sdIterator = this->speedDials.constBegin();
+		while (sdIterator != this->speedDials.constEnd()) {
+			AstCtiSpeedDial *speedDial = sdIterator.value();
+
+			if (lastGroup != speedDial->groupName) {
+				lastGroup = speedDial->groupName;
+				xmlSpeedDialGroup = xmlDoc.createElement("SpeedDialGroup");
+				xmlSpeedDialGroup.setAttribute("Name", lastGroup);
+				xmlSpeedDials.appendChild(xmlSpeedDialGroup);
+			}
+
+			QDomElement xmlSpeedDial = xmlDoc.createElement("SpeedDial");
+
+			xmlElement = xmlDoc.createElement("Name");
+			xmlSpeedDial.appendChild(xmlElement);
+			xmlText = xmlDoc.createTextNode(speedDial->name);
+			xmlElement.appendChild(xmlText);
+
+			xmlElement = xmlDoc.createElement("Number");
+			xmlSpeedDial.appendChild(xmlElement);
+			xmlText = xmlDoc.createTextNode(speedDial->number);
+			xmlElement.appendChild(xmlText);
+
+			xmlElement = xmlDoc.createElement("BLF");
+			xmlSpeedDial.appendChild(xmlElement);
+			xmlText = xmlDoc.createTextNode(QString::number(speedDial->isBlf));
+			xmlElement.appendChild(xmlText);
+
+			xmlElement = xmlDoc.createElement("Order");
+			xmlSpeedDial.appendChild(xmlElement);
+			xmlText = xmlDoc.createTextNode(speedDial->order);
+			xmlElement.appendChild(xmlText);
+
+			xmlSpeedDialGroup.appendChild(xmlSpeedDial);
+
+			sdIterator++;
+		}
+	}
+
+	 if (this->services.size() > 0) {
+		QDomElement xmlServices = xmlDoc.createElement("Services");
+		xmlServices.setAttribute("Count", this->services.size());
+
+		QMap<int, AstCtiAction*>::const_iterator servicesIterator = this->services->constBegin();
+		while (servicesIterator != this->services->constEnd()) {
+			AstCtiService *service = servicesIterator.key();
+			QDomElement xmlService = xmlDoc.createElement("Service");
+
+			xmlElement = xmlDoc.createElement("Name");
+			xmlService.appendChild(xmlElement);
+			xmlText = xmlDoc.createTextNode(service->getName());
+			xmlElement.appendChild(xmlText);
+
+			xmlElement = xmlDoc.createElement("QueueName");
+			xmlService.appendChild(xmlElement);
+			xmlText = xmlDoc.createTextNode(service->getQueueName());
+			xmlElement.appendChild(xmlText);
+
+			xmlElement = xmlDoc.createElement("ContextType");
+			xmlService.appendChild(xmlElement);
+			xmlText = xmlDoc.createTextNode(service->getContextTypeString());
+			xmlElement.appendChild(xmlText);
+
+			xmlServices.appendChild(xmlService);
+			servicesIterator++;
+		}
+
+		xmlOperator.appendChild(xmlServices);
+	}
+
+	return xmlDoc.toString();
 }

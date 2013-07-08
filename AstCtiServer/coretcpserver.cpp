@@ -61,8 +61,6 @@ CoreTcpServer::CoreTcpServer(AstCtiConfiguration *config, QObject *parent)
 	this->commandsList.insert("CHPW",       CmdChangePassword);
 	this->commandsList.insert("KEEP",       CmdKeep);
 	this->commandsList.insert("OSTYPE",     CmdOsType);
-	this->commandsList.insert("SERVICES",   CmdServices);
-	this->commandsList.insert("QUEUES",     CmdQueues);
 	this->commandsList.insert("PAUSE",      CmdPause);
 	this->commandsList.insert("ORIG",       CmdOrig);
 	this->commandsList.insert("MAC",        CmdMac);
@@ -71,17 +69,19 @@ CoreTcpServer::CoreTcpServer(AstCtiConfiguration *config, QObject *parent)
 			this, SLOT(newConnection()));
 
 	qRegisterMetaType<AstCtiConfiguration*>("AstCtiConfiguration*");
-	qRegisterMetaType<AstCtiCall*>("AstCtiCall*");
+	qRegisterMetaType<AstCtiChannel*>("AstCtiChannel*");
 	qRegisterMetaType<AmiCommand*>("AMICommand*");
 
 	this->amiClient = new AmiClient();
 	this->amiClient->setParameters(this->config);
-	connect(this->amiClient, SIGNAL(amiConnectionStatusChange(const AmiConnectionStatus)),
-			this, SLOT(amiConnectionStatusChange(const AmiConnectionStatus)));
-	connect(this->amiClient, SIGNAL(asteriskEvent(const AmiEvent, AstCtiCall*)),
-			this, SLOT(receiveAsteriskEvent(const AmiEvent, AstCtiCall*)));
-	connect(this->amiClient, SIGNAL(asteriskResponse(AmiCommand*)),
-			this, SLOT(processAsteriskResponse(AmiCommand*)));
+	connect(this->amiClient, SIGNAL(amiConnectionStatusChange(AmiConnectionStatus)),
+			this, SLOT(amiConnectionStatusChange(AmiConnectionStatus)));
+	connect(this->amiClient, SIGNAL(amiChannelEvent(AmiEvent, AstCtiChannel*, QString)),
+			this, SLOT(receiveAmiChannelEvent(AmiEvent, AstCtiChannel*, QString)));
+	connect(this->amiClient, SIGNAL(amiStatusEvent(AmiEvent, QString, QString)),
+			this, SLOT(receiveAmiStatusEvent(AmiEvent, QString, QString)));
+	connect(this->amiClient, SIGNAL(amiResponse(AmiCommand*)),
+			this, SLOT(processAmiResponse(AmiCommand*)));
 	connect(this, SIGNAL(newAmiCommand(AmiCommand*)),
 			this->amiClient, SLOT(sendCommandToAsterisk(AmiCommand*)));
 	connect(this, SIGNAL(newAmiConfiguration(AstCtiConfiguration*)),
@@ -272,7 +272,7 @@ void CoreTcpServer::newConnection()
 	}
 }
 
-void CoreTcpServer::amiConnectionStatusChange(const AmiConnectionStatus status)
+void CoreTcpServer::amiConnectionStatusChange(AmiConnectionStatus status)
 {
 	this->amiStatus = status;
     switch(status) {
@@ -552,35 +552,6 @@ void CoreTcpServer::processClientData(QTcpSocket *socket, const QString &data)
 		}
 		this->sendDataToClient(socket, "100 OK");
 		break;
-	case CmdServices:
-		if (!cm->isAuthenticated) {
-			this->sendDataToClient(socket, "101 KO Not authenticated");
-			break;
-		}
-
-		foreach (AstCtiService *service, cm->activeOperator->getServices()->keys()) {
-			this->sendDataToClient(socket, QString("200 %1 %2")
-										   .arg(service->getName())
-										   .arg(service->getContextType() == ServiceTypeInbound ?
-													"INBOUND" : "OUTBOUND"));
-		}
-		this->sendDataToClient(socket, "201 eof");
-
-		break;
-	case CmdQueues:
-		if (!cm->isAuthenticated) {
-			this->sendDataToClient(socket, "101 KO Not authenticated");
-			break;
-		}
-
-		foreach (AstCtiService *service, cm->activeOperator->getServices()->keys()) {
-			if (service->getServiceIsQueue())
-				this->sendDataToClient(socket, QString("202 %1")
-											   .arg(service->getQueueName()));
-		}
-		this->sendDataToClient(socket, "203 eof");
-
-		break;
 	case CmdPause:
 		if (!cm->isAuthenticated) {
 			this->sendDataToClient(socket, "101 KO Not authenticated");
@@ -713,68 +684,71 @@ void CoreTcpServer::stopServer()
 	CtiServerApplication::instance()->quit();
 }
 
-void CoreTcpServer::receiveAsteriskEvent(const AmiEvent &eventId, AstCtiCall *call)
+void CoreTcpServer::receiveAmiChannelEvent(AmiEvent &eventId, AstCtiChannel *channel, QString data)
 {
-	QString logMsg = "";
-	if (call != 0)
-		logMsg = "for call " + call->getUniqueId();
+	QLOG_INFO() << "Received AMI channel event" << AmiClient::getEventName(eventId)
+				<< "for channel" << channel->getChannel()
+				<< "with data" << data;
 
 	switch (eventId) {
 	case AmiEventNewchannel:
 		{
-			QString context = call->getContext();
-			if (!context.isEmpty()) {
-				AstCtiService *service = this->config->getServiceByName(context);
-				if (service != 0) {
-					// Here we add reference to service actions.
-					// Before the call is passed to the client, the right action
-					// will be selected using client's operating system.
-					call->setActions(service->getActions());
+			const QString context = channel->getContext();
+			AstCtiService *service = this->config->getServiceByName(context);
+			if (service != 0) {
+				// Here we add reference to service actions.
+				// Before the call is passed to the client, the right action
+				// will be selected using client's operating system.
+				channel->setActions(service->getActions());
 
-					// Add relevant variables to call
-					foreach (QString varName, *(service->getVariables()))
-						call->addVariable(varName, "");
-				}
+				// Add relevant variables to call
+				foreach (QString varName, *(service->getVariables()))
+					channel->addVariable(varName, "");
 			}
 		}
 		break;
 	case AmiEventBridge:
 		{
-			if (call != 0) {
-				QString callChannel = call->getParsedDestChannel();
+			QString channelName = channel->getParsedChannel();
 
-				if (callChannel.length() > 0) {
-					ClientManager* cm = this->getClientByExten(callChannel);
-					if (cm != 0) {
-						QString clientOperatingSystem = cm->clientOperatingSystem;
-						if (!clientOperatingSystem.isEmpty()) {
-							// Here we add information about CTI application to start
-							call->setOperatingSystem(clientOperatingSystem);
-							QString xmlData = call->toXml();
-							this->sendDataToClient(cm->socket, xmlData);
-						}
-					} else {
-						QLOG_WARN() << ">> receiveCtiEvent << Client with exten" << callChannel
-									<< "not found in client list";
+			if (channelName.length() > 0) {
+				ClientManager* cm = this->getClientByExten(channelName);
+				if (cm != 0) {
+					QString clientOperatingSystem = cm->clientOperatingSystem;
+					if (!clientOperatingSystem.isEmpty()) {
+						// Here we add information about CTI application to start
+						channel->setOperatingSystem(clientOperatingSystem);
+						QString xmlData = channel->toXml();
+						this->sendDataToClient(cm->socket, xmlData);
 					}
 				} else {
-					QLOG_WARN() << ">> receiveCtiEvent << Call Channel is empty";
+					QLOG_WARN() << ">> receiveCtiEvent << Client with exten" << channelName
+								<< "not found in client list";
 				}
+			} else {
+				QLOG_WARN() << ">> receiveCtiEvent << Call Channel is empty";
 			}
 		}
 		break;
 	case AmiEventHangup:
-		// Call object is owned by another thread so it is unsafe to delete it here.
+		// Channel object is owned by another thread so it is unsafe to delete it here.
 		// Instead, we invoke QObject's deleteLater() method which will
 		// delete the object once the control returns to the event loop.
-		call->deleteLater();
+		channel->deleteLater();
 		break;
 	}
-
-	QLOG_INFO() << "Received CTI Event" << AmiClient::getEventName(eventId) << logMsg;
 }
 
-void CoreTcpServer::processAsteriskResponse(AmiCommand *cmd)
+void CoreTcpServer::receiveAmiStatusEvent(AmiEvent eventId, QString object, QString status)
+{
+	QLOG_INFO() << "Received AMI status event" << AmiClient::getEventName(eventId)
+				<< "for object" << object
+				<< "with status" << status;
+
+
+}
+
+void CoreTcpServer::processAmiResponse(AmiCommand *cmd)
 {
 	ClientManager* cm = this->getClientByExten(cmd->exten);
 
@@ -814,7 +788,7 @@ void CoreTcpServer::ctiClientLogin(ClientManager *cm)
 			i.next();
 			AstCtiService *service = i.key();
 			// Check if we got an existent service and it is a queue
-			if (service != 0 && service->getServiceIsQueue()) {
+			if (service != 0 && service->isQueue()) {
 				QString beginInPause = (op->getBeginInPause() ? "true" : "false");
 				QString penalty = QString::number(i.value());
 				// Get operator interfaces from it's seat
@@ -848,7 +822,7 @@ void CoreTcpServer::ctiClientLogoff(ClientManager *cm)
 			i.next();
 			AstCtiService *service = i.key();
 			// Check if we got an existent service and it is a queue
-			if (service != 0 && service->getServiceIsQueue()) {
+			if (service != 0 && service->isQueue()) {
 				// Get operator interfaces from it's seat
 				QStringList interfaces = seat->getExtensions();
 

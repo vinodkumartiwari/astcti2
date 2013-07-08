@@ -43,13 +43,14 @@
 #define ASTCTICALLXMLPARSER_H
 
 #include <QXmlDefaultHandler>
+#include <QSharedPointer>
 
-#include "astcticall.h"
+#include "astctichannel.h"
 
-class AstCtiCallXMLParser: public QXmlDefaultHandler
+class AstCtiChannelXmlParser: public QXmlDefaultHandler
 {
 public:
-	AstCtiCallXMLParser(AstCtiCall *call);
+	explicit AstCtiChannelXmlParser(AstCtiChannel *channel);
 
 	bool startElement(const QString &, const QString &,
 					  const QString &name, const QXmlAttributes &);
@@ -57,10 +58,10 @@ public:
     bool endElement(const QString &, const QString &, const QString &name);
 
 private:
-	AstCtiCall    *call;
-	AstCtiAction  *currentAction;
-	QString        currentText;
-	bool           inVariables;
+	AstCtiChannel                 *channel;
+	QSharedPointer<AstCtiAction>   currentAction;
+	QString                        currentText;
+	bool                           inVariables;
 };
 
 #endif // ASTCTICALLXMLPARSER_H

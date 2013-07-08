@@ -42,54 +42,54 @@
 #include <QHashIterator>
 #include <QDebug>
 
-#include "astcticallxmlparser.h"
+#include "astctichannelxmlparser.h"
 
-AstCtiCallXMLParser::AstCtiCallXMLParser(AstCtiCall *call)
+AstCtiChannelXmlParser::AstCtiChannelXmlParser(AstCtiChannel *channel)
         : QXmlDefaultHandler()
 {
-    this->call = call;
+	this->channel = channel;
 
     this->inVariables = false;
 }
 
-bool AstCtiCallXMLParser::startElement(const QString &, const QString &,
-									   const QString &name, const QXmlAttributes &attrs)
+bool AstCtiChannelXmlParser::startElement(const QString &, const QString &,
+										  const QString &name, const QXmlAttributes &attrs)
 {
     if (name == "Variables") {
         this->inVariables = true;
     } else if (name == "Application") {
-        this->currentAction = new AstCtiAction;
+		this->currentAction = QSharedPointer<AstCtiAction>(new AstCtiAction);
         this->currentAction->type = ActionTypeApplication;
     } else if (name == "Browser") {
-        this->currentAction = new AstCtiAction;
-        this->currentAction->type = ActionTypeExternalBrowser;
+		this->currentAction = QSharedPointer<AstCtiAction>(new AstCtiAction);
+		this->currentAction->type = ActionTypeExternalBrowser;
     } else if (name == "InternalBrowser") {
-        this->currentAction = new AstCtiAction;
-        this->currentAction->type = ActionTypeInternalBrowser;
+		this->currentAction = QSharedPointer<AstCtiAction>(new AstCtiAction);
+		this->currentAction->type = ActionTypeInternalBrowser;
     } else if (name == "TcpMessage") {
-        this->currentAction = new AstCtiAction;
-        this->currentAction->type = ActionTypeTcpMessage;
+		this->currentAction = QSharedPointer<AstCtiAction>(new AstCtiAction);
+		this->currentAction->type = ActionTypeTcpMessage;
     } else if (name == "UdpMessage") {
-        this->currentAction = new AstCtiAction;
-        this->currentAction->type = ActionTypeUdpMessage;
-    } else if (name == "call") {
-        this->call->uniqueId = attrs.value(0);
+		this->currentAction = QSharedPointer<AstCtiAction>(new AstCtiAction);
+		this->currentAction->type = ActionTypeUdpMessage;
+	} else if (name == "Channel") {
+		this->channel->uniqueId = attrs.value(0);
     }
 
     return true;
 }
 
-bool AstCtiCallXMLParser::characters(const QString &ch)
+bool AstCtiChannelXmlParser::characters(const QString &ch)
 {
     this->currentText = ch;
 
     return true;
 }
 
-bool AstCtiCallXMLParser::endElement(const QString &, const QString &, const QString &name)
+bool AstCtiChannelXmlParser::endElement(const QString &, const QString &, const QString &name)
 {
     if (inVariables) {
-        this->call->variables.insert(name, this->currentText);
+		this->channel->variables.insert(name, this->currentText);
     } else if (name == "Variables") {
         this->inVariables = false;
     } else if (name == "Application" ||
@@ -97,13 +97,12 @@ bool AstCtiCallXMLParser::endElement(const QString &, const QString &, const QSt
                name == "InternalBrowser" ||
                name == "TcpMessage" ||
                name == "UdpMessage") {
-        this->call->actions.append(this->currentAction);
-        this->currentAction = 0;
+		this->channel->actions.append(this->currentAction);
 	} else if (name == "Destination") {
 		this->currentAction->destination = this->currentText;
 	} else if (name == "Parameters") {
         //Server will fill in the variable values, no need to do it here
-//        QHashIterator<QString, QString> i(this->call->variables);
+//        QHashIterator<QString, QString> i(this->channel->variables);
 //        while (i.hasNext()) {
 //            i.next();
 //            this->currentText.replace(i.key(), i.value(), Qt::CaseSensitive);
@@ -112,24 +111,24 @@ bool AstCtiCallXMLParser::endElement(const QString &, const QString &, const QSt
     } else if (name == "Encoding") {
         this->currentAction->encoding = this->currentText;
     } else if (name == "Channel") {
-        this->call->channel = this->currentText;
+		this->channel->channel = this->currentText;
     } else if (name == "ParsedChannel") {
-        this->call->parsedChannel = this->currentText;
-    } else if (name == "DestChannel") {
-        this->call->destChannel = this->currentText;
-    } else if (name == "ParsedDestChannel") {
-        this->call->parsedDestChannel = this->currentText;
+		this->channel->parsedChannel = this->currentText;
     } else if (name == "CallerIdNum") {
-        this->call->callerIdNum = this->currentText;
+		this->channel->callerIdNum = this->currentText;
     } else if (name == "CallerIdName") {
-        this->call->callerIdName = this->currentText;
-    } else if (name == "DestUniqueId") {
-        this->call->destUniqueId = this->currentText;
+		this->channel->callerIdName = this->currentText;
     } else if (name == "Context") {
-        this->call->context = this->currentText;
-    } else if (name == "State") {
-        this->call->state = this->currentText;
-    }
+		this->channel->context = this->currentText;
+	} else if (name == "Exten") {
+		this->channel->exten = this->currentText;
+	} else if (name == "State") {
+		this->channel->state = this->currentText;
+	} else if (name == "AccountCode") {
+		this->channel->accountCode = this->currentText;
+	} else if (name == "BridgeId") {
+		this->channel->bridgeId = this->currentText.toInt();
+	}
 
     return true;
 }

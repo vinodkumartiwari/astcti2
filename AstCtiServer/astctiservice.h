@@ -63,7 +63,8 @@ public:
 	int                          getId();
 	QString                      getName();
 	AstCtiServiceType            getContextType();
-	bool                         getServiceIsQueue();
+	QString                      getContextTypeString();
+	bool                         isQueue();
 	QString                      getQueueName();
 
 	QStringList                 *getVariables();

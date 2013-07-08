@@ -39,11 +39,12 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef ASTCTICALL_H
-#define ASTCTICALL_H
+#ifndef ASTCTICHANNEL_H
+#define ASTCTICHANNEL_H
 
 #include <QHash>
 #include <QList>
+#include <QSharedPointer>
 
 enum AstCtiActionType {
     ActionTypeApplication,
@@ -61,20 +62,21 @@ struct AstCtiAction
     QString parameters;
 };
 
-struct AstCtiCall
+struct AstCtiChannel
 {
-    QString                 channel;
+	QString                 uniqueId;
+	QString                 channel;
     QString                 parsedChannel;
-    QString                 destChannel;
-    QString                 parsedDestChannel;
     QString                 callerIdNum;
     QString                 callerIdName;
-    QString                 uniqueId;
-    QString                 destUniqueId;
     QString                 context;
-    QString                 state;
-    QHash<QString, QString> variables;
-	QList<AstCtiAction*>    actions;
+	QString                 exten;
+	QString                 state;
+	QString                 accountCode;
+	int                     bridgeId;
+
+	QHash<QString, QString>               variables;
+	QList<QSharedPointer<AstCtiAction> >  actions;
 };
 
-#endif // ASTCTICALL_H
+#endif // ASTCTICHANNEL_H

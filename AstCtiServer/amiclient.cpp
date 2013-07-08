@@ -66,7 +66,8 @@ AmiClient::~AmiClient()
 	if (this->localSocket->state() == QAbstractSocket::ConnectedState) {
 		this->performLogoff();
 	}
-	qDeleteAll(this->activeCalls);
+	qDeleteAll(this->freeChannels);
+	qDeleteAll(this->bridgedChannels);
 	qDeleteAll(this->pendingAmiCommands);
 	delete this->localSocket;
 }
@@ -156,8 +157,6 @@ void AmiClient::setParameters(AstCtiConfiguration *config)
 
 			this->performLogoff();
 			this->localSocket->disconnectFromHost();
-			qDeleteAll(this->pendingAmiCommands);
-			this->pendingAmiCommands.clear();
 		}
 	}
 
@@ -186,6 +185,13 @@ void AmiClient::socketError(QAbstractSocket::SocketError error)
 
 void AmiClient::socketDisconnected()
 {
+	qDeleteAll(this->freeChannels);
+	this->freeChannels.clear();
+	qDeleteAll(this->bridgedChannels);
+	this->bridgedChannels.clear();
+	qDeleteAll(this->pendingAmiCommands);
+	this->pendingAmiCommands.clear();
+
 	this->amiClientStatus = AmiStatusLoggedOff;
     emit this->amiConnectionStatusChange(AmiConnectionStatusDisconnected);
 	QLOG_WARN() << "AmiClient Socket Disconnected";
@@ -263,11 +269,48 @@ QHash<QString, QString>* AmiClient::hashFromMessage(QString data)
     return hash;
 }
 
+AstCtiChannel *AmiClient::addChannelToBridge(const int bridgeId, const QString &uniqueId,
+											 const QString &channelName)
+{
+	AstCtiChannel *channel = this->freeChannels.take(uniqueId);
+	if (channel != 0) {
+		if (bridgeId == 0)
+			channel->setBridgeId(AstCtiChannel::getNextBridgeId());
+		else
+			channel->setBridgeId(bridgeId);
+
+		this->bridgedChannels.insert(uniqueId, channel);
+		emit this->amiChannelEvent(AmiEventBridge, channel, "");
+		return channel;
+	}
+
+	QLOG_WARN() << "Channel" << uniqueId << channelName
+				<< "is entering a bridge, but it is not found in the list of free channels.";
+	return 0;
+}
+
+void AmiClient::removeChannelFromBridge(const QString &uniqueId, const QString &channelName)
+{
+	AstCtiChannel *channel = this->bridgedChannels.take(uniqueId);
+	if (channel != 0) {
+		this->freeChannels.insert(uniqueId, channel);
+		emit this->amiChannelEvent(AmiEventUnlink, channel, "");
+	}
+
+	QLOG_WARN() << "Channel" << uniqueId << channelName
+				<< "is being unlinked, but it is not found in the list of bridged channels.";
+}
+
+bool AmiClient::isLocalChannel(const QString &channelName)
+{
+	return channelName.contains("Local/");
+}
+
 void AmiClient::evaluateEvent(QHash<QString, QString> *event)
 {
 	QLOG_DEBUG() << "Received Asterisk event" << this->eventToString(event);
 
-	QString eventName = event->value("Event");
+	const QString eventName = event->value("Event");
 
 	if (eventName == "FullyBooted") {
 		// Asterisk is fully booted now, so we can interact with it freely
@@ -281,126 +324,388 @@ void AmiClient::evaluateEvent(QHash<QString, QString> *event)
 	} else if (eventName == "Shutdown") {
 		QLOG_WARN() << "Asterisk shutting down. Connection lost.";
 
-		qDeleteAll(this->activeCalls);
-		this->activeCalls.clear();
-		qDeleteAll(this->pendingAmiCommands);
-		this->pendingAmiCommands.clear();
 		this->localSocket->close();
 		this->amiClientStatus = AmiStatusLoggedOff;
 
-		emit this->asteriskEvent(AmiEventShutdown, 0);
+		//emit this->asteriskEvent(AmiEventShutdown, 0, "");
 	} else if (eventName == "Newchannel") {
-		// Build a new asterisk call object and add it to hashtable
-		QString uniqueId = event->value("Uniqueid");
-		AstCtiCall *newCall = new AstCtiCall(uniqueId);
-        newCall->setChannel(event->value("Channel"));
-        newCall->setCalleridNum(event->value("CallerIDNum"));
-        newCall->setCalleridName(event->value("CallerIDName"));
-        newCall->setState(event->value("ChannelStateDesc"));
-		newCall->setExten(event->value("Exten"));
-		newCall->setAccountCode(event->value("AccountCode"));
+		const QString channelName = event->value("Channel");
+		// We ignore local channels, they just bridge "real" channels
+		// Local channels always consist of two halves (two virtual channels)
+		// On Bridge event, we will associate each half with its "real" channel counterpart
+		if (!this->isLocalChannel(channelName)) {
+			// Build a new asterisk channel object and add it ot list of free channels
+			const QString uniqueId = event->value("Uniqueid");
+			const QString exten = event->value("Exten");
+			AstCtiChannel *newChannel = new AstCtiChannel(uniqueId);
+			newChannel->setChannel(channelName);
+			newChannel->setCalleridNum(event->value("CallerIDNum"));
+			newChannel->setCalleridName(event->value("CallerIDName"));
+			newChannel->setContext(event->value("Context"));
+			newChannel->setExten(exten);
+			newChannel->setState((AstCtiChannelState)event->value("ChannelState").toInt());
+			newChannel->setAccountCode(event->value("AccountCode"));
 
-		this->activeCalls.insert(uniqueId, newCall);
+			this->freeChannels.insert(uniqueId, newChannel);
 
-		QLOG_DEBUG() << "Newchannel" << event->value("Channel")
-					 << "ID" << uniqueId
-					 << "CallerID" << event->value("CallerIDNum")
-					 << "in state:" << event->value("ChannelStateDesc");
+			QLOG_DEBUG() << "Newchannel" << channelName
+						 << "ID" << uniqueId
+						 << "CID" << event->value("CallerIDNum")
+						 << "in state:" << event->value("ChannelStateDesc");
 
-        // TODO: Add destionation and call
-		emit this->asteriskEvent(AmiEventNewchannel, newCall);
+			// TODO
+			emit this->amiChannelEvent(AmiEventNewchannel, newChannel, "");
+		}
+	} else if (eventName == "Newstate") {
+		const QString channelName = event->value("Channel");
+		if (!this->isLocalChannel(channelName)) {
+			const QString uniqueId = event->value("Uniqueid");
+			AstCtiChannel *channel = this->freeChannels.value(uniqueId);
+			if (channel == 0)
+				channel = this->bridgedChannels.value(uniqueId);
+
+			if (channel != 0) {
+				const AstCtiChannelState state =
+						(AstCtiChannelState)event->value("ChannelState").toInt();
+				channel->setState(state);
+				emit this->amiChannelEvent(AmiEventNewstate, channel,
+										 event->value("ConnectedLineNum"));
+
+				QLOG_DEBUG() << "New state" << event->value("ChannelStateDesc")
+							 << "for channel" << uniqueId << channelName
+							 << "CallerID" << event->value("CallerIDNum");
+			} else {
+				QLOG_WARN() << "Received Newstate event for channel"
+							<< uniqueId << channelName
+							<< "CallerID" << event->value("CallerIDNum")
+							<< "but it does not exist in channel list.";
+			}
+		}
+	} else if (eventName == "NewCallerid") {
+		const QString channelName = event->value("Channel");
+		if (!this->isLocalChannel(channelName)) {
+			const QString uniqueId = event->value("Uniqueid");
+			AstCtiChannel *channel = this->freeChannels.value(uniqueId);
+			if (channel == 0)
+				channel = this->bridgedChannels.value(uniqueId);
+
+			if (channel != 0) {
+				const QString cidNum = event->value("CallerIDNum");
+				const QString cidName = event->value("CallerIDName");
+				channel->setCalleridNum(cidNum);
+				channel->setCalleridName(cidName);
+				emit this->amiChannelEvent(AmiEventNewCallerid, channel, "");
+
+				QLOG_DEBUG() << "New caller ID" << cidNum << cidName
+							 << "for channel" << uniqueId << channelName;
+			} else {
+				QLOG_WARN() << "Received NewCallerid event for channel"
+							<< uniqueId << channelName
+							<< "CallerID" << event->value("CallerIDNum")
+							<< "but it does not exist in channel list.";
+			}
+		}
+	} else if (eventName == "NewAccountCode") {
+		const QString channelName = event->value("Channel");
+		if (!this->isLocalChannel(channelName)) {
+			const QString uniqueId = event->value("Uniqueid");
+			AstCtiChannel *channel = this->freeChannels.value(uniqueId);
+			if (channel == 0)
+				channel = this->bridgedChannels.value(uniqueId);
+
+			if (channel != 0) {
+				const QString accountCode = event->value("AccountCode");
+				channel->setAccountCode(accountCode);
+				emit this->amiChannelEvent(AmiEventNewAccountCode, channel, "");
+
+				QLOG_DEBUG() << "New account code" << accountCode
+							 << "for channel" << uniqueId << channelName;
+			} else {
+				QLOG_WARN() << "Received NewAccountCode event for channel"
+							<< uniqueId << channelName
+							<< "CallerID" << event->value("CallerIDNum")
+							<< "but it does not exist in channel list.";
+			}
+		}
+	} else if (eventName == "MusicOnHold") {
+		const QString channelName = event->value("Channel");
+		if (!this->isLocalChannel(channelName)) {
+			const QString uniqueId = event->value("Uniqueid");
+			AstCtiChannel *channel = this->freeChannels.value(uniqueId);
+			if (channel == 0)
+				channel = this->bridgedChannels.value(uniqueId);
+
+			if (channel != 0) {
+				const QString state = event->value("State");
+				emit this->amiChannelEvent(AmiEventMusicOnHold, channel, state);
+
+				QLOG_DEBUG() << "Music on hold" << state
+							 << "for channel" << uniqueId << channelName;
+			} else {
+				QLOG_WARN() << "Received MusicOnHold event for channel"
+							<< uniqueId << channelName
+							<< "but it does not exist in channel list.";
+			}
+		}
+	} else if (eventName == "Unlink") {
+		// On Unlink, we remove the channel from bridged channels, but we dont destroy it,
+		// because Asterisk may attempt to bridge the channels again
+		// Channels are only destroyed on Hangup
+		const QString uniqueId1 = event->value("Uniqueid1");
+		const QString uniqueId2 = event->value("Uniqueid2");
+		const QString channelName1 = event->value("Channel1");
+		const QString channelName2 = event->value("Channel2");
+		const bool isLocal1 = this->isLocalChannel(channelName1);
+		const bool isLocal2 = this->isLocalChannel(channelName2);
+
+		if (isLocal1 && isLocal2) {
+			// Both channels are local, nothing to do.
+			// This should not happen, but we check for it anyway
+		} else if (isLocal2) {
+			// Calling channel is being unlinked from it's local channel half
+			AstCtiChannel *channel = this->freeChannels.value(uniqueId2);
+			if (channel != 0)
+				// Channel is not bridged yet, we just remove the association
+				channel->setAssociatedLocalChannel("");
+			else
+				// Channel is bridged, we unbridge it
+				this->removeChannelFromBridge(uniqueId2, channelName2);
+		} else if (isLocal1) {
+			// Called channel is being unlinked from it's local channel half
+			AstCtiChannel *channel = this->freeChannels.value(uniqueId1);
+			if (channel != 0)
+				// Channel is not bridged yet, we just remove the association
+				channel->setAssociatedLocalChannel("");
+			else
+				// Channel is bridged, we unbridge it
+				this->removeChannelFromBridge(uniqueId1, channelName1);
+		} else {
+			this->removeChannelFromBridge(uniqueId1, channelName1);
+			this->removeChannelFromBridge(uniqueId2, channelName2);
+		}
 	} else if (eventName == "Hangup") {
-		QString uniqueId = event->value("Uniqueid");
-		if (this->activeCalls.contains(uniqueId)) {
-			AstCtiCall *newCall = this->activeCalls.value(uniqueId);
-            if (newCall != 0) {
+		const QString channelName = event->value("Channel");
+		if (!this->isLocalChannel(channelName)) {
+			const QString uniqueId = event->value("Uniqueid");
+			AstCtiChannel *channel = this->freeChannels.value(uniqueId);
+			if (channel != 0) {
 				//Receiving slot is responsible for deleting the call object
-				emit this->asteriskEvent(AmiEventHangup, newCall);
-            }
-			// Delete the call from the hashtable
-			this->activeCalls.remove(uniqueId);
-        }
-		QLOG_DEBUG() << "Hangup: " << event->value("Channel")
-					 << "ID" << uniqueId
-					 << "CallerID" << event->value("CallerIDNum");
+				emit this->amiChannelEvent(AmiEventHangup, channel, event->value("Cause"));
+				// Delete the channel from the hashtable
+				this->freeChannels.remove(uniqueId);
+
+				QLOG_DEBUG() << "Hangup:" << "ID" << uniqueId << channelName
+							 << "CallerID" << event->value("CallerIDNum");
+			} else {
+				QLOG_WARN() << "Received Hangup event for channel"
+							<< uniqueId << channelName
+							<< "CallerID" << event->value("CallerIDNum")
+							<< "but it does not exist in channel list.";
+			}
+		}
 	} else if (eventName == "Newexten") {
-        QString context = event->value("Context");
-		QString uniqueId = event->value("Uniqueid");
-		if (this->activeCalls.contains(uniqueId)) {
-			AstCtiCall *newCall = this->activeCalls.value(uniqueId);
-			if (newCall != 0 && newCall->getContext() != context) {
-				newCall->setContext(context);
-				QLOG_INFO() << "Call context for" << uniqueId << "is now" << context;
-				// TODO: Add destionation and call
-				emit this->asteriskEvent(AmiEventNewexten, newCall);
-            }
-        }
+		const QString channelName = event->value("Channel");
+		if (!this->isLocalChannel(channelName)) {
+			const QString context = event->value("Context");
+			const QString uniqueId = event->value("Uniqueid");
+			AstCtiChannel *channel = this->freeChannels.value(uniqueId);
+			if (channel = 0)
+				channel = this->bridgedChannels.value(uniqueId);
+
+			if (channel != 0 && channel->getContext() != context) {
+				channel->setContext(context);
+				QLOG_INFO() << "Call context for" << uniqueId << channelName << "is now" << context;
+				emit this->amiChannelEvent(AmiEventNewexten, channel, "");
+			}
+		}
 	} else if (eventName == "VarSet") {
-		QString uniqueId = event->value("Uniqueid");
-		if (this->activeCalls.contains(uniqueId) ) {
-			AstCtiCall *newCall = this->activeCalls.value(uniqueId);
-            if (newCall != 0) {
-				QString variable = event->value("Variable");
-				QString value = event->value("Value");
+		const QString channelName = event->value("Channel");
+		if (!this->isLocalChannel(channelName)) {
+			const QString uniqueId = event->value("Uniqueid");
+			AstCtiChannel *channel = this->bridgedChannels.value(uniqueId);
+			if (channel == 0)
+				channel = this->freeChannels.value(uniqueId);
 
-				//Variable will be set only if it exists in call object
-				newCall->setVariable(variable, value);
+			if (channel != 0) {
+				const QString variable = event->value("Variable");
+				const QString value = event->value("Value");
 
-				QLOG_DEBUG() << "Reading variable" << variable
-							 << "with value" << value
-							 << "for UniqueID:" << uniqueId;
+				//Variable will be set only if it exists in channel object
+				if (channel->setVariable(variable, value)) {
+					QLOG_DEBUG() << "Reading variable" << variable
+								 << "with value" << value
+								 << "for channel" << uniqueId << channelName;
 
-				emit this->asteriskEvent(AmiEventVarSet, newCall);
-            }
-        }
+					emit this->amiChannelEvent(AmiEventVarSet, channel, variable);
+				}
+			}
+		}
     } else if (eventName == "Join") {
-		QLOG_INFO() << "Channel" << event->value("Channel")
-					<< "is joining queue" << event->value("Queue");
-		// TODO: Add destination and call
-		emit this->asteriskEvent(AmiEventJoin, 0);
-    } else if (eventName == "Bridge") {
-        // we come from a queue
-        /*
-        Event: Bridge
-        Privilege: call,all
-        Bridgestate: Link
-        Bridgetype: core
-        Channel1: SIP/200-0974a250 <- source channel
-        Channel2: SIP/201-097525f8 <- dest channel
-        Uniqueid1: bruno-1240133625.2 <- source uid
-        Uniqueid2: bruno-1240133628.3 <- dest uid
-        CallerID1: 200
-        CallerID2: 200
-        */
+		const QString uniqueId = event->value("Uniqueid");
+		const QString queue = event->value("Queue");
+		AstCtiChannel *channel = this->freeChannels.value(uniqueId);
+		if (channel != 0) {
+			QLOG_INFO() << "Channel" << uniqueId << event->value("Channel")
+						<< "is joining queue" << queue;
+			emit this->amiChannelEvent(AmiEventJoin, channel, queue);
+		} else {
+			QLOG_WARN() << "Channel" << uniqueId << event->value("Channel")
+						<< "is joining queue" << queue
+						<< "but it is not found in the list of free channels.";
+		}
+	} else if (eventName == "Bridge") {
+		const QString uniqueId1 = event->value("Uniqueid1");
+		const QString uniqueId2 = event->value("Uniqueid2");
+		const QString channelName1 = event->value("Channel1");
+		const QString channelName2 = event->value("Channel2");
 
-		QString uniqueId1 = event->value("Uniqueid1");
-		QString uniqueId2 = event->value("Uniqueid2");
-
-		QLOG_DEBUG() << "Processing Bridge event for channels" << event->value("Channel1")
+		QLOG_DEBUG() << "Processing Bridge event for channels" << channelName1
 					 << "( CID" << event->value("Callerid1") << "UID" << uniqueId1 << ") and"
-					 << event->value("Channel2")
+					 << channelName2
 					 << "( CID" << event->value("Callerid2") << "UID" << uniqueId2 << ")";
 
-		AstCtiCall *newCall = 0;
-		if (this->activeCalls.contains(uniqueId1))
-			newCall = this->activeCalls.value(uniqueId1);
-		else if (this->activeCalls.contains(uniqueId2))
-			newCall = this->activeCalls.value(uniqueId2);
+		const bool isLocal1 = this->isLocalChannel(channelName1);
+		const bool isLocal2 = this->isLocalChannel(channelName2);
 
-		if (newCall != 0) {
-			// Let's say where the call is directed. The destination
-			// will let us know the client to signal.
-			newCall->setDestUniqueId(event->value("Uniqueid2"));
-			newCall->setDestChannel(event->value("Channel2"));
+		if (isLocal1 && isLocal2) {
+			// Both channels are local, nothing to do.
+			// This should not happen, but we check for it anyway
+		} else if (isLocal2) {
+			// Calling channel is being bridged with first half of the local channel
+			// We associate the local channel with the calling channel,
+			// but don't indicate any bridging yet
+			AstCtiChannel *channel = this->freeChannels.value(uniqueId1);
+			if (channel != 0) {
+				channel->setAssociatedLocalChannel(channelName2);
+				QLOG_DEBUG() << "Associating local channel" << uniqueId2 << channelName2
+							 << "with calling channel" << uniqueId1 << channelName1;
+			} else {
+				// We check if the channel is already bridged
+				// Asterisk will sometimes temporarily break the bridge
+				// In this case, we don't have to do anything
+				channel = this->bridgedChannels.value(uniqueId1);
+				if (channel == 0) {
+					QLOG_WARN() << "Channel" << uniqueId1 << channelName1
+								<< "is being bridged with local channel"
+								<< uniqueId2 << channelName2
+								<< "but it is not found in the list of free channels.";
+				}
+			}
+		} else if (isLocal1) {
+			// Called channel is being bridged with second half of the local channel
+			// We associate the local channel with the called channel,
+			// and indicate that calling channel and called channel are bridged
+			AstCtiChannel *channel2 = this->freeChannels.value(uniqueId2);
+			if (channel2 != 0) {
+				channel2->setAssociatedLocalChannel(channelName1);
+				QLOG_DEBUG() << "Associating local channel" << uniqueId1 << channelName1
+							 << "with called channel" << uniqueId2 << channelName2;
 
-			emit this->asteriskEvent(AmiEventBridge, newCall);
+				AstCtiChannel *channel1 = 0;
+				const int listSize = this->freeChannels.size();
+				for (int i = 0; i < listSize; i++) {
+					AstCtiChannel *channel = this->freeChannels.values().at(i);
+					if (channel->hasMatchingLocalChannel(channelName1)) {
+						channel1 = channel;
+						break;
+					}
+				}
+				if (channel1 != 0) {
+					channel1 = this->addChannelToBridge(0, uniqueId1, channelName1);
+					channel2 = this->addChannelToBridge(channel1->getBridgeId(),
+														uniqueId2, channelName2);
+				} else {
+					QLOG_WARN() << "Channel" << uniqueId2 << channelName2
+								<< "is being bridged with another channel via local channel"
+								<< uniqueId1 << channelName1 << "but matching channel"
+								<< "is not found in the list of free channels.";
+
+					// We delete the channel because we don't have a matching channel to bridge
+					this->freeChannels.remove(uniqueId2);
+					delete channel2;
+				}
+			} else {
+				// We check if the channel is already bridged
+				// Asterisk will sometimes temporarily break the bridge
+				// In this case, we don't have to do anything
+				channel2 = this->bridgedChannels.value(uniqueId2);
+				if (channel2 == 0) {
+					QLOG_WARN() << "Channel" << uniqueId2 << channelName2
+								<< "is being bridged with local channel"
+								<< uniqueId1 << channelName1
+								<< "but it is not found in the list of free channels.";
+				}
+			}
+		} else {
+			AstCtiChannel *channel1 = this->bridgedChannels.value(uniqueId1);
+			AstCtiChannel *channel2 = this->bridgedChannels.value(uniqueId2);
+
+			if (channel1 != 0 && channel2 != 0) {
+				// Both channels already exist in bridged channels
+				// Asterisk will sometimes temporarily break and then re-establish the bridge
+				// (e.g. when interpreting DTMF, so for each DTMF we will get
+				// one Brige event with Bridgestate=Unlink and one with Bridgestate=Link)
+				// This is internal stuff which shouldn't even be exposed to AMI,
+				// so we don't need to do anything in this case
+			} else if (channel1 != 0) {
+				// First channel already exists in bridged channels
+				channel2 =
+						this->addChannelToBridge(channel1->getBridgeId(), uniqueId2, channelName2);
+			} else if (channel2 != 0) {
+				// Second channel already exists in bridged channels
+				channel1 =
+						this->addChannelToBridge(channel2->getBridgeId(), uniqueId1, channelName1);
+			} else {
+				// Neither channel already exists in bridged channels,
+				// we need to create a new bridge
+				channel1 = this->addChannelToBridge(0, uniqueId1, channelName1);
+				channel2 = this->addChannelToBridge(channel1->getBridgeId(),
+													uniqueId2, channelName2);
+				if (channel1 != 0 && channel2 == 0)
+					// Only the first channel was found, so we don't have a complete bridge
+					// This should not happen, we must unbridge the first channel
+					this->removeChannelFromBridge(uniqueId1, channelName1);
+				else if (channel1 == 0 && channel2 != 0)
+					// Only the second channel was found, so we don't have a complete bridge
+					// This should not happen, we must unbridge the second channel
+					this->removeChannelFromBridge(uniqueId2, channelName2);
+			}
 		}
-    }
+	} else if (eventName == "ExtensionStatus") {
+		const QString extension = event->value("Hint");
+		const QString status = event->value("Status");
+		emit this->amiStatusEvent(AmiEventExtensionStatus, extension, status);
+
+		QLOG_DEBUG() << "Received new status"
+					 << this->extensionStatusToString((AmiExtensionStatus)status.toInt())
+					 << "for extension" << extension;
+	} else if (eventName == "PeerStatus") {
+		// We shouldn't need this event because ExtensionStatus event
+		// should follow any change in peer status
+		// However, we process this in case ExtensionStatus doesn't work for some reason
+		const QString extension = event->value("Peer");
+		const QString peerStatus = event->value("PeerStatus");
+		// We use the same values as for extension status
+		// "Registered" and "Reachable" = ExtensionStatusNotInUse
+		// "Unregistered" and "Unreachable" = ExtensionStatusUnavailable
+		// The only other value is "Lagged", which we ignore
+		QString status = "";
+		if (peerStatus == "Registered" || peerStatus == "Reachable")
+			status = QString::number((int)ExtensionStatusNotInUse);
+		else if (peerStatus == "Unregistered" || peerStatus == "Unreachable")
+			status = QString::number((int)ExtensionStatusUnavailable);
+
+		if (status.length() > 0)
+			emit this->amiStatusEvent(AmiEventPeerStatus, extension, status);
+
+		QLOG_DEBUG() << "Received new status" << peerStatus
+					 << "for peer" << extension;
+	}
 }
 
 void AmiClient::evaluateResponse(QHash<QString, QString> *response)
 {
-    int actionId = response->value("ActionID").toInt();
+	const int actionId = response->value("ActionID").toInt();
 	if (actionId == 0) {
 		QLOG_WARN() << "ActionId is set to 0 in AMIClient::evaluateResponse()";
 	}
@@ -446,7 +751,7 @@ void AmiClient::evaluateResponse(QHash<QString, QString> *response)
 			default:
 				//Signal that the response was received.
 				//Receiving slot is responsible for deleting the command object
-				emit this->asteriskResponse(cmd);
+				emit this->amiResponse(cmd);
 			}
         }
     }
@@ -508,7 +813,7 @@ void AmiClient::sendCommandToAsterisk(AmiCommand *command)
 		//Receiving slot is responsible for deleting the command object
 		command->responseString = "Error";
 		command->responseMessage = "Command not sent";
-		emit this->asteriskResponse(command);
+		emit this->amiResponse(command);
 		this->currentActionId--;
 	}
 }
@@ -525,18 +830,30 @@ QString AmiClient::getEventName(const AmiEvent event) {
 		return "Newexten";
 	case AmiEventNewstate:
 		return "Newstate";
-	case AmiEventHangup:
-		return "Hangup";
-	case AmiEventVarSet:
-		return "VarSet";
-	case AmiEventJoin:
-		return "Join";
+	case AmiEventNewCallerid:
+		return "NewCallerid";
+	case AmiEventDial:
+		return "Dial";
 	case AmiEventBridge:
 		return "Bridge";
+	case AmiEventUnlink:
+		return "Unlink";
+	case AmiEventHangup:
+		return "Hangup";
+	case AmiEventJoin:
+		return "Join";
+	case AmiEventVarSet:
+		return "VarSet";
+	case AmiEventMusicOnHold:
+		return "MusicOnHold";
 	case AmiEventExtensionStatus:
 		return "ExtensionStatus";
 	case AmiEventPeerStatus:
 		return "PeerStatus";
+	case AmiEventRTCPReceived:
+		return "RTCPReceived";
+	case AmiEventRTCPSent:
+		return "RTCPSent";
 	default:
 		return "";
 	}
@@ -584,6 +901,26 @@ QString AmiClient::eventToString(QHash<QString, QString> *event)
 		if (argName != "Event")
 			result.append(QString(" (%1=%2)").arg(argName).arg(event->value(argName)));
 	}
+
+	return result;
+}
+
+QString AmiClient::extensionStatusToString(const AmiExtensionStatus status)
+{
+	QString result = "";
+	if (status & ExtensionStatusInUse)
+		result.append ("InUse|");
+	if (status & ExtensionStatusBusy)
+		result.append ("Busy|");
+	if (status & ExtensionStatusUnavailable)
+		result.append ("Unavailable|");
+	if (status & ExtensionStatusRinging)
+		result.append ("Ringing|");
+
+	if (result.length() == 0)
+		result = "NotInUse";
+	else
+		result.chop(1);
 
 	return result;
 }
