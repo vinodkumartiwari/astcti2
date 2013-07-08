@@ -226,7 +226,7 @@ int AstCtiSpeedDialWidget::voicemail() const
 
 void AstCtiSpeedDialWidget::setVoicemail(const int vm)
 {
-    this->m_voicemail= vm;
+	this->m_voicemail = vm;
 
 	ui->voicemailLabel->setVisible(vm && this->m_busyLampField);
 

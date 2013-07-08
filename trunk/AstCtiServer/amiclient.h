@@ -45,14 +45,13 @@
 
 #include "astcticonfiguration.h"
 #include "amicommand.h"
-#include "astcticall.h"
-
+#include "astctichannel.h"
 enum AmiClientStatus {
 	AmiStatusLoggedOff,
 	AmiStatusLoggingIn,
 	AmiStatusLoggedIn,
-    AmiStatusRequestingExtensions,
-    AmiStatusRequestingSip,
+	AmiStatusRequestingExtensions,
+	AmiStatusRequestingSip,
 	AmiStatusRequestingQueues
 };
 Q_DECLARE_METATYPE(AmiClientStatus)
@@ -63,20 +62,44 @@ enum AmiEvent {
 	AmiEventNewchannel,
 	AmiEventNewexten,
 	AmiEventNewstate,
-	AmiEventHangup,
-	AmiEventVarSet,
-	AmiEventJoin,
+	AmiEventNewCallerid,
+	AmiEventNewAccountCode,
+	AmiEventDial,
 	AmiEventBridge,
+	AmiEventUnlink,
+	AmiEventHangup,
+	AmiEventJoin,
+	AmiEventVarSet,
+	AmiEventMusicOnHold,
 	AmiEventExtensionStatus,
-	AmiEventPeerStatus
+	AmiEventPeerStatus,
+	AmiEventRTCPReceived,
+	AmiEventRTCPSent
 };
 Q_DECLARE_METATYPE(AmiEvent)
 
 enum AmiConnectionStatus {
-    AmiConnectionStatusDisconnected,
+	AmiConnectionStatusDisconnected,
 	AmiConnectionStatusConnected
 };
 Q_DECLARE_METATYPE(AmiConnectionStatus)
+
+//	Value   State            Description
+//	0	    NOT_INUSE        Channel is not in use (free)
+//	1	    INUSE            One or more devices are in use
+//	2	    BUSY             All devices are busy
+//	4	    UNAVAILABLE      All devices are unavailable
+//	8	    RINGING          One or more devices are ringing
+enum ExtensionStatus {
+	ExtensionStatusNotInUse = 0,
+	ExtensionStatusInUse = 1,
+	ExtensionStatusBusy = 2,
+	ExtensionStatusUnavailable = 4,
+	ExtensionStatusRinging = 8
+};
+Q_DECLARE_FLAGS(AmiExtensionStatus, ExtensionStatus)
+Q_DECLARE_OPERATORS_FOR_FLAGS(AmiExtensionStatus)
+Q_DECLARE_METATYPE(AmiExtensionStatus)
 
 class AmiClient : public QObject
 {
@@ -97,9 +120,12 @@ public slots:
 	void                            sendCommandToAsterisk(AmiCommand *command);
 
 signals:
-	void                            asteriskEvent(const AmiEvent &eventId, AstCtiCall *call);
-	void                            asteriskResponse(AmiCommand *command);
-	void                            amiConnectionStatusChange(const AmiConnectionStatus status);
+	void                            amiChannelEvent(AmiEvent eventId, AstCtiChannel *channel,
+													QString data);
+	void                            amiStatusEvent(AmiEvent eventId, QString object,
+												   QString status);
+	void                            amiResponse(AmiCommand *command);
+	void                            amiConnectionStatusChange(AmiConnectionStatus status);
 
 private:
 	Q_DISABLE_COPY(AmiClient)
@@ -112,7 +138,8 @@ private:
 	quint16                         amiConnectRetryAfter;
 
 	QTcpSocket                     *localSocket;
-	QHash<QString, AstCtiCall*>     activeCalls;
+	QHash<QString, AstCtiChannel*>  freeChannels;
+	QHash<QString, AstCtiChannel*>  bridgedChannels;
 	QHash<int, AmiCommand*>         pendingAmiCommands;
 	int                             currentActionId;
 	bool                            isRunning;
@@ -124,10 +151,16 @@ private:
 	void                            performLogin();
 	void                            performLogoff();
 	QHash<QString, QString>*        hashFromMessage(QString data);
+	AstCtiChannel                  *addChannelToBridge(const int bridgeId, const QString &uniqueId,
+													   const QString &channelName);
+	void                            removeChannelFromBridge(const QString &uniqueId,
+															const QString &channelName);
+	bool                            isLocalChannel(const QString &channelName);
 	void                            evaluateEvent(QHash<QString, QString> *event);
 	void                            evaluateResponse(QHash<QString, QString> *response);
 	QString                         socketStateToString(QAbstractSocket::SocketState socketState);
 	QString							eventToString(QHash<QString, QString> *event);
+	QString							extensionStatusToString(const AmiExtensionStatus status);
 	void							delay(const int secs);
 
 private slots:

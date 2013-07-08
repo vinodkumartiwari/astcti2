@@ -41,8 +41,18 @@
 
 #include <QObject>
 #include <QHash>
+#include <QMap>
 
 #include "astctiservice.h"
+
+struct AstCtiSpeedDial
+{
+	QString groupName;
+	QString name;
+	QString number;
+	quint8  order;
+	bool    isBlf;
+};
 
 class AstCtiOperator : public QObject
 {
@@ -52,6 +62,7 @@ class AstCtiOperator : public QObject
 public:
 	explicit AstCtiOperator(int id, const QString &fullName, const QString &username,
 							const QString &password, bool beginInPause, int seatID,
+							bool canMonitor, bool canAlterSpeedDials,
 							QObject *parent=0);
 	~AstCtiOperator();
 
@@ -66,8 +77,11 @@ public:
 	bool                          changePassword(QString &newPassword);
 	bool                          checkPassword(const QString &password);
 
+	bool                          loadSpeedDials();
 	bool                          loadServices(QHash<int, AstCtiService*> *serviceList);
 	QHash<AstCtiService*, int>   *getServices();
+
+	QString                       toXml();
 
 private:
 	Q_DISABLE_COPY(AstCtiOperator)
@@ -77,8 +91,11 @@ private:
 	QString  password;
 	bool     beginInPause;
 	int      seatId;
+	bool     canMonitor;
+	bool     canAlterSpeedDials;
 
-	QHash<AstCtiService*, int> services;
+	QMap<QString, AstCtiSpeedDial*> speedDials;
+	QHash<AstCtiService*, int>      services;
 };
 
 #endif // ASTCTIOPERATOR_H

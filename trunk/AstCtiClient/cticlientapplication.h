@@ -42,26 +42,15 @@
 #ifndef CTICLIENTAPPLICATION_H
 #define CTICLIENTAPPLICATION_H
 
-#include <QtWidgets/QApplication>
-#include <QIcon>
-#include <QtCore/QUrl>
-#include <QtCore/QPointer>
-#include <QTcpSocket>
 #include <QStringList>
-#include <QHash>
-#include <QTimer>
-
+#include <QTcpSocket>
 #include <QtSingleApplication>
 
-#include "coreconstants.h"
-#include "argumentlist.h"
 #include "cticonfig.h"
 #include "astcticommand.h"
-#include "astcticallxmlparser.h"
+#include "astctichannel.h"
 #include "loginwindow.h"
-#include "passwordwindow.h"
-#include "compactwindow.h"
-#include "managerwindow.h"
+#include "cticlientwindow.h"
 #include "browserwindow.h"
 
 #ifdef Q_OS_WIN
@@ -78,7 +67,7 @@ const QString defaultServerHost = "localhost";
 const QString defaultServerPort = "5000";
 const QString defaultConnectTimeout = "2000";
 const QString defaultConnectRetryInterval = "2";
-const int defaultKeepAliveInterval = 5000;
+const int     defaultKeepAliveInterval = 5000;
 
 enum CtiClientType {
 	CtiClientCallCenter,
@@ -91,10 +80,6 @@ enum AstCtiResponseCodes {
     RspAuthOK = 102,
     RspCompressLevel = 103,
     RspKeepAlive = 104,
-    RspServiceData = 200,
-    RspServiceListEnd = 201,
-    RspQueueData = 202,
-    RspQueueListEnd = 203,
     RspPauseOK = 300,
     RspPausePending = 301,
     RspPauseError = 302,
@@ -134,9 +119,7 @@ public slots:
     void                    applicationClosed(QProcess *process);
 
 signals:
-	void                    eventReceived(AstCtiCall *astCtiCall);
-    void                    servicesReceived(QHash<QString, QString> *servicesList);
-    void                    queuesReceived(QStringList *queuesList);
+	void                    eventReceived(AstCtiChannel *astCtiChannel);
     void                    pauseAccepted();
     void                    pauseError(const QString &message);
     void                    newMessage(const QString &message, QSystemTrayIcon::MessageIcon severity);
@@ -168,7 +151,6 @@ private:
     AstCtiConfiguration     *config;
 	AstCtiCommand           *lastCtiCommand;
     QHash<QString, QString> *servicesList;
-    QStringList             *queuesList;
     QTimer                  *idleTimer;
     QTimer                  *connectTimer;
     QTcpSocket              *localSocket;

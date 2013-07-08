@@ -126,7 +126,17 @@ AstCtiServiceType AstCtiService::getContextType()
     return this->contextType;
 }
 
-bool AstCtiService::getServiceIsQueue()
+QString AstCtiService::getContextTypeString()
+{
+	switch (this->contextType) {
+	case ServiceTypeInbound:
+		return "Inbound";
+	default: // ServiceTypeOutbound
+		return "Outbound";
+	}
+}
+
+bool AstCtiService::isQueue()
 {
 	return !this->queueName.isEmpty();
 }

@@ -66,8 +66,6 @@ enum AstCtiCommands {
 	CmdMac,
 	CmdKeep,
 	CmdOsType,
-	CmdServices,
-	CmdQueues,
 	CmdPause,
 	CmdOrig
 };
@@ -93,12 +91,6 @@ signals:
 
 	//TODO
 	void serverIsClosing();
-
-//	void amiClientDisconnected();
-//	void amiClientPauseIn(ClientManager *cl);
-//	void amiClientPauseOut(ClientManager *cl);
-//	void amiClientLogin(ClientManager *cl);
-//	void amiClientLogoff(ClientManager *cl);
 
 private:
 	Q_DISABLE_COPY(CoreTcpServer)
@@ -135,15 +127,17 @@ private:
 
 private slots:
 	//QTcpSocket
-	void                            newConnection();
-	void                            socketDataReceived();
-	void                            socketDisconnected();
-	void                            socketError(QAbstractSocket::SocketError error);
+	void               newConnection();
+	void               socketDataReceived();
+	void               socketDisconnected();
+	void               socketError(QAbstractSocket::SocketError error);
 
 	//AmiClient
-	void                            amiConnectionStatusChange(const AmiConnectionStatus status);
-	void                            receiveAsteriskEvent(const AmiEvent &eventid, AstCtiCall *call);
-	void                            processAsteriskResponse(AmiCommand *command);
+	void               amiConnectionStatusChange(AmiConnectionStatus status);
+	void               receiveAmiChannelEvent(AmiEvent eventId, AstCtiChannel *channel,
+											  QString data);
+	void               receiveAmiStatusEvent(AmiEvent eventId, QString object, QString status);
+	void               processAmiResponse(AmiCommand *command);
 };
 
 #endif // CORETCPSERVER_H

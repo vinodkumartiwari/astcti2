@@ -53,8 +53,6 @@ enum AstCtiCommands {
     CmdChangePassword,
     CmdMac,
     CmdOsType,
-    CmdServices,
-    CmdQueues,
     CmdPause,
 	CmdOrig
 };

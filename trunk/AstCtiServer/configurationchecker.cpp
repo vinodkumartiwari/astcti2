@@ -193,7 +193,7 @@ bool ConfigurationChecker::readConfiguration()
 	if (ok) {
 		const QList<QVariantList> operatorData =
 				DB::readTable("SELECT ID_OPERATOR,FULL_NAME,USERNAME,PASS_WORD,"
-							  "BEGIN_IN_PAUSE,ID_SEAT "
+							  "BEGIN_IN_PAUSE,ID_SEAT,CAN_MONITOR,CAN_ALTER_SPEEDDIALS "
 							  "FROM operators WHERE ENABLED=1", &ok);
 		if (ok) {
 			const int listSize = operatorData.size();
@@ -203,8 +203,11 @@ bool ConfigurationChecker::readConfiguration()
 				AstCtiOperator *op =
 						new AstCtiOperator(operatorRow.at(0).toInt(), operatorRow.at(1).toString(),
 										   username, operatorRow.at(3).toString(),
-										   operatorRow.at(4).toBool(), operatorRow.at(5).toInt());
-				ok = op->loadServices(&(config->services));
+										   operatorRow.at(4).toBool(), operatorRow.at(5).toInt(),
+										   operatorRow.at(6).toBool(), operatorRow.at(7).toBool());
+				ok = op->loadSpeedDials();
+				if (ok)
+					ok = op->loadServices(&(config->services));
 				if (!ok) {
 					delete op;
 					break;

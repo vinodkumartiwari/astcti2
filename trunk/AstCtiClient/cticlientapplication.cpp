@@ -39,10 +39,13 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#include <QDebug>
 #include <QNetworkInterface>
-#include <QXmlSimpleReader>
 
+#include "argumentlist.h"
+#include "passwordwindow.h"
+#include "compactwindow.h"
+#include "managerwindow.h"
+#include "astctichannelxmlparser.h"
 #include "cticlientapplication.h"
 
 CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char **argv)
@@ -128,7 +131,6 @@ CtiClientApplication::CtiClientApplication(const QString &appId, int &argc, char
 
     //Initialize lists
     this->servicesList = new QHash<QString, QString>;
-    this->queuesList = new QStringList();
 
     //Create socket for communication with server
     this->localSocket = new QTcpSocket();
@@ -161,7 +163,6 @@ CtiClientApplication::~CtiClientApplication()
 	delete this->config;
 	delete this->localSocket;
 	delete this->servicesList;
-	delete this->queuesList;
 
     qDeleteAll(this->applications);
     qDeleteAll(this->browserWindows);
@@ -521,31 +522,17 @@ void CtiClientApplication::processResponse(const AstCtiResponse &response) {
         //Pause is pending, it will be confirmed or denied later by RspPauseOK or RspPauseError
         resetLastCtiCommand();
         break;
-    case RspQueueData:
-        this->queuesList->append(response.data.last());
-        break;
-    case RspQueueListEnd:
-        resetLastCtiCommand();
-        emit queuesReceived(this->queuesList);
-        break;
-    case RspServiceData:
-        this->servicesList->insert(response.data.first(), response.data.last());
-        break;
-    case RspServiceListEnd:
-        resetLastCtiCommand();
-        emit servicesReceived(this->servicesList);
-        break;
     }
 }
 
-//Creates AstCtiCall object from XML using custom parser
+//Creates AstCtiChannel object from XML using custom parser
 void CtiClientApplication::processEvent(const QString &eventData) {
 	if (config->debug)
 		qDebug() << "Processing event:" << eventData;
 
-    AstCtiCall call;
+	AstCtiChannel channel;
 
-    AstCtiCallXMLParser handler(&call);
+	AstCtiChannelXmlParser handler(&channel);
 
     QXmlInputSource source;
     source.setData(eventData);
@@ -557,7 +544,7 @@ void CtiClientApplication::processEvent(const QString &eventData) {
 
     //Let main window know about the event
     //TODO: Perhaps process event (or some events) here?
-    emit eventReceived(&call);
+	emit eventReceived(&channel);
 }
 
 //Prepares data for sending to server, using compression if so indicated
@@ -622,14 +609,6 @@ void CtiClientApplication::sendCommandToServer(const AstCtiCommands command,
     cmd->command = command;
     cmd->parameters = parameters;
     this->lastCtiCommand = cmd;
-
-    if (cmd->command == CmdServices)
-        //Prepare for receiving services
-        this->servicesList->clear();
-
-    if (cmd->command == CmdQueues)
-        //Prepare for receiving queues
-        this->queuesList->clear();
 
     //Convert command to string and send to server
 	QString data = this->getCommandName(cmd->command);
@@ -926,10 +905,6 @@ QString CtiClientApplication::getCommandName(const AstCtiCommands command)
 		return "CHPW";
 	case CmdOsType:
 		return "OSTYPE";
-	case CmdServices:
-		return "SERVICES";
-	case CmdQueues:
-		return "QUEUES";
 	case CmdPause:
 		return "PAUSE";
 	case CmdOrig:
