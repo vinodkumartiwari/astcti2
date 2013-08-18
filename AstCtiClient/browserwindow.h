@@ -57,29 +57,29 @@ namespace Ui {
 class BrowserWindow : public QMainWindow {
     Q_OBJECT
 public:
-    explicit BrowserWindow(const QString &userName, QUrl url, QWidget *parent = 0);
+    explicit BrowserWindow(const QString& userName, QUrl url, QWidget* parent = 0);
     virtual ~BrowserWindow();
 
     void setUrl(QUrl url);
-    WebView *currentView() const;
+    WebView* currentView() const;
 
 signals:
     void windowClosing(BrowserWindow*);
     void linkClicked(QUrl);
 
 protected:
-    QLabel *statusLabel;
+    QLabel* statusLabel;
 
     QStringList history;
     int currentHistoryItem;
 
-    void changeEvent(QEvent *e);
-    void closeEvent(QCloseEvent *e);
-    void keyPressEvent(QKeyEvent *e);
+    void changeEvent(QEvent* e);
+    void closeEvent(QCloseEvent* e);
+    void keyPressEvent(QKeyEvent* e);
 
 private:
-    Ui::BrowserWindow *ui;
-    WebView *webView;
+    Ui::BrowserWindow* ui;
+    WebView* webView;
 
     QString userName;
     QUrl currentUrl;

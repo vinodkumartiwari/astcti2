@@ -36,51 +36,39 @@
  * If you do not wish that, delete this exception notice.
  */
 
-#ifndef ASTCTICONFIGURATION_H
-#define ASTCTICONFIGURATION_H
+#ifndef ASTCTIEXTENSION_H
+#define ASTCTIEXTENSION_H
 
-#include <QObject>
-#include <QHash>
 #include <QMetaType>
 
-#include "astctiaction.h"
-#include "astctiservice.h"
-#include "astctiseat.h"
-#include "astctioperator.h"
-
-class AstCtiConfiguration : public QObject
-{
-	Q_OBJECT
-
-public:
-	explicit AstCtiConfiguration(QObject* parent = 0);
-	~AstCtiConfiguration();
-
-	QString             ctiServerAddress;
-	quint16             ctiServerPort;
-	quint16             ctiConnectTimeout;
-	quint16             ctiReadTimeout;
-	quint16             ctiCompressionLevel;
-	QString             amiHost;
-	quint16             amiPort;
-	QString             amiUser;
-	QString             amiSecret;
-	quint16             amiConnectTimeout;
-	quint16             amiConnectRetryAfter;
-	QString             asteriskVersion;
-	QString             autoAnswerContext;
-
-	AstCtiActionHash    actions;
-	AstCtiServiceHash   services;
-	AstCtiSeatHash      seats;
-	AstCtiOperatorHash  operators;
-
-	AstCtiService*      getServiceByName(const QString& serviceName);
-	AstCtiSeat*         getSeatByMac(const QString& mac);
-
-private:
-	Q_DISABLE_COPY(AstCtiConfiguration)
+//	Value   State            Description
+//	0	    NOT_INUSE        Channel is not in use (free)
+//	1	    INUSE            One or more devices are in use
+//	2	    BUSY             All devices are busy
+//	4	    UNAVAILABLE      All devices are unavailable
+//	8	    RINGING          One or more devices are ringing
+enum ExtensionStatus {
+	ExtensionStatusNotInUse = 0,
+	ExtensionStatusInUse = 1,
+	ExtensionStatusBusy = 2,
+	ExtensionStatusUnavailable = 4,
+	ExtensionStatusRinging = 8
 };
-Q_DECLARE_METATYPE(AstCtiConfiguration*)
+Q_DECLARE_FLAGS(AstCtiExtensionStatus, ExtensionStatus)
+Q_DECLARE_OPERATORS_FOR_FLAGS(AstCtiExtensionStatus)
+Q_DECLARE_METATYPE(AstCtiExtensionStatus)
 
-#endif
+struct AstCtiExtension
+{
+	QString               channel;
+	QString               number;
+	QString               name;
+	bool                  canAutoAnswer;
+	bool                  loggedInQueue;
+	QString               userAgent;
+	AstCtiExtensionStatus status;
+};
+
+typedef QList<AstCtiExtension*> AstCtiExtensionList;
+
+#endif // ASTCTIEXTENSION_H

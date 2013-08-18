@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
 @author Niksa Baldun (niksa.baldun@gmail.com)
 @since qt 4.8.4
 
-*/
+ */
 
 class ArgumentList : public QStringList
 {
@@ -98,21 +98,21 @@ class ArgumentList : public QStringList
 	@param arguments list of command line arguments, as supplied to QCoreApplication.
 	@see argsToStringList()
 	*/
-	ArgumentList(const QStringList &arguments);
+	ArgumentList(const QStringList& arguments);
 
     /**
 	Finds <b>and removes</b> a switch from the list, if it exists.
 	@param option the switch to search for without dash(es)
 	@return true if the switch was found
 	*/
-	bool getSwitch(const QString &option);
+	bool getSwitch(const QString& option);
 
 	/**
 	Finds <b>and removes</b> all instances of the switch from the list, if it exists.
 	@param option the switch to search for without dash(es)
 	@return number of occurences of the switch
 	*/
-	int getSwitchMulti(const QString &option);
+	int getSwitchMulti(const QString& option);
 
     /**
 	Finds/removes a switch <b>and its accompanying argument</b>
@@ -122,7 +122,7 @@ class ArgumentList : public QStringList
 	@param acceptArgWithoutSpace true if argument can be provided without space, default false
 	@return the argument following option, or defaultValue if the option is not found.
     */
-	QString getSwitchArg(const QString &option, const QString &defaultValue=QString(),
+	QString getSwitchArg(const QString& option, const QString& defaultValue=QString(),
 						 bool acceptArgWithoutSpace=false);
 
   private:
@@ -130,20 +130,20 @@ class ArgumentList : public QStringList
 	(Re)loads list of arguments into this object.
 	@param arguments list of command line arguments, as supplied to QCoreApplication.
 	*/
-	void argsToStringlist(const QStringList &arguments);
+	void argsToStringlist(const QStringList& arguments);
 
     /**
       Checks whether a given argument is a switch
       @param argument to check
       @return true if the argument is a switch
     */
-	bool isSwitch(const QString &arg) const;
+	bool isSwitch(const QString& arg) const;
 
 	/**
 	  Checks whether a given argument is a long switch (with double dash)
 	  @param argument to check
 	  @return true if the argument is a short switch
 	*/
-	bool isLongSwitch(const QString &arg) const;
+	bool isLongSwitch(const QString& arg) const;
 };
 #endif

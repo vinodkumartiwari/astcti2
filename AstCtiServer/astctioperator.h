@@ -44,15 +44,19 @@
 #include <QMap>
 
 #include "astctiservice.h"
+#include "astctiseat.h"
 
 struct AstCtiSpeedDial
 {
-	QString groupName;
-	QString name;
-	QString number;
-	quint8  order;
-	bool    isBlf;
+	QString               groupName;
+	QString               name;
+	QString               number;
+	quint8                order;
+	bool                  isBlf;
+	AstCtiExtensionStatus extensionStatus;
 };
+
+typedef QMap<QString, AstCtiSpeedDial*> AstCtiSpeedDialMap;
 
 class AstCtiOperator : public QObject
 {
@@ -60,42 +64,46 @@ class AstCtiOperator : public QObject
     Q_OBJECT
 
 public:
-	explicit AstCtiOperator(int id, const QString &fullName, const QString &username,
-							const QString &password, bool beginInPause, int seatID,
-							bool canMonitor, bool canAlterSpeedDials,
-							QObject *parent=0);
+	explicit AstCtiOperator(int id, const QString& fullName, const QString& username,
+							const QString& password, bool beginInPause, int seatID,
+							bool canMonitor, bool canAlterSpeedDials, bool canRecord,
+							QObject* parent = 0);
 	~AstCtiOperator();
 
-	int                           getId();
-	QString                       getFullName();
-	QString                       getUsername();
-	QString                       getPassword();
-	bool                          getBeginInPause();
-	int                           getSeatId();
-	bool                          isCallCenter();
+	int                         getId() const;
+	const QString&              getFullName() const;
+	const QString&              getUsername() const;
+	const QString&              getPassword() const;
+	bool                        getBeginInPause() const;
+	int                         getSeatId() const;
+	bool                        getCanMonitor() const;
+	bool                        isCallCenter() const;
 
-	bool                          changePassword(QString &newPassword);
-	bool                          checkPassword(const QString &password);
+	bool                        changePassword(QString& newPassword);
+	bool                        checkPassword(const QString& password) const;
 
-	bool                          loadSpeedDials();
-	bool                          loadServices(QHash<int, AstCtiService*> *serviceList);
-	QHash<AstCtiService*, int>   *getServices();
+	bool                        loadSpeedDials();
+	bool                        loadServices(AstCtiServiceHash* serviceList);
+	const AstCtiServiceRevHash& getServices() const;
 
-	QString                       toXml();
+	QString                     toXml(AstCtiSeat* seat);
 
 private:
 	Q_DISABLE_COPY(AstCtiOperator)
-	int      id;
-	QString  fullName;
-	QString  username;
-	QString  password;
-	bool     beginInPause;
-	int      seatId;
-	bool     canMonitor;
-	bool     canAlterSpeedDials;
+	int                   id;
+	QString               fullName;
+	QString               username;
+	QString               password;
+	bool                  beginInPause;
+	int                   seatId;
+	bool                  canMonitor;
+	bool                  canAlterSpeedDials;
+	bool                  canRecord;
 
-	QMap<QString, AstCtiSpeedDial*> speedDials;
-	QHash<AstCtiService*, int>      services;
+	AstCtiSpeedDialMap    speedDials;
+	AstCtiServiceRevHash  services;
 };
+
+typedef QHash<QString, AstCtiOperator*> AstCtiOperatorHash;
 
 #endif // ASTCTIOPERATOR_H

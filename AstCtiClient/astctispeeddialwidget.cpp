@@ -44,7 +44,7 @@
 #include "astctispeeddialwidget.h"
 #include "ui_astctispeeddialwidget.h"
 
-AstCtiSpeedDialWidget::AstCtiSpeedDialWidget(QWidget *parent) :
+AstCtiSpeedDialWidget::AstCtiSpeedDialWidget(QWidget* parent) :
     QWidget(parent),
     ui(new Ui::AstCtiSpeedDialWidget)
 {
@@ -81,7 +81,7 @@ QString AstCtiSpeedDialWidget::name() const
     return this->m_name;
 }
 
-void AstCtiSpeedDialWidget::setName(const QString &capt)
+void AstCtiSpeedDialWidget::setName(const QString& capt)
 {
     this->m_name = capt;
     setCaption();
@@ -93,7 +93,7 @@ QString AstCtiSpeedDialWidget::number() const
     return this->m_number;
 }
 
-void AstCtiSpeedDialWidget::setNumber(const QString &num)
+void AstCtiSpeedDialWidget::setNumber(const QString& num)
 {
     this->m_number = num;
     setCaption();
@@ -116,7 +116,7 @@ QString AstCtiSpeedDialWidget::group() const
     return this->m_group;
 }
 
-void AstCtiSpeedDialWidget::setGroup(const QString &grp)
+void AstCtiSpeedDialWidget::setGroup(const QString& grp)
 {
     this->m_group = grp;
 }
@@ -212,7 +212,7 @@ QString AstCtiSpeedDialWidget::callForwardNumber() const
     return this->m_CallForwardNumber;
 }
 
-void AstCtiSpeedDialWidget::setCallForwardNumber(const QString &cfnum)
+void AstCtiSpeedDialWidget::setCallForwardNumber(const QString& cfnum)
 {
     this->m_CallForwardNumber = cfnum;
 
@@ -233,7 +233,7 @@ void AstCtiSpeedDialWidget::setVoicemail(const int vm)
     setStatusText();
 }
 
-void AstCtiSpeedDialWidget::paintEvent(QPaintEvent *)
+void AstCtiSpeedDialWidget::paintEvent(QPaintEvent* )
 {
     QStylePainter painter(this);
 
@@ -267,7 +267,7 @@ void AstCtiSpeedDialWidget::paintEvent(QPaintEvent *)
     painter.drawPrimitive(QStyle::PE_Widget, option);
 }
 
-void AstCtiSpeedDialWidget::resizeEvent(QResizeEvent *)
+void AstCtiSpeedDialWidget::resizeEvent(QResizeEvent* )
 {
     int iconWidth = this->ui->callForwardLabel->width();
 
@@ -277,7 +277,7 @@ void AstCtiSpeedDialWidget::resizeEvent(QResizeEvent *)
     this->ui->voicemailLabel->move(this->width() - iconWidth, this->height() - iconWidth);
 }
 
-bool AstCtiSpeedDialWidget::eventFilter(QObject *, QEvent *e)
+bool AstCtiSpeedDialWidget::eventFilter(QObject* , QEvent* e)
 {
     bool accepted = false;
 
@@ -308,28 +308,28 @@ void AstCtiSpeedDialWidget::setCaption()
 void AstCtiSpeedDialWidget::setStatusText()
 {
     QString s;
-    QString status = trUtf8("Name: ") + this->m_name;
+	QString status = tr("Name: ") + this->m_name;
     if (this->m_number.length() > 0)
-        status += "\n" + trUtf8("Number: ") + this->m_number;
-    status += "\n" + trUtf8("Status: ") + extensionStateToString();
+		status += "\n" + tr("Number: ") + this->m_number;
+	status += "\n" + tr("Status: ") + extensionStateToString();
 	if (this->m_doNotDisturb && this->m_busyLampField) {
-        s = trUtf8("Do not disturb: on");
+		s = tr("Do not disturb: on");
         this->ui->doNotDisturbLabel->setToolTip(s);
         status += "\n" + s;
     }
 	if (this->m_callWaiting && this->m_busyLampField) {
-        s = trUtf8("Call waiting: on");
+		s = tr("Call waiting: on");
         this->ui->callWaitingLabel->setToolTip(s);
         status += "\n" + s;
     }
 	if (this->m_callForward != AstCtiSpeedDialWidget::CallForwardNone && this->m_busyLampField) {
-		s = trUtf8("Call forward ") + callForwardToString()
-		  + trUtf8(" to ") + this->m_CallForwardNumber;
+		s = tr("Call forward ") + callForwardToString()
+		  + tr(" to ") + this->m_CallForwardNumber;
         this->ui->callForwardLabel->setToolTip(s);
         status += "\n" + s;
     }
 	if (this->m_voicemail > 0 && this->m_busyLampField) {
-        s = trUtf8("New voicemail messages: %1").arg(this->m_voicemail);
+		s = tr("New voicemail messages: %1").arg(this->m_voicemail);
         this->ui->voicemailLabel->setToolTip(s);
         status += "\n" + s;
     }
@@ -339,31 +339,46 @@ void AstCtiSpeedDialWidget::setStatusText()
 
 QString AstCtiSpeedDialWidget::extensionStateToString()
 {
-    switch (this->m_extensionState) {
+	//We use a variable to exploit NRVO
+	QString stateName;
+
+	switch (this->m_extensionState) {
     case AstCtiSpeedDialWidget::ExtensionStateDisconnected:
-        return trUtf8("Disconnected");
-    case AstCtiSpeedDialWidget::ExtensionStateIdle:
-        return trUtf8("Idle");
-    case AstCtiSpeedDialWidget::ExtensionStateRinging:
-        return trUtf8("Ringing");
-    case AstCtiSpeedDialWidget::ExtensionStateBusy:
-        return trUtf8("Busy");
-    default:
-        return trUtf8("Unknown");
-    }
+		stateName = tr("Disconnected");
+		break;
+	case AstCtiSpeedDialWidget::ExtensionStateIdle:
+		stateName = tr("Idle");
+		break;
+	case AstCtiSpeedDialWidget::ExtensionStateRinging:
+		stateName = tr("Ringing");
+		break;
+	case AstCtiSpeedDialWidget::ExtensionStateBusy:
+		stateName = tr("Busy");
+		break;
+	default:
+		stateName = tr("Unknown");
+		break;
+	}
+
+	return stateName;
 }
 
 QString AstCtiSpeedDialWidget::callForwardToString()
 {
-    if (this->m_callForward & AstCtiSpeedDialWidget::CallForwardUnconditional)
-        return trUtf8("unconditional");
+	//We use a variable to exploit NRVO
+	QString cfName;
+
+	if (this->m_callForward & AstCtiSpeedDialWidget::CallForwardUnconditional)
+		cfName = tr("unconditional");
 	if (this->m_callForward & AstCtiSpeedDialWidget::CallForwardOnBusy &&
 		AstCtiSpeedDialWidget::CallForwardOnNoAnswer)
-        return trUtf8("on busy and on no answer");
+		cfName = tr("on busy and on no answer");
     if (this->m_callForward & AstCtiSpeedDialWidget::CallForwardOnBusy)
-        return trUtf8("on busy");
+		cfName = tr("on busy");
     if (this->m_callForward & AstCtiSpeedDialWidget::CallForwardOnNoAnswer)
-        return trUtf8("on no answer");
+		cfName = tr("on no answer");
+	else
+		cfName = QStringLiteral("");
 
-    return "";
+	return cfName;
 }

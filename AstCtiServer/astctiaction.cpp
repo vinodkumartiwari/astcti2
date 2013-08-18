@@ -39,9 +39,9 @@
 #include "QsLog.h"
 #include "astctiaction.h"
 
-AstCtiAction::AstCtiAction(const int &id, const QString &osType, const QString &actionType,
-						   const QString &destination, const QString &parameters,
-						   const QString &messageEncoding, QObject *parent) :	QObject(parent)
+AstCtiAction::AstCtiAction(const int id, const QString& osType, const QString& actionType,
+						   const QString& destination, const QString& parameters,
+						   const QString& messageEncoding, QObject* parent) :	QObject(parent)
 {
 	QLOG_TRACE() << "Creating new AstCtiAction" << id << actionType << destination;
 
@@ -61,74 +61,87 @@ AstCtiAction::~AstCtiAction()
 
 QString AstCtiAction::getActionName(const AstCtiActionType actionType)
 {
+	//We use a variable to exploit NRVO
+	QString actionName;
+
 	switch(actionType) {
 	case ActionApplication:
-		return "Application";
+		actionName = QStringLiteral("Application");
+		break;
 	case ActionBrowser:
-		return "Browser";
+		actionName = QStringLiteral("Browser");
+		break;
 	case ActionInternalBrowser:
-		return "InternalBrowser";
+		actionName = QStringLiteral("InternalBrowser");
+		break;
 	case ActionTcpMessage:
-		return "TcpMessage";
+		actionName = QStringLiteral("TcpMessage");
+		break;
 	default:
-		return "UdpMessage";
+		actionName = QStringLiteral("UdpMessage");
+		break;
 	}
+
+	return actionName;
 }
 
-AstCtiActionType AstCtiAction::parseActionType(const QString &actionTypeString) {
-	if (actionTypeString == "Application")
+AstCtiActionType AstCtiAction::parseActionType(const QString& actionTypeString) {
+	if (actionTypeString == QStringLiteral("Application"))
 		return ActionApplication;
-	else if (actionTypeString == "Browser")
+	else if (actionTypeString == QStringLiteral("Browser"))
 		return ActionBrowser;
-	else if (actionTypeString == "InternalBrowser")
+	else if (actionTypeString == QStringLiteral("InternalBrowser"))
 		return ActionInternalBrowser;
-	else if (actionTypeString == "TcpMessage")
+	else if (actionTypeString == QStringLiteral("TcpMessage"))
 		return ActionTcpMessage;
 	else
 		return ActionUdpMessage;
 }
 
-AstCtiActionOsType AstCtiAction::parseOsType(const QString &osTypeString) {
-	if (osTypeString == "Linux")
+AstCtiActionOsType AstCtiAction::parseOsType(const QString& osTypeString) {
+	//We use a variable to exploit NRVO
+	QString osName;
+
+	if (osTypeString == QStringLiteral("Linux"))
 		return ActionOsLinux;
-	else if (osTypeString == "Macintosh")
+	else if (osTypeString == QStringLiteral("Macintosh"))
 		return ActionOsMacintosh;
-	else if (osTypeString == "Windows")
+	else if (osTypeString == QStringLiteral("Windows"))
 		return ActionOsWindows;
 	else
 		return ActionOsAll;
 }
 
-int AstCtiAction::getId()
+int AstCtiAction::getId() const
 {
 	return this->id;
 }
 
-AstCtiActionType AstCtiAction::getActionType()
+AstCtiActionType AstCtiAction::getActionType() const
 {
     return this->actionType;
 }
 
-AstCtiActionOsType AstCtiAction::getOsType()
+AstCtiActionOsType AstCtiAction::getOsType() const
 {
 	return this->osType;
 }
 
-QString AstCtiAction::getDestination()
+const QString& AstCtiAction::getDestination() const
 {
 	return this->destination;
 }
 
-QString AstCtiAction::getParameters()
+const QString& AstCtiAction::getParameters() const
 {
 	return this->parameters;
 }
 
-void AstCtiAction::setParameters(const QString &newParameters)
-{
-	this->parameters = newParameters;
+const QString& AstCtiAction::getMessageEncoding() const {
+	return this->messageEncoding;
 }
 
-QString AstCtiAction::getMessageEncoding() {
-	return this->messageEncoding;
+void AstCtiAction::setParameters(const QString& newParameters)
+{
+	this->parameters = newParameters;
 }

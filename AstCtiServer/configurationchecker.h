@@ -53,8 +53,7 @@
 #define defaultAmiUser                      "manager"
 #define defaultAmiSecret                    "password"
 #define defaultAmiConnectTimeout            1500
-#define defaultAmiReadTimeout               1500
-#define defaultAmiConnectRetryAfter         30
+#define defaultAmiConnectRetryAfter         2
 
 #define defaultAsteriskVersion              "1.8"
 #define defaultAutoAnswerContext            "cti-auto-answer"
@@ -64,20 +63,21 @@ class ConfigurationChecker : public QObject
     Q_OBJECT
 
 public:
-	explicit ConfigurationChecker(QObject *parent=0);
+	explicit ConfigurationChecker(QObject* parent = 0);
     ~ConfigurationChecker();
+
 	void                stop();
 
 public slots:
 	void                run();
 
 signals:
-	void				newConfiguration(AstCtiConfiguration *newConfig);
+	void				newConfiguration(AstCtiConfiguration* newConfig);
 
 private:
 	Q_DISABLE_COPY(ConfigurationChecker)
 	long                readLastModified();
-	QVariant            readSetting(const QString &name, const QVariant &defaultValue);
+	QVariant            readSetting(const QString& name, const QVariant& defaultValue);
 	bool                readConfiguration();
 	QString             timestampToString(const long timestamp);
 	void                delay(const int secs);

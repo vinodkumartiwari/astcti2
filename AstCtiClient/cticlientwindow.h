@@ -42,32 +42,35 @@
 #ifndef CTICLIENTWINDOW_H
 #define CTICLIENTWINDOW_H
 
-#include <QtWidgets>
+#include <QtWidgets/QWidget>
 #include <QSystemTrayIcon>
+#include <QHash>
 
 #include "coreconstants.h"
+#include "cticonfig.h"
+#include "astctichannel.h"
 #include "aboutdialog.h"
 #include "browserwindow.h"
-
-const QString statusMessageOK = "Conection to server OK";
-const QString statusMessageNotOK = "Conection to server has been lost. Trying to reconnect...";
-const QString pauseErrorMessage = "There was an error with pause operation:";
 
 class CtiClientWindow : public QWidget
 {
     Q_OBJECT
+
 public:
-	explicit CtiClientWindow(const QString &userName);
+	explicit CtiClientWindow(AstCtiConfiguration* config);
+	~CtiClientWindow();
 
 public slots:
-    virtual void showMessage(const QString &message, QSystemTrayIcon::MessageIcon severity);
+    virtual void showMessage(const QString& message, QSystemTrayIcon::MessageIcon severity);
     virtual void setStatus(bool status);
     virtual void about();
     virtual void minimizeToTray();
-    virtual void placeCall();
+	virtual void newConfig(AstCtiConfiguration* config);
+	virtual void receiveChannelEvent(AstCtiChannel* channel);
+	virtual void placeCall();
     virtual void pause(bool paused);
     virtual void pauseAccepted();
-    virtual void pauseError(const QString &message);
+    virtual void pauseError(const QString& message);
     virtual void quit(bool skipCheck);
 
 signals:
@@ -76,15 +79,21 @@ signals:
     void logOff();
 
 protected:
-    void closeEvent(QCloseEvent *e);
+	QString statusMsgOK;
+	QString statusMsgNotOK;
+	QString pauseErrorMsg;
+
+	void closeEvent(QCloseEvent* e);
 
     bool canClose;
     bool paused;
+	bool canRecord;
     QPoint dragOrigin;
     QString userName;
-    QSystemTrayIcon *trayIcon;
+    QSystemTrayIcon* trayIcon;
+	QHash<QString, AstCtiChannel*> activeChannels;
 
-    virtual bool isValidDrag(QMouseEvent *mouseEvent) const;
+    virtual bool isValidDrag(QMouseEvent* mouseEvent) const;
     virtual void createTrayIcon();
     virtual void connectSlots() = 0;
     virtual void enableControls(bool enable) = 0;

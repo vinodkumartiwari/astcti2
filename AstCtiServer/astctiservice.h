@@ -56,33 +56,36 @@ class AstCtiService : public QObject
 	Q_ENUMS(AstCtiServiceType)
 
 public:
-	explicit AstCtiService(const int &id, const QString &name, const QString &contextType,
-						   const QString &queueName, QObject *parent=0);
+	explicit AstCtiService(const int id, const QString& name, const QString& contextType,
+						   const QString& queueName, QObject* parent = 0);
 	~AstCtiService();
 
-	int                          getId();
-	QString                      getName();
-	AstCtiServiceType            getContextType();
-	QString                      getContextTypeString();
-	bool                         isQueue();
-	QString                      getQueueName();
+	int                    getId() const;
+	const QString&         getName() const;
+	AstCtiServiceType      getContextType() const;
+	QString                getContextTypeString() const;
+	bool                   isQueue() const;
+	const QString&         getQueueName() const;
 
-	QStringList                 *getVariables();
-	QMap<int, AstCtiAction*>    *getActions();
+	const QStringList&     getVariables() const;
+	const AstCtiActionMap& getActions() const;
 
-	bool                         loadVariables();
-	bool                         loadActions(QHash<int, AstCtiAction*> *actionList);
+	bool                   loadVariables();
+	bool                   loadActions(AstCtiActionHash* actionList);
 
 private:
 	Q_DISABLE_COPY(AstCtiService)
-	int                          id;
-	QString                      name;
-	AstCtiServiceType            contextType;
-	QString                      queueName;
+	int                    id;
+	QString                name;
+	AstCtiServiceType      contextType;
+	QString                queueName;
 
-	QStringList                  variables;
+	QStringList            variables;
 	//QMap is needed for storing ordered items
-	QMap<int, AstCtiAction*>     actions;
+	AstCtiActionMap        actions;
 };
+
+typedef QHash<int, AstCtiService*> AstCtiServiceHash;
+typedef QHash<AstCtiService*, int> AstCtiServiceRevHash;
 
 #endif // ASTCTISERVICE_H

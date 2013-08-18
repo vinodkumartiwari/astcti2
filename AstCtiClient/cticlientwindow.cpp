@@ -43,18 +43,29 @@
 
 #include "cticlientwindow.h"
 
-CtiClientWindow::CtiClientWindow(const QString &userName) :
+CtiClientWindow::CtiClientWindow(AstCtiConfiguration* config) :
     QWidget()
 {
-    this->canClose = false;
+	this->statusMsgOK = tr("Conection to server OK");
+	this->statusMsgNotOK = tr("Conection to server has been lost. Trying to reconnect...");
+	this->pauseErrorMsg = tr("There was an error with pause operation:");
+
+	this->canClose = false;
     this->paused = false;
-    this->userName = userName;
+	this->userName = config->userName;
     this->dragOrigin = QPoint(-1, -1);
 
     this->createTrayIcon();
 }
 
-void CtiClientWindow::closeEvent(QCloseEvent *e)
+CtiClientWindow::~CtiClientWindow()
+{
+	delete this->trayIcon;
+
+	qDeleteAll(this->activeChannels);
+}
+
+void CtiClientWindow::closeEvent(QCloseEvent* e)
 {
     if (this->canClose) {
         writeSettings();
@@ -64,7 +75,7 @@ void CtiClientWindow::closeEvent(QCloseEvent *e)
     }
 }
 
-bool CtiClientWindow::isValidDrag(QMouseEvent *mouseEvent) const
+bool CtiClientWindow::isValidDrag(QMouseEvent* mouseEvent) const
 {
     if (!mouseEvent || mouseEvent->modifiers() != Qt::NoModifier)
         return false;
@@ -79,7 +90,7 @@ bool CtiClientWindow::isValidDrag(QMouseEvent *mouseEvent) const
 void CtiClientWindow::createTrayIcon()
 {
      QIcon icon;
-	 icon.addPixmap(QPixmap(QString::fromUtf8(":/res/res/asteriskcti16x16.png")),
+	 icon.addPixmap(QPixmap(QStringLiteral(":/res/res/asteriskcti16x16.png")),
 					QIcon::Normal, QIcon::Off);
 
      this->trayIcon = new QSystemTrayIcon(icon, this);
@@ -98,7 +109,7 @@ void CtiClientWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void CtiClientWindow::showMessage(const QString &message, QSystemTrayIcon::MessageIcon severity)
+void CtiClientWindow::showMessage(const QString& message, QSystemTrayIcon::MessageIcon severity)
 {
     if (this->trayIcon->supportsMessages()) {
         this->trayIcon->showMessage(APP_NAME, message, severity, 50000);
@@ -118,6 +129,19 @@ void CtiClientWindow::showMessage(const QString &message, QSystemTrayIcon::Messa
     }
 }
 
+void CtiClientWindow::newConfig(AstCtiConfiguration* config)
+{
+	//TODO
+	this->userName = config->userName;
+	this->canRecord = config->canRecord;
+}
+
+void CtiClientWindow::receiveChannelEvent(AstCtiChannel* channel)
+{
+	// To  be implemented in a derived class
+	Q_UNUSED(channel);
+}
+
 void CtiClientWindow::setStatus(bool status)
 {
     if (status) {
@@ -127,7 +151,7 @@ void CtiClientWindow::setStatus(bool status)
             this->trayIcon->showMessage("", "", QSystemTrayIcon::NoIcon, 1);
     } else {
         enableControls(false);
-        showMessage(statusMessageNotOK, QSystemTrayIcon::Critical);
+        showMessage(statusMsgNotOK, QSystemTrayIcon::Critical);
     }
 }
 
@@ -156,12 +180,12 @@ void CtiClientWindow::pauseAccepted() {
     this->paused = !this->paused;
 }
 
-void CtiClientWindow::pauseError(const QString &message)
+void CtiClientWindow::pauseError(const QString& message)
 {
-   //TODO: decide what to do with pause Errors
+   //TODO: decide what to do with pause errors
    //a pause error can occur also if we, administratively using CLI,
    //remove an agent from queue...
-   this->showMessage(pauseErrorMessage + "\n\n" + message, QSystemTrayIcon::Warning);
+   this->showMessage(pauseErrorMsg + "\n\n" + message, QSystemTrayIcon::Warning);
 }
 
 void CtiClientWindow::quit(bool skipCheck)
@@ -169,11 +193,11 @@ void CtiClientWindow::quit(bool skipCheck)
     if (!skipCheck) {
         QMessageBox msgBox;
 
-        msgBox.setText(trUtf8("Are you sure you want to quit?"));
-        QPushButton *yesBtn = msgBox.addButton(trUtf8("&Yes"),QMessageBox::YesRole);
-        yesBtn->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
-        QPushButton *noBtn = msgBox.addButton(trUtf8("&No"),QMessageBox::NoRole);
-        noBtn->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
+		msgBox.setText(tr("Are you sure you want to quit?"));
+		QPushButton* yesBtn = msgBox.addButton(tr("&Yes"),QMessageBox::YesRole);
+		yesBtn->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/ok.png"))));
+		QPushButton* noBtn = msgBox.addButton(tr("&No"),QMessageBox::NoRole);
+		noBtn->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/cancel.png"))));
 
         msgBox.setDefaultButton(noBtn);
         msgBox.setIcon(QMessageBox::Question);
@@ -186,7 +210,7 @@ void CtiClientWindow::quit(bool skipCheck)
     }
 
     if (this->canClose) {
-        emit logOff();
+		emit this->logOff();
 
         this->close();
     }

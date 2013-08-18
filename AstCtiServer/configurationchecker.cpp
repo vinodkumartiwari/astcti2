@@ -40,7 +40,7 @@
 #include "configurationchecker.h"
 #include "db.h"
 
-ConfigurationChecker::ConfigurationChecker(QObject *parent) : QObject(parent)
+ConfigurationChecker::ConfigurationChecker(QObject* parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating ConfigurationChecker";
 	this->isRunning = true;
@@ -58,7 +58,7 @@ void ConfigurationChecker::run()
 	this->lastTimeStamp = 0;
 
 	while (this->isRunning) {
-		long modified = this->readLastModified();
+		const long modified = this->readLastModified();
         if (modified > this->lastTimeStamp) {
 			QLOG_INFO() << "Configuration has changed on" << this->timestampToString(modified);
 
@@ -83,54 +83,55 @@ void ConfigurationChecker::stop()
 long ConfigurationChecker::readLastModified()
 {
 	//If the conversion fails, toLongLong() returns 0, which is what we want
-	return this->readSetting("last_update", 0).toLongLong();
+	return this->readSetting(QStringLiteral("last_update"), 0).toLongLong();
 }
 
 bool ConfigurationChecker::readConfiguration()
 {
 	QLOG_INFO() << "Reading configuration settings from database";
 
-	AstCtiConfiguration *config = new AstCtiConfiguration();
+	AstCtiConfiguration* config = new AstCtiConfiguration();
 
 	config->amiHost =
-			readSetting("ami_host",                     defaultAmiHost).toString();
+			readSetting(QStringLiteral("ami_host"), defaultAmiHost).toString();
 	config->amiPort =
-			readSetting("ami_port",                     defaultAmiPort).toInt();
+			readSetting(QStringLiteral("ami_port"), defaultAmiPort).toInt();
 	config->amiUser =
-			readSetting("ami_user",                     defaultAmiUser).toString();
+			readSetting(QStringLiteral("ami_user"), defaultAmiUser).toString();
 	config->amiSecret =
-			readSetting("ami_secret",                   defaultAmiSecret).toString();
+			readSetting(QStringLiteral("ami_secret"), defaultAmiSecret).toString();
 	config->amiConnectTimeout =
-			readSetting("ami_connect_timeout",          defaultAmiConnectTimeout).toInt();
-	config->amiReadTimeout =
-			readSetting("ami_read_timeout",             defaultAmiReadTimeout).toInt();
+			readSetting(QStringLiteral("ami_connect_timeout"), defaultAmiConnectTimeout).toInt();
 	config->amiConnectRetryAfter =
-			readSetting("ami_connect_retry_after",      defaultAmiConnectRetryAfter).toInt();
+			readSetting(QStringLiteral("ami_connect_retry_after"),
+						defaultAmiConnectRetryAfter).toInt();
 	config->ctiServerAddress =
-			readSetting("cti_server_address",           defaultCtiServerAddress).toString();
+			readSetting(QStringLiteral("cti_server_address"), defaultCtiServerAddress).toString();
 	config->ctiServerPort =
-			readSetting("cti_server_port",              defaultCtiServerPort).toInt();
+			readSetting(QStringLiteral("cti_server_port"), defaultCtiServerPort).toInt();
 	config->ctiConnectTimeout =
-			readSetting("cti_connect_timeout",          defaultCtiConnectTimeout).toInt();
+			readSetting(QStringLiteral("cti_connect_timeout"), defaultCtiConnectTimeout).toInt();
 	config->ctiReadTimeout =
-			readSetting("cti_read_timeout",             defaultCtiReadTimeout).toInt();
+			readSetting(QStringLiteral("cti_read_timeout"), defaultCtiReadTimeout).toInt();
 	config->ctiCompressionLevel =
-			readSetting("cti_socket_compression_level", defaultCtiSocketCompressionLevel).toInt();
+			readSetting(QStringLiteral("cti_socket_compression_level"),
+						defaultCtiSocketCompressionLevel).toInt();
 	config->asteriskVersion =
-			readSetting("asterisk_version",             defaultAsteriskVersion).toString();
+			readSetting(QStringLiteral("asterisk_version"), defaultAsteriskVersion).toString();
 	config->autoAnswerContext =
-			readSetting("auto_answer_context",          defaultAutoAnswerContext).toString();
+			readSetting(QStringLiteral("auto_answer_context"), defaultAutoAnswerContext).toString();
 
 	bool ok;
 
-	const QList<QVariantList> seatData = DB::readTable("SELECT ID_SEAT,SEAT_MAC,DESCRIPTION "
-													   "FROM seats WHERE ENABLED=1", &ok);
+	const QVariantTable seatData =
+			DB::readTable(QStringLiteral(
+				"SELECT id,mac_address,description FROM seats WHERE enabled=true"), &ok);
 	if (ok) {
 		const int listSize = seatData.size();
 		for (int i = 0; i < listSize; i++) {
 			const QVariantList seatRow = seatData.at(i);
 			const int id = seatRow.at(0).toInt();
-			AstCtiSeat *seat = new AstCtiSeat(id, seatRow.at(1).toString(),
+			AstCtiSeat* seat = new AstCtiSeat(id, seatRow.at(1).toString(),
 											  seatRow.at(2).toString());
 			ok = seat->loadExtensions();
 			if (!ok) {
@@ -148,15 +149,15 @@ bool ConfigurationChecker::readConfiguration()
 	}
 
 	if (ok) {
-		const QList<QVariantList> actionData =
-				DB::readTable("SELECT ID_ACTION,ACTION_OS_TYPE,ACTION_TYPE,ACTION_DESTINATION,"
-							  "PARAMETERS,ENCODING FROM actions WHERE ENABLED=1", &ok);
+		const QVariantTable actionData =
+				DB::readTable("SELECT id,os_type,action_type,destination,parameters,encoding "
+							  "FROM actions WHERE enabled=true", &ok);
 		if (ok) {
 			const int listSize = actionData.size();
 			for (int i = 0; i < listSize; i++) {
 				const QVariantList actionRow = actionData.at(i);
 				const int id = actionRow.at(0).toInt();
-				AstCtiAction *action =
+				AstCtiAction* action =
 						new AstCtiAction(id, actionRow.at(1).toString(),
 										 actionRow.at(2).toString(), actionRow.at(3).toString(),
 										 actionRow.at(4).toString(), actionRow.at(5).toString());
@@ -166,15 +167,15 @@ bool ConfigurationChecker::readConfiguration()
 	}
 
 	if (ok) {
-		const QList<QVariantList> serviceData =
-				DB::readTable("SELECT ID_SERVICE,SERVICE_NAME,SERVICE_CONTEXT_TYPE,"
-							  "SERVICE_QUEUE_NAME FROM services WHERE ENABLED=1", &ok);
+		const QVariantTable serviceData =
+				DB::readTable("SELECT id,name,service_type,queue_name "
+							  "FROM services WHERE enabled=true", &ok);
 		if (ok) {
 			const int listSize = serviceData.size();
 			for (int i = 0; i < listSize; i++) {
 				const QVariantList serviceRow = serviceData.at(i);
 				const int id = serviceRow.at(0).toInt();
-				AstCtiService *service =
+				AstCtiService* service =
 						new AstCtiService(id, serviceRow.at(1).toString(),
 										  serviceRow.at(2).toString(), serviceRow.at(3).toString());
 				ok = service->loadVariables();
@@ -191,20 +192,21 @@ bool ConfigurationChecker::readConfiguration()
 	}
 
 	if (ok) {
-		const QList<QVariantList> operatorData =
-				DB::readTable("SELECT ID_OPERATOR,FULL_NAME,USERNAME,PASS_WORD,"
-							  "BEGIN_IN_PAUSE,ID_SEAT,CAN_MONITOR,CAN_ALTER_SPEEDDIALS "
-							  "FROM operators WHERE ENABLED=1", &ok);
+		const QVariantTable operatorData =
+				DB::readTable("SELECT id,full_name,username,password,"
+							  "begin_in_pause,id_seat,can_monitor,can_alter_speeddials,can_record "
+							  "FROM operators WHERE enabled=true", &ok);
 		if (ok) {
 			const int listSize = operatorData.size();
 			for (int i = 0; i < listSize; i++) {
 				const QVariantList operatorRow = operatorData.at(i);
 				const QString username = operatorRow.at(2).toString();
-				AstCtiOperator *op =
+				AstCtiOperator* op =
 						new AstCtiOperator(operatorRow.at(0).toInt(), operatorRow.at(1).toString(),
 										   username, operatorRow.at(3).toString(),
 										   operatorRow.at(4).toBool(), operatorRow.at(5).toInt(),
-										   operatorRow.at(6).toBool(), operatorRow.at(7).toBool());
+										   operatorRow.at(6).toBool(), operatorRow.at(7).toBool(),
+										   operatorRow.at(8).toBool());
 				ok = op->loadSpeedDials();
 				if (ok)
 					ok = op->loadServices(&(config->services));
@@ -232,18 +234,19 @@ bool ConfigurationChecker::readConfiguration()
 	return ok;
 }
 
-QVariant ConfigurationChecker::readSetting(const QString &name, const QVariant &defaultValue)
+QVariant ConfigurationChecker::readSetting(const QString& name, const QVariant& defaultValue)
 {
 	QVariantList params;
 	params.append(name);
 	bool ok;
-	QVariant value = DB::readScalar("SELECT val FROM server_settings WHERE name=?", params, &ok);
-	if (ok)
-		return value;
-	else
+	QVariant value = DB::readScalar(QStringLiteral(
+						 "SELECT val FROM server_settings WHERE name=?"), params, &ok);
+	if (!ok)
 		//TODO: We return the default value in case of an error.
 		//TODO: Perhaps execution should be stopped in that case
-		return defaultValue;
+		value = defaultValue;
+
+	return value;
 }
 
 QString ConfigurationChecker::timestampToString(const long timestamp) {

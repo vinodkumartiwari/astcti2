@@ -44,10 +44,10 @@
 // DOCS STYLE COMMENTS:
 // http://www.ph.unimelb.edu.au/~ssk/kde/kdoc/
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	// QCoreApplication needs to be initialized here
-    CtiServerApplication application("AsteriskCTIServer", argc, argv);
+	CtiServerApplication application(QStringLiteral("AsteriskCTIServer"), argc, argv);
 
     if (application.isRunning()) {
          //Wake up running instance and exit

@@ -43,18 +43,18 @@
 #include "browserwindow.h"
 #include "ui_browserwindow.h"
 
-BrowserWindow::BrowserWindow(const QString &userName, QUrl url, QWidget *parent) :
+BrowserWindow::BrowserWindow(const QString& userName, QUrl url, QWidget* parent) :
     QMainWindow(parent),
     ui(new Ui::BrowserWindow)
 {
     ui->setupUi(this);
 
     webView = new WebView(this->ui->centralwidget);
-    webView->setObjectName(QString::fromUtf8("webView"));
-    webView->setUrl(QUrl("about:blank"));
+	webView->setObjectName(QStringLiteral("webView"));
+	webView->setUrl(QUrl(QStringLiteral("about:blank")));
     this->ui->verticalLayout->addWidget(webView);
 
-    this->statusLabel = new QLabel(trUtf8("<b>Not Connected</b>")) ;
+	this->statusLabel = new QLabel(tr("<b>Not Connected</b>")) ;
     this->statusBar()->addWidget(this->statusLabel);
 
     this->currentHistoryItem = -1;
@@ -92,7 +92,7 @@ BrowserWindow::~BrowserWindow()
     delete ui;
 }
 
-void BrowserWindow::keyPressEvent(QKeyEvent *e)
+void BrowserWindow::keyPressEvent(QKeyEvent* e)
 {
     if (e->key() == Qt::Key_Return) {
         if (this->focusWidget() == this->ui->urlLineEdit) {
@@ -102,7 +102,7 @@ void BrowserWindow::keyPressEvent(QKeyEvent *e)
     }
 }
 
-void BrowserWindow::changeEvent(QEvent *e)
+void BrowserWindow::changeEvent(QEvent* e)
 {
     switch (e->type()) {
     case QEvent::LanguageChange:
@@ -113,7 +113,7 @@ void BrowserWindow::changeEvent(QEvent *e)
     }
 }
 
-void BrowserWindow::closeEvent(QCloseEvent *e)
+void BrowserWindow::closeEvent(QCloseEvent* e)
 {
     Q_UNUSED(e)
 
@@ -121,7 +121,7 @@ void BrowserWindow::closeEvent(QCloseEvent *e)
     emit windowClosing(this);
 }
 
-WebView *BrowserWindow::currentView() const
+WebView* BrowserWindow::currentView() const
 {
     return this->webView;
 }
@@ -147,13 +147,13 @@ void BrowserWindow::webView_loadStarted()
     this->ui->urlLineEdit->setText(url.toString());
     this->ui->reloadButton->setEnabled(false);
     this->ui->stopButton->setEnabled(true);
-    this->statusLabel->setText(trUtf8("Loading..."));
+	this->statusLabel->setText(tr("Loading..."));
 }
 
 void BrowserWindow::goButton_clicked()
 {
     QString url = this->ui->urlLineEdit->text();
-    if (!url.startsWith("http://") && !url.startsWith("https://"))  {
+	if (!url.startsWith(QStringLiteral("http://")) && !url.startsWith(QStringLiteral("https://"))) {
         url = "http://" + url;
     }
     setUrl(QUrl(url));
@@ -187,7 +187,7 @@ void BrowserWindow::webView_loadFinished(bool)
 {
     this->ui->reloadButton->setEnabled(true);
     this->ui->stopButton->setEnabled(false);
-    this->statusLabel->setText(trUtf8("Complete"));
+	this->statusLabel->setText(tr("Complete"));
 }
 
 void BrowserWindow::webView_statusBarMessage(QString text)
@@ -202,7 +202,7 @@ void BrowserWindow::webView_titleChanged(QString title)
 
 void BrowserWindow::webView_loadProgress(int progress)
 {
-   this->statusLabel->setText(trUtf8("Progress: %1 %").arg(progress));
+   this->statusLabel->setText(tr("Progress: %1 %").arg(progress));
 }
 
 void BrowserWindow::webView_linkClicked(QUrl url)
@@ -220,8 +220,8 @@ void BrowserWindow::writeSettings()
     QSettings settings(APP_NAME);
 
     settings.beginGroup("BrowserWindow." + this->userName + "." + this->currentUrl.host());
-    settings.setValue("geometry", this->saveGeometry());
-    settings.setValue("windowState", this->saveState());
+	settings.setValue(QStringLiteral("geometry"), this->saveGeometry());
+	settings.setValue(QStringLiteral("windowState"), this->saveState());
     settings.endGroup();
  }
 
@@ -231,11 +231,11 @@ void BrowserWindow::readSettings()
 
     settings.beginGroup("BrowserWindow." + this->userName + "." + this->currentUrl.host());
     //TODO
-    //On X11, restoreGeometry cannot account for non-client area because the window is not shown yet
+	//On X11, restoreGeometry cannot account for non-client area because window is not shown yet
 	//The window will shift toward bottom right corner depending on the size of window decoration
     //Currently (Qt 4.6), there doesn't appear to be a workaround for this
     //A possible workaround would be to create borderless window and implement moving and sizing
-    this->restoreGeometry(settings.value("geometry").toByteArray());
-    this->restoreState(settings.value("windowState").toByteArray());
+	this->restoreGeometry(settings.value(QStringLiteral("geometry")).toByteArray());
+	this->restoreState(settings.value(QStringLiteral("windowState")).toByteArray());
     settings.endGroup();
  }

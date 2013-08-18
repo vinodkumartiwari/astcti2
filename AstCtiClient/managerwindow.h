@@ -60,28 +60,31 @@ class ManagerWindow : public CtiClientWindow
     Q_OBJECT
 
 public:
-    explicit ManagerWindow(const QString &userName);
+	explicit ManagerWindow(AstCtiConfiguration* config);
     ~ManagerWindow();
 
 public slots:
-    void showHelp();
+	virtual void newConfig(AstCtiConfiguration* config);
+	virtual void receiveChannelEvent(AstCtiChannel* channel);
+
+	void showHelp();
     void showMaxRestore();
 
 protected:
-    void changeEvent(QEvent *e);
-    void resizeEvent(QResizeEvent *e);
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *);
-    bool eventFilter(QObject *object, QEvent *e);
+    void changeEvent(QEvent* e);
+    void resizeEvent(QResizeEvent* e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* );
+    bool eventFilter(QObject* object, QEvent* e);
 
 private:
-    Ui::ManagerWindow *ui;
-    QVBoxLayout *mainLayout;
-    QWidget *titleDummyWidget;
-    QStackedLayout *titleStackedLayout;
-//    QHBoxLayout *accountsLayout;
-//    QTabBar *accountsTabBar;
+    Ui::ManagerWindow* ui;
+    QVBoxLayout* mainLayout;
+    QWidget* titleDummyWidget;
+    QStackedLayout* titleStackedLayout;
+//    QHBoxLayout* accountsLayout;
+//    QTabBar* accountsTabBar;
 
     void connectSlots();
     void enableControls(bool enable);

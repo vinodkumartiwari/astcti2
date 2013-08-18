@@ -46,16 +46,16 @@
 #include "passwordwindow.h"
 #include "ui_passwordwindow.h"
 
-PasswordWindow::PasswordWindow(QWidget *parent) :
+PasswordWindow::PasswordWindow(QWidget* parent) :
     QDialog(parent),
     ui(new Ui::PasswordWindow)
 {
     ui->setupUi(this);
 
 	ui->dialogButtonBox->buttons().at(0)->setIcon(
-			QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
+			QIcon(QPixmap(QStringLiteral(":/res/res/ok.png"))));
 	ui->dialogButtonBox->buttons().at(1)->setIcon(
-			QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
+			QIcon(QPixmap(QStringLiteral(":/res/res/cancel.png"))));
 
 	connect(this->ui->dialogButtonBox, SIGNAL(accepted()),
 			this, SLOT(accepting()));
@@ -68,7 +68,7 @@ PasswordWindow::~PasswordWindow()
     delete ui;
 }
 
-void PasswordWindow::changeEvent(QEvent *e)
+void PasswordWindow::changeEvent(QEvent* e)
 {
     QDialog::changeEvent(e);
     switch (e->type()) {
@@ -83,7 +83,7 @@ void PasswordWindow::changeEvent(QEvent *e)
 void PasswordWindow::accepting()
 {
     if (this->ui->passwordLineEdit->text() != this->ui->confirmPasswordLineEdit->text()) {
-        QMessageBox::critical(this, APP_NAME, trUtf8("Passwords do not match."));
+		QMessageBox::critical(this, APP_NAME, tr("Passwords do not match."));
         this->ui->passwordLineEdit->setFocus();
         this->ui->passwordLineEdit->selectAll();
     } else {

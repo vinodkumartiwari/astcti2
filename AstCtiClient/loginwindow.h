@@ -53,19 +53,19 @@ namespace Ui {
 class LoginWindow : public QDialog {
     Q_OBJECT
 public:
-    LoginWindow(QWidget *parent = 0);
+    LoginWindow(QWidget* parent = 0);
     ~LoginWindow();
 
-    void showMessage(const QString message, bool connectionLost);
+	void showMessage(const QString& message, const bool connectionLost);
 
 signals:
-    void accepted(const QString &username, const QString &password);
+    void accepted(const QString& username, const QString& password);
 
 protected:
-    void changeEvent(QEvent *e);
+    void changeEvent(QEvent* e);
 
 private:
-    Ui::LoginWindow *ui;
+    Ui::LoginWindow* ui;
 
 private slots:
     void accepting();

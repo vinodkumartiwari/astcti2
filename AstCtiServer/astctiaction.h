@@ -63,22 +63,22 @@ class AstCtiAction : public QObject
 	Q_ENUMS(AstCtiActionOsType)
 
 public:
-	explicit AstCtiAction(const int &id, const QString &osType, const QString &actionType,
-						  const QString &destination, const QString &parameters,
-						  const QString &messageEncoding, QObject *parent=0);
+	explicit AstCtiAction(const int id, const QString& osType, const QString& actionType,
+						  const QString& destination, const QString& parameters,
+						  const QString& messageEncoding, QObject* parent = 0);
 	~AstCtiAction();
 
-	int                 getId();
-	AstCtiActionOsType  getOsType();
-	AstCtiActionType    getActionType();
-	QString             getDestination();
-	QString             getParameters();
-	QString             getMessageEncoding();
-	void                setParameters(const QString &newParameters);
+	int                 getId() const;
+	AstCtiActionOsType  getOsType() const;
+	AstCtiActionType    getActionType() const;
+	const QString&      getDestination() const;
+	const QString&      getParameters() const;
+	const QString&      getMessageEncoding() const;
+	void                setParameters(const QString& newParameters);
 
 	static QString            getActionName(const AstCtiActionType actionType);
-	static AstCtiActionType   parseActionType(const QString &actionTypeString);
-	static AstCtiActionOsType parseOsType(const QString &osTypeString);
+	static AstCtiActionType   parseActionType(const QString& actionTypeString);
+	static AstCtiActionOsType parseOsType(const QString& osTypeString);
 
 private:
 	Q_DISABLE_COPY(AstCtiAction)
@@ -89,5 +89,8 @@ private:
 	QString             parameters;
 	QString             messageEncoding;
 };
+
+typedef QHash<int, AstCtiAction*> AstCtiActionHash;
+typedef QMap<int, AstCtiAction*> AstCtiActionMap;
 
 #endif // ASTCTIACTION_H

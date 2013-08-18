@@ -42,7 +42,7 @@
 #include "db.h"
 #include "astctiseat.h"
 
-AstCtiSeat::AstCtiSeat(int id, const QString &mac, const QString &description, QObject *parent)
+AstCtiSeat::AstCtiSeat(int id, const QString& mac, const QString& description, QObject* parent)
 	: QObject(parent)
 {
 	QLOG_TRACE() << "Creating new AstCtiSeat" << id << description;
@@ -50,11 +50,29 @@ AstCtiSeat::AstCtiSeat(int id, const QString &mac, const QString &description, Q
 	this->id = id;
 	this->mac = mac;
 	this->description = description;
+	//this->extensions = AstCtiExtensionList();
 }
 
 AstCtiSeat::~AstCtiSeat()
 {
 	QLOG_TRACE() << "Destroying AstCtiSeat" << this->id << this->description;
+
+	qDeleteAll(this->extensions);
+}
+
+int AstCtiSeat::getId() const
+{
+	return this->id;
+}
+
+const QString& AstCtiSeat::getMac() const
+{
+	return this->mac;
+}
+
+const QString& AstCtiSeat::getDescription() const
+{
+    return this->description;
 }
 
 bool AstCtiSeat::loadExtensions()
@@ -66,13 +84,27 @@ bool AstCtiSeat::loadExtensions()
 	bool ok;
 	QVariantList params;
 	params.append(this->id);
-	const QVariantList extenData =
-			DB::readList("SELECT EXTEN FROM extensions "
-						  "WHERE ID_SEAT=? AND ENABLED=1", params, &ok);
+	const QVariantTable extenData =
+			DB::readTable("SELECT exten,description,can_auto_answer FROM extensions "
+						  "WHERE id_seat=? AND enabled=true ORDER BY exten", params, &ok);
+	// We order by EXTEN so order will be the same when comparing two seats (see compareExtensions)
 	if (ok) {
 		const int listSize = extenData.size();
-		for (int i = 0; i < listSize; i++)
-			this->extensions.append(extenData.at(i).toString());
+		for (int i = 0; i < listSize; i++) {
+			const QVariantList extenRow = extenData.at(i);
+			AstCtiExtension* extension = new AstCtiExtension();
+			QString channel = extenRow.at(0).toString();
+			extension->channel = channel;
+			// We get the extension number by splitting the parsed channel on '/'
+			QStringList channelParts = channel.split('/');
+			if (!channelParts.isEmpty())
+				extension->number = channelParts.last();
+			else
+				extension->number = channel;
+			extension->name = extenRow.at(1).toString();
+			extension->canAutoAnswer = extenRow.at(2).toBool();
+			this->extensions.append(extension);
+		}
 	} else {
 		QLOG_ERROR() << "Loading extensions failed for seat" << this->id << this->description;
 	}
@@ -80,22 +112,60 @@ bool AstCtiSeat::loadExtensions()
 	return ok;
 }
 
-int AstCtiSeat::getId()
-{
-	return this->id;
-}
-
-QString AstCtiSeat::getMac()
-{
-	return this->mac;
-}
-
-QString AstCtiSeat::getDescription()
-{
-    return this->description;
-}
-
-QStringList AstCtiSeat::getExtensions()
+const AstCtiExtensionList& AstCtiSeat::getExtensions() const
 {
 	return this->extensions;
+}
+
+QStringList AstCtiSeat::getExtensionNumbers() const
+{
+	QStringList extNumbers;
+	const int listSize = this->extensions.size();
+	for (int i = 0; i < listSize; i++)
+		extNumbers.append(this->extensions.at(i)->number);
+	return extNumbers;
+}
+
+bool AstCtiSeat::hasExtension(const QString& channel) const
+{
+	return this->getExtension(channel) != 0;
+}
+
+bool AstCtiSeat::compareExtensions(const AstCtiExtensionList& newExtensions) const
+{
+	const int listSize = this->extensions.size();
+	if (listSize != newExtensions.size())
+		return false;
+
+	for (int i = 0; i < listSize; i++)
+		if (this->extensions.at(i)->channel != newExtensions.at(i)->channel)
+			return false;
+
+	return true;
+}
+
+void AstCtiSeat::setExtensionUserAgent(const QString& channel, const QString& userAgent)
+{
+	AstCtiExtension* extension = this->getExtension(channel);
+	if (extension != 0)
+		extension->userAgent = userAgent;
+}
+
+void AstCtiSeat::setExtensionStatus(const QString& channel, const AstCtiExtensionStatus status)
+{
+	AstCtiExtension* extension = this->getExtension(channel);
+	if (extension != 0)
+		extension->status = status;
+}
+
+AstCtiExtension* AstCtiSeat::getExtension(const QString& channel) const
+{
+	const int listSize = this->extensions.size();
+	for (int i = 0; i < listSize; i++) {
+		AstCtiExtension* extension = this->extensions.at(i);
+		if (extension->channel == channel)
+			return extension;
+	}
+
+	return 0;
 }

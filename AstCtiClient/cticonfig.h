@@ -42,6 +42,55 @@
 #ifndef CTICONFIG_H
 #define CTICONFIG_H
 
+#include <QHash>
+#include <QMap>
+#include <QSharedPointer>
+
+typedef QHash<QString, QString> QStringHash;
+
+//	Value   State            Description
+//	0	    NOT_INUSE        Channel is not in use (free)
+//	1	    INUSE            One or more devices are in use
+//	2	    BUSY             All devices are busy
+//	4	    UNAVAILABLE      All devices are unavailable
+//	8	    RINGING          One or more devices are ringing
+enum ExtensionStatus {
+	ExtensionStatusNotInUse = 0,
+	ExtensionStatusInUse = 1,
+	ExtensionStatusBusy = 2,
+	ExtensionStatusUnavailable = 4,
+	ExtensionStatusRinging = 8
+};
+Q_DECLARE_FLAGS(AstCtiExtensionStatus, ExtensionStatus)
+Q_DECLARE_OPERATORS_FOR_FLAGS(AstCtiExtensionStatus)
+Q_DECLARE_METATYPE(AstCtiExtensionStatus)
+
+struct AstCtiExtension
+{
+	QString               channel;
+	QString               number;
+	QString               name;
+	bool                  canAutoAnswer;
+	bool                  loggedInQueue;
+	AstCtiExtensionStatus status;
+};
+
+typedef QSharedPointer<AstCtiExtension> AstCtiExtensionPtr;
+typedef QList<AstCtiExtensionPtr> AstCtiExtensionPtrList;
+
+struct AstCtiSpeedDial
+{
+	QString               groupName;
+	QString               name;
+	QString               number;
+	quint8                order;
+	bool                  isBlf;
+	AstCtiExtensionStatus extensionStatus;
+};
+
+typedef QSharedPointer<AstCtiSpeedDial> AstCtiSpeedDialPtr;
+typedef QMap<QString, AstCtiSpeedDialPtr> AstCtiSpeedDialPtrMap;
+
 struct AstCtiConfiguration
 {
 	bool     debug;
@@ -51,7 +100,17 @@ struct AstCtiConfiguration
 	quint16  serverPort;
 	int      connectTimeout;
 	quint32  connectRetryInterval;
-	QString  username;
+	QString  userName;
 	QString  password;
+	QString  fullName;
+	bool     isCallCenter;
+	bool     beginInPause;
+	bool     canMonitor;
+	bool     canAlterSpeedDials;
+	bool     canRecord;
+
+	AstCtiExtensionPtrList  extensions;
+	AstCtiSpeedDialPtrMap   speedDials;
+	QStringHash             services;
 };
 #endif

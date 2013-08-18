@@ -60,21 +60,20 @@ class ClientManager : public  QObject
     Q_OBJECT
 
 public:
-	explicit ClientManager(QObject *parent=0);
+	explicit ClientManager(QObject* parent = 0);
     ~ClientManager();
 
-	QTcpSocket          *socket;
-	AstCtiOperator      *activeOperator;
-	AstCtiSeat          *activeSeat;
-	AstCtiClientState    state;
-	QString              clientOperatingSystem;
-	QString              ctiUsername;
-	bool                 isAuthenticated;
-	int                  compressionLevel;
-	int                  retries;
-	quint16              blockSize;
-	QString              localIdentifier;
-	QStringList          getExtensions();
+	QTcpSocket*               socket;
+	AstCtiOperator*           activeOperator;
+	AstCtiSeat*               activeSeat;
+	AstCtiClientState         state;
+	QString                   clientOperatingSystem;
+	QString                   ctiUsername;
+	bool                      isAuthenticated;
+	int                       compressionLevel;
+	int                       retries;
+	quint16                   blockSize;
+	QString                   localIdentifier;
 
 private:
 	Q_DISABLE_COPY(ClientManager)

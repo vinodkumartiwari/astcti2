@@ -42,8 +42,8 @@
 
 /*!
     Our CoreTcpServer derive from QTcpServer
-*/
-CoreTcpServer::CoreTcpServer(AstCtiConfiguration *config, QObject *parent)
+ */
+CoreTcpServer::CoreTcpServer(AstCtiConfiguration* config, QObject* parent)
 	: QTcpServer(parent)
 {
 	QLOG_TRACE() << "Creating CoreTcpServer";
@@ -53,17 +53,17 @@ CoreTcpServer::CoreTcpServer(AstCtiConfiguration *config, QObject *parent)
     this->config = config;
 
 	//Initialize list of CTI commands
-	this->commandsList.insert("QUIT",       CmdQuit);
-	this->commandsList.insert("CMPR",       CmdCompression);
-	this->commandsList.insert("NOOP",       CmdNoOp);
-	this->commandsList.insert("USER",       CmdUser);
-	this->commandsList.insert("PASS",       CmdPass);
-	this->commandsList.insert("CHPW",       CmdChangePassword);
-	this->commandsList.insert("KEEP",       CmdKeep);
-	this->commandsList.insert("OSTYPE",     CmdOsType);
-	this->commandsList.insert("PAUSE",      CmdPause);
-	this->commandsList.insert("ORIG",       CmdOrig);
-	this->commandsList.insert("MAC",        CmdMac);
+	this->commandsList.insert(QStringLiteral("QUIT"),    CmdQuit);
+	this->commandsList.insert(QStringLiteral("CMPR"),    CmdCompression);
+	this->commandsList.insert(QStringLiteral("NOOP"),    CmdNoOp);
+	this->commandsList.insert(QStringLiteral("USER"),    CmdUser);
+	this->commandsList.insert(QStringLiteral("PASS"),    CmdPass);
+	this->commandsList.insert(QStringLiteral("CHPW"),    CmdChangePassword);
+	this->commandsList.insert(QStringLiteral("KEEP"),    CmdKeep);
+	this->commandsList.insert(QStringLiteral("OSTYPE"),  CmdOsType);
+	this->commandsList.insert(QStringLiteral("PAUSE"),   CmdPause);
+	this->commandsList.insert(QStringLiteral("ORIG"),    CmdOrig);
+	this->commandsList.insert(QStringLiteral("MAC"),     CmdMac);
 
 	connect(this, SIGNAL(newConnection()),
 			this, SLOT(newConnection()));
@@ -76,8 +76,8 @@ CoreTcpServer::CoreTcpServer(AstCtiConfiguration *config, QObject *parent)
 	this->amiClient->setParameters(this->config);
 	connect(this->amiClient, SIGNAL(amiConnectionStatusChange(AmiConnectionStatus)),
 			this, SLOT(amiConnectionStatusChange(AmiConnectionStatus)));
-	connect(this->amiClient, SIGNAL(amiChannelEvent(AmiEvent, AstCtiChannel*, QString)),
-			this, SLOT(receiveAmiChannelEvent(AmiEvent, AstCtiChannel*, QString)));
+	connect(this->amiClient, SIGNAL(amiChannelEvent(AmiEvent, AstCtiChannel*)),
+			this, SLOT(receiveAmiChannelEvent(AmiEvent, AstCtiChannel*)));
 	connect(this->amiClient, SIGNAL(amiStatusEvent(AmiEvent, QString, QString)),
 			this, SLOT(receiveAmiStatusEvent(AmiEvent, QString, QString)));
 	connect(this->amiClient, SIGNAL(amiResponse(AmiCommand*)),
@@ -87,7 +87,7 @@ CoreTcpServer::CoreTcpServer(AstCtiConfiguration *config, QObject *parent)
 	connect(this, SIGNAL(newAmiConfiguration(AstCtiConfiguration*)),
 			this->amiClient, SLOT(setParameters(AstCtiConfiguration*)));
 
-	QThread *amiThread = new QThread(this);
+	QThread* amiThread = new QThread(this);
 	this->amiClient->moveToThread(amiThread);
 	connect(amiThread, SIGNAL(started()),
 			this->amiClient, SLOT(run()));
@@ -103,7 +103,7 @@ CoreTcpServer::~CoreTcpServer()
 	this->amiClient->stop();
 	// amiClient will be deleted automatically because the thread's
 	// finished() signal is connected to amiClient's deleteLater() slot
-	QThread *amiThread = this->amiClient->thread();
+	QThread* amiThread = this->amiClient->thread();
 	amiThread->quit();
 	amiThread->wait();
 	delete amiThread;
@@ -113,22 +113,21 @@ CoreTcpServer::~CoreTcpServer()
 	delete this->config;
 }
 
-AstCtiConfiguration *CoreTcpServer::getConfig()
+AstCtiConfiguration* CoreTcpServer::getConfig()
 {
 	return this->config;
 }
 
-void CoreTcpServer::setConfig(AstCtiConfiguration *newConfig)
+void CoreTcpServer::setConfig(AstCtiConfiguration* newConfig)
 {
 	this->stopListening();
 
-	AstCtiConfiguration *tmpConfig = this->config;
+	AstCtiConfiguration* tmpConfig = this->config;
 
 	bool amiParamsChanged = newConfig->amiHost != tmpConfig->amiHost ||
 							newConfig->amiPort != tmpConfig->amiPort ||
 							newConfig->amiUser != tmpConfig->amiUser ||
 							newConfig->amiSecret != tmpConfig->amiSecret ||
-							newConfig->amiReadTimeout != tmpConfig->amiReadTimeout ||
 							newConfig->amiConnectTimeout != tmpConfig->amiConnectTimeout ||
 							newConfig->amiConnectRetryAfter != tmpConfig->amiConnectRetryAfter;
 	if (amiParamsChanged)
@@ -152,12 +151,12 @@ void CoreTcpServer::setConfig(AstCtiConfiguration *newConfig)
 			this->disconnectClients();
 		} else {
 			//Check if operators or seats are changed, some clients may have to be disconnected
-			foreach (ClientManager *cm, this->clients) {
+			foreach (ClientManager* cm, this->clients) {
 				bool disconnected = false;
-				AstCtiOperator *activeOp = cm->activeOperator;
+				AstCtiOperator* activeOp = cm->activeOperator;
 				if (activeOp != 0) {
 					QString username = activeOp->getUsername();
-					AstCtiOperator *op = tmpConfig->operators.value(username);
+					AstCtiOperator* op = tmpConfig->operators.value(username);
 					if (op == 0) {
 						//Operator does not exist in new config
 						//Disconnection will delete client and remove it from clients hash
@@ -170,26 +169,28 @@ void CoreTcpServer::setConfig(AstCtiConfiguration *newConfig)
 							cm->socket->disconnectFromHost();
 							disconnected = true;
 						} else {
-							//Operator is unchanged in new config
+							//Critical operator parameters are unchanged in new config
 							cm->activeOperator = op;
 						}
 					}
 				}
 
 				if (!disconnected) {
-					AstCtiSeat *activeSeat = cm->activeSeat;
+					AstCtiSeat* activeSeat = cm->activeSeat;
 					if (activeSeat != 0) {
 						int id = activeSeat->getId();
-						AstCtiSeat *seat = tmpConfig->seats.value(id);
+						AstCtiSeat* seat = tmpConfig->seats.value(id);
 						if (seat == 0) {
 							//Seat does not exist in new config
 							//Disconnection will delete client and remove it from clients hash
 							cm->socket->disconnectFromHost();
+							disconnected = true;
 						} else {
 							if (activeSeat->getMac() != seat->getMac() ||
-								activeSeat->getExtensions() != seat->getExtensions()) {
+								!activeSeat->compareExtensions(seat->getExtensions())) {
 								//Critical seat parameters have changed
 								cm->socket->disconnectFromHost();
+								disconnected = true;
 							} else {
 								//Seat is unchanged in new config
 								cm->activeSeat = seat;
@@ -197,6 +198,10 @@ void CoreTcpServer::setConfig(AstCtiConfiguration *newConfig)
 						}
 					}
 				}
+
+				if (!disconnected)
+					//Send new operator configuration to client
+					this->sendDataToClient(cm->socket, cm->activeOperator->toXml(cm->activeSeat));
 			}
 		}
 	}
@@ -242,10 +247,10 @@ void CoreTcpServer::stopListening()
 
 /*!
 	Called when a new connection is avaiable.
-*/
+ */
 void CoreTcpServer::newConnection()
 {
-	QTcpSocket *newSocket = this->nextPendingConnection();
+	QTcpSocket* newSocket = this->nextPendingConnection();
 
 	if (newSocket != 0)  {
 		QHostAddress remoteAddr = newSocket->peerAddress();
@@ -260,7 +265,7 @@ void CoreTcpServer::newConnection()
 		connect(newSocket, SIGNAL(error(QAbstractSocket::SocketError)),
 				this, SLOT(socketError(QAbstractSocket::SocketError)));
 
-		ClientManager *cm = new ClientManager();
+		ClientManager* cm = new ClientManager();
 		cm->socket = newSocket;
 		cm->localIdentifier = QString("%1:%2")
 							  .arg(remoteAddr.toString()).arg(remotePort);
@@ -272,13 +277,13 @@ void CoreTcpServer::newConnection()
 	}
 }
 
-void CoreTcpServer::amiConnectionStatusChange(AmiConnectionStatus status)
+void CoreTcpServer::amiConnectionStatusChange(const AmiConnectionStatus status)
 {
 	this->amiStatus = status;
     switch(status) {
     case AmiConnectionStatusConnected:
 		/* CODE TESTING START */
-		//this->stopServer(true);
+		//this->stopServer();
 		//return;
 		/* CODE TESTING END */
 
@@ -295,9 +300,9 @@ void CoreTcpServer::amiConnectionStatusChange(AmiConnectionStatus status)
 void CoreTcpServer::socketDataReceived()
 {
 	//Retrieve sender QTcpSocket
-	QTcpSocket *socket = qobject_cast<QTcpSocket*>(QObject::sender());
+	QTcpSocket* socket = qobject_cast<QTcpSocket*>(QObject::sender());
 
-	ClientManager *cm = this->clients.value(socket);
+	ClientManager* cm = this->clients.value(socket);
 
 	QDataStream in(socket);
 	//in.setVersion(QDataStream::Qt_4_5);
@@ -340,9 +345,9 @@ void CoreTcpServer::socketDataReceived()
 
 void CoreTcpServer::socketDisconnected() {
 	//Retrieve sender QTcpSocket
-	QTcpSocket *socket = qobject_cast<QTcpSocket*>(QObject::sender());
+	QTcpSocket* socket = qobject_cast<QTcpSocket*>(QObject::sender());
 
-	ClientManager *cm = this->clients.value(socket);
+	ClientManager* cm = this->clients.value(socket);
 
 	if (cm->isAuthenticated && this->amiStatus == AmiConnectionStatusConnected) {
 		// We should do a logoff right now
@@ -358,18 +363,18 @@ void CoreTcpServer::socketDisconnected() {
 void CoreTcpServer::socketError(QAbstractSocket::SocketError error)
 {
 	//Retrieve sender QTcpSocket
-	QTcpSocket *socket = qobject_cast<QTcpSocket*>(QObject::sender());
+	QTcpSocket* socket = qobject_cast<QTcpSocket*>(QObject::sender());
 
-	ClientManager *cm = this->clients.value(socket);
+	ClientManager* cm = this->clients.value(socket);
 
 	QString iden = cm == 0 ? "" : cm->localIdentifier;
 	QLOG_ERROR() << "Client Socket Error:" << error << socket->errorString()
 				 << "for client" << iden;
 }
 
-void CoreTcpServer::processClientData(QTcpSocket *socket, const QString &data)
+void CoreTcpServer::processClientData(QTcpSocket* socket, const QString& data)
 {
-	ClientManager *cm = this->clients.value(socket);
+	ClientManager* cm = this->clients.value(socket);
 
 	QLOG_DEBUG() << (QString("Client %1 << %2")
 					 .arg(cm->localIdentifier, -32)
@@ -385,53 +390,53 @@ void CoreTcpServer::processClientData(QTcpSocket *socket, const QString &data)
 
 	switch(commandsList[cmd.command]) {
 	case CmdQuit:
-		this->sendDataToClient(socket, "900 BYE");
+		this->sendDataToClient(socket, QStringLiteral("900 BYE"));
 		socket->flush();
 		socket->disconnectFromHost();
 		break;
 	case CmdNoOp:
-		this->sendDataToClient(socket, "100 OK");
+		this->sendDataToClient(socket, QStringLiteral("100 OK"));
 		break;
 	case CmdUser:
 		if (cmd.parameters.count() < 1) {
-			this->sendDataToClient(socket, "101 KO No username given");
+			this->sendDataToClient(socket, QStringLiteral("101 KO No username given"));
 			break;
 		} else {
 			cm->ctiUsername = cmd.parameters.at(0);
 
 			// Avoid duplicate logins
-			AstCtiOperator *ctiOperator = config->operators.value(cm->ctiUsername);
+			AstCtiOperator* ctiOperator = config->operators.value(cm->ctiUsername);
 			if (ctiOperator != 0) {
 				if (!this->containsUser(cm->ctiUsername)) {
-					this->sendDataToClient(socket, "100 OK Send password now");
+					this->sendDataToClient(socket, QStringLiteral("100 OK Send password now"));
 				} else {
 					cm->ctiUsername = "";
-					this->sendDataToClient(socket, "101 KO User is still logged in");
+					this->sendDataToClient(socket, QStringLiteral("101 KO User already logged in"));
 				}
 			} else {
 				cm->ctiUsername = "";
-				this->sendDataToClient(socket, "101 KO User doesn't exist");
+				this->sendDataToClient(socket, QStringLiteral("101 KO User doesn't exist"));
 			}
 		}
 		break;
 	case CmdPass:
 		if (cm->ctiUsername.isEmpty())  {
-			this->sendDataToClient(socket, "101 KO Send user first");
+			this->sendDataToClient(socket, QStringLiteral("101 KO Send user first"));
 		} else {
 			if (cmd.parameters.count() < 1) {
-				this->sendDataToClient(socket, "101 KO No password given");
+				this->sendDataToClient(socket, QStringLiteral("101 KO No password given"));
 				break;
 			}
 
 			{
-				AstCtiOperator *ctiOperator = config->operators.value(cm->ctiUsername);
+				AstCtiOperator* ctiOperator = config->operators.value(cm->ctiUsername);
 				if (ctiOperator == 0) {
-					this->sendDataToClient(socket, "101 KO Operator not found");
+					this->sendDataToClient(socket, QStringLiteral("101 KO Operator not found"));
 					cm->ctiUsername = "";
 					cm->retries--;
 				} else {
 					if (!ctiOperator->checkPassword(cmd.parameters.at(0))) {
-						this->sendDataToClient(socket, "101 KO Wrong password");
+						this->sendDataToClient(socket, QStringLiteral("101 KO Wrong password"));
 						cm->ctiUsername = "";
 						cm->retries--;
 					} else {
@@ -440,22 +445,22 @@ void CoreTcpServer::processClientData(QTcpSocket *socket, const QString &data)
 						cm->activeOperator = ctiOperator;
 						cm->isAuthenticated = true;
 						if (ctiOperator->isCallCenter()) {
-							this->sendDataToClient(socket, "102 OK");
+							this->sendDataToClient(socket, QStringLiteral("102 OK"));
 						} else {
-							AstCtiSeat *seat = config->seats.value(ctiOperator->getSeatId());
+							AstCtiSeat* seat = config->seats.value(ctiOperator->getSeatId());
 							if (seat == 0) {
-								this->sendDataToClient(socket, "101 KO Extension(s) not found");
+								this->sendDataToClient(
+										socket, QStringLiteral("101 KO Extension(s) not found"));
 								cm->ctiUsername = "";
 								cm->retries--;
 							} else {
 								cm->activeSeat = seat;
 								cm->localIdentifier.append(QString(" (%1)")
-														   .arg(seat->getExtensions().join(" ")));
+														   .arg(seat->getExtensionNumbers()
+																.join(" ")));
 								// We can do a successful cti login only after the seat is known
 								this->ctiClientLogin(cm);
-								this->sendDataToClient(
-										socket, QString("102 OK %1")
-												.arg(seat->getExtensions().join(" ")));
+								this->sendDataToClient(socket, QString(QStringLiteral("102 OK")));
 							}
 						}
 					}
@@ -468,11 +473,11 @@ void CoreTcpServer::processClientData(QTcpSocket *socket, const QString &data)
 		break;
 	case CmdChangePassword:
 		if (!cm->isAuthenticated) {
-			this->sendDataToClient(socket, "101 KO Not authenticated");
+			this->sendDataToClient(socket, QStringLiteral("101 KO Not authenticated"));
 			break;
 		} else {
 			if (cmd.parameters.count() < 2) {
-				this->sendDataToClient(socket, "101 KO Invalid parameters");
+				this->sendDataToClient(socket, QStringLiteral("101 KO Invalid parameters"));
 				break;
 			}
 
@@ -482,40 +487,42 @@ void CoreTcpServer::processClientData(QTcpSocket *socket, const QString &data)
 
 				if (cm->activeOperator->checkPassword(oldPassword) &&
 					cm->activeOperator->changePassword(newPassword)) {
-					this->sendDataToClient(socket, "100 OK Password changed successfully");
+					this->sendDataToClient(
+							socket, QStringLiteral("100 OK Password changed successfully"));
 				} else {
-					this->sendDataToClient(socket, "101 KO Password not changed. Error occurred");
+					this->sendDataToClient(
+							socket, QStringLiteral("101 KO Password not changed. Error occurred."));
 				}
 			} else {
-				this->sendDataToClient(socket, "101 KO Not authenticated");
+				this->sendDataToClient(socket, QStringLiteral("101 KO Not authenticated"));
 			}
 
 		}
 	case CmdMac:
 		if (!cm->isAuthenticated) {
-			this->sendDataToClient(socket, "101 KO Not authenticated");
+			this->sendDataToClient(socket, QStringLiteral("101 KO Not authenticated"));
 			break;
 		}
 		if (cm->activeSeat != 0) {
-			this->sendDataToClient(socket, "101 KO Seat already set");
+			this->sendDataToClient(socket, QStringLiteral("101 KO Seat already set"));
 			break;
 		}
 
 		if (cmd.parameters.count() < 1) {
-			this->sendDataToClient(socket, "101 KO No MAC given");
+			this->sendDataToClient(socket, QStringLiteral("101 KO No MAC given"));
 			break;
 		} else {
 			QString mac = cmd.parameters.at(0).toLower();
-			AstCtiSeat *seat = config->getSeatByMac(mac);
+			AstCtiSeat* seat = config->getSeatByMac(mac);
 			if (seat != 0) {
 				cm->activeSeat = seat;
-				cm->localIdentifier.append(QString(" (%1)").arg(seat->getExtensions().join(" ")));
+				cm->localIdentifier.append(QString(" (%1)").arg(seat->getExtensionNumbers()
+																.join(" ")));
 				// We can do a successful cti login only after the seat is known
 				this->ctiClientLogin(cm);
-				this->sendDataToClient(socket, QString("100 OK %1")
-											   .arg(seat->getExtensions().join(" ")));
+				this->sendDataToClient(socket, QString(QStringLiteral("100 OK")));
 			} else {
-				this->sendDataToClient(socket, "101 KO MAC address unknown");
+				this->sendDataToClient(socket, QStringLiteral("101 KO MAC address unknown"));
 			}
 		}
 		break;
@@ -528,40 +535,50 @@ void CoreTcpServer::processClientData(QTcpSocket *socket, const QString &data)
 		break;
 	case CmdOsType:
 		if (!cm->isAuthenticated) {
-			cm->clientOperatingSystem = "";
-			this->sendDataToClient(socket, "101 KO Not authenticated");
+			this->sendDataToClient(socket, QStringLiteral("101 KO Not authenticated"));
+			break;
+		}
+		if (cm->activeSeat == 0) {
+			this->sendDataToClient(socket, QStringLiteral("101 KO MAC address was not sent"));
 			break;
 		}
 		if (cmd.parameters.count() < 1) {
-			cm->clientOperatingSystem = "";
-			this->sendDataToClient(socket, "101 KO Operating system not set");
+			this->sendDataToClient(socket, QStringLiteral("101 KO Operating system not set"));
 			break;
 		} else {
-			cm->clientOperatingSystem = cmd.parameters.at(0);
-			this->sendDataToClient(socket, "100 OK Operating system set");
+			const QString osTypeString = cmd.parameters.at(0);
+			if (AstCtiAction::parseOsType(osTypeString) == ActionOsAll) {
+				this->sendDataToClient(socket, QStringLiteral("101 KO Operating system unknown"));
+				break;
+			}
+			cm->clientOperatingSystem = osTypeString;
+			this->sendDataToClient(socket, QStringLiteral("100 OK Operating system set"));
+			// This is the end of the handshake phase, so we send operator data to client
+			// After receiving this, client will display it's main window
+			this->sendDataToClient(socket, cm->activeOperator->toXml(cm->activeSeat));
 		}
 		break;
 	case CmdOrig:
 		if (!cm->isAuthenticated) {
-			this->sendDataToClient(socket, "101 KO Not authenticated");
+			this->sendDataToClient(socket, QStringLiteral("101 KO Not authenticated"));
 			break;
 		}
 		foreach (parm, cmd.parameters) {
 			//TODO
 //			emit this->notifyServer(parm);
 		}
-		this->sendDataToClient(socket, "100 OK");
+		this->sendDataToClient(socket, QStringLiteral("100 OK"));
 		break;
 	case CmdPause:
 		if (!cm->isAuthenticated) {
-			this->sendDataToClient(socket, "101 KO Not authenticated");
+			this->sendDataToClient(socket, QStringLiteral("101 KO Not authenticated"));
 			break;
 		}
 		if (cmd.parameters.count() < 1) {
-			this->sendDataToClient(socket, "101 KO No action requested");
+			this->sendDataToClient(socket, QStringLiteral("101 KO No action requested"));
 			break;
 		} else {
-			this->sendDataToClient(socket, "301 Pause Pending");
+			this->sendDataToClient(socket, QStringLiteral("301 Pause Pending"));
 			if (cm->state == StatePaused) {
 				cm->state = StatePauseOutRequested;
 				this->ctiClientPauseOut(cm);
@@ -572,20 +589,20 @@ void CoreTcpServer::processClientData(QTcpSocket *socket, const QString &data)
 		}
 		break;
 	case CmdNotDefined:
-		this->sendDataToClient(socket, "101 KO Invalid Command");
+		this->sendDataToClient(socket, QStringLiteral("101 KO Invalid Command"));
 		break;
 	} // end switch
 }
 
 /*!
 	Sends string data over the specified QTcpSocket
-*/
-void CoreTcpServer::sendDataToClient(QTcpSocket *socket, const QString &data)
+ */
+void CoreTcpServer::sendDataToClient(QTcpSocket* socket, const QString& data)
 {
 	if (socket == 0 || socket->state() != QAbstractSocket::ConnectedState)
 		return;
 
-	ClientManager *cm = this->clients.value(socket);
+	ClientManager* cm = this->clients.value(socket);
 	QLOG_DEBUG() << (QString("Client %1 >> %2")
 					 .arg(cm->localIdentifier, -32)
 					 .arg(data.simplified())).toUtf8().constData();
@@ -606,24 +623,24 @@ void CoreTcpServer::sendDataToClient(QTcpSocket *socket, const QString &data)
 	socket->write(block);
 }
 
-bool CoreTcpServer::containsUser(const QString &username)
+bool CoreTcpServer::containsUser(const QString& username)
 {
 	return this->users.contains(username);
 }
 
-void CoreTcpServer::addUser(const QString &username)
+void CoreTcpServer::addUser(const QString& username)
 {
 	if (!containsUser(username))
 		this->users.append(username);
 }
 
-void CoreTcpServer::removeUser(const QString &username)
+void CoreTcpServer::removeUser(const QString& username)
 {
 	if (containsUser(username))
 		this->users.removeAll(username);
 }
 
-void CoreTcpServer::addClient(QTcpSocket *socket, ClientManager *cm)
+void CoreTcpServer::addClient(QTcpSocket* socket, ClientManager* cm)
 {
 	QLOG_INFO() << "Adding client" << cm->localIdentifier;
 
@@ -632,10 +649,10 @@ void CoreTcpServer::addClient(QTcpSocket *socket, ClientManager *cm)
 	QLOG_INFO() << "Number of clients:" << this->clients.count();
 }
 
-void CoreTcpServer::removeClient(QTcpSocket *socket)
+void CoreTcpServer::removeClient(QTcpSocket* socket)
 {
 	if (this->clients.contains(socket)) {
-		ClientManager *cm = this->clients.value(socket);
+		ClientManager* cm = this->clients.value(socket);
 		QLOG_INFO() << "Removing client" << cm->localIdentifier;
 
 		this->clients.remove(socket);
@@ -650,19 +667,18 @@ void CoreTcpServer::removeClient(QTcpSocket *socket)
 	}
 }
 
-ClientManager *CoreTcpServer::getClientByExten(const QString &exten)
+ClientManager* CoreTcpServer::getClientByExten(const QString& exten)
 {
-	foreach (ClientManager *cm, this->clients) {
-		if (cm->getExtensions().contains(exten))
+	foreach (ClientManager* cm, this->clients)
+		if (cm->activeSeat != 0 && cm->activeSeat->hasExtension(exten))
 			return cm;
-	}
 
 	return 0;
 }
 
 void CoreTcpServer::disconnectClients()
 {
-	foreach (ClientManager *cm, this->clients) {
+	foreach (ClientManager* cm, this->clients) {
 		//Disconnection will delete client and remove it from clients hash
 		cm->socket->disconnectFromHost();
 	}
@@ -684,91 +700,85 @@ void CoreTcpServer::stopServer()
 	CtiServerApplication::instance()->quit();
 }
 
-void CoreTcpServer::receiveAmiChannelEvent(AmiEvent &eventId, AstCtiChannel *channel, QString data)
+void CoreTcpServer::receiveAmiChannelEvent(const AmiEvent eventId, AstCtiChannel* channel)
 {
 	QLOG_INFO() << "Received AMI channel event" << AmiClient::getEventName(eventId)
-				<< "for channel" << channel->getChannel()
-				<< "with data" << data;
+				<< "for channel" << channel->getChannel();
 
-	switch (eventId) {
-	case AmiEventNewchannel:
-		{
-			const QString context = channel->getContext();
-			AstCtiService *service = this->config->getServiceByName(context);
-			if (service != 0) {
-				// Here we add reference to service actions.
-				// Before the call is passed to the client, the right action
-				// will be selected using client's operating system.
-				channel->setActions(service->getActions());
+	const QString exten = channel->getChannel();
+	foreach (ClientManager* cm, this->clients) {
+		if (cm->activeSeat != 0 && cm->activeSeat->hasExtension(exten)) {
+			switch (eventId) {
+			case AmiEventNewchannel:
+			{
+				const QString context = channel->getContext();
+				AstCtiService* service = this->config->getServiceByName(context);
+				if (service != 0) {
+					// Here we add reference to service actions.
+					// Before the call is passed to the client, the right action
+					// will be selected using client's operating system.
+					channel->setActions(service->getActions());
 
-				// Add relevant variables to call
-				foreach (QString varName, *(service->getVariables()))
-					channel->addVariable(varName, "");
-			}
-		}
-		break;
-	case AmiEventBridge:
-		{
-			QString channelName = channel->getParsedChannel();
-
-			if (channelName.length() > 0) {
-				ClientManager* cm = this->getClientByExten(channelName);
-				if (cm != 0) {
-					QString clientOperatingSystem = cm->clientOperatingSystem;
-					if (!clientOperatingSystem.isEmpty()) {
-						// Here we add information about CTI application to start
-						channel->setOperatingSystem(clientOperatingSystem);
-						QString xmlData = channel->toXml();
-						this->sendDataToClient(cm->socket, xmlData);
-					}
-				} else {
-					QLOG_WARN() << ">> receiveCtiEvent << Client with exten" << channelName
-								<< "not found in client list";
+					// Add relevant variables to call
+					foreach (QString varName, service->getVariables())
+						channel->addVariable(varName, "");
 				}
-			} else {
-				QLOG_WARN() << ">> receiveCtiEvent << Call Channel is empty";
 			}
+				break;
+			case AmiEventBridge:
+				// Here we add information about client operating system
+				// so that only relevant actions are sent to CTI client
+				channel->setOperatingSystem(cm->clientOperatingSystem);
+				break;
+			}
+			this->sendDataToClient(cm->socket, channel->toXml(AmiClient::getEventName(eventId)));
+		} else if (cm->activeOperator != 0 && cm->activeOperator->getCanMonitor()) {
+			// Operator monitors all system calls
+			this->sendDataToClient(cm->socket, channel->toXml(AmiClient::getEventName(eventId)));
 		}
-		break;
-	case AmiEventHangup:
-		// Channel object is owned by another thread so it is unsafe to delete it here.
-		// Instead, we invoke QObject's deleteLater() method which will
-		// delete the object once the control returns to the event loop.
-		channel->deleteLater();
-		break;
 	}
+
+	// Channel object is owned by another thread so it is unsafe to delete it here.
+	// Instead, we invoke QObject's deleteLater() method which will
+	// delete the object once the control returns to the event loop.
+	if (eventId == AmiEventHangup)
+		channel->deleteLater();
 }
 
-void CoreTcpServer::receiveAmiStatusEvent(AmiEvent eventId, QString object, QString status)
+void CoreTcpServer::receiveAmiStatusEvent(const AmiEvent eventId,
+										  const QString& object, const QString& status)
 {
 	QLOG_INFO() << "Received AMI status event" << AmiClient::getEventName(eventId)
 				<< "for object" << object
 				<< "with status" << status;
 
-
+	//TODO
 }
 
-void CoreTcpServer::processAmiResponse(AmiCommand *cmd)
+void CoreTcpServer::processAmiResponse(AmiCommand* cmd)
 {
 	ClientManager* cm = this->getClientByExten(cmd->exten);
 
 	if (cm != 0) {
 		QString responseString = cmd->responseString;
-        QString responseMessage = cmd->responseMessage;
+		QString responseMessage = cmd->responseMessage;
 		if (cmd->action == AmiActionQueuePause) {
-            bool result = (responseString.toLower() == "success");
-			if (cm->state == StatePauseInRequested) {
-				this->pauseInResult(cm, result, responseMessage);
-			} else if (cm->state == StatePauseOutRequested) {
-				this->pauseOutResult(cm, result, responseMessage);
-			}
-        } else {
-			QLOG_WARN() << ">> processAsteriskResponse << Client with exten" << cmd->exten
-						<< "not found in client list";
-			this->ctiResponse(cm, AmiCommand::getActionName(cmd->action),
-							  responseString, responseMessage);
-        }
-    }
+			bool success = (responseString.toLower() == QStringLiteral("success"));
+
+			if (cm->state == StatePauseInRequested)
+				cm->state = success ? StatePaused : StateLoggedIn;
+			else if (cm->state == StatePauseOutRequested)
+				cm->state = success ? StateLoggedIn : StatePaused;
+
+			if (success)
+				this->sendDataToClient(cm->socket, QStringLiteral("300 OK"));
+			else
+				this->sendDataToClient(cm->socket, QString("302 KO %1").arg(responseMessage));
+		}
+	} else {
+		QLOG_WARN() << "Process AMI Response: Client with exten" << cmd->exten
+					<< "not found in client list";
+	}
 
 	// Cmd object is owned by another thread so it is unsafe to delete it here.
 	// Instead, we invoke QObject's deleteLater() method which will
@@ -776,33 +786,61 @@ void CoreTcpServer::processAmiResponse(AmiCommand *cmd)
 	cmd->deleteLater();
 }
 
-void CoreTcpServer::ctiClientLogin(ClientManager *cm)
+void CoreTcpServer::ctiClientLogin(ClientManager* cm)
 {
-	AstCtiSeat *seat = cm->activeSeat;
-	AstCtiOperator *op = cm->activeOperator;
+	AstCtiSeat* seat = cm->activeSeat;
+	AstCtiOperator* op = cm->activeOperator;
 	if (seat != 0 && op != 0) {
-		QHash<AstCtiService*, int> *services = op->getServices();
+		AstCtiServiceRevHash services = op->getServices();
 
-		QHashIterator<AstCtiService*, int> i(*services);
-		while (i.hasNext()) {
-			i.next();
-			AstCtiService *service = i.key();
+		AstCtiServiceRevHash::const_iterator servicesIterator = services.constBegin();
+		while (servicesIterator != services.constEnd()) {
+			AstCtiService* service = servicesIterator.key();
 			// Check if we got an existent service and it is a queue
 			if (service != 0 && service->isQueue()) {
-				QString beginInPause = (op->getBeginInPause() ? "true" : "false");
-				QString penalty = QString::number(i.value());
+				QString beginInPause =
+						op->getBeginInPause() ? QStringLiteral("true") : QStringLiteral("false");
+				QString penalty = QString::number(servicesIterator.value());
 				// Get operator interfaces from it's seat
-				QStringList interfaces = seat->getExtensions();
+				AstCtiExtensionList interfaces = seat->getExtensions();
 
 				const int listSize = interfaces.size();
 				for (int i = 0; i < listSize; i++) {
-					AmiCommand *cmd = new AmiCommand(AmiActionQueueAdd);
-					cmd->exten = interfaces.at(i);
-					cmd->parameters = new QHash<QString, QString>;
-					cmd->parameters->insert("Queue", service->getQueueName());
-					cmd->parameters->insert("Interface", interfaces.at(i));
-					cmd->parameters->insert("Penalty", penalty);
-					cmd->parameters->insert("Paused", beginInPause);
+					AmiCommand* cmd = new AmiCommand(AmiActionQueueAdd);
+					cmd->exten = interfaces.at(i)->channel;
+					cmd->addParameter(QStringLiteral("Queue"), service->getQueueName());
+					cmd->addParameter(QStringLiteral("Interface"), cmd->exten);
+					cmd->addParameter(QStringLiteral("Penalty"), penalty);
+					cmd->addParameter(QStringLiteral("Paused"), beginInPause);
+					emit this->newAmiCommand(cmd);
+				}
+			}
+
+		}
+	}
+}
+
+void CoreTcpServer::ctiClientLogoff(ClientManager* cm)
+{
+	AstCtiSeat* seat = cm->activeSeat;
+	AstCtiOperator* op = cm->activeOperator;
+	if (seat != 0 && op != 0) {
+		AstCtiServiceRevHash services = op->getServices();
+
+		AstCtiServiceRevHash::const_iterator servicesIterator = services.constBegin();
+		while (servicesIterator != services.constEnd()) {
+			AstCtiService* service = servicesIterator.key();
+			// Check if we got an existent service and it is a queue
+			if (service != 0 && service->isQueue()) {
+				// Get operator interfaces from it's seat
+				AstCtiExtensionList interfaces = seat->getExtensions();
+
+				const int listSize = interfaces.size();
+				for (int i = 0; i < listSize; i++) {
+					AmiCommand* cmd = new AmiCommand(AmiActionQueueRemove);
+					cmd->exten = interfaces.at(i)->channel;
+					cmd->addParameter(QStringLiteral("Queue"), service->getQueueName());
+					cmd->addParameter(QStringLiteral("Interface"), cmd->exten);
 					emit this->newAmiCommand(cmd);
 				}
 			}
@@ -810,114 +848,49 @@ void CoreTcpServer::ctiClientLogin(ClientManager *cm)
 	}
 }
 
-void CoreTcpServer::ctiClientLogoff(ClientManager *cm)
+void CoreTcpServer::ctiClientPauseIn(ClientManager* cm)
 {
-	AstCtiSeat *seat = cm->activeSeat;
-	AstCtiOperator *op = cm->activeOperator;
-	if (seat != 0 && op != 0) {
-		QHash<AstCtiService*, int> *services = op->getServices();
-
-		QHashIterator<AstCtiService*, int> i(*services);
-		while (i.hasNext()) {
-			i.next();
-			AstCtiService *service = i.key();
-			// Check if we got an existent service and it is a queue
-			if (service != 0 && service->isQueue()) {
-				// Get operator interfaces from it's seat
-				QStringList interfaces = seat->getExtensions();
-
-				const int listSize = interfaces.size();
-				for (int i = 0; i < listSize; i++) {
-					AmiCommand *cmd = new AmiCommand(AmiActionQueueRemove);
-					cmd->exten = interfaces.at(i);
-					cmd->parameters = new QHash<QString, QString>;
-					cmd->parameters->insert("Queue", service->getQueueName());
-					cmd->parameters->insert("Interface", interfaces.at(i));
-					emit this->newAmiCommand(cmd);
-				}
-			}
-		}
-	}
-}
-
-void CoreTcpServer::ctiClientPauseIn(ClientManager *cm)
-{
-	AstCtiSeat *seat = cm->activeSeat;
-	AstCtiOperator *op = cm->activeOperator;
+	AstCtiSeat* seat = cm->activeSeat;
+	AstCtiOperator* op = cm->activeOperator;
 	if (seat != 0 && op != 0) {
 		// Get operator interfaces from it's seat
-		QStringList interfaces = seat->getExtensions();
+		AstCtiExtensionList interfaces = seat->getExtensions();
 
 		const int listSize = interfaces.size();
 		for (int i = 0; i < listSize; i++) {
-			AmiCommand *cmd = new AmiCommand(AmiActionQueuePause);
-			cmd->exten = interfaces.at(i);
-			cmd->parameters = new QHash<QString, QString>;
-			cmd->parameters->insert("Interface", interfaces.at(i));
-			cmd->parameters->insert("Paused", "true");
+			AmiCommand* cmd = new AmiCommand(AmiActionQueuePause);
+			cmd->exten = interfaces.at(i)->channel;
+			cmd->addParameter(QStringLiteral("Interface"), cmd->exten);
+			cmd->addParameter(QStringLiteral("Paused"), QStringLiteral("true"));
 			emit this->newAmiCommand(cmd);
 		}
 	}
 }
 
-void CoreTcpServer::ctiClientPauseOut(ClientManager *cm)
+void CoreTcpServer::ctiClientPauseOut(ClientManager* cm)
 {
-	AstCtiSeat *seat = cm->activeSeat;
-	AstCtiOperator *op = cm->activeOperator;
+	AstCtiSeat* seat = cm->activeSeat;
+	AstCtiOperator* op = cm->activeOperator;
 	if (seat != 0 && op != 0) {
 		// Get operator interfaces from it's seat
-		QStringList interfaces = seat->getExtensions();
+		AstCtiExtensionList interfaces = seat->getExtensions();
 
 		const int listSize = interfaces.size();
 		for (int i = 0; i < listSize; i++) {
-			AmiCommand *cmd = new AmiCommand(AmiActionQueuePause);
-			cmd->exten = interfaces.at(i);
-			cmd->parameters = new QHash<QString, QString>;
-			cmd->parameters->insert("Interface", interfaces.at(i));
-			cmd->parameters->insert("Paused", "false");
+			AmiCommand* cmd = new AmiCommand(AmiActionQueuePause);
+			cmd->exten = interfaces.at(i)->channel;
+			cmd->addParameter(QStringLiteral("Interface"), cmd->exten);
+			cmd->addParameter(QStringLiteral("Paused"), QStringLiteral("false"));
 			emit this->newAmiCommand(cmd);
 		}
 	}
-}
-
-void CoreTcpServer::pauseInResult(ClientManager *cm, bool result, const QString &reason)
-{
-	if (result) {
-		cm->state = StatePaused;
-		this->sendDataToClient(cm->socket, "300 OK");
-	} else {
-		cm->state = StateLoggedIn;
-		this->sendDataToClient(cm->socket, QString("302 KO %1").arg(reason));
-	}
-}
-
-void CoreTcpServer::pauseOutResult(ClientManager *cm, bool result, const QString &reason)
-{
-	if (result) {
-		cm->state = StateLoggedIn;
-		this->sendDataToClient(cm->socket, "300 OK");
-	} else {
-		cm->state = StatePaused;
-		this->sendDataToClient(cm->socket, QString("302 KO %1").arg(reason));
-	}
-}
-
-void CoreTcpServer::ctiResponse(ClientManager *cm, const QString &actionName,
-								const QString &responseString, const QString &responseMessage)
-{
-	//TODO
-	QString strMessage = QString("500 %1,%2,%3")
-								 .arg(actionName)
-								 .arg(responseString)
-								 .arg(responseMessage);
-	this->sendDataToClient(cm->socket, strMessage);
 }
 
 /*!
 	Parse a string command and returns an AstCtiCommand struct with
 	command and parameters as QStringList;
-*/
-AstCtiCommand CoreTcpServer::parseCommand(const QString &command)
+ */
+AstCtiCommand CoreTcpServer::parseCommand(const QString& command)
 {
 	QStringList data = command.split(" ");
 	AstCtiCommand newCommand;

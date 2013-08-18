@@ -46,31 +46,33 @@
 
 #include <QtSql>
 
+typedef QList<QVariantList> QVariantTable;
+
 class DB
 {
 public:
-	static bool buildConnection(const QString &host, quint16 &port,
-								const QString &user, const QString &pass, const QString &database);
+	static bool buildConnection(const QString& host, const quint16 port,
+								const QString& user, const QString& pass, const QString& database);
 	static bool openConnection();
 	static void closeConnection();
 	static void destroyConnection();
 	static bool beginTransaction();
 	static bool commitTransaction();
 	static bool rollbackTransaction();
-	static QVariant readScalar(const QString &sql, bool *ok);
-	static QVariant readScalar(const QString &sql, const QVariantList &params, bool *ok);
-	static QVariantList readList(const QString &sql, bool *ok);
-	static QVariantList readList(const QString &sql, const QVariantList &params, bool *ok);
-	static QVariantList readRow(const QString &sql, bool *ok);
-	static QVariantList readRow(const QString &sql, const QVariantList &params, bool *ok);
-	static QList<QVariantList> readTable(const QString &sql, bool *ok);
-	static QList<QVariantList> readTable(const QString &sql, const QVariantList &params, bool *ok);
-	static int executeNonQuery(const QString &sql);
-	static int executeNonQuery(const QString &sql, const QVariantList &params);
+	static QVariant readScalar(const QString& sql, bool* ok);
+	static QVariant readScalar(const QString& sql, const QVariantList& params, bool* ok);
+	static QVariantList readList(const QString& sql, bool* ok);
+	static QVariantList readList(const QString& sql, const QVariantList& params, bool* ok);
+	static QVariantList readRow(const QString& sql, bool* ok);
+	static QVariantList readRow(const QString& sql, const QVariantList& params, bool* ok);
+	static QVariantTable readTable(const QString& sql, bool* ok);
+	static QVariantTable readTable(const QString& sql, const QVariantList& params, bool* ok);
+	static int executeNonQuery(const QString& sql);
+	static int executeNonQuery(const QString& sql, const QVariantList& params);
 
 private:
-	static QSqlQuery     *execSQL(const QString &sql, const QVariantList &params, bool *ok);
-	static QSqlDatabase  *connection;
+	static QSqlQuery*     execSQL(const QString& sql, const QVariantList& params, bool* ok);
+	static QSqlDatabase*  connection;
 	static bool           supportsTransactions;
 	static bool           inTransaction;
 };

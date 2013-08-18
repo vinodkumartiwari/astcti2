@@ -44,7 +44,7 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 
-AboutDialog::AboutDialog(QWidget *parent) :
+AboutDialog::AboutDialog(QWidget* parent) :
     QDialog(parent),
     ui(new Ui::AboutDialog)
 {
@@ -64,7 +64,7 @@ void AboutDialog::setUpInfoLabel()
     QString version = QLatin1String(APP_VERSION_LONG);
     version += QDate(2007, 25, 10).toString(Qt::SystemLocaleDate);
 
-    const QString description = trUtf8(
+	const QString description = tr(
         "<h3>AsteriskCTI Client %1</h3>"
         "Based on Qt %2<br/>"
         "<br/>"
@@ -90,7 +90,7 @@ void AboutDialog::setUpInfoLabel()
     this->ui->lblCopyright->setTextInteractionFlags(Qt::TextBrowserInteraction);
 }
 
-void AboutDialog::changeEvent(QEvent *e)
+void AboutDialog::changeEvent(QEvent* e)
 {
     switch (e->type()) {
     case QEvent::LanguageChange:
@@ -113,29 +113,29 @@ void AboutDialog::on_btnClose_clicked()
 
 void AboutDialog::on_btnShowLicense_clicked()
 {
-    QDialog *dialog = new QDialog(this);
+    QDialog* dialog = new QDialog(this);
 
     Qt::WindowFlags flags = dialog->windowFlags();
     flags |= Qt::WindowMinMaxButtonsHint;
     flags |= Qt::WindowContextHelpButtonHint;
     dialog->setWindowFlags(flags);
 
-    dialog->setWindowTitle(trUtf8("License"));
-    QVBoxLayout *layout = new QVBoxLayout(dialog);
-    QTextBrowser *licenseBrowser = new QTextBrowser(dialog);
+	dialog->setWindowTitle(tr("License"));
+    QVBoxLayout* layout = new QVBoxLayout(dialog);
+    QTextBrowser* licenseBrowser = new QTextBrowser(dialog);
     layout->addWidget(licenseBrowser);
 
-    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Close);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttonBox , SIGNAL(rejected()), dialog, SLOT(reject()));
     layout->addWidget(buttonBox);
 
     QString appPath = QCoreApplication::applicationDirPath();
-	QString fileName = appPath + "/LICENSE.txt";
+	QString fileName = appPath.append("/LICENSE.txt");
     QFile file(fileName);
 
     QString licenseText;
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        licenseText = trUtf8("Could not read file: ") + fileName;
+		licenseText = tr("Could not read file: ") + fileName;
     else
         licenseText = file.readAll();
 

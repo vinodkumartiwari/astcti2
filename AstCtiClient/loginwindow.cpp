@@ -45,14 +45,14 @@
 #include "loginwindow.h"
 #include "ui_loginwindow.h"
 
-LoginWindow::LoginWindow(QWidget *parent) : QDialog(parent), ui(new Ui::LoginWindow)
+LoginWindow::LoginWindow(QWidget* parent) : QDialog(parent), ui(new Ui::LoginWindow)
 {
     ui->setupUi(this);
 
 	ui->dialogButtonBox->buttons().at(0)->setIcon(
-				QIcon(QPixmap(QString::fromUtf8(":/res/res/ok.png"))));
+				QIcon(QPixmap(QStringLiteral(":/res/res/ok.png"))));
 	ui->dialogButtonBox->buttons().at(1)->setIcon(
-				QIcon(QPixmap(QString::fromUtf8(":/res/res/cancel.png"))));
+				QIcon(QPixmap(QStringLiteral(":/res/res/cancel.png"))));
 
     connect(this->ui->dialogButtonBox, SIGNAL(accepted()), this, SLOT(accepting()));
     connect(this->ui->dialogButtonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));
@@ -68,7 +68,7 @@ LoginWindow::~LoginWindow()
     delete ui;
 }
 
-void LoginWindow::changeEvent(QEvent *e)
+void LoginWindow::changeEvent(QEvent* e)
 {
     QDialog::changeEvent(e);
     switch (e->type()) {
@@ -80,7 +80,7 @@ void LoginWindow::changeEvent(QEvent *e)
     }
 }
 
-void LoginWindow::showMessage(const QString message, bool connectionLost)
+void LoginWindow::showMessage(const QString& message, const bool connectionLost)
 {
     this->ui->dialogButtonBox->buttons().at(0)->setEnabled(!connectionLost);
     this->ui->messageLabel->setText(message);
@@ -89,7 +89,7 @@ void LoginWindow::showMessage(const QString message, bool connectionLost)
 void LoginWindow::accepting()
 {
     if (this->ui->usernameLineEdit->text().isEmpty()) {
-		this->showMessage(trUtf8("Username is required to continue. Please enter your username."),
+		this->showMessage(tr("Username is required to continue. Please enter your username."),
 						  false);
         this->ui->usernameLineEdit->setFocus();
     } else {

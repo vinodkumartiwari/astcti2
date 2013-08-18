@@ -54,14 +54,14 @@ class AboutDialog : public QDialog {
     Q_DISABLE_COPY(AboutDialog)
 
 public:
-    explicit AboutDialog(QWidget *parent = 0);
+	explicit AboutDialog(QWidget* parent = 0);
     virtual ~AboutDialog();
 
 protected:
-    virtual void changeEvent(QEvent *e);
+	virtual void changeEvent(QEvent* e);
 
 private:
-    Ui::AboutDialog *ui;
+	Ui::AboutDialog* ui;
 
     void setUpInfoLabel();
 

@@ -51,21 +51,21 @@ namespace Ui {
 class CompactWindow : public CtiClientWindow {
     Q_OBJECT
 public:
-    explicit CompactWindow(const QString &userName);
+	explicit CompactWindow(AstCtiConfiguration* config);
     virtual ~CompactWindow();
 
 public slots:
     void setStatus(bool status);
     void pause(bool paused);
     void pauseAccepted();
-    void pauseError(const QString &message);
+    void pauseError(const QString& message);
 
 protected:
-    void changeEvent(QEvent *e);
-    bool eventFilter(QObject *object, QEvent *e);
+    void changeEvent(QEvent* e);
+    bool eventFilter(QObject* object, QEvent* e);
 
 private:
-    Ui::CompactWindow *ui;
+    Ui::CompactWindow* ui;
 
     void connectSlots();
     void enableControls(bool enable);

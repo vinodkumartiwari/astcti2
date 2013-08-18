@@ -46,6 +46,8 @@
 #include <QList>
 #include <QSharedPointer>
 
+typedef QHash<QString, QString> QStringHash;
+
 enum AstCtiActionType {
     ActionTypeApplication,
     ActionTypeInternalBrowser,
@@ -62,21 +64,30 @@ struct AstCtiAction
     QString parameters;
 };
 
+typedef QSharedPointer<AstCtiAction> AstCtiActionPtr;
+typedef QList<AstCtiActionPtr> AstCtiActionPtrList;
+
 struct AstCtiChannel
 {
+	QString                 lastEvent;
 	QString                 uniqueId;
 	QString                 channel;
     QString                 parsedChannel;
-    QString                 callerIdNum;
+	QString                 channelExten;
+	QString                 callerIdNum;
     QString                 callerIdName;
     QString                 context;
-	QString                 exten;
+	QString                 dialedLineNum;
+	QString                 connectedLineNum;
+	QString                 queue;
 	QString                 state;
 	QString                 accountCode;
+	QString                 musicOnHoldState;
+	QString                 hangupCause;
 	int                     bridgeId;
 
-	QHash<QString, QString>               variables;
-	QList<QSharedPointer<AstCtiAction> >  actions;
+	QStringHash            variables;
+	AstCtiActionPtrList    actions;
 };
 
 #endif // ASTCTICHANNEL_H

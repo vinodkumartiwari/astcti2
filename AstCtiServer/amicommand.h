@@ -46,13 +46,17 @@
 #include <QHash>
 #include <QMetaType>
 
+typedef QHash<QString, QString> QStringHash;
+
 enum AmiAction {
 	AmiActionLogin,
 	AmiActionLogoff,
 	AmiActionOriginate,
 	AmiActionQueueAdd,
 	AmiActionQueuePause,
-	AmiActionQueueRemove
+	AmiActionQueueRemove,
+	AmiActionSipShowPeer,
+	AmiActionExtensionState
 };
 Q_DECLARE_METATYPE(AmiAction)
 
@@ -62,19 +66,24 @@ class AmiCommand : public QObject
 	Q_ENUMS(AmiAction)
 
 public:
-	explicit AmiCommand(AmiAction action, QObject *parent = 0);
+	explicit AmiCommand(AmiAction action, QObject* parent = 0);
 	~AmiCommand();
-	static QString            getActionName(const AmiAction action);
 
-	AmiAction                 action;
-	QString                   exten;
-	QHash<QString, QString>  *parameters;
-	QHash<QString, QString>  *variables;
-	QString                   responseString;
-	QString                   responseMessage;
+	void            addParameter(const QString& name, const QString& value);
+	void            addVariable(const QString& name, const QString& value);
+	static QString  getActionName(const AmiAction action);
+	QString         toString(const int actionId) const;
+
+	AmiAction       action;
+	QString         exten;
+	QString         responseString;
+	QString         responseMessage;
 
 private:
 	Q_DISABLE_COPY(AmiCommand)
+
+	QStringHash*    parameters;
+	QStringHash*    variables;
 };
 Q_DECLARE_METATYPE(AmiCommand*)
 
