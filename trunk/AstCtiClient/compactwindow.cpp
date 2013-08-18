@@ -46,8 +46,8 @@
 #include "ui_compactwindow.h"
 #include "managerwindow.h"
 
-CompactWindow::CompactWindow(const QString &userName) :
-	CtiClientWindow(userName),
+CompactWindow::CompactWindow(AstCtiConfiguration* config) :
+	CtiClientWindow(config),
     ui(new Ui::CompactWindow)
 {
     ui->setupUi(this);
@@ -74,7 +74,7 @@ CompactWindow::~CompactWindow()
     delete ui;
 }
 
-void CompactWindow::changeEvent(QEvent *e)
+void CompactWindow::changeEvent(QEvent* e)
 {
     QWidget::changeEvent(e);
     switch (e->type()) {
@@ -86,13 +86,13 @@ void CompactWindow::changeEvent(QEvent *e)
     }
 }
 
-bool CompactWindow::eventFilter(QObject *object, QEvent *e)
+bool CompactWindow::eventFilter(QObject* object, QEvent* e)
 {
     bool accepted = false;
 
     QEvent::Type type = e->type();
 
-	QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(e);
+	QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(e);
 
     if (isValidDrag(mouseEvent)) {
         this->dragOrigin = mouseEvent->globalPos();
@@ -150,7 +150,7 @@ void CompactWindow::readSettings()
     QSettings settings(APP_NAME);
 
     settings.beginGroup("CompactWindow." + this->userName);
-    this->restoreGeometry(settings.value("geometry").toByteArray());
+	this->restoreGeometry(settings.value(QStringLiteral("geometry")).toByteArray());
     settings.endGroup();
 }
 
@@ -159,7 +159,7 @@ void CompactWindow::writeSettings()
     QSettings settings(APP_NAME);
 
     settings.beginGroup("CompactWindow." + this->userName);
-    settings.setValue("geometry", this->saveGeometry());
+	settings.setValue(QStringLiteral("geometry"), this->saveGeometry());
     settings.endGroup();
 }
 
@@ -167,11 +167,11 @@ void CompactWindow::setStatus(bool status)
 {
 	CtiClientWindow::setStatus(status);
     if (status) {
-        this->ui->statusLabel->setPixmap(QPixmap(QString::fromUtf8(":/res/res/greenled.png")));
-        this->ui->statusLabel->setToolTip(statusMessageOK);
+		this->ui->statusLabel->setPixmap(QPixmap(QStringLiteral(":/res/res/greenled.png")));
+        this->ui->statusLabel->setToolTip(statusMsgOK);
     } else {
-        this->ui->statusLabel->setPixmap(QPixmap(QString::fromUtf8(":/res/res/redled.png")));
-        this->ui->statusLabel->setToolTip(statusMessageNotOK);
+		this->ui->statusLabel->setPixmap(QPixmap(QStringLiteral(":/res/res/redled.png")));
+        this->ui->statusLabel->setToolTip(statusMsgNotOK);
     }
 }
 
@@ -193,7 +193,7 @@ void CompactWindow::pauseAccepted() {
     this->ui->pauseButton->setEnabled(true);
 }
 
-void CompactWindow::pauseError(const QString &message)
+void CompactWindow::pauseError(const QString& message)
 {
    this->ui->pauseButton->setEnabled(true);
 

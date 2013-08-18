@@ -51,12 +51,12 @@ ArgumentList::ArgumentList()
 	}
 }
 
-ArgumentList::ArgumentList(const QStringList &arguments)
+ArgumentList::ArgumentList(const QStringList& arguments)
 {
 	this->argsToStringlist(arguments);
 }
 
-bool ArgumentList::getSwitch(const QString &option)
+bool ArgumentList::getSwitch(const QString& option)
 {
 	if (option.isEmpty())
 		return false;
@@ -88,7 +88,7 @@ bool ArgumentList::getSwitch(const QString &option)
 	return false;
 }
 
-int ArgumentList::getSwitchMulti(const QString &option)
+int ArgumentList::getSwitchMulti(const QString& option)
 {
 	int count = 0;
 
@@ -114,57 +114,57 @@ int ArgumentList::getSwitchMulti(const QString &option)
 	return count;
 }
 
-QString ArgumentList::getSwitchArg(const QString &option, const QString &defaultValue,
+QString ArgumentList::getSwitchArg(const QString& option, const QString& defaultValue,
 								   bool acceptArgWithoutSpace)
 {
-	if (option.isEmpty() || this->isEmpty())
-		return defaultValue;
-
-	bool isLongSwitch = option.length() > 1;
-	QString fullOption = isLongSwitch ? QString("--%1").arg(option) : QString("-%1").arg(option);
-
 	QString retVal = defaultValue;
 
-	const int listSize = this->size();
-	for (int i = 0; i < listSize; i++) {
-		if (fullOption == this->at(i)) {
-			if (i < listSize - 1) {
-				if (!this->isSwitch(this->at(i + 1))) {
-					retVal = this->at(i + 1);
-					this->removeAt(i + 1);
-					this->removeAt(i);
-				}
-			}
-			break;
-		}
-		if (!isLongSwitch) {
-			QString arg = this->at(i);
-			if (this->isSwitch(arg) && !this->isLongSwitch(arg)) {
-				int charIndex = arg.indexOf(option);
-				if (charIndex > 0) {
-					if (charIndex == arg.length() - 1) {
-						//Option is at the last position in argument, so we search for next one
-						if (i < listSize - 1) {
-							if (!this->isSwitch(this->at(i + 1))) {
-								retVal = this->at(i + 1);
-								this->removeAt(i + 1);
-								arg.chop(1);
-								this->replace(i, arg);
-							}
-						}
-					} else {
-						//Option is a the middle of an argument, so we take the remainder
-						if (acceptArgWithoutSpace) {
-							retVal = arg.mid(charIndex);
-							if (charIndex == 1) {
-								this->removeAt(i);
-							} else {
-								arg.chop(arg.length() - charIndex);
-								this->replace(i, arg);
-							}
-						}
+	if (!option.isEmpty() && !this->isEmpty()) {
+		bool isLongSwitch = option.length() > 1;
+		QString fullOption = isLongSwitch ? QString("--%1").arg(option) :
+											QString("-%1").arg(option);
+
+		const int listSize = this->size();
+		for (int i = 0; i < listSize; i++) {
+			if (fullOption == this->at(i)) {
+				if (i < listSize - 1) {
+					if (!this->isSwitch(this->at(i + 1))) {
+						retVal = this->at(i + 1);
+						this->removeAt(i + 1);
+						this->removeAt(i);
 					}
-					break;
+				}
+				break;
+			}
+			if (!isLongSwitch) {
+				QString arg = this->at(i);
+				if (this->isSwitch(arg) && !this->isLongSwitch(arg)) {
+					int charIndex = arg.indexOf(option);
+					if (charIndex > 0) {
+						if (charIndex == arg.length() - 1) {
+							//Option is at the last position in argument, so we search for next one
+							if (i < listSize - 1) {
+								if (!this->isSwitch(this->at(i + 1))) {
+									retVal = this->at(i + 1);
+									this->removeAt(i + 1);
+									arg.chop(1);
+									this->replace(i, arg);
+								}
+							}
+						} else {
+							//Option is a the middle of an argument, so we take the remainder
+							if (acceptArgWithoutSpace) {
+								retVal = arg.mid(charIndex);
+								if (charIndex == 1) {
+									this->removeAt(i);
+								} else {
+									arg.chop(arg.length() - charIndex);
+									this->replace(i, arg);
+								}
+							}
+						}
+						break;
+					}
 				}
 			}
 		}
@@ -173,7 +173,7 @@ QString ArgumentList::getSwitchArg(const QString &option, const QString &default
 	return retVal;
 }
 
-void ArgumentList::argsToStringlist(const QStringList &arguments)
+void ArgumentList::argsToStringlist(const QStringList& arguments)
 {
 	//We start at 1 because first argument is the path of application executable,
 	//which we don't care about
@@ -182,12 +182,12 @@ void ArgumentList::argsToStringlist(const QStringList &arguments)
 		this->append(arguments.at(i));
 }
 
-bool ArgumentList::isSwitch(const QString &arg) const
+bool ArgumentList::isSwitch(const QString& arg) const
 {
 	return arg.startsWith('-');
 }
 
-bool ArgumentList::isLongSwitch(const QString &arg) const
+bool ArgumentList::isLongSwitch(const QString& arg) const
 {
 	return arg.startsWith("--");
 }

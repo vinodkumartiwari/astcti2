@@ -40,7 +40,7 @@ public:
     virtual ~RotationStrategy();
 
     virtual void setInitialInfo(const QFile &file) = 0;
-    virtual void includeMessageInCalculation(const QString &message) = 0;
+    virtual void includeMessageInCalculation(const QString& message) = 0;
     virtual bool shouldRotate() = 0;
     virtual void rotate() = 0;
     virtual QIODevice::OpenMode recommendedOpenModeFlag() = 0;
@@ -51,7 +51,7 @@ class NullRotationStrategy : public RotationStrategy
 {
 public:
     virtual void setInitialInfo(const QFile &) {}
-    virtual void includeMessageInCalculation(const QString &) {}
+    virtual void includeMessageInCalculation(const QString& ) {}
     virtual bool shouldRotate() { return false; }
     virtual void rotate() {}
     virtual QIODevice::OpenMode recommendedOpenModeFlag() { return QIODevice::Truncate; }
@@ -65,7 +65,7 @@ public:
     static const int MaxBackupCount;
 
     virtual void setInitialInfo(const QFile &file);
-    virtual void includeMessageInCalculation(const QString &message);
+    virtual void includeMessageInCalculation(const QString& message);
     virtual bool shouldRotate();
     virtual void rotate();
     virtual QIODevice::OpenMode recommendedOpenModeFlag();

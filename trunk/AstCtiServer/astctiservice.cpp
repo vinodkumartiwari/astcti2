@@ -40,14 +40,15 @@
 #include "db.h"
 #include "astctiservice.h"
 
-AstCtiService::AstCtiService(const int &id, const QString &name, const QString &contextType,
-							   const QString &queueName, QObject *parent) : QObject(parent)
+AstCtiService::AstCtiService(const int id, const QString& name, const QString& contextType,
+							   const QString& queueName, QObject* parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating new AstCtiService" << id << name;
 
 	this->id = id;
 	this->name = name;
-	this->contextType = contextType == "INBOUND" ? ServiceTypeInbound : ServiceTypeOutbound;
+	this->contextType =
+			contextType == QStringLiteral("INBOUND") ? ServiceTypeInbound : ServiceTypeOutbound;
 	this->queueName = queueName;
 }
 
@@ -66,8 +67,8 @@ bool AstCtiService::loadVariables()
 	QVariantList params;
 	params.append(this->id);
 	const QVariantList variableData =
-			DB::readList("SELECT VARNAME FROM services_variables "
-						 "WHERE ID_SERVICE=? AND ENABLED=1", params, &ok);
+			DB::readList("SELECT varname FROM services_variables "
+						 "WHERE id_service=? AND enabled=true", params, &ok);
 	if (ok) {
 		const int listSize = variableData.size();
 		for (int i = 0; i < listSize; i++) {
@@ -80,7 +81,7 @@ bool AstCtiService::loadVariables()
 	return ok;
 }
 
-bool AstCtiService::loadActions(QHash<int, AstCtiAction*> *actionList)
+bool AstCtiService::loadActions(AstCtiActionHash* actionList)
 {
 	QLOG_TRACE() << "Loading actions for service" << this->id << this->name;
 
@@ -89,17 +90,17 @@ bool AstCtiService::loadActions(QHash<int, AstCtiAction*> *actionList)
 	bool ok;
 	QVariantList params;
 	params.append(this->id);
-	const QList<QVariantList> actionData =
-			DB::readTable("SELECT ID_ACTION,ACTION_ORDER FROM services_actions "
-						  "WHERE ID_SERVICE=? AND ENABLED=1 "
-						  "ORDER BY ACTION_ORDER ASC, ID_ACTION ASC", params, &ok);
+	const QVariantTable actionData =
+			DB::readTable("SELECT id_action,action_order FROM services_actions "
+						  "WHERE id_service=? AND enabled=true "
+						  "ORDER BY action_order ASC, id_action ASC", params, &ok);
 	if (ok) {
 		const int listSize = actionData.size();
 		for (int i = 0; i < listSize; i++) {
 			const QVariantList actionRow = actionData.at(i);
 			const int actionId = actionRow.at(0).toInt();
 			const int actionOrder = actionRow.at(1).toInt();
-			AstCtiAction *action = actionList->value(actionId);
+			AstCtiAction* action = actionList->value(actionId);
 			if (action != 0)
 				//There may be actions with same order number, so we use insertMulti()
 				this->actions.insertMulti(actionOrder, action);
@@ -111,47 +112,52 @@ bool AstCtiService::loadActions(QHash<int, AstCtiAction*> *actionList)
 	return ok;
 }
 
-int AstCtiService::getId()
+int AstCtiService::getId() const
 {
 	return this->id;
 }
 
-QString AstCtiService::getName()
+const QString& AstCtiService::getName() const
 {
     return this->name;
 }
 
-AstCtiServiceType AstCtiService::getContextType()
+AstCtiServiceType AstCtiService::getContextType() const
 {
     return this->contextType;
 }
 
-QString AstCtiService::getContextTypeString()
+QString AstCtiService::getContextTypeString() const
 {
+	//We use a variable to exploit NRVO
+	QString typeName;
+
 	switch (this->contextType) {
 	case ServiceTypeInbound:
-		return "Inbound";
+		typeName = QStringLiteral("Inbound");
 	default: // ServiceTypeOutbound
-		return "Outbound";
+		typeName = QStringLiteral("Outbound");
 	}
+
+	return typeName;
 }
 
-bool AstCtiService::isQueue()
+bool AstCtiService::isQueue() const
 {
 	return !this->queueName.isEmpty();
 }
 
-QString AstCtiService::getQueueName()
+const QString& AstCtiService::getQueueName() const
 {
     return this->queueName;
 }
 
-QStringList *AstCtiService::getVariables()
+const QStringList& AstCtiService::getVariables() const
 {
-	return &(this->variables);
+	return this->variables;
 }
 
-QMap<int, AstCtiAction*> *AstCtiService::getActions()
+const AstCtiActionMap& AstCtiService::getActions() const
 {
-	return &(this->actions);
+	return this->actions;
 }

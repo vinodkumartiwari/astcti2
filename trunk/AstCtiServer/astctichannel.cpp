@@ -37,7 +37,7 @@
  */
 
 #include <QStringList>
-#include <QDomDocument>
+#include <QXmlStreamWriter>
 
 #include "QsLog.h"
 #include "astctichannel.h"
@@ -45,22 +45,25 @@
 //Define static variables
 int AstCtiChannel::nextBridgeId = 0;
 
-AstCtiChannel::AstCtiChannel(const QString &uniqueId, QObject *parent) : QObject(parent)
+AstCtiChannel::AstCtiChannel(const QString& uniqueId, QObject* parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating new AstCtiChannel" << uniqueId;
 
 	this->uniqueId = uniqueId;
-	this->actions = 0;
-	this->channel = "";
-	this->parsedChannel = "";
-	this->channelExten = "";
-	this->callerIdNum = "";
-	this->callerIdName = "";
-	this->context = "";
+	//this->actions = 0;
+	this->channel = QStringLiteral("");
+	this->parsedChannel = QStringLiteral("");
+	this->channelExten = QStringLiteral("");
+	this->callerIdNum = QStringLiteral("");
+	this->callerIdName = QStringLiteral("");
+	this->context = QStringLiteral("");
 	this->state = ChannelStateUnknown;
-	this->exten = "";
-	this->accountCode = "";
-	this->associatedLocalChannel = "";
+	this->dialedLineNum = QStringLiteral("");
+	this->connectedLineNum = QStringLiteral("");
+	this->accountCode = QStringLiteral("");
+	this->musicOnHoldState = QStringLiteral("Stop");
+	this->hangupCause = QStringLiteral("");
+	this->associatedLocalChannel = QStringLiteral("");
 }
 
 AstCtiChannel::~AstCtiChannel()
@@ -68,22 +71,22 @@ AstCtiChannel::~AstCtiChannel()
 	QLOG_TRACE() << "Destroying AstCtiChannel" << this->uniqueId;
 }
 
-QString AstCtiChannel::getUniqueId() const
+const QString& AstCtiChannel::getUniqueId() const
 {
 	return this->uniqueId;
 }
 
-void AstCtiChannel::setUniqueId(const QString &uniqueId)
+void AstCtiChannel::setUniqueId(const QString& uniqueId)
 {
 	this->uniqueId = uniqueId;
 }
 
-QString AstCtiChannel::getChannel() const
+const QString& AstCtiChannel::getChannel() const
 {
     return this->channel;
 }
 
-void AstCtiChannel::setChannel(const QString &channel)
+void AstCtiChannel::setChannel(const QString& channel)
 {
     this->channel = channel;
 
@@ -98,57 +101,82 @@ void AstCtiChannel::setChannel(const QString &channel)
 			this->parsedChannel = channelParts.at(0);
 	}
 
-	// We get the extension by splitting the parsed channel on '/'
+	// We get the extension number by splitting the parsed channel on '/'
 	channelParts = this->parsedChannel.split('/');
 	if (channelParts.count() > 1)
 		this->channelExten = channelParts.last();
 }
 
-QString AstCtiChannel::getParsedChannel() const
+const QString& AstCtiChannel::getParsedChannel() const
 {
     return this->parsedChannel;
 }
 
-QString AstCtiChannel::getCalleridNum() const
+const QString& AstCtiChannel::getChannelExten() const
+{
+	return this->channelExten;
+}
+
+const QString& AstCtiChannel::getCalleridNum() const
 {
     return this->callerIdNum;
 }
 
-void AstCtiChannel::setCalleridNum(const QString &callerIdNum)
+void AstCtiChannel::setCalleridNum(const QString& callerIdNum)
 {
 	this->callerIdNum = callerIdNum;
-	this->addVariable("CALLERID", callerIdNum);
+	this->addVariable(QStringLiteral("CALLERID"), callerIdNum);
 }
 
-QString AstCtiChannel::getCalleridName() const
+const QString& AstCtiChannel::getCalleridName() const
 {
     return this->callerIdName;
 }
 
-void AstCtiChannel::setCalleridName(const QString &callerIdName)
+void AstCtiChannel::setCalleridName(const QString& callerIdName)
 {
 	this->callerIdName = callerIdName;
-	this->addVariable("CALLERIDNAME", callerIdName);
+	this->addVariable(QStringLiteral("CALLERIDNAME"), callerIdName);
 }
 
-QString AstCtiChannel::getContext() const
+const QString& AstCtiChannel::getContext() const
 {
     return this->context;
 }
 
-void AstCtiChannel::setContext(const QString &context)
+void AstCtiChannel::setContext(const QString& context)
 {
     this->context = context;
 }
 
-QString AstCtiChannel::getExten() const
+const QString& AstCtiChannel::getDialedLineNum() const
 {
-	return this->exten;
+	return this->dialedLineNum;
 }
 
-void AstCtiChannel::setExten(const QString &exten)
+void AstCtiChannel::setDialedLineNum(const QString& dialedLineNum)
 {
-	this->exten = exten;
+	this->dialedLineNum = dialedLineNum;
+}
+
+const QString& AstCtiChannel::getConnectedLineNum() const
+{
+	return this->connectedLineNum;
+}
+
+void AstCtiChannel::setConnectedLineNum(const QString& connectedLineNum)
+{
+	this->connectedLineNum = connectedLineNum;
+}
+
+const QString& AstCtiChannel::getQueue() const
+{
+	return this->queue;
+}
+
+void AstCtiChannel::setQueue(const QString& queue)
+{
+	this->queue = queue;
 }
 
 AstCtiChannelState AstCtiChannel::getState() const
@@ -161,27 +189,94 @@ void AstCtiChannel::setState(const AstCtiChannelState state)
     this->state = state;
 }
 
-QString AstCtiChannel::getAccountCode() const
+QString AstCtiChannel::channelStateToString(const AstCtiChannelState state)
+{
+	//We use a variable to exploit NRVO
+	QString stateName;
+
+	switch (state) {
+	case ChannelStateDown:
+		stateName = QStringLiteral("Down");
+		break;
+	case ChannelStateRsrvd:
+		stateName = QStringLiteral("Rsrvd");
+		break;
+	case ChannelStateOffHook:
+		stateName = QStringLiteral("OffHook");
+		break;
+	case ChannelStateDialing:
+		stateName = QStringLiteral("Dialing");
+		break;
+	case ChannelStateRing:
+		stateName = QStringLiteral("Ring");
+		break;
+	case ChannelStateRinging:
+		stateName = QStringLiteral("Ringing");
+		break;
+	case ChannelStateUp:
+		stateName = QStringLiteral("Up");
+		break;
+	case ChannelStateBusy:
+		stateName = QStringLiteral("Busy");
+		break;
+	case ChannelStateDialingOffhook:
+		stateName = QStringLiteral("DialingOffhook");
+		break;
+	case ChannelStatePrering:
+		stateName = QStringLiteral("Prering");
+		break;
+	case ChannelStateUnknown:
+		stateName = QStringLiteral("Unknown");
+		break;
+	default:
+		stateName = QStringLiteral("");
+		break;
+	}
+
+	return stateName;
+}
+
+const QString& AstCtiChannel::getAccountCode() const
 {
 	return this->accountCode;
 }
 
-void AstCtiChannel::setAccountCode(const QString &accountCode)
+void AstCtiChannel::setAccountCode(const QString& accountCode)
 {
 	this->accountCode = accountCode;
 }
 
-QString AstCtiChannel::getAssociatedLocalChannel() const
+const QString& AstCtiChannel::getMusicOnHoldState() const
+{
+	return this->musicOnHoldState;
+}
+
+void AstCtiChannel::setMusicOnHoldState(const QString& state)
+{
+	this->musicOnHoldState = state;
+}
+
+const QString& AstCtiChannel::getHangupCause() const
+{
+	return this->hangupCause;
+}
+
+void AstCtiChannel::setHangupCause(const QString& hangupCause)
+{
+	this->hangupCause = hangupCause;
+}
+
+const QString& AstCtiChannel::getAssociatedLocalChannel() const
 {
 	return this->associatedLocalChannel;
 }
 
-void AstCtiChannel::setAssociatedLocalChannel(const QString &localChannel)
+void AstCtiChannel::setAssociatedLocalChannel(const QString& localChannel)
 {
 	this->associatedLocalChannel = localChannel;
 }
 
-bool AstCtiChannel::hasMatchingLocalChannel(const QString &localChannel)
+bool AstCtiChannel::hasMatchingLocalChannel(const QString& localChannel) const
 {
 	const int length1 = this->associatedLocalChannel.length();
 	const int length2 = localChannel.length();
@@ -212,19 +307,14 @@ int AstCtiChannel::getNextBridgeId()
 	return ++nextBridgeId;
 }
 
-QHash<QString, QString> *AstCtiChannel::getVariables()
-{
-	return &(this->variables);
-}
-
-void AstCtiChannel::addVariable(const QString &name, const QString &value)
+void AstCtiChannel::addVariable(const QString& name, const QString& value)
 {
 	//There is no need to remove existing item,
 	//insert will replace value if the key already exists
 	this->variables.insert(name, value);
 }
 
-bool AstCtiChannel::setVariable(const QString &name, const QString &value)
+bool AstCtiChannel::setVariable(const QString& name, const QString& value)
 {
 	if (this->variables.contains(name)) {
 		this->variables.insert(name, value);
@@ -234,28 +324,23 @@ bool AstCtiChannel::setVariable(const QString &name, const QString &value)
 	return false;
 }
 
-QMap<int, AstCtiAction*> *AstCtiChannel::getActions()
-{
-	return this->actions;
-}
-
-void AstCtiChannel::setActions(QMap<int, AstCtiAction*> *callActions) {
+void AstCtiChannel::setActions(AstCtiActionMap callActions) {
 
     this->actions = callActions;
 }
 
-void AstCtiChannel::setOperatingSystem(const QString &operatingSystem)
+void AstCtiChannel::setOperatingSystem(const QString& operatingSystem)
 {
 	this->clientOperatingSystem = AstCtiAction::parseOsType(operatingSystem);
 }
 
 void AstCtiChannel::parseActionParameters()
 {
-	if (this->actions != 0 && this->variables.count() > 0) {
-		QMap<int, AstCtiAction*>::const_iterator actionIterator = this->actions->constBegin();
-		while (actionIterator != this->actions->constEnd()) {
-			QString parameters = ((AstCtiAction*)actionIterator.value())->getParameters();
-			QHash<QString, QString>::const_iterator varIterator = this->variables.constBegin();
+	if (this->actions.size() > 0 && this->variables.size() > 0) {
+		AstCtiActionMap::const_iterator actionIterator = this->actions.constBegin();
+		while (actionIterator != this->actions.constEnd()) {
+			QString parameters = actionIterator.value()->getParameters();
+			QStringHash::const_iterator varIterator = this->variables.constBegin();
 			while (varIterator != this->variables.constEnd()) {
 				QString varName = QString("{%1}").arg(varIterator.key());
 				parameters = parameters.replace(varName, varIterator.value());
@@ -269,130 +354,82 @@ void AstCtiChannel::parseActionParameters()
     }
 }
 
-QString AstCtiChannel::toXml()
+QString AstCtiChannel::toXml(const QString& eventName)
 {
-	QDomDocument xmlDoc("AstCtiChannel");
+	QString xmlString;
 
-	QDomElement xmlChannel = xmlDoc.createElement("Channel");
-	xmlChannel.setAttribute("UniqueId", this->uniqueId);
-	xmlDoc.appendChild(xmlChannel);
-
-	// Here we go for parameter substitution
+	// Do the parameter substitution
 	this->parseActionParameters();
 
-	QDomElement xmlElement;
-	QDomText xmlText;
+	QXmlStreamWriter writer(&xmlString);
 
-	// Channel
-	xmlElement = xmlDoc.createElement("Channel");
-	xmlChannel.appendChild(xmlElement);
-	xmlText = xmlDoc.createTextNode(this->channel);
-	xmlElement.appendChild(xmlText);
+	writer.writeStartDocument();
 
-	// ParsedChannel
-	xmlElement = xmlDoc.createElement("ParsedChannel");
-	xmlChannel.appendChild(xmlElement);
-	xmlText = xmlDoc.createTextNode(this->parsedChannel);
-	xmlElement.appendChild(xmlText);
+	writer.writeStartElement(QStringLiteral("AsteriskChannel"));
+	writer.writeAttribute(QStringLiteral("UniqueId"), this->uniqueId);
 
-	// Callerid Num
-	xmlElement = xmlDoc.createElement("CallerIdNum");
-	xmlChannel.appendChild(xmlElement);
-	xmlText = xmlDoc.createTextNode(this->calleridNum);
-	xmlElement.appendChild(xmlText);
+	// XML object is sent to client in response to some event
+	// so we let the client know which event it is
+	if (!eventName.isEmpty())
+		writer.writeTextElement(QStringLiteral("Event"), eventName);
 
-	// Callerid Name
-	xmlElement = xmlDoc.createElement("CallerIdName");
-	xmlChannel.appendChild(xmlElement);
-	xmlText = xmlDoc.createTextNode(this->calleridName);
-	xmlElement.appendChild(xmlText);
+	writer.writeTextElement(QStringLiteral("Channel"), this->channel);
+	writer.writeTextElement(QStringLiteral("ParsedChannel"), this->parsedChannel);
+	writer.writeTextElement(QStringLiteral("ChannelExten"), this->channelExten);
+	writer.writeTextElement(QStringLiteral("CallerIdNum"), this->callerIdNum);
+	writer.writeTextElement(QStringLiteral("CallerIdName"), this->callerIdName);
+	writer.writeTextElement(QStringLiteral("Context"), this->context);
+	writer.writeTextElement(QStringLiteral("DialedLineNum"), this->dialedLineNum);
+	writer.writeTextElement(QStringLiteral("ConnectedLineNum"), this->dialedLineNum);
+	writer.writeTextElement(QStringLiteral("Queue"), this->queue);
+	writer.writeTextElement(QStringLiteral("State"), channelStateToString(this->state));
+	writer.writeTextElement(QStringLiteral("AccountCode"), this->accountCode);
+	writer.writeTextElement(QStringLiteral("MusicOnHoldState"), this->musicOnHoldState);
+	writer.writeTextElement(QStringLiteral("HangupCause"), this->hangupCause);
+	writer.writeTextElement(QStringLiteral("BridgeId"), QString::number(this->bridgeId));
 
-	// Context
-	xmlElement = xmlDoc.createElement("Context");
-	xmlChannel.appendChild(xmlElement);
-	xmlText = xmlDoc.createTextNode(this->context);
-	xmlElement.appendChild(xmlText);
+	if (this->variables.size() > 0) {
+		writer.writeStartElement(QStringLiteral("Variables"));
 
-	// Exten
-	xmlElement = xmlDoc.createElement("Exten");
-	xmlChannel.appendChild(xmlElement);
-	xmlText = xmlDoc.createTextNode(this->exten);
-	xmlElement.appendChild(xmlText);
-
-	// State
-	xmlElement = xmlDoc.createElement("State");
-	xmlChannel.appendChild(xmlElement);
-	xmlText = xmlDoc.createTextNode(QString::number(this->state));
-	xmlElement.appendChild(xmlText);
-
-	// Account code
-	xmlElement = xmlDoc.createElement("AccountCode");
-	xmlChannel.appendChild(xmlElement);
-	xmlText = xmlDoc.createTextNode(this->accountCode);
-	xmlElement.appendChild(xmlText);
-
-	// Bridge ID
-	xmlElement = xmlDoc.createElement("BridgeId");
-	xmlChannel.appendChild(xmlElement);
-	xmlText = xmlDoc.createTextNode(QString::number(this->bridgeId));
-	xmlElement.appendChild(xmlText);
-
-	if (this->variables->size() > 0) {
-		QDomElement xmlVars = xmlDoc.createElement("Variables");
-		xmlVars.setAttribute("Count", this->variables->size());
-		xmlChannel.appendChild(xmlVars);
-
-		QHash<QString, QString>::const_iterator varIterator = this->variables.constBegin();
+		QStringHash::const_iterator varIterator = this->variables.constBegin();
 		while (varIterator != this->variables.constEnd()) {
-			xmlElement = xmlDoc.createElement(varIterator.key());
-			xmlVars.appendChild(xmlElement);
-			xmlText = xmlDoc.createTextNode(varIterator.value());
-			xmlElement.appendChild(xmlText);
+			writer.writeTextElement(varIterator.key(), varIterator.value());
 			varIterator++;
 		}
+
+		writer.writeEndElement(); // Variables
 	}
 
-	 if (this->actions != 0 && this->actions->size() > 0) {
-		int actionsCount = 0;
-		QDomElement xmlActions = xmlDoc.createElement("Actions");
+	 if (this->actions.size() > 0) {
+		 writer.writeStartElement(QStringLiteral("Actions"));
 
-		QMap<int, AstCtiAction*>::const_iterator actionsIterator = this->actions->constBegin();
-		while (actionsIterator != this->actions->constEnd()) {
-			AstCtiAction *action = actionsIterator.value();
+		AstCtiActionMap::const_iterator actionsIterator = this->actions.constBegin();
+		while (actionsIterator != this->actions.constEnd()) {
+			AstCtiAction* action = actionsIterator.value();
 			if (action->getOsType() == ActionOsAll ||
 				action->getOsType() == this->clientOperatingSystem) {
-				actionsCount++;
+
 				QString elementName = AstCtiAction::getActionName(action->getActionType());
 
-				QDomElement xmlAction = xmlDoc.createElement(elementName);
+				writer.writeStartElement(elementName);
 
-				xmlElement = xmlDoc.createElement("Destination");
-				xmlAction.appendChild(xmlElement);
-				xmlText = xmlDoc.createTextNode(action->getDestination());
-				xmlElement.appendChild(xmlText);
+				writer.writeTextElement(QStringLiteral("Destination"), action->getDestination());
+				if (!action->getParameters().isEmpty())
+					writer.writeTextElement(QStringLiteral("Parameters"), action->getParameters());
+				if (!action->getMessageEncoding().isEmpty())
+					writer.writeTextElement(QStringLiteral("Encoding"),
+											action->getMessageEncoding());
 
-				if (!action->getParameters().isEmpty()) {
-					xmlElement = xmlDoc.createElement("Parameters");
-					xmlAction.appendChild(xmlElement);
-					xmlText = xmlDoc.createTextNode(action->getParameters());
-					xmlElement.appendChild(xmlText);
-				}
-
-				if (!action->getMessageEncoding().isEmpty()) {
-					xmlElement = xmlDoc.createElement("Encoding");
-					xmlAction.appendChild(xmlElement);
-					xmlText = xmlDoc.createTextNode(action->getMessageEncoding());
-					xmlElement.appendChild(xmlText);
-				}
-
-				xmlActions.appendChild(xmlAction);
+				writer.writeEndElement(); // Action
 			}
 			actionsIterator++;
 		}
 
-		xmlActions.setAttribute("Count", actionsCount);
-		xmlChannel.appendChild(xmlActions);
+		writer.writeEndElement(); // Actions
 	}
 
-	return xmlDoc.toString();
+	 writer.writeEndElement(); // AsteriskChannel
+	 writer.writeEndDocument();
+
+	 return xmlString;
 }

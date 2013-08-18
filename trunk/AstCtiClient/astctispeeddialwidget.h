@@ -65,7 +65,7 @@ class AstCtiSpeedDialWidget : public QWidget
     Q_PROPERTY( int voicemail READ voicemail WRITE setVoicemail )
 
 public:
-	explicit AstCtiSpeedDialWidget(QWidget *parent = 0);
+	explicit AstCtiSpeedDialWidget(QWidget* parent = 0);
 	~AstCtiSpeedDialWidget();
 
     //Enums need to be declared within the class
@@ -99,31 +99,31 @@ public:
     int voicemail() const;
 
 public slots:
-    void setName(const QString &capt);
-    void setNumber(const QString &num);
+    void setName(const QString& capt);
+    void setNumber(const QString& num);
     void setShowNumber(const bool shownum);
-    void setGroup(const QString &grp);
+    void setGroup(const QString& grp);
     void setBusyLampField(const bool blf);
     void setExtensionState(const ExtensionState state);
     void setDoNotDisturb(const bool dnd);
     void setCallWaiting(const bool cw);
     void setCallForward(const CallForward cf);
-    void setCallForwardNumber(const QString &cfnum);
+    void setCallForwardNumber(const QString& cfnum);
     void setVoicemail(const int vm);
 
 signals:
-    void dial(const QString &number);
-    void takeCall(const QString &number);
+    void dial(const QString& number);
+    void takeCall(const QString& number);
 
 protected:
-    void paintEvent(QPaintEvent *);
-    void resizeEvent(QResizeEvent *);
-    bool eventFilter(QObject *, QEvent *e);
+    void paintEvent(QPaintEvent* );
+    void resizeEvent(QResizeEvent* );
+    bool eventFilter(QObject* , QEvent* e);
 
 private:
 	Q_DISABLE_COPY(AstCtiSpeedDialWidget)
 
-	Ui::AstCtiSpeedDialWidget *ui;
+	Ui::AstCtiSpeedDialWidget* ui;
 
     void setCaption();
     void setStatusText();

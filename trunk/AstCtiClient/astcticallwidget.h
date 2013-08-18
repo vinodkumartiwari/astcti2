@@ -67,7 +67,7 @@ class AstCtiCallWidget : public QWidget
     Q_PROPERTY( bool canEditContact READ canEditContact WRITE setCanEditContact )
 
 public:
-	explicit AstCtiCallWidget(QWidget *parent = 0);
+	explicit AstCtiCallWidget(QWidget* parent = 0);
 	~AstCtiCallWidget();
 
     //Enums need to be declared within the class
@@ -80,15 +80,16 @@ public:
 
     enum CallState {
         CallStateNone,
-        CallStateRinging,
+		CallStateDialing,
+		CallStateRinging,
         CallStateBusy,
         CallStateInCall,
         CallStateOnHold
     };
 
-    QString callerIdNumber() const;
-    QString callerIdName() const;
-    QString remarks() const;
+	QString callerIdNumber() const;
+	QString callerIdName() const;
+	QString remarks() const;
     CallDirection callDirection() const;
     CallState callState() const;
     bool canAnswer() const;
@@ -98,10 +99,12 @@ public:
     bool canRecord() const;
     bool canEditContact() const;
 
+	static CallState callStateFromString(const QString& state);
+
 public slots:
-    void setCallerIdNumber(const QString &cid);
-    void setCallerIdName(const QString &cid);
-    void setRemarks(const QString &rems);
+    void setCallerIdNumber(const QString& cid);
+    void setCallerIdName(const QString& cid);
+    void setRemarks(const QString& rems);
     void setCallDirection(const CallDirection direction);
     void setCallState(const CallState state);
     void setCanAnswer(const bool value);
@@ -117,15 +120,15 @@ signals:
     void conference();
     void transfer();
     void record();
-    void editContact(const QString &number, const QString &name);
+    void editContact(const QString& number, const QString& name);
 
 protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent* );
 
 private:
 	Q_DISABLE_COPY(AstCtiCallWidget)
 
-	Ui::AstCtiCallWidget *ui;
+	Ui::AstCtiCallWidget* ui;
 
     CallDirection m_callDirection;
     CallState m_callState;

@@ -63,10 +63,10 @@ public:
 };
 
 AstCtiDefaultStylePrivate::AstCtiDefaultStylePrivate() :
-    lineeditImage(QLatin1String(":/core/images/inputfield.png")),
-    lineeditImage_disabled(QLatin1String(":/core/images/inputfield_disabled.png")),
-    extButtonPixmap(QLatin1String(":/core/images/extension.png")),
-    closeButtonPixmap(QLatin1String(":/core/images/closebutton.png"))
+	lineeditImage(QStringLiteral(":/core/images/inputfield.png")),
+	lineeditImage_disabled(QStringLiteral(":/core/images/inputfield_disabled.png")),
+	extButtonPixmap(QStringLiteral(":/core/images/extension.png")),
+	closeButtonPixmap(QStringLiteral(":/core/images/closebutton.png"))
 {
 }
 
@@ -109,25 +109,25 @@ void AstCtiDefaultStyle::polish(QPalette &palette)
     palette.setBrush(QPalette::Disabled, QPalette::Base, palette.base().color().dark());
 }
 
-void AstCtiDefaultStyle::polish(QWidget *widget)
+void AstCtiDefaultStyle::polish(QWidget* widget)
 {
     //Generate paint events when the mouse pointer enters or leaves the widget
-    if (qobject_cast<QAbstractButton *>(widget)
-     || qobject_cast<QComboBox *>(widget)
-     || qobject_cast<QTabBar *>(widget))
+    if (qobject_cast<QAbstractButton* >(widget)
+     || qobject_cast<QComboBox* >(widget)
+     || qobject_cast<QTabBar* >(widget))
         widget->setAttribute(Qt::WA_Hover, true);
 }
 
-void AstCtiDefaultStyle::unpolish(QWidget *widget)
+void AstCtiDefaultStyle::unpolish(QWidget* widget)
 {
     //Undo any modification done to the widget in polish()
-    if (qobject_cast<QAbstractButton *>(widget)
-     || qobject_cast<QComboBox *>(widget)
-     || qobject_cast<QTabBar *>(widget))
+    if (qobject_cast<QAbstractButton* >(widget)
+     || qobject_cast<QComboBox* >(widget)
+     || qobject_cast<QTabBar* >(widget))
         widget->setAttribute(Qt::WA_Hover, false);
 }
 
-// int AstCtiDefaultStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+// int AstCtiDefaultStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QWidget* widget) const
 // {
 //     switch (metric) {
 //     case PM_ComboBoxFrameWidth:
@@ -139,7 +139,7 @@ void AstCtiDefaultStyle::unpolish(QWidget *widget)
 //     }
 // }
 
-int AstCtiDefaultStyle::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *widget, QStyleHintReturn *returnData) const
+int AstCtiDefaultStyle::styleHint(StyleHint hint, const QStyleOption* option, const QWidget* widget, QStyleHintReturn* returnData) const
 {
     //Disable dithering of disabled text nad enable etching
     switch (hint) {
@@ -152,7 +152,7 @@ int AstCtiDefaultStyle::styleHint(StyleHint hint, const QStyleOption *option, co
     }
 }
 
-//QIcon AstCtiDefaultStyle::standardIconImplementation(StandardPixmap standardIcon, const QStyleOption *option, const QWidget *widget) const
+//QIcon AstCtiDefaultStyle::standardIconImplementation(StandardPixmap standardIcon, const QStyleOption* option, const QWidget* widget) const
 //{
 //    QIcon icon;
 //    switch (standardIcon) {
@@ -165,7 +165,7 @@ int AstCtiDefaultStyle::styleHint(StyleHint hint, const QStyleOption *option, co
 //    return icon;
 //}
 
-void AstCtiDefaultStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void AstCtiDefaultStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const
 {
     switch (element) {
     case PE_FrameFocusRect:
@@ -227,7 +227,7 @@ void AstCtiDefaultStyle::drawPrimitive(PrimitiveElement element, const QStyleOpt
 //            QBrush brush;
 //            bool darker;
 
-//            const QStyleOptionButton *buttonOption =  qstyleoption_cast<const QStyleOptionButton *>(option);
+//            const QStyleOptionButton* buttonOption =  qstyleoption_cast<const QStyleOptionButton* >(option);
 //            if (buttonOption && (buttonOption->features & QStyleOptionButton::Flat)) {
 //                brush = option->palette.background();
 //                darker = (option->state & (State_Sunken | State_On));
@@ -304,7 +304,7 @@ void AstCtiDefaultStyle::drawPrimitive(PrimitiveElement element, const QStyleOpt
     }
 }
 
-void AstCtiDefaultStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void AstCtiDefaultStyle::drawControl(ControlElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const
 {
     if (widget != 0 && widget->isWindow()) {
         int x, y, width, height;
@@ -327,7 +327,7 @@ void AstCtiDefaultStyle::drawControl(ControlElement element, const QStyleOption 
 
     switch (element) {
     case CE_TabBarTabShape:
-        if (const QStyleOptionTabV3 *tabOption = qstyleoption_cast<const QStyleOptionTabV3 *>(option)) {
+        if (const QStyleOptionTabV3* tabOption = qstyleoption_cast<const QStyleOptionTabV3* >(option)) {
             if (tabOption->state & (State_Selected | State_MouseOver) && tabOption->state & State_Enabled) {
                 painter->save();
                 QColor highlightColor(37,187,219);
@@ -339,9 +339,9 @@ void AstCtiDefaultStyle::drawControl(ControlElement element, const QStyleOption 
     case CE_PushButtonLabel:
         {
             QStyleOptionButton myButtonOption;
-            const QStyleOptionButton *buttonOption = qstyleoption_cast<const QStyleOptionButton *>(option);
+            const QStyleOptionButton* buttonOption = qstyleoption_cast<const QStyleOptionButton* >(option);
             if (buttonOption) {
-                myButtonOption = *buttonOption;
+                myButtonOption =* buttonOption;
                 if (myButtonOption.palette.currentColorGroup() != QPalette::Disabled) {
                     if (myButtonOption.state & (State_Sunken | State_On)) {
                         myButtonOption.palette.setBrush(QPalette::ButtonText, myButtonOption.palette.brightText());
@@ -356,7 +356,7 @@ void AstCtiDefaultStyle::drawControl(ControlElement element, const QStyleOption 
     }
 }
 
-void AstCtiDefaultStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
+void AstCtiDefaultStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget) const
 {
     QCommonStyle::drawComplexControl(control, option, painter, widget);
 }

@@ -42,7 +42,7 @@
 #include "QsLog.h"
 #include "astcticonfiguration.h"
 
-AstCtiConfiguration::AstCtiConfiguration(QObject *parent) : QObject(parent)
+AstCtiConfiguration::AstCtiConfiguration(QObject* parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating new AstCtiConfiguration";
 }
@@ -57,9 +57,9 @@ AstCtiConfiguration::~AstCtiConfiguration()
 	qDeleteAll(this->seats);
 }
 
-AstCtiService *AstCtiConfiguration::getServiceByName(const QString &serviceName)
+AstCtiService* AstCtiConfiguration::getServiceByName(const QString& serviceName)
 {
-	foreach (AstCtiService *service, this->services.values()) {
+	foreach (AstCtiService* service, this->services.values()) {
 		if (service->getName() == serviceName)
 			return service;
 	}
@@ -67,9 +67,9 @@ AstCtiService *AstCtiConfiguration::getServiceByName(const QString &serviceName)
 	return 0;
 }
 
-AstCtiSeat *AstCtiConfiguration::getSeatByMac(const QString &mac)
+AstCtiSeat* AstCtiConfiguration::getSeatByMac(const QString& mac)
 {
-	foreach (AstCtiSeat *seat, this->seats.values()) {
+	foreach (AstCtiSeat* seat, this->seats.values()) {
 		if (seat->getMac() == mac)
 			return seat;
 	}

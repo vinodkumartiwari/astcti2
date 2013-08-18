@@ -46,6 +46,8 @@
 
 #include "astctiaction.h"
 
+typedef QHash<QString, QString> QStringHash;
+
 //	Value   State            Description
 //	0	    Down             Channel is down and available
 //	1	    Rsrvd            Channel is down, but reserved
@@ -80,74 +82,87 @@ class AstCtiChannel : public QObject
     Q_OBJECT
 
 public:
-	explicit AstCtiChannel(const QString &uniqueId, QObject *parent=0);
+	explicit AstCtiChannel(const QString& uniqueId, QObject* parent = 0);
 	~AstCtiChannel();
 
-	QString                   getUniqueId() const;
-	void                      setUniqueId(const QString &uniqueId);
+	const QString&      getUniqueId() const;
+	void                setUniqueId(const QString& uniqueId);
 
-	QString                   getChannel() const;
-	void                      setChannel(const QString &channel);
-	QString                   getParsedChannel() const;
-	QString                   getChannelExten() const;
+	const QString&      getChannel() const;
+	void                setChannel(const QString& channel);
+	const QString&      getParsedChannel() const;
+	const QString&      getChannelExten() const;
 
-	QString                   getCalleridNum() const;
-	void                      setCalleridNum(const QString &callerIdNum);
-	QString                   getCalleridName() const;
-	void                      setCalleridName(const QString &callerIdName);
+	const QString&      getCalleridNum() const;
+	void                setCalleridNum(const QString& callerIdNum);
+	const QString&      getCalleridName() const;
+	void                setCalleridName(const QString& callerIdName);
 
-	QString                   getContext() const;
-	void                      setContext(const QString &context);
-	QString                   getExten() const;
-	void                      setExten(const QString &exten);
+	const QString&      getContext() const;
+	void                setContext(const QString& context);
+	const QString&      getDialedLineNum() const;
+	void                setDialedLineNum(const QString& dialedLineNum);
+	const QString&      getConnectedLineNum() const;
+	void                setConnectedLineNum(const QString& connectedLineNum);
+	const QString&      getQueue() const;
+	void                setQueue(const QString& queue);
 
-	AstCtiChannelState        getState() const;
-	void                      setState(const AstCtiChannelState state);
+	AstCtiChannelState  getState() const;
+	void                setState(const AstCtiChannelState state);
+	static QString      channelStateToString(const AstCtiChannelState state);
 
-	QString                   getAccountCode() const;
-	void                      setAccountCode(const QString &accountCode);
+	const QString&      getAccountCode() const;
+	void                setAccountCode(const QString& accountCode);
 
-	QString                   getAssociatedLocalChannel() const;
-	void                      setAssociatedLocalChannel(const QString &localChannel);
-	bool                      hasMatchingLocalChannel(const QString &localChannel);
+	const QString&      getMusicOnHoldState() const;
+	void                setMusicOnHoldState(const QString& state);
 
-	int                       getBridgeId() const;
-	void                      setBridgeId(const int bridgeId);
-	static int                getNextBridgeId();
+	const QString&      getHangupCause() const;
+	void                setHangupCause(const QString& hangupCause);
 
-	QHash<QString, QString>  *getVariables();
-	void                      addVariable(const QString &name, const QString &value);
-	bool                      setVariable(const QString &name, const QString &value);
+	const QString&      getAssociatedLocalChannel() const;
+	void                setAssociatedLocalChannel(const QString& localChannel);
+	bool                hasMatchingLocalChannel(const QString& localChannel) const;
 
-	void                      setActions(QMap<int, AstCtiAction*> *callActions);
-	QMap<int, AstCtiAction*> *getActions();
+	int                 getBridgeId() const;
+	void                setBridgeId(const int bridgeId);
+	static int          getNextBridgeId();
 
-	void                      setOperatingSystem(const QString &operatingSystem);
+	void                addVariable(const QString& name, const QString& value);
+	bool                setVariable(const QString& name, const QString& value);
 
-	void                      parseActionParameters();
+	void                setActions(AstCtiActionMap callActions);
 
-	QString                   toXml();
+	void                setOperatingSystem(const QString& operatingSystem);
+
+	QString             toXml(const QString& eventName);
 
 private:
 	Q_DISABLE_COPY(AstCtiChannel)
-	QString                         uniqueId;
-	QString                         channel;
-    QString                         parsedChannel;
-	QString                         channelExten;
-	QString                         callerIdNum;
-    QString                         callerIdName;
-    QString                         context;
-	QString                         exten;
-	AstCtiChannelState              state;
-	QString                         accountCode;
-	QString                         associatedLocalChannel;
-	int                             bridgeId;
-	AstCtiActionOsType              clientOperatingSystem;
+	QString             uniqueId;
+	QString             channel;
+	QString             parsedChannel;
+	QString             channelExten;
+	QString             callerIdNum;
+	QString             callerIdName;
+	QString             context;
+	QString             dialedLineNum;
+	QString             connectedLineNum;
+	QString             queue;
+	AstCtiChannelState  state;
+	QString             accountCode;
+	QString             musicOnHoldState;
+	QString             hangupCause;
+	QString             associatedLocalChannel;
+	int                 bridgeId;
+	AstCtiActionOsType  clientOperatingSystem;
 
-	QHash<QString, QString>         variables;
-	QMap<int, AstCtiAction*>       *actions;
+	QStringHash         variables;
+	AstCtiActionMap     actions;
 
-	static int                      nextBridgeId;
+	static int          nextBridgeId;
+
+	void                parseActionParameters();
 };
 Q_DECLARE_METATYPE(AstCtiChannel*)
 

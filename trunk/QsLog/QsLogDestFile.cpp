@@ -48,7 +48,7 @@ void QsLogging::SizeRotationStrategy::setInitialInfo(const QFile &file)
     mCurrentSizeInBytes = file.size();
 }
 
-void QsLogging::SizeRotationStrategy::includeMessageInCalculation(const QString &message)
+void QsLogging::SizeRotationStrategy::includeMessageInCalculation(const QString& message)
 {
     mCurrentSizeInBytes += message.toUtf8().size();
 }

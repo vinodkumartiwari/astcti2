@@ -45,7 +45,7 @@
 #include "ctiserverapplication.h"
 #include "db.h"
 
-CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char **argv)
+CtiServerApplication::CtiServerApplication(const QString& appId, int argc, char** argv)
 		: QtSingleCoreApplication(appId, argc, argv)
 {
 	this->canStart = false;
@@ -55,19 +55,20 @@ CtiServerApplication::CtiServerApplication(const QString &appId, int &argc, char
 		this->configChecker = 0;
 
 		ArgumentList args(this->arguments());
-		int verbosity = args.getSwitchMulti("v");
-		QString configFileName = args.getSwitchArg("c", "settings.ini");
-		QString logFileName = args.getSwitchArg("l", "");
+		int verbosity = args.getSwitchMulti(QStringLiteral("v"));
+		QString configFileName = args.getSwitchArg(QStringLiteral("c"),
+												   QStringLiteral("settings.ini"));
+		QString logFileName = args.getSwitchArg(QStringLiteral("l"), QStringLiteral(""));
 		if (logFileName.isEmpty())
-			if (args.getSwitch("l")) {
+			if (args.getSwitch(QStringLiteral("l"))) {
 				//The switch can be specified without argument,
 				//in which case default filename is used
 				logFileName = QCoreApplication::applicationDirPath();
-				logFileName.append("/logs/astctiserver.log");
+				logFileName.append(QStringLiteral("/logs/astctiserver.log"));
 			}
 
 		// Init the logging mechanism
-		QsLogging::Logger &logger = QsLogging::Logger::instance();
+		QsLogging::Logger& logger = QsLogging::Logger::instance();
 
 		QsLogging::Level loggingLevel;
 		switch (verbosity) {
@@ -127,7 +128,7 @@ CtiServerApplication::~CtiServerApplication()
 			this->configChecker->stop();
 			// configChecker will be deleted automatically because the thread's
 			// finished() signal is connected to configChecker's deleteLater() slot
-			QThread *configThread = this->configChecker->thread();
+			QThread* configThread = this->configChecker->thread();
 			configThread->quit();
 			configThread->wait();
 			delete configThread;
@@ -151,7 +152,7 @@ bool CtiServerApplication::start()
 	connect(this->configChecker, SIGNAL(newConfiguration(AstCtiConfiguration*)),
 			this, SLOT(reloadSettings(AstCtiConfiguration*)));
 
-	QThread *configThread = new QThread(this);
+	QThread* configThread = new QThread(this);
 	this->configChecker->moveToThread(configThread);
 	connect(configThread, SIGNAL(started()),
 			this->configChecker, SLOT(run()));
@@ -165,7 +166,7 @@ bool CtiServerApplication::start()
 	return this->exec();
 }
 
-void  CtiServerApplication::reloadSettings(AstCtiConfiguration *newConfig)
+void  CtiServerApplication::reloadSettings(AstCtiConfiguration* newConfig)
 {
 	if (this->coreTcpServer == 0) {
 		//Configuration has not been read before
@@ -193,12 +194,12 @@ void  CtiServerApplication::reloadSettings(AstCtiConfiguration *newConfig)
 	}
 }
 
-CtiServerApplication *CtiServerApplication::instance()
+CtiServerApplication* CtiServerApplication::instance()
 {
     return (static_cast<CtiServerApplication*>(QCoreApplication::instance()));
 }
 
-bool CtiServerApplication::buildCoreTcpServer(AstCtiConfiguration *config)
+bool CtiServerApplication::buildCoreTcpServer(AstCtiConfiguration* config)
 {
 	this->coreTcpServer = new CoreTcpServer(config, this);
 //	connect(this->coreTcpServer, SIGNAL(destroyed()),
@@ -209,16 +210,17 @@ bool CtiServerApplication::buildCoreTcpServer(AstCtiConfiguration *config)
 QString CtiServerApplication::readDatabaseVersion()
 {
 	QVariantList params;
-	params.append("db_version");
+	params.append(QStringLiteral("db_version"));
 	bool ok;
-	QVariant result = DB::readScalar("SELECT val FROM server_settings WHERE name=?", params, &ok);
+	QVariant result = DB::readScalar(QStringLiteral(
+			"SELECT val FROM server_settings WHERE name=?"), params, &ok);
 	if (!ok)
-        result = "Error reading database version";
+		result = QStringLiteral("Error reading database version");
 
     return result.toString();
 }
 
-bool CtiServerApplication::createDatabaseConnection(const QString &iniFilePath)
+bool CtiServerApplication::createDatabaseConnection(const QString& iniFilePath)
 {
 	QLOG_INFO() << "Reading settings from file" << iniFilePath;
 
@@ -238,12 +240,12 @@ bool CtiServerApplication::createDatabaseConnection(const QString &iniFilePath)
         // Instantiate a QSettings object for read/write from/to ini file
 		QSettings settings(iniFilePath, QSettings::IniFormat);
 
-        settings.beginGroup("RuntimeDb");
-		sqlHost     = settings.value("host",     defaultSqlHost ).toString();
-		sqlUserName = settings.value("user",     defaultSqlUser).toString();
-		sqlPassWord = settings.value("password", defaultSqlPassWord).toString();
-		sqlPort     = settings.value("port",     defaultSqlPort).toInt();
-		sqlDatabase = settings.value("database", defaultSqlDatabase).toString();
+		settings.beginGroup(QStringLiteral("RuntimeDb"));
+		sqlHost     = settings.value(QStringLiteral("host"),     defaultSqlHost ).toString();
+		sqlUserName = settings.value(QStringLiteral("user"),     defaultSqlUser).toString();
+		sqlPassWord = settings.value(QStringLiteral("password"), defaultSqlPassWord).toString();
+		sqlPort     = settings.value(QStringLiteral("port"),     defaultSqlPort).toInt();
+		sqlDatabase = settings.value(QStringLiteral("database"), defaultSqlDatabase).toString();
         settings.endGroup();
     } else {
 		QLOG_WARN() << "File" << iniFilePath << "not found. Using defaults.";
@@ -259,7 +261,7 @@ bool CtiServerApplication::createDatabaseConnection(const QString &iniFilePath)
 		return false;
 
 	QString dbVersion = this->readDatabaseVersion();
-	if (dbVersion.startsWith("Error"))
+	if (dbVersion.startsWith(QStringLiteral("Error")))
 		return false;
 
 	QLOG_INFO() << "Database connection successfully created." << "Database version" << dbVersion;

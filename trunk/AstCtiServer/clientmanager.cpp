@@ -41,19 +41,18 @@
 
 /*!
     ClientManager Constructor
-*/
-ClientManager::ClientManager(QObject *parent) : QObject(parent)
+ */
+ClientManager::ClientManager(QObject* parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating new ClientManager";
 
-	// Initialize private variables
 	this->state                 = StateLoggedOff;
 	this->socket                = 0;
 	this->activeOperator        = 0;
     this->activeSeat            = 0;
-	this->localIdentifier       = "";
-    this->clientOperatingSystem = "";
-    this->ctiUsername           = "";
+	this->localIdentifier       = QStringLiteral("");
+	this->clientOperatingSystem = QStringLiteral("");
+	this->ctiUsername           = QStringLiteral("");
     this->blockSize             = 0;
     this->compressionLevel      = -1;
 	this->isAuthenticated       = false;
@@ -66,12 +65,4 @@ ClientManager::~ClientManager()
 
 	// this->activeSeat does not need to be deleted as it is not allocated in this class
 	// this->activeOperator does not need to be deleted as it is not allocated in this class
-}
-
-QStringList ClientManager::getExtensions()
-{
-	if (this->activeSeat == 0)
-		return QStringList();
-	else
-		return this->activeSeat->getExtensions();
 }

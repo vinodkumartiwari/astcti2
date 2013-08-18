@@ -40,27 +40,41 @@
 #define ASTCTISEAT_H
 
 #include <QObject>
-#include <QStringList>
+#include <QList>
+
+#include "astctiextension.h"
 
 class AstCtiSeat : public QObject
 {
     Q_OBJECT
 
 public:
-	explicit AstCtiSeat(int id, const QString &mac,	const QString &description, QObject *parent=0);
+	explicit AstCtiSeat(int id, const QString& mac,	const QString& description, QObject* parent = 0);
 	~AstCtiSeat();
-	int          getId();
-	QString      getMac();
-	QString      getDescription();
-	QStringList  getExtensions();
-	bool         loadExtensions();
+
+	int                        getId() const;
+	const QString&             getMac() const;
+	const QString&             getDescription() const;
+	bool                       loadExtensions();
+	const AstCtiExtensionList& getExtensions() const;
+	QStringList                getExtensionNumbers() const;
+	bool                       compareExtensions(const AstCtiExtensionList& newExtensions) const;
+	bool                       hasExtension(const QString& channel) const;
+	void                       setExtensionUserAgent(const QString& channel,
+													 const QString& userAgent);
+	void                       setExtensionStatus(const QString& channel,
+												  const AstCtiExtensionStatus status);
 
 private:
 	Q_DISABLE_COPY(AstCtiSeat)
-	int         id;
-	QString     mac;
-	QString     description;
-	QStringList extensions;
+	int                  id;
+	QString              mac;
+	QString              description;
+	AstCtiExtensionList  extensions;
+
+	AstCtiExtension*     getExtension(const QString& channel) const;
 };
+
+typedef QHash<int, AstCtiSeat*> AstCtiSeatHash;
 
 #endif // ASTCTISEAT_H

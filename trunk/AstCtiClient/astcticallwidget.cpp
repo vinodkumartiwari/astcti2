@@ -45,7 +45,7 @@
 #include "astcticallwidget.h"
 #include "ui_astcticallwidget.h"
 
-AstCtiCallWidget::AstCtiCallWidget(QWidget *parent) :
+AstCtiCallWidget::AstCtiCallWidget(QWidget* parent) :
     QWidget(parent),
 	ui(new Ui::AstCtiCallWidget)
 {
@@ -73,7 +73,7 @@ AstCtiCallWidget::~AstCtiCallWidget()
     delete ui;
 }
 
-void AstCtiCallWidget::paintEvent(QPaintEvent *)
+void AstCtiCallWidget::paintEvent(QPaintEvent* )
 {
     QStyleOption opt;
     opt.init(this);
@@ -86,13 +86,13 @@ QString AstCtiCallWidget::callerIdNumber() const
     return ui->numberLabel->text();
 }
 
-void AstCtiCallWidget::setCallerIdNumber(const QString &cid)
+void AstCtiCallWidget::setCallerIdNumber(const QString& cid)
 {
     if (cid == ui->numberLabel->text())
         return;
 
     if (cid.isEmpty()) {
-        ui->numberLabel->setText(trUtf8("???"));
+		ui->numberLabel->setText(tr("???"));
     } else {
         ui->numberLabel->setText(cid);
     }
@@ -103,7 +103,7 @@ QString AstCtiCallWidget::callerIdName() const
     return ui->nameLabel->text();
 }
 
-void AstCtiCallWidget::setCallerIdName(const QString &cid)
+void AstCtiCallWidget::setCallerIdName(const QString& cid)
 {
     if (cid == ui->nameLabel->text())
         return;
@@ -121,7 +121,7 @@ QString AstCtiCallWidget::remarks() const
     return ui->remarksLabel->text();
 }
 
-void AstCtiCallWidget::setRemarks(const QString &rms)
+void AstCtiCallWidget::setRemarks(const QString& rms)
 {
     if (rms == ui->remarksLabel->text())
         return;
@@ -146,9 +146,11 @@ void AstCtiCallWidget::setCallDirection(const CallDirection direction)
     this->m_callDirection = direction;
 
     if (direction == CallDirectionIncoming)
-        ui->callDirectionLabel->setPixmap(QPixmap(QString::fromUtf8(":/res/res/direction-incoming.png")));
+		ui->callDirectionLabel->setPixmap(
+					QPixmap(QStringLiteral(":/res/res/direction-incoming.png")));
     else
-        ui->callDirectionLabel->setPixmap(QPixmap(QString::fromUtf8(":/res/res/direction-outgoing.png")));
+		ui->callDirectionLabel->setPixmap(
+					QPixmap(QStringLiteral(":/res/res/direction-outgoing.png")));
 }
 
 AstCtiCallWidget::CallState AstCtiCallWidget::callState() const
@@ -237,28 +239,49 @@ void AstCtiCallWidget::setCanEditContact(const bool value)
     enableEditContact();
 }
 
+AstCtiCallWidget::CallState AstCtiCallWidget::callStateFromString(const QString& state)
+{
+	if (state == QStringLiteral("Dialing") || state == QStringLiteral("DialingOffhook"))
+		return CallStateDialing;
+	else if (state == QStringLiteral("Ring") ||
+			 state == QStringLiteral("Ringing") ||
+			 state == QStringLiteral("Prering"))
+		return CallStateRinging;
+	else if (state == QStringLiteral("Busy"))
+		return CallStateBusy;
+	else if (state == QStringLiteral("Up"))
+		return CallStateInCall;
+	else
+		return CallStateNone;
+
+	// CallStateOnHold cannot be inferred from Asterisk state
+	// We set it when we receive MusicOnHold event
+}
+
 void AstCtiCallWidget::enableAnswer()
 {
     switch (this->m_callState) {
     case CallStateRinging:
-        ui->callToolButton->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/call-start.png"))));
+		ui->callToolButton->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/call-start.png"))));
         ui->callToolButton->setEnabled(this->m_canAnswer);
         if (this->m_canAnswer)
-            ui->callToolButton->setToolTip("Answer");
+			ui->callToolButton->setToolTip(tr("Answer"));
         else
-            ui->callToolButton->setToolTip("The phone does not support soft answering");
+			ui->callToolButton->setToolTip(
+						tr("The phone does not support soft answering"));
         break;
+	case CallStateDialing:
     case CallStateBusy:
     case CallStateInCall:
     case CallStateOnHold:
-        ui->callToolButton->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/call-stop.png"))));
+		ui->callToolButton->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/call-stop.png"))));
         ui->callToolButton->setEnabled(true);
-        ui->callToolButton->setToolTip("Hang up");
+		ui->callToolButton->setToolTip(tr("Hang up"));
         break;
     default:
-        ui->callToolButton->setIcon(QIcon(QPixmap(QString::fromUtf8(":/res/res/call-start.png"))));
+		ui->callToolButton->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/call-start.png"))));
         ui->callToolButton->setEnabled(true);
-        ui->callToolButton->setToolTip("Answer");
+		ui->callToolButton->setToolTip(tr("Answer"));
         break;
     }
 }
@@ -266,30 +289,37 @@ void AstCtiCallWidget::enableAnswer()
 void AstCtiCallWidget::enableHold()
 {
     switch (this->m_callState) {
-    case CallStateBusy:
+	case CallStateDialing:
+		ui->holdToolButton->setEnabled(false);
+		ui->holdToolButton->setToolTip(
+					tr("Call cannot be put on hold in dialing state"));
+		break;
+	case CallStateBusy:
         ui->holdToolButton->setEnabled(false);
-        ui->holdToolButton->setToolTip("Call cannot be put on hold in busy state");
+		ui->holdToolButton->setToolTip(
+					tr("Call cannot be put on hold in busy state"));
         break;
     case CallStateRinging:
         ui->holdToolButton->setEnabled(false);
-        ui->holdToolButton->setToolTip("Call cannot be put on hold in ringing state");
+		ui->holdToolButton->setToolTip(
+					tr("Call cannot be put on hold in ringing state"));
         break;
     case CallStateInCall:
         ui->holdToolButton->setEnabled(this->m_canHold);
         if (this->m_canHold)
-            ui->holdToolButton->setToolTip("Hold");
+			ui->holdToolButton->setToolTip(tr("Hold"));
         else
-            ui->holdToolButton->setToolTip("Hold is not supported or not allowed");
+			ui->holdToolButton->setToolTip(tr("Hold is not supported or not allowed"));
         ui->holdToolButton->setDown(false);
         break;
     case CallStateOnHold:
         ui->holdToolButton->setEnabled(true);
-        ui->holdToolButton->setToolTip("Resume");
+		ui->holdToolButton->setToolTip(tr("Resume"));
         ui->holdToolButton->setDown(true);
         break;
     default:
         ui->holdToolButton->setEnabled(true);
-        ui->holdToolButton->setToolTip("Hold");
+		ui->holdToolButton->setToolTip(tr("Hold"));
         break;
     }
 }
@@ -297,25 +327,33 @@ void AstCtiCallWidget::enableHold()
 void AstCtiCallWidget::enableConference()
 {
     switch (this->m_callState) {
-    case CallStateBusy:
+	case CallStateDialing:
+		ui->conferenceToolButton->setEnabled(false);
+		ui->conferenceToolButton->setToolTip(
+					tr("Call cannot be added to conference while in dialing state"));
+		break;
+	case CallStateBusy:
         ui->conferenceToolButton->setEnabled(false);
-        ui->conferenceToolButton->setToolTip("Call cannot be added to conference while busy");
+		ui->conferenceToolButton->setToolTip(
+					tr("Call cannot be added to conference while busy"));
         break;
-    case CallStateRinging:
+	case CallStateRinging:
         ui->conferenceToolButton->setEnabled(false);
-        ui->conferenceToolButton->setToolTip("Call cannot be added to conference while in ringing state");
+		ui->conferenceToolButton->setToolTip(
+					tr("Call cannot be added to conference while in ringing state"));
         break;
     case CallStateInCall:
     case CallStateOnHold:
         ui->conferenceToolButton->setEnabled(this->m_canConference);
         if (this->m_canConference)
-            ui->conferenceToolButton->setToolTip("Add to conference");
+			ui->conferenceToolButton->setToolTip(tr("Add to conference"));
         else
-            ui->conferenceToolButton->setToolTip("Conferencing is not supported or not allowed");
+			ui->conferenceToolButton->setToolTip(
+						tr("Conferencing is not supported or not allowed"));
         break;
     default:
         ui->conferenceToolButton->setEnabled(true);
-        ui->conferenceToolButton->setToolTip("Add to conference");
+		ui->conferenceToolButton->setToolTip(tr("Add to conference"));
         break;
     }
 }
@@ -323,22 +361,26 @@ void AstCtiCallWidget::enableConference()
 void AstCtiCallWidget::enableTransfer()
 {
     switch (this->m_callState) {
-    case CallStateBusy:
+	case CallStateDialing:
+		ui->transferToolButton->setEnabled(false);
+		ui->transferToolButton->setToolTip(tr("Transfer is not allowed while busy"));
+		break;
+	case CallStateBusy:
         ui->transferToolButton->setEnabled(false);
-        ui->transferToolButton->setToolTip("Transfer is not allowed while busy");
+		ui->transferToolButton->setToolTip(tr("Transfer is not allowed while dialing"));
         break;
     case CallStateRinging:
     case CallStateInCall:
     case CallStateOnHold:
         ui->transferToolButton->setEnabled(this->m_canTransfer);
         if (this->m_canTransfer)
-            ui->transferToolButton->setToolTip("Transfer");
+			ui->transferToolButton->setToolTip(tr("Transfer"));
         else
-            ui->transferToolButton->setToolTip("Transfer is not supported or not allowed");
+			ui->transferToolButton->setToolTip(tr("Transfer is not supported or not allowed"));
         break;
     default:
         ui->transferToolButton->setEnabled(true);
-        ui->transferToolButton->setToolTip("Transfer");
+		ui->transferToolButton->setToolTip(tr("Transfer"));
         break;
     }
 }
@@ -348,29 +390,30 @@ void AstCtiCallWidget::enableRecord()
     switch (this->m_callState) {
     case CallStateBusy:
         ui->recordToolButton->setEnabled(false);
-        ui->recordToolButton->setToolTip("Recording is not allowed while busy");
+		ui->recordToolButton->setToolTip(tr("Recording is not allowed while busy"));
         break;
-    case CallStateRinging:
+	case CallStateDialing:
+	case CallStateRinging:
         ui->recordToolButton->setEnabled(this->m_canRecord);
         if (this->m_canRecord)
-            ui->recordToolButton->setToolTip("Start recording immediately after answer");
+			ui->recordToolButton->setToolTip(tr("Start recording immediately after answer"));
         else
-            ui->recordToolButton->setToolTip("Recording is not supported or not allowed");
+			ui->recordToolButton->setToolTip(tr("Recording is not supported or not allowed"));
         break;
     case CallStateInCall:
     case CallStateOnHold:
         ui->recordToolButton->setEnabled(this->m_canRecord);
         if (this->m_canRecord)
             if (ui->recordToolButton->isDown())
-                ui->recordToolButton->setToolTip("Stop recording");
+				ui->recordToolButton->setToolTip(tr("Stop recording"));
             else
-                ui->recordToolButton->setToolTip("Record call");
+				ui->recordToolButton->setToolTip(tr("Record call"));
         else
-            ui->recordToolButton->setToolTip("Recording is not supported or not allowed");
+			ui->recordToolButton->setToolTip(tr("Recording is not supported or not allowed"));
         break;
     default:
         ui->recordToolButton->setEnabled(true);
-        ui->recordToolButton->setToolTip("Record");
+		ui->recordToolButton->setToolTip(tr("Record"));
         break;
     }
 }
@@ -379,18 +422,20 @@ void AstCtiCallWidget::enableEditContact()
 {
     switch (this->m_callState) {
     case CallStateBusy:
-    case CallStateRinging:
+	case CallStateDialing:
+	case CallStateRinging:
     case CallStateInCall:
     case CallStateOnHold:
         ui->contactsToolButton->setEnabled(this->m_canEditContact);
         if (this->m_canEditContact)
-            ui->contactsToolButton->setToolTip("Edit contact information");
+			ui->contactsToolButton->setToolTip(tr("Edit contact information"));
         else
-            ui->contactsToolButton->setToolTip("Working with address book is not supported or not allowed");
+			ui->contactsToolButton->setToolTip(
+						tr("Editing address book is not supported or not allowed"));
         break;
     default:
         ui->contactsToolButton->setEnabled(true);
-        ui->contactsToolButton->setToolTip("Edit contact information");
+		ui->contactsToolButton->setToolTip(tr("Edit contact information"));
         break;
     }
 }

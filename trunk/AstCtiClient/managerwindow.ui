@@ -345,16 +345,14 @@ p, li { white-space: pre-wrap; }
        <item>
         <widget class="QTabWidget" name="accountsTabWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>-1</number>
+         </property>
+         <property name="elideMode">
+          <enum>Qt::ElideMiddle</enum>
          </property>
          <property name="documentMode">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="tab">
-          <attribute name="title">
-           <string>Account 1</string>
-          </attribute>
-         </widget>
         </widget>
        </item>
       </layout>
@@ -637,7 +635,7 @@ p, li { white-space: pre-wrap; }
            <x>0</x>
            <y>0</y>
            <width>291</width>
-           <height>138</height>
+           <height>95</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="activeCallsLayout">
@@ -975,6 +973,38 @@ p, li { white-space: pre-wrap; }
          </spacer>
         </item>
         <item>
+         <widget class="QToolButton" name="editSpeedDialsButton">
+          <property name="minimumSize">
+           <size>
+            <width>26</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>26</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>Edit speed dials</string>
+          </property>
+          <property name="icon">
+           <iconset resource="mainresources.qrc">
+            <normaloff>:/res/res/change.png</normaloff>:/res/res/change.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>16</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QToolButton" name="speedDialSearchOptionsButton">
           <property name="minimumSize">
            <size>
@@ -1016,7 +1046,7 @@ p, li { white-space: pre-wrap; }
        </layout>
       </item>
       <item>
-       <widget class="QTabWidget" name="tabWidget">
+       <widget class="QTabWidget" name="speedDialsTabWidget">
         <property name="currentIndex">
          <number>0</number>
         </property>

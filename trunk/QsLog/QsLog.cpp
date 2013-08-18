@@ -80,7 +80,7 @@ static const char* LevelToText(Level theLevel)
 class LogWriterRunnable : public QRunnable
 {
 public:
-    LogWriterRunnable(const QString &message, Level level)
+    LogWriterRunnable(const QString& message, Level level)
         : mMessage(message)
         , mLevel(level) {}
 

@@ -64,24 +64,24 @@ class CtiServerApplication : public QtSingleCoreApplication
     Q_OBJECT
 
 public:
-    CtiServerApplication(const QString &appId, int &argc, char **argv);
+	CtiServerApplication(const QString& appId, int argc, char** argv);
     ~CtiServerApplication();
-    static CtiServerApplication *instance();
+    static CtiServerApplication* instance();
 
 	bool                  getCanStart();
 	bool                  start();
 
 public slots:
-	void                  reloadSettings(AstCtiConfiguration *newConfig);
+	void                  reloadSettings(AstCtiConfiguration* newConfig);
 
 private:
 	Q_DISABLE_COPY(CtiServerApplication)
 	bool                  canStart;
-	CoreTcpServer        *coreTcpServer;
-	ConfigurationChecker *configChecker;
-	bool                  buildCoreTcpServer(AstCtiConfiguration *config);
+	CoreTcpServer*        coreTcpServer;
+	ConfigurationChecker* configChecker;
+	bool                  buildCoreTcpServer(AstCtiConfiguration* config);
 	QString               readDatabaseVersion();
-	bool                  createDatabaseConnection(const QString &iniFilePath);
+	bool                  createDatabaseConnection(const QString& iniFilePath);
 };
 
 #endif // CTISERVERAPPLICATION_H

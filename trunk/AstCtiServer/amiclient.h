@@ -44,8 +44,13 @@
 #include <QHash>
 
 #include "astcticonfiguration.h"
+#include "astctiextension.h"
 #include "amicommand.h"
 #include "astctichannel.h"
+
+typedef QHash<QString, AstCtiChannel*> AstCtiChannelHash;
+typedef QHash<int, AmiCommand*> AmiCommandHash;
+
 enum AmiClientStatus {
 	AmiStatusLoggedOff,
 	AmiStatusLoggingIn,
@@ -57,6 +62,7 @@ enum AmiClientStatus {
 Q_DECLARE_METATYPE(AmiClientStatus)
 
 enum AmiEvent {
+	AmiEventNone,
 	AmiEventFullyBooted,
 	AmiEventShutdown,
 	AmiEventNewchannel,
@@ -84,23 +90,6 @@ enum AmiConnectionStatus {
 };
 Q_DECLARE_METATYPE(AmiConnectionStatus)
 
-//	Value   State            Description
-//	0	    NOT_INUSE        Channel is not in use (free)
-//	1	    INUSE            One or more devices are in use
-//	2	    BUSY             All devices are busy
-//	4	    UNAVAILABLE      All devices are unavailable
-//	8	    RINGING          One or more devices are ringing
-enum ExtensionStatus {
-	ExtensionStatusNotInUse = 0,
-	ExtensionStatusInUse = 1,
-	ExtensionStatusBusy = 2,
-	ExtensionStatusUnavailable = 4,
-	ExtensionStatusRinging = 8
-};
-Q_DECLARE_FLAGS(AmiExtensionStatus, ExtensionStatus)
-Q_DECLARE_OPERATORS_FOR_FLAGS(AmiExtensionStatus)
-Q_DECLARE_METATYPE(AmiExtensionStatus)
-
 class AmiClient : public QObject
 {
     Q_OBJECT
@@ -111,62 +100,62 @@ class AmiClient : public QObject
 public:
 	explicit AmiClient();
 	~AmiClient();
-	static QString                  getEventName(const AmiEvent event);
-	void                            stop();
+
+	static QString     getEventName(const AmiEvent event);
+	void               stop();
 
 public slots:
-	void                            run();
-	void                            setParameters(AstCtiConfiguration *config);
-	void                            sendCommandToAsterisk(AmiCommand *command);
+	void               run();
+	void               setParameters(AstCtiConfiguration* config);
+	void               sendCommandToAsterisk(AmiCommand* command);
 
 signals:
-	void                            amiChannelEvent(AmiEvent eventId, AstCtiChannel *channel,
-													QString data);
-	void                            amiStatusEvent(AmiEvent eventId, QString object,
-												   QString status);
-	void                            amiResponse(AmiCommand *command);
-	void                            amiConnectionStatusChange(AmiConnectionStatus status);
+	void               amiChannelEvent(AmiEvent eventId, AstCtiChannel* channel);
+	void               amiStatusEvent(AmiEvent eventId, QString object, QString status);
+	void               amiResponse(AmiCommand* command);
+	void               amiConnectionStatusChange(AmiConnectionStatus status);
 
 private:
 	Q_DISABLE_COPY(AmiClient)
-	QString                         amiHost;
-	quint16                         amiPort;
-	QString                         amiUser;
-	QString                         amiSecret;
-	quint16                         amiConnectTimeout;
-	quint16                         amiReadTimeout;
-	quint16                         amiConnectRetryAfter;
+	QString            amiHost;
+	quint16            amiPort;
+	QString            amiUser;
+	QString            amiSecret;
+	quint16            amiConnectTimeout;
+	quint16            amiConnectRetryAfter;
 
-	QTcpSocket                     *localSocket;
-	QHash<QString, AstCtiChannel*>  freeChannels;
-	QHash<QString, AstCtiChannel*>  bridgedChannels;
-	QHash<int, AmiCommand*>         pendingAmiCommands;
-	int                             currentActionId;
-	bool                            isRunning;
-    QString                         dataBuffer;
-	AmiClientStatus                 amiClientStatus;
-	bool                            sendDataToAsterisk(const QString &data);
-	void                            buildSocket();
-	void                            parseDataReceivedFromAsterisk();
-	void                            performLogin();
-	void                            performLogoff();
-	QHash<QString, QString>*        hashFromMessage(QString data);
-	AstCtiChannel                  *addChannelToBridge(const int bridgeId, const QString &uniqueId,
-													   const QString &channelName);
-	void                            removeChannelFromBridge(const QString &uniqueId,
-															const QString &channelName);
-	bool                            isLocalChannel(const QString &channelName);
-	void                            evaluateEvent(QHash<QString, QString> *event);
-	void                            evaluateResponse(QHash<QString, QString> *response);
-	QString                         socketStateToString(QAbstractSocket::SocketState socketState);
-	QString							eventToString(QHash<QString, QString> *event);
-	QString							extensionStatusToString(const AmiExtensionStatus status);
-	void							delay(const int secs);
+	QTcpSocket*        localSocket;
+	AstCtiChannelHash  freeChannels;
+	AstCtiChannelHash  bridgedChannels;
+	AmiCommandHash     pendingAmiCommands;
+	int                currentActionId;
+	bool               isRunning;
+	bool               reconnectWarningIssued;
+	QString            dataBuffer;
+	AmiClientStatus    amiClientStatus;
+	bool               sendDataToAsterisk(const QString& data);
+	void               buildSocket();
+	void               parseDataReceivedFromAsterisk();
+	void               performLogin();
+	void               performLogoff();
+	QStringHash        hashFromMessage(const QString& data);
+	AstCtiChannel*     addChannelToBridge(const int bridgeId, const QString& uniqueId,
+													   const QString& channelName);
+	void               removeChannelFromBridge(const QString& uniqueId,
+															const QString& channelName);
+	bool               isLocalChannel(const QString& channelName);
+	void               evaluateEvent(const QStringHash& event);
+	void               evaluateResponse(const QStringHash& response);
+	QString            socketStateToString(QAbstractSocket::SocketState socketState);
+	QString            eventToString(const QStringHash& event);
+	QString	           extensionStatusToString(const AstCtiExtensionStatus status);
+	void               delay(const int secs);
 
 private slots:
-    void                            socketStateChanged(QAbstractSocket::SocketState socketState);
-	void                            socketError(QAbstractSocket::SocketError error);
-    void                            socketDisconnected();
+	void               receiveData();
+	void               socketDisconnected();
+	void               socketStateChanged(QAbstractSocket::SocketState socketState);
+	void               socketError(QAbstractSocket::SocketError error);
 };
 
 #endif // AMICLIENT_H

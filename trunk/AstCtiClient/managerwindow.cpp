@@ -49,11 +49,13 @@
 #include "coreconstants.h"
 #include "aboutdialog.h"
 #include "astctidefaultstyle.h"
+#include "astcticallwidget.h"
+#include "astctispeeddialwidget.h"
 #include "managerwindow.h"
 #include "ui_managerwindow.h"
 
-ManagerWindow::ManagerWindow(const QString &userName) :
-	CtiClientWindow(userName), ui(new Ui::ManagerWindow)
+ManagerWindow::ManagerWindow(AstCtiConfiguration* config) :
+	CtiClientWindow(config), ui(new Ui::ManagerWindow)
 {
     ui->setupUi(this);
 
@@ -69,26 +71,26 @@ ManagerWindow::ManagerWindow(const QString &userName) :
 	//        "border: 1px solid rgb(0, 102, 153);}");
 
     titleDummyWidget = new QWidget();
-    titleDummyWidget->setObjectName(QString::fromUtf8("titleWidget"));
+	titleDummyWidget->setObjectName(QStringLiteral("titleWidget"));
     titleDummyWidget->setMinimumSize(ui->titleWidget->minimumSize());
     titleDummyWidget->setMaximumSize(ui->titleWidget->maximumSize());
     titleStackedLayout = new QStackedLayout(titleDummyWidget);
-    titleStackedLayout->setObjectName(QString::fromUtf8("titleStackedLayout"));
+	titleStackedLayout->setObjectName(QStringLiteral("titleStackedLayout"));
     titleStackedLayout->setStackingMode(QStackedLayout::StackAll);
     titleStackedLayout->setContentsMargins(0, 0, 0, 0);
     titleStackedLayout->addWidget(ui->aboutWidget);
     titleStackedLayout->addWidget(ui->titleWidget);
 //    accountsLayout = new QHBoxLayout(ui->accountsWidget);
-//    accountsLayout->setObjectName(QString::fromUtf8("accountsLayout"));
+//    accountsLayout->setObjectName(QStringLiteral("accountsLayout"));
 //    accountsLayout->setContentsMargins(46, 2, 0, 0);
 //    accountsTabBar = new QTabBar(ui->accountsWidget);
-//    accountsTabBar->setObjectName(QString::fromUtf8("accountsTabBar"));
+//    accountsTabBar->setObjectName(QStringLiteral("accountsTabBar"));
 //    accountsTabBar->setExpanding(false);
 //    accountsTabBar->setDrawBase(false);
 //    accountsTabBar->addTab("Account 1");
 //    accountsLayout->addWidget(accountsTabBar);
     mainLayout = new QVBoxLayout(this);
-    mainLayout->setObjectName(QString::fromUtf8("mainLayout"));
+	mainLayout->setObjectName(QStringLiteral("mainLayout"));
     mainLayout->setContentsMargins(borderWidth, borderWidth, borderWidth, borderWidth);
     mainLayout->setSpacing(borderWidth);
     mainLayout->addWidget(titleDummyWidget);
@@ -110,10 +112,12 @@ ManagerWindow::ManagerWindow(const QString &userName) :
     this->connectSlots();
     this->readSettings();
 
+	this->newConfig(config);
+
     //TEMP
     //TableWidget will be replaced by TableView
     this->ui->contactsTableWidget->setHorizontalHeaderLabels(QStringList() << "Name" << "Number");
-    QTableWidgetItem *newItem;
+    QTableWidgetItem* newItem;
     newItem = new QTableWidgetItem(tr("Contact1"));
     this->ui->contactsTableWidget->setItem(0, 0, newItem);
     newItem = new QTableWidgetItem(tr("123456789"));
@@ -164,9 +168,92 @@ void ManagerWindow::connectSlots()
 			this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 }
 
-void ManagerWindow::enableControls(bool enable)
+void ManagerWindow::newConfig(AstCtiConfiguration* config)
 {
-    //TODO
+	CtiClientWindow::newConfig(config);
+
+	this->ui->accountsTabWidget->setUpdatesEnabled(false);
+
+	const int listSize = config->extensions.size();
+
+	if (this->ui->accountsTabWidget->count() == 0) {
+		// We only set accounts the first time this procedure is called
+		// After than, only extension name can change
+		// Changing extension number(s) would cause dropping the connection
+		for (int i = 0; i < listSize; i++) {
+			AstCtiExtensionPtr extension = config->extensions.at(i);
+
+			QWidget* tab = new QWidget();
+			tab->setObjectName("tab" + extension->number);
+			this->ui->accountsTabWidget->addTab(tab, QString());
+		}
+	}
+	for (int i = 0; i < listSize; i++) {
+		AstCtiExtensionPtr extension = config->extensions.at(i);
+		QString ext = extension->number;
+		if (!extension->name.isEmpty())
+			ext = QString("%1 (%2)").arg(extension->name).arg(ext);
+		this->ui->accountsTabWidget->setTabText(i, ext);
+	}
+
+	this->ui->accountsTabWidget->setUpdatesEnabled(true);
+
+	this->ui->speedDialsTabWidget->setUpdatesEnabled(false);
+
+	for (int i = 0; i < this->ui->speedDialsTabWidget->count(); i++)
+		delete this->ui->speedDialsTabWidget->widget(i);
+	this->ui->speedDialsTabWidget->clear();
+
+	QString lastGroup = "";
+	QWidget* newTab = 0;
+
+	AstCtiSpeedDialPtrMap::const_iterator sdIterator = config->speedDials.constBegin();
+	while (sdIterator != config->speedDials.constEnd()) {
+		AstCtiSpeedDialPtr speedDial = sdIterator.value();
+
+		if (lastGroup != speedDial->groupName) {
+			lastGroup = speedDial->groupName;
+			newTab = new QWidget();
+			newTab->setObjectName(lastGroup + "Tab");
+			this->ui->speedDialsTabWidget->addTab(newTab, lastGroup);
+		}
+
+		AstCtiSpeedDialWidget* sdWidget = new AstCtiSpeedDialWidget(newTab);
+
+		sdWidget->setName(speedDial->name);
+		sdWidget->setNumber(speedDial->number);
+		sdWidget->setBusyLampField(speedDial->isBlf);
+
+		sdIterator++;
+	}
+
+	this->ui->speedDialsTabWidget->setUpdatesEnabled(true);
+}
+
+void ManagerWindow::receiveChannelEvent(AstCtiChannel* channel)
+{
+	const QString eventName = channel->lastEvent;
+
+	if (eventName == QStringLiteral("NewChannel")) {
+		AstCtiCallWidget* callWidget = new AstCtiCallWidget(this->ui->callsScrollArea);
+		callWidget->setCallerIdNumber(channel->callerIdNum);
+		callWidget->setCallerIdName(channel->callerIdName);
+		callWidget->setCallDirection(channel->dialedLineNum.isEmpty()
+									 ? AstCtiCallWidget::CallDirectionIncoming
+									 : AstCtiCallWidget::CallDirectionOutgoing);
+		callWidget->setCallState(AstCtiCallWidget::callStateFromString(channel->state));
+		// TODO: Answering is currently not possible because there is no way to tell the
+		// TODO: ringing phone to answer. Asterisk 11 may include this functionality
+		callWidget->setCanAnswer(false);
+		// There is currently no way to tell the phone to hold while in-call
+		// Hold will be implemented via parking feature
+		callWidget->setCanHold(true);
+		callWidget->setCanConference(true);
+		callWidget->setCanTransfer(true);
+		callWidget->setCanRecord(this->canRecord);
+		// TODO: Change when contacs are implemented
+		callWidget->setCanEditContact(true);
+	}
 }
 
 void ManagerWindow::readSettings()
@@ -174,10 +261,13 @@ void ManagerWindow::readSettings()
     QSettings settings(APP_NAME);
 
     settings.beginGroup("ManagerWindow." + this->userName);
-    this->restoreGeometry(settings.value("geometry").toByteArray());
-    ui->centerSplitter->restoreState(settings.value("centerSplitterSizes").toByteArray());
-    ui->leftSplitter->restoreState(settings.value("leftSplitterSizes").toByteArray());
-    ui->rightSplitter->restoreState(settings.value("rightSplitterSizes").toByteArray());
+	this->restoreGeometry(settings.value(QStringLiteral("geometry")).toByteArray());
+	ui->centerSplitter->restoreState(
+				settings.value(QStringLiteral("centerSplitterSizes")).toByteArray());
+	ui->leftSplitter->restoreState(
+				settings.value(QStringLiteral("leftSplitterSizes")).toByteArray());
+	ui->rightSplitter->restoreState(
+				settings.value(QStringLiteral("rightSplitterSizes")).toByteArray());
     settings.endGroup();
 }
 
@@ -186,11 +276,16 @@ void ManagerWindow::writeSettings()
     QSettings settings(APP_NAME);
 
     settings.beginGroup("ManagerWindow." + this->userName);
-    settings.setValue("geometry", this->saveGeometry());
-    settings.setValue("centerSplitterSizes", ui->centerSplitter->saveState());
-    settings.setValue("leftSplitterSizes", ui->leftSplitter->saveState());
-    settings.setValue("rightSplitterSizes", ui->rightSplitter->saveState());
+	settings.setValue(QStringLiteral("geometry"), this->saveGeometry());
+	settings.setValue(QStringLiteral("centerSplitterSizes"), ui->centerSplitter->saveState());
+	settings.setValue(QStringLiteral("leftSplitterSizes"), ui->leftSplitter->saveState());
+	settings.setValue(QStringLiteral("rightSplitterSizes"), ui->rightSplitter->saveState());
     settings.endGroup();
+}
+
+void ManagerWindow::enableControls(bool enable)
+{
+	//TODO
 }
 
 void ManagerWindow::showHelp()
@@ -207,22 +302,22 @@ void ManagerWindow::showMaxRestore()
     }
 }
 
-void ManagerWindow::changeEvent(QEvent *e)
+void ManagerWindow::changeEvent(QEvent* e)
 {
     if (e->type() == QEvent::WindowStateChange) {
         if (this->isMaximized()) {
 			this->ui->maximizeButton->setIcon(
-					QIcon(QPixmap(QString::fromUtf8(":/res/res/window-restore.png"))));
-            this->ui->maximizeButton->setToolTip(trUtf8("Restore"));
+					QIcon(QPixmap(QStringLiteral(":/res/res/window-restore.png"))));
+			this->ui->maximizeButton->setToolTip(tr("Restore"));
         } else {
 			this->ui->maximizeButton->setIcon(
-					QIcon(QPixmap(QString::fromUtf8(":/res/res/window-maximize.png"))));
-            this->ui->maximizeButton->setToolTip(trUtf8("Maximize"));
+					QIcon(QPixmap(QStringLiteral(":/res/res/window-maximize.png"))));
+			this->ui->maximizeButton->setToolTip(tr("Maximize"));
         }
     }
 }
 
-void ManagerWindow::resizeEvent(QResizeEvent *e)
+void ManagerWindow::resizeEvent(QResizeEvent* e)
 {
     if (!this->isFullScreen() && !this->isMaximized()) {
 		//Round corners
@@ -298,7 +393,7 @@ void ManagerWindow::resizeEvent(QResizeEvent *e)
 //    }
 }
 
-void ManagerWindow::mouseMoveEvent(QMouseEvent *e)
+void ManagerWindow::mouseMoveEvent(QMouseEvent* e)
 {
     if (this->dragOrigin != QPoint(-1, -1)) {
         int dx = e->globalX() - this->dragOrigin.x();
@@ -352,7 +447,7 @@ void ManagerWindow::mouseMoveEvent(QMouseEvent *e)
     }
 }
 
-void ManagerWindow::mousePressEvent(QMouseEvent *e)
+void ManagerWindow::mousePressEvent(QMouseEvent* e)
 {
     //Recheck if mouse position is within border
     int x = e->x();
@@ -368,19 +463,19 @@ void ManagerWindow::mousePressEvent(QMouseEvent *e)
         this->dragOrigin = e->globalPos();
 }
 
-void ManagerWindow::mouseReleaseEvent(QMouseEvent *)
+void ManagerWindow::mouseReleaseEvent(QMouseEvent* )
 {
     this->dragOrigin = QPoint(-1, -1);
 }
 
-bool ManagerWindow::eventFilter(QObject *object, QEvent *e)
+bool ManagerWindow::eventFilter(QObject* object, QEvent* e)
 {
     bool accepted = false;
 
     QEvent::Type type = e->type();
 
     if (object == this->ui->captionLabel) {
-		QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(e);
+		QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(e);
 
         if (isValidDrag(mouseEvent)) {
             this->dragOrigin = mouseEvent->globalPos();

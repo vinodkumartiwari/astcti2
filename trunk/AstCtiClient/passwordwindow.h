@@ -53,17 +53,17 @@ namespace Ui {
 class PasswordWindow : public QDialog {
     Q_OBJECT
 public:
-    PasswordWindow(QWidget *parent = 0);
+    PasswordWindow(QWidget* parent = 0);
     ~PasswordWindow();
 
     QString oldPass;
     QString newPass;
 
 protected:
-    void changeEvent(QEvent *e);
+    void changeEvent(QEvent* e);
 
 private:
-    Ui::PasswordWindow *ui;
+    Ui::PasswordWindow* ui;
 
 private slots:
     void accepting();

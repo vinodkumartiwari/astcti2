@@ -42,9 +42,9 @@
 #include "cticlientapplication.h"
 #include "astctidefaultstyle.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    CtiClientApplication application("AsteriskCTIClient", argc, argv);
+	CtiClientApplication application(QStringLiteral("AsteriskCTIClient"), argc, argv);
 
     //Check if another instance is already running
     if (application.isRunning()) {
@@ -55,8 +55,8 @@ int main(int argc, char *argv[])
 
 	//QApplication::setStyle(new AstCtiDefaultStyle);
 
-    //If application encounters any error in constructor, showLoginWindow() will return false
-	if (!application.showLoginWindow())
+	//If application encounters any error in constructor, canStart will be false
+	if (!application.canStart)
         return 1;
 
     return application.exec();

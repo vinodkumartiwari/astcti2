@@ -43,15 +43,15 @@
 #include "db.h"
 
 //Define static variables
-QSqlDatabase *DB::connection;
+QSqlDatabase* DB::connection;
 bool DB::supportsTransactions;
 bool DB::inTransaction;
 
 //Creates a database connection and adds it to the list of connections for later use
-bool DB::buildConnection(const QString &host, quint16 &port,
-						 const QString &user, const QString &pass, const QString &database)
+bool DB::buildConnection(const QString& host, const quint16 port,
+						 const QString& user, const QString& pass, const QString& database)
 {
-	connection = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL", dbConnectionName));
+	connection = new QSqlDatabase(QSqlDatabase::addDatabase("QPSQL", dbConnectionName));
 
 	if(connection->isValid()) {
 		connection->setHostName(host);
@@ -75,7 +75,7 @@ bool DB::openConnection()
 {
 	if (!connection->isOpen())
 		if (!connection->open()) {
-			QLOG_ERROR() << "Unable to open MySQL database:" << connection->lastError();
+			QLOG_ERROR() << "Unable to open database:" << connection->lastError();
 		}
 
 	return connection->isOpen();
@@ -161,9 +161,9 @@ bool DB::rollbackTransaction()
 
 //Executes SQL command with optional list of parameters
 //Returns QSqlQuery object
-QSqlQuery *DB::execSQL(const QString &sql, const QVariantList &params, bool *ok)
+QSqlQuery* DB::execSQL(const QString& sql, const QVariantList& params, bool* ok)
 {
-	QSqlQuery *query = new QSqlQuery(*connection);
+	QSqlQuery* query = new QSqlQuery(*connection);
 	if (!openConnection()) {
 		*ok = false;
 		return query;
@@ -199,17 +199,17 @@ QSqlQuery *DB::execSQL(const QString &sql, const QVariantList &params, bool *ok)
 }
 
 //Executes SQL command and returns a single value
-QVariant DB::readScalar(const QString &sql, bool *ok)
+QVariant DB::readScalar(const QString& sql, bool* ok)
 {
     return readScalar(sql, QVariantList(), ok);
 }
 
 //Executes SQL command with parameters and returns a single value
-QVariant DB::readScalar(const QString &sql, const QVariantList &params, bool *ok)
+QVariant DB::readScalar(const QString& sql, const QVariantList& params, bool* ok)
 {
 	QVariant result;
 
-	QSqlQuery *query = execSQL(sql, params, ok);
+	QSqlQuery* query = execSQL(sql, params, ok);
 
 	if (*ok) {
 		if (query->first())
@@ -225,17 +225,17 @@ QVariant DB::readScalar(const QString &sql, const QVariantList &params, bool *ok
 }
 
 //Executes SQL command and returns a list of values
-QVariantList DB::readList(const QString &sql, bool *ok)
+QVariantList DB::readList(const QString& sql, bool* ok)
 {
     return readList(sql, QVariantList(), ok);
 }
 
 //Executes SQL command with parameters and returns a list of values
-QVariantList DB::readList(const QString &sql, const QVariantList &params, bool *ok)
+QVariantList DB::readList(const QString& sql, const QVariantList& params, bool* ok)
 {
 	QVariantList result;
 
-	QSqlQuery *query = execSQL(sql, params, ok);
+	QSqlQuery* query = execSQL(sql, params, ok);
 
 	if (*ok)
 		while (query->next())
@@ -247,17 +247,17 @@ QVariantList DB::readList(const QString &sql, const QVariantList &params, bool *
 }
 
 //Executes SQL command and returns a single row as QVariantList
-QVariantList DB::readRow(const QString &sql, bool *ok)
+QVariantList DB::readRow(const QString& sql, bool* ok)
 {
 	return readRow(sql, QVariantList(), ok);
 }
 
 //Executes SQL command and returns a single row as QVariantList
-QVariantList DB::readRow(const QString &sql, const QVariantList &params, bool *ok)
+QVariantList DB::readRow(const QString& sql, const QVariantList& params, bool* ok)
 {
 	QVariantList result;
 
-	QSqlQuery *query = execSQL(sql, params, ok);
+	QSqlQuery* query = execSQL(sql, params, ok);
 
 	if (*ok) {
 		*ok = query->first();
@@ -274,17 +274,17 @@ QVariantList DB::readRow(const QString &sql, const QVariantList &params, bool *o
 }
 
 //Executes SQL command and returns values in a form of a table
-QList<QVariantList> DB::readTable(const QString &sql, bool *ok)
+QVariantTable DB::readTable(const QString& sql, bool* ok)
 {
     return readTable(sql, QVariantList(), ok);
 }
 
 //Executes SQL command with parameters and returns values in form of a table
-QList<QVariantList> DB::readTable(const QString &sql, const QVariantList &params, bool *ok)
+QVariantTable DB::readTable(const QString& sql, const QVariantList& params, bool* ok)
 {
-	QList<QVariantList> result;
+	QVariantTable result;
 
-	QSqlQuery *query = execSQL(sql, params, ok);
+	QSqlQuery* query = execSQL(sql, params, ok);
 
 	if (*ok) {
 		const int columnCount = query->record().count();
@@ -305,19 +305,19 @@ QList<QVariantList> DB::readTable(const QString &sql, const QVariantList &params
 
 //Executes SQL command
 //Returns the number of affected rows on success or -1 on failure
-int DB::executeNonQuery(const QString &sql)
+int DB::executeNonQuery(const QString& sql)
 {
 	return executeNonQuery(sql, QVariantList());
 }
 
 //Executes SQL command with parameters
 //Returns the number of affected rows on success or -1 on failure
-int DB::executeNonQuery(const QString &sql, const QVariantList &params)
+int DB::executeNonQuery(const QString& sql, const QVariantList& params)
 {
 	int result = -1;
 
 	bool ok;
-	QSqlQuery *query = execSQL(sql, params, &ok);
+	QSqlQuery* query = execSQL(sql, params, &ok);
 	if (ok)
 		result = query->numRowsAffected();
 

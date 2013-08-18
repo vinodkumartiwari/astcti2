@@ -58,14 +58,14 @@
 ** WebPage
 */
 
-WebPage::WebPage(QObject *parent)
+WebPage::WebPage(QObject* parent)
     : QWebPage(parent)
 {
-//    connect(this, SIGNAL(unsupportedContent(QNetworkReply *)),
-//            this, SLOT(handleUnsupportedContent(QNetworkReply *)));
+//    connect(this, SIGNAL(unsupportedContent(QNetworkReply* )),
+//            this, SLOT(handleUnsupportedContent(QNetworkReply* )));
 }
 
-bool WebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request,
+bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest &request,
 									  NavigationType type)
 {
     if (frame == mainFrame()) {
@@ -75,7 +75,7 @@ bool WebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &r
     return QWebPage::acceptNavigationRequest(frame, request, type);
 }
 //
-//QWebPage *WebPage::createWindow(QWebPage::WebWindowType type)
+//QWebPage* WebPage::createWindow(QWebPage::WebWindowType type)
 //{
 //    Q_UNUSED(type);
 //    /*switch(type)
@@ -86,14 +86,14 @@ bool WebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &r
 //        case QWebPage::WebModalDialog:
 //            break;
 //    }*/
-//    BrowserWindow *w = new BrowserWindow( qobject_cast<QWidget*>(this->parent()) );
+//    BrowserWindow* w = new BrowserWindow( qobject_cast<QWidget*>(this->parent()) );
 //    w->show();
 //    return w->currentView()->webPage();
 //}
 
 #if !defined(QT_NO_UITOOLS)
-QObject *WebPage::createPlugin(const QString &classId, const QUrl &url,
-							   const QStringList &paramNames, const QStringList &paramValues)
+QObject* WebPage::createPlugin(const QString& classId, const QUrl &url,
+							   const QStringList& paramNames, const QStringList& paramValues)
 {
     Q_UNUSED(url);
     Q_UNUSED(paramNames);
@@ -103,12 +103,12 @@ QObject *WebPage::createPlugin(const QString &classId, const QUrl &url,
 }
 #endif // !defined(QT_NO_UITOOLS)
 
-void WebPage::handleUnsupportedContent(QNetworkReply *reply)
+void WebPage::handleUnsupportedContent(QNetworkReply* reply)
 {
-    QFile file(QLatin1String(":/res/notfound.html"));
+	QFile file(QStringLiteral(":/res/notfound.html"));
     bool isOpened = file.open(QIODevice::ReadOnly);
     Q_ASSERT(isOpened);
-    QString title = trUtf8("Error loading page: %1").arg(reply->url().toString());
+	QString title = tr("Error loading page: %1").arg(reply->url().toString());
     QString html = QString(QLatin1String(file.readAll()))
                         .arg(title)
                         .arg(reply->errorString())
@@ -118,21 +118,21 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply)
     imageBuffer.open(QBuffer::ReadWrite);
     QIcon icon = view()->style()->standardIcon(QStyle::SP_MessageBoxWarning, 0, view());
     QPixmap pixmap = icon.pixmap(QSize(32,32));
-    if (pixmap.save(&imageBuffer, "PNG")) {
-        html.replace(QLatin1String("IMAGE_BINARY_DATA_HERE"),
+	if (pixmap.save(&imageBuffer, "PNG")) {
+		html.replace(QStringLiteral("IMAGE_BINARY_DATA_HERE"),
                      QString(QLatin1String(imageBuffer.buffer().toBase64())));
     }
 
     QList<QWebFrame*> frames;
     frames.append(mainFrame());
     while (!frames.isEmpty()) {
-        QWebFrame *frame = frames.takeFirst();
+        QWebFrame* frame = frames.takeFirst();
         if (frame->url() == reply->url()) {
             frame->setHtml(html, reply->url());
             return;
         }
-        QList<QWebFrame *> children = frame->childFrames();
-        foreach(QWebFrame *frame, children)
+        QList<QWebFrame* > children = frame->childFrames();
+        foreach(QWebFrame* frame, children)
             frames.append(frame);
     }
     if (m_loadingUrl == reply->url()) {
@@ -157,8 +157,8 @@ WebView::WebView(QWidget* parent)
 			this, SIGNAL(urlChanged(const QUrl &)));
 //	connect(m_page, SIGNAL(downloadRequested(const QNetworkRequest &)),
 //			this, SLOT(downloadRequested(const QNetworkRequest &)));
-	connect(m_page, SIGNAL(unsupportedContent(QNetworkReply *)),
-			m_page, SLOT(handleUnsupportedContent(QNetworkReply *)));
+	connect(m_page, SIGNAL(unsupportedContent(QNetworkReply* )),
+			m_page, SLOT(handleUnsupportedContent(QNetworkReply* )));
 	m_page->setForwardUnsupportedContent(true);
 	m_page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
@@ -185,7 +185,7 @@ void WebView::loadUrl(const QUrl &url)
     load(url);
 }
 
-QString WebView::lastStatusBarText() const
+const QString& WebView::lastStatusBarText() const
 {
     return m_statusBarText;
 }
@@ -193,13 +193,13 @@ QString WebView::lastStatusBarText() const
 QUrl WebView::url() const
 {
     QUrl url = QWebView::url();
-    if (!url.isEmpty())
-        return url;
+	if (url.isEmpty())
+		url = m_initialUrl;
 
-    return m_initialUrl;
+	return url;
 }
 
-void WebView::setStatusBarText(const QString &message)
+void WebView::setStatusBarText(const QString& message)
 {
     m_statusBarText = message;
 }

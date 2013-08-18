@@ -18,7 +18,6 @@ SOURCES += main.cpp \
     webview.cpp \
     argumentlist.cpp \
     loginwindow.cpp \
-    astctichannelxmlparser.cpp \
     compactwindow.cpp \
     passwordwindow.cpp \
     managerwindow.cpp \
@@ -37,7 +36,6 @@ HEADERS += \
     loginwindow.h \
     astcticommand.h \
     astctichannel.h \
-    astctichannelxmlparser.h \
     compactwindow.h \
     passwordwindow.h \
     managerwindow.h \

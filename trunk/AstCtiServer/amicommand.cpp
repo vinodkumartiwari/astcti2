@@ -42,7 +42,7 @@
 #include "QsLog.h"
 #include "amicommand.h"
 
-AmiCommand::AmiCommand(AmiAction action, QObject *parent) : QObject(parent)
+AmiCommand::AmiCommand(AmiAction action, QObject* parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating new AMI command" << getActionName(action);
 
@@ -60,21 +60,86 @@ AmiCommand::~AmiCommand()
 	delete this->variables;
 }
 
-QString AmiCommand::getActionName(const AmiAction action) {
+void AmiCommand::addParameter(const QString& name, const QString& value)
+{
+	if (this->parameters == 0)
+		this->parameters = new QStringHash;
+
+	this->parameters->insert(name, value);
+}
+
+void AmiCommand::addVariable(const QString& name, const QString& value)
+{
+	if (this->variables == 0)
+		this->variables = new QStringHash;
+
+	this->variables->insert(name, value);
+}
+
+QString AmiCommand::getActionName(const AmiAction action)
+{
+	//We use a variable to exploit NRVO
+	QString actionName;
+
 	switch (action) {
 	case AmiActionLogin:
-		return "Login";
+		actionName = QStringLiteral("Login");
+		break;
 	case AmiActionLogoff:
-		return "Logoff";
+		actionName = QStringLiteral("Logoff");
+		break;
 	case AmiActionOriginate:
-		return "Originate";
+		actionName = QStringLiteral("Originate");
+		break;
 	case AmiActionQueueAdd:
-		return "QueueAdd";
+		actionName = QStringLiteral("QueueAdd");
+		break;
 	case AmiActionQueuePause:
-		return "QueuePause";
+		actionName = QStringLiteral("QueuePause");
+		break;
 	case AmiActionQueueRemove:
-		return "QueueRemove";
+		actionName = QStringLiteral("QueueRemove");
+		break;
+	case AmiActionSipShowPeer:
+		actionName = QStringLiteral("SIPshowpeer");
+		break;
+	case AmiActionExtensionState:
+		actionName = QStringLiteral("ExtensionState");
+		break;
 	default:
-		return "";
+		actionName = QStringLiteral("");
+		break;
 	}
+
+	return actionName;
+}
+
+QString AmiCommand::toString(const int actionId) const
+{
+	QString data = QStringLiteral("");
+
+	//Define action
+	data.append(QString("Action:%1\r\n").arg(AmiCommand::getActionName(this->action)));
+	//Add action ID
+	data.append(QString("ActionId:%1\r\n").arg(actionId));
+	//Add parameters, if any
+	if (this->parameters != 0) {
+		QHashIterator<QString, QString> i(*this->parameters);
+		while (i.hasNext()) {
+			i.next();
+			data.append(QString("%1:%2\r\n").arg(i.key()).arg(i.value()));
+		}
+	}
+	//Add variables, if any
+	if (this->variables != 0) {
+		QHashIterator<QString, QString> i(*this->variables);
+		while (i.hasNext()) {
+			i.next();
+			data.append(QString("Variable:%1=%2\r\n").arg(i.key()).arg(i.value()));
+		}
+	}
+	//End command
+	data.append(QStringLiteral("\r\n"));
+
+	return data;
 }
