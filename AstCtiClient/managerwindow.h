@@ -65,7 +65,9 @@ public:
 
 public slots:
 	virtual void newConfig(AstCtiConfiguration* config);
-	virtual void receiveChannelEvent(AstCtiChannel* channel);
+	virtual void handleChannelEvent(AstCtiChannel* channel);
+	virtual void pause();
+	virtual void agentStatusChanged(const QString& channelName, const AstCtiAgentStatus status);
 
 	void showHelp();
     void showMaxRestore();
@@ -86,10 +88,12 @@ private:
 //    QHBoxLayout* accountsLayout;
 //    QTabBar* accountsTabBar;
 
-    void connectSlots();
-    void enableControls(bool enable);
-    void writeSettings();
-    void readSettings();
+	virtual void connectSlots();
+	virtual void enableControls(const bool enable);
+	virtual void writeSettings();
+	virtual void readSettings();
+
+	bool isCallCenter;
 
     bool resizeLeft;
     bool resizeRight;

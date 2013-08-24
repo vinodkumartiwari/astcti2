@@ -47,7 +47,7 @@ AmiCommand::AmiCommand(AmiAction action, QObject* parent) : QObject(parent)
 	QLOG_TRACE() << "Creating new AMI command" << getActionName(action);
 
 	this->action = action;
-	this->exten = "";
+	this->channelName = "";
 	this->parameters = 0;
 	this->variables = 0;
 }
@@ -58,6 +58,11 @@ AmiCommand::~AmiCommand()
 
 	delete this->parameters;
 	delete this->variables;
+}
+
+QString AmiCommand::getParameter(const QString& name) const
+{
+	return this->parameters->value(name);
 }
 
 void AmiCommand::addParameter(const QString& name, const QString& value)
@@ -105,6 +110,9 @@ QString AmiCommand::getActionName(const AmiAction action)
 		break;
 	case AmiActionExtensionState:
 		actionName = QStringLiteral("ExtensionState");
+		break;
+	case AmiActionCoreShowChannels:
+		actionName = QStringLiteral("CoreShowChannels");
 		break;
 	default:
 		actionName = QStringLiteral("");

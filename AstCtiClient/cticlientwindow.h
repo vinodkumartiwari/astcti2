@@ -61,20 +61,22 @@ public:
 	~CtiClientWindow();
 
 public slots:
-    virtual void showMessage(const QString& message, QSystemTrayIcon::MessageIcon severity);
-    virtual void setStatus(bool status);
-    virtual void about();
-    virtual void minimizeToTray();
-	virtual void newConfig(AstCtiConfiguration* config);
-	virtual void receiveChannelEvent(AstCtiChannel* channel);
+	// Signals from UI
+	virtual void about();
+	virtual void minimizeToTray();
 	virtual void placeCall();
-    virtual void pause(bool paused);
-    virtual void pauseAccepted();
-    virtual void pauseError(const QString& message);
-    virtual void quit(bool skipCheck);
+	virtual void pause() = 0;
+	virtual void quit(bool skipCheck);
+
+	// Signals from CtiClientApplication
+	virtual void showMessage(const QString& message, QSystemTrayIcon::MessageIcon severity);
+    virtual void setStatus(bool status);
+	virtual void newConfig(AstCtiConfiguration* config);
+	virtual void handleChannelEvent(AstCtiChannel* channel) = 0;
+	virtual void agentStatusChanged(const QString& channelName, const AstCtiAgentStatus status) = 0;
 
 signals:
-    void pauseRequest(bool paused);
+	void pauseRequest(const QString& channelName);
     void changePassword();
     void logOff();
 
@@ -86,7 +88,6 @@ protected:
 	void closeEvent(QCloseEvent* e);
 
     bool canClose;
-    bool paused;
 	bool canRecord;
     QPoint dragOrigin;
     QString userName;
@@ -96,7 +97,7 @@ protected:
     virtual bool isValidDrag(QMouseEvent* mouseEvent) const;
     virtual void createTrayIcon();
     virtual void connectSlots() = 0;
-    virtual void enableControls(bool enable) = 0;
+	virtual void enableControls(const bool enable) = 0;
     virtual void writeSettings() = 0;
     virtual void readSettings() = 0;
 

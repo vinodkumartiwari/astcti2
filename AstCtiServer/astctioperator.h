@@ -79,7 +79,7 @@ public:
 	bool                        getCanMonitor() const;
 	bool                        isCallCenter() const;
 
-	bool                        changePassword(QString& newPassword);
+	bool                        changePassword(const QString& newPassword);
 	bool                        checkPassword(const QString& password) const;
 
 	bool                        loadSpeedDials();

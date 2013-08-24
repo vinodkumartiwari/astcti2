@@ -85,16 +85,16 @@ bool AstCtiSeat::loadExtensions()
 	QVariantList params;
 	params.append(this->id);
 	const QVariantTable extenData =
-			DB::readTable("SELECT exten,description,can_auto_answer FROM extensions "
-						  "WHERE id_seat=? AND enabled=true ORDER BY exten", params, &ok);
-	// We order by EXTEN so order will be the same when comparing two seats (see compareExtensions)
+			DB::readTable("SELECT channel,description,can_auto_answer FROM extensions "
+						  "WHERE id_seat=? AND enabled=true ORDER BY channel", params, &ok);
+	// Order by channel so order will be the same when comparing two seats (see compareExtensions)
 	if (ok) {
 		const int listSize = extenData.size();
 		for (int i = 0; i < listSize; i++) {
 			const QVariantList extenRow = extenData.at(i);
 			AstCtiExtension* extension = new AstCtiExtension();
 			QString channel = extenRow.at(0).toString();
-			extension->channel = channel;
+			extension->channelName = channel;
 			// We get the extension number by splitting the parsed channel on '/'
 			QStringList channelParts = channel.split('/');
 			if (!channelParts.isEmpty())
@@ -126,9 +126,9 @@ QStringList AstCtiSeat::getExtensionNumbers() const
 	return extNumbers;
 }
 
-bool AstCtiSeat::hasExtension(const QString& channel) const
+bool AstCtiSeat::hasExtension(const QString& channelName) const
 {
-	return this->getExtension(channel) != 0;
+	return this->getExtension(channelName) != 0;
 }
 
 bool AstCtiSeat::compareExtensions(const AstCtiExtensionList& newExtensions) const
@@ -138,32 +138,39 @@ bool AstCtiSeat::compareExtensions(const AstCtiExtensionList& newExtensions) con
 		return false;
 
 	for (int i = 0; i < listSize; i++)
-		if (this->extensions.at(i)->channel != newExtensions.at(i)->channel)
+		if (this->extensions.at(i)->channelName != newExtensions.at(i)->channelName)
 			return false;
 
 	return true;
 }
 
-void AstCtiSeat::setExtensionUserAgent(const QString& channel, const QString& userAgent)
+void AstCtiSeat::setExtensionUserAgent(const QString& channelName, const QString& userAgent)
 {
-	AstCtiExtension* extension = this->getExtension(channel);
+	AstCtiExtension* extension = this->getExtension(channelName);
 	if (extension != 0)
 		extension->userAgent = userAgent;
 }
 
-void AstCtiSeat::setExtensionStatus(const QString& channel, const AstCtiExtensionStatus status)
+void AstCtiSeat::setExtensionStatus(const QString& channelName, const AstCtiExtensionStatus status)
 {
-	AstCtiExtension* extension = this->getExtension(channel);
+	AstCtiExtension* extension = this->getExtension(channelName);
 	if (extension != 0)
 		extension->status = status;
 }
 
-AstCtiExtension* AstCtiSeat::getExtension(const QString& channel) const
+void AstCtiSeat::setAgentStatus(const QString& channelName, const AstCtiAgentStatus status)
+{
+	AstCtiExtension* extension = this->getExtension(channelName);
+	if (extension != 0)
+		extension->agentStatus = status;
+}
+
+AstCtiExtension* AstCtiSeat::getExtension(const QString& channelName) const
 {
 	const int listSize = this->extensions.size();
 	for (int i = 0; i < listSize; i++) {
 		AstCtiExtension* extension = this->extensions.at(i);
-		if (extension->channel == channel)
+		if (extension->channelName == channelName)
 			return extension;
 	}
 

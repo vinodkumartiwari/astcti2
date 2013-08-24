@@ -402,6 +402,32 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
+        <widget class="QToolButton" name="pauseButton">
+         <property name="minimumSize">
+          <size>
+           <width>36</width>
+           <height>36</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>Actions</string>
+         </property>
+         <property name="icon">
+          <iconset resource="mainresources.qrc">
+           <normaloff>:/res/res/agt_pause-queue.png</normaloff>:/res/res/agt_pause-queue.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QToolButton" name="actionButton">
          <property name="minimumSize">
           <size>
@@ -418,32 +444,6 @@ p, li { white-space: pre-wrap; }
          <property name="icon">
           <iconset resource="mainresources.qrc">
            <normaloff>:/res/res/applications-system.png</normaloff>:/res/res/applications-system.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="voicemailButton">
-         <property name="minimumSize">
-          <size>
-           <width>36</width>
-           <height>36</height>
-          </size>
-         </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="toolTip">
-          <string>Voicemail</string>
-         </property>
-         <property name="icon">
-          <iconset resource="mainresources.qrc">
-           <normaloff>:/res/res/voicemail32x32.png</normaloff>:/res/res/voicemail32x32.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -1100,6 +1100,32 @@ p, li { white-space: pre-wrap; }
               <property name="spacing">
                <number>4</number>
               </property>
+              <item row="0" column="0">
+               <widget class="QToolButton" name="voicemailButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>36</width>
+                  <height>36</height>
+                 </size>
+                </property>
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="toolTip">
+                 <string>Voicemail</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="mainresources.qrc">
+                  <normaloff>:/res/res/voicemail32x32.png</normaloff>:/res/res/voicemail32x32.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </widget>

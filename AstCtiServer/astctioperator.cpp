@@ -131,7 +131,7 @@ bool AstCtiOperator::loadServices(AstCtiServiceHash* serviceList)
 	return ok;
 }
 
-bool AstCtiOperator::changePassword(QString& newPassword)
+bool AstCtiOperator::changePassword(const QString& newPassword)
 {
 	QVariantList params;
 	params.append(newPassword);
@@ -223,12 +223,12 @@ QString AstCtiOperator::toXml(AstCtiSeat* seat)
 		AstCtiExtension* extension = extensions.at(i);
 		writer.writeStartElement(QStringLiteral("Extension"));
 		writer.writeAttribute(QStringLiteral("Number"), extension->number);
-		writer.writeTextElement(QStringLiteral("Channel"), extension->channel);
+		writer.writeTextElement(QStringLiteral("Channel"), extension->channelName);
 		writer.writeTextElement(QStringLiteral("Name"), extension->name);
 		writer.writeTextElement(QStringLiteral("CanAutoAnswer"),
 								QString::number(extension->canAutoAnswer));
-		writer.writeTextElement(QStringLiteral("LoggedInQueue"),
-								QString::number(extension->loggedInQueue));
+		writer.writeTextElement(QStringLiteral("AgentStatus"),
+								QString::number((int)extension->agentStatus));
 		writer.writeTextElement(QStringLiteral("Status"),
 								QString::number((int)extension->status));
 		writer.writeEndElement(); // Extension

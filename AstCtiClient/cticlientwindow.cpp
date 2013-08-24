@@ -51,7 +51,6 @@ CtiClientWindow::CtiClientWindow(AstCtiConfiguration* config) :
 	this->pauseErrorMsg = tr("There was an error with pause operation:");
 
 	this->canClose = false;
-    this->paused = false;
 	this->userName = config->userName;
     this->dragOrigin = QPoint(-1, -1);
 
@@ -68,7 +67,7 @@ CtiClientWindow::~CtiClientWindow()
 void CtiClientWindow::closeEvent(QCloseEvent* e)
 {
     if (this->canClose) {
-        writeSettings();
+		this->writeSettings();
         e->accept();
     } else {
         e->ignore();
@@ -94,7 +93,7 @@ void CtiClientWindow::createTrayIcon()
 					QIcon::Normal, QIcon::Off);
 
      this->trayIcon = new QSystemTrayIcon(icon, this);
-     this->trayIcon->setToolTip(QString(APP_NAME) + " client " + QString(APP_VERSION_LONG));
+	 this->trayIcon->setToolTip(QString(APP_NAME) + tr(" client ") + QString(APP_VERSION_LONG));
      this->trayIcon->show();
 }
 
@@ -136,22 +135,16 @@ void CtiClientWindow::newConfig(AstCtiConfiguration* config)
 	this->canRecord = config->canRecord;
 }
 
-void CtiClientWindow::receiveChannelEvent(AstCtiChannel* channel)
-{
-	// To  be implemented in a derived class
-	Q_UNUSED(channel);
-}
-
 void CtiClientWindow::setStatus(bool status)
 {
-    if (status) {
-        enableControls(true);
+	this->enableControls(status);
+
+	if (status) {
         //Hide the message
         if (this->trayIcon->supportsMessages())
             this->trayIcon->showMessage("", "", QSystemTrayIcon::NoIcon, 1);
     } else {
-        enableControls(false);
-        showMessage(statusMsgNotOK, QSystemTrayIcon::Critical);
+		this->showMessage(statusMsgNotOK, QSystemTrayIcon::Critical);
     }
 }
 
@@ -171,32 +164,15 @@ void CtiClientWindow::placeCall()
     //TODO
 }
 
-void CtiClientWindow::pause(bool paused)
-{
-    emit this->pauseRequest(paused);
-}
-
-void CtiClientWindow::pauseAccepted() {
-    this->paused = !this->paused;
-}
-
-void CtiClientWindow::pauseError(const QString& message)
-{
-   //TODO: decide what to do with pause errors
-   //a pause error can occur also if we, administratively using CLI,
-   //remove an agent from queue...
-   this->showMessage(pauseErrorMsg + "\n\n" + message, QSystemTrayIcon::Warning);
-}
-
 void CtiClientWindow::quit(bool skipCheck)
 {
     if (!skipCheck) {
         QMessageBox msgBox;
 
 		msgBox.setText(tr("Are you sure you want to quit?"));
-		QPushButton* yesBtn = msgBox.addButton(tr("&Yes"),QMessageBox::YesRole);
+		QPushButton* yesBtn = msgBox.addButton(tr("&Yes"), QMessageBox::YesRole);
 		yesBtn->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/ok.png"))));
-		QPushButton* noBtn = msgBox.addButton(tr("&No"),QMessageBox::NoRole);
+		QPushButton* noBtn = msgBox.addButton(tr("&No"), QMessageBox::NoRole);
 		noBtn->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/cancel.png"))));
 
         msgBox.setDefaultButton(noBtn);

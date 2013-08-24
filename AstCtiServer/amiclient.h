@@ -79,8 +79,12 @@ enum AmiEvent {
 	AmiEventMusicOnHold,
 	AmiEventExtensionStatus,
 	AmiEventPeerStatus,
+	AmiEventAgentStatus, //Fake event, fired when we receive response to Queue commands
+	AmiEventPeerEntry,
 	AmiEventRTCPReceived,
-	AmiEventRTCPSent
+	AmiEventRTCPSent,
+	AmiEventCoreShowChannel,
+	AmiEventCoreShowChannelsComplete
 };
 Q_DECLARE_METATYPE(AmiEvent)
 
@@ -101,8 +105,10 @@ public:
 	explicit AmiClient();
 	~AmiClient();
 
-	static QString     getEventName(const AmiEvent event);
 	void               stop();
+	static QString     getEventName(const AmiEvent event);
+	static QString	   extensionStatusToString(const AstCtiExtensionStatus status);
+	static QString     agentStatusToString(const AstCtiAgentStatus status);
 
 public slots:
 	void               run();
@@ -110,10 +116,11 @@ public slots:
 	void               sendCommandToAsterisk(AmiCommand* command);
 
 signals:
-	void               amiChannelEvent(AmiEvent eventId, AstCtiChannel* channel);
-	void               amiStatusEvent(AmiEvent eventId, QString object, QString status);
-	void               amiResponse(AmiCommand* command);
-	void               amiConnectionStatusChange(AmiConnectionStatus status);
+	void               amiChannelEvent(const AmiEvent eventId, AstCtiChannel* channel);
+	void               amiStatusEvent(const AmiEvent eventId, const QString channelName,
+									  const int status);
+	void               amiConnectionStatusChange(const AmiConnectionStatus status);
+	void               amiCommandFailed(const AmiAction action, const QString channelName);
 
 private:
 	Q_DISABLE_COPY(AmiClient)
@@ -139,16 +146,18 @@ private:
 	void               performLogin();
 	void               performLogoff();
 	QStringHash        hashFromMessage(const QString& data);
+	void               bridgeChannels(const QString& uniqueId1, const QString& uniqueId2,
+									  const QString& channelName1, const QString& channelName2);
+	AstCtiChannel*     addConfChannelToBridge(AstCtiChannel* channel, const int startFrom);
 	AstCtiChannel*     addChannelToBridge(const int bridgeId, const QString& uniqueId,
-													   const QString& channelName);
-	void               removeChannelFromBridge(const QString& uniqueId,
-															const QString& channelName);
+										  const QString& channelName);
+	void               removeChannelFromBridge(const QString& uniqueId, const QString& channelName);
 	bool               isLocalChannel(const QString& channelName);
 	void               evaluateEvent(const QStringHash& event);
 	void               evaluateResponse(const QStringHash& response);
+	QDateTime          parseDuration(const QString& duration);
 	QString            socketStateToString(QAbstractSocket::SocketState socketState);
 	QString            eventToString(const QStringHash& event);
-	QString	           extensionStatusToString(const AstCtiExtensionStatus status);
 	void               delay(const int secs);
 
 private slots:

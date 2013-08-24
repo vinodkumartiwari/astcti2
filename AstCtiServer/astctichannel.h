@@ -42,6 +42,7 @@
 #include <QObject>
 #include <QHash>
 #include <QMap>
+#include <QDateTime>
 #include <QMetaType>
 
 #include "astctiaction.h"
@@ -88,10 +89,10 @@ public:
 	const QString&      getUniqueId() const;
 	void                setUniqueId(const QString& uniqueId);
 
-	const QString&      getChannel() const;
-	void                setChannel(const QString& channel);
-	const QString&      getParsedChannel() const;
-	const QString&      getChannelExten() const;
+	const QString&      getChannelId() const;
+	void                setChannelId(const QString& channelId);
+	const QString&      getChannelName() const;
+	const QString&      getNumber() const;
 
 	const QString&      getCalleridNum() const;
 	void                setCalleridNum(const QString& callerIdNum);
@@ -104,6 +105,12 @@ public:
 	void                setDialedLineNum(const QString& dialedLineNum);
 	const QString&      getConnectedLineNum() const;
 	void                setConnectedLineNum(const QString& connectedLineNum);
+
+	const QString&      getApplication() const;
+	void                setApplication(const QString& application);
+	const QString&      getApplicationData() const;
+	void                setApplicationData(const QString& applicationData);
+
 	const QString&      getQueue() const;
 	void                setQueue(const QString& queue);
 
@@ -124,6 +131,9 @@ public:
 	void                setAssociatedLocalChannel(const QString& localChannel);
 	bool                hasMatchingLocalChannel(const QString& localChannel) const;
 
+	const QDateTime&    getStartTime() const;
+	void                setStartTime(const QDateTime& startTime);
+
 	int                 getBridgeId() const;
 	void                setBridgeId(const int bridgeId);
 	static int          getNextBridgeId();
@@ -140,20 +150,23 @@ public:
 private:
 	Q_DISABLE_COPY(AstCtiChannel)
 	QString             uniqueId;
-	QString             channel;
-	QString             parsedChannel;
-	QString             channelExten;
+	QString             channelId;
+	QString             channelName;
+	QString             number;
 	QString             callerIdNum;
 	QString             callerIdName;
 	QString             context;
 	QString             dialedLineNum;
 	QString             connectedLineNum;
+	QString             application;
+	QString             applicationData;
 	QString             queue;
 	AstCtiChannelState  state;
 	QString             accountCode;
 	QString             musicOnHoldState;
 	QString             hangupCause;
 	QString             associatedLocalChannel;
+	QDateTime           startTime;
 	int                 bridgeId;
 	AstCtiActionOsType  clientOperatingSystem;
 

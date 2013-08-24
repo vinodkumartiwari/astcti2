@@ -82,7 +82,7 @@ AstCtiDefaultStyle::~AstCtiDefaultStyle()
     d = 0;
 }
 
-void AstCtiDefaultStyle::polish(QPalette &palette)
+void AstCtiDefaultStyle::polish(QPalette& palette)
 {
 //    QLinearGradient windowGradient;
 //    windowGradient.setStart(0, 0);
@@ -361,7 +361,7 @@ void AstCtiDefaultStyle::drawComplexControl(ComplexControl control, const QStyle
     QCommonStyle::drawComplexControl(control, option, painter, widget);
 }
 
-void AstCtiDefaultStyle::setTexture(QPalette &palette, QPalette::ColorRole role, const QPixmap &pixmap)
+void AstCtiDefaultStyle::setTexture(QPalette& palette, QPalette::ColorRole role, const QPixmap& pixmap)
 {
     for (int i = 0; i < QPalette::NColorGroups; ++i) {
         QColor color = palette.brush(QPalette::ColorGroup(i), role).color();
@@ -369,7 +369,7 @@ void AstCtiDefaultStyle::setTexture(QPalette &palette, QPalette::ColorRole role,
     }
 }
 
-QPainterPath AstCtiDefaultStyle::roundRectPath(const QRect &rect)
+QPainterPath AstCtiDefaultStyle::roundRectPath(const QRect& rect)
 {
     //int radius = qMin(rect.width(), rect.height()) / 2;
     int radius = 10;

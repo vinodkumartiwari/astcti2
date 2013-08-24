@@ -69,25 +69,25 @@ typedef QList<AstCtiActionPtr> AstCtiActionPtrList;
 
 struct AstCtiChannel
 {
-	QString                 lastEvent;
-	QString                 uniqueId;
-	QString                 channel;
-    QString                 parsedChannel;
-	QString                 channelExten;
-	QString                 callerIdNum;
-    QString                 callerIdName;
-    QString                 context;
-	QString                 dialedLineNum;
-	QString                 connectedLineNum;
-	QString                 queue;
-	QString                 state;
-	QString                 accountCode;
-	QString                 musicOnHoldState;
-	QString                 hangupCause;
-	int                     bridgeId;
+	QString              lastEvent;
+	QString              uniqueId;
+	QString              channelId;
+	QString              channelName;
+	QString              number;
+	QString              callerIdNum;
+	QString              callerIdName;
+	QString              context;
+	QString              dialedLineNum;
+	QString              connectedLineNum;
+	QString              queue;
+	QString              state;
+	QString              accountCode;
+	QString              musicOnHoldState;
+	QString              hangupCause;
+	int                  bridgeId;
 
-	QStringHash            variables;
-	AstCtiActionPtrList    actions;
+	QStringHash          variables;
+	AstCtiActionPtrList  actions;
 };
 
 #endif // ASTCTICHANNEL_H

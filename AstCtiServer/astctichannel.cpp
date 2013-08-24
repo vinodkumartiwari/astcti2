@@ -51,9 +51,9 @@ AstCtiChannel::AstCtiChannel(const QString& uniqueId, QObject* parent) : QObject
 
 	this->uniqueId = uniqueId;
 	//this->actions = 0;
-	this->channel = QStringLiteral("");
-	this->parsedChannel = QStringLiteral("");
-	this->channelExten = QStringLiteral("");
+	this->channelId = QStringLiteral("");
+	this->channelName = QStringLiteral("");
+	this->number = QStringLiteral("");
 	this->callerIdNum = QStringLiteral("");
 	this->callerIdName = QStringLiteral("");
 	this->context = QStringLiteral("");
@@ -81,40 +81,49 @@ void AstCtiChannel::setUniqueId(const QString& uniqueId)
 	this->uniqueId = uniqueId;
 }
 
-const QString& AstCtiChannel::getChannel() const
+const QString& AstCtiChannel::getChannelId() const
 {
-    return this->channel;
+    return this->channelId;
 }
 
-void AstCtiChannel::setChannel(const QString& channel)
+void AstCtiChannel::setChannelId(const QString& channelId)
 {
-    this->channel = channel;
+	this->channelId = channelId;
 
-	QStringList channelParts;
 
 	// Channel format is <technology>/<resource>-<identifier> (e.g. SIP/200-0899e2c8)
-	// In case of phones, "resource" is a phone extension
-	// We remove the identifier part by splitting the string on '-'
-	if (channel.contains('-')) {
-		channelParts = channel.split('-');
-		if (channelParts.count() > 0)
-			this->parsedChannel = channelParts.at(0);
+	// <technology>/<resource> pair represents actual channel name, while identifier
+	// is the id of the current channel (there could be multiple simultaneous audio channels).
+	// We remove the identifier part by splitting the string on hyphen
+	QStringList channelParts = channelId.split('-');
+	if (channelParts.size() > 1) {
+		// Theoretically, <resource> could contain a hyphen, so we just remove the identifier part
+		channelParts.removeLast();
+		this->channelName = channelParts.join('-');
+	} else {
+		this->channelName = channelId;
 	}
 
-	// We get the extension number by splitting the parsed channel on '/'
-	channelParts = this->parsedChannel.split('/');
-	if (channelParts.count() > 1)
-		this->channelExten = channelParts.last();
+	// In case of phones, "resource" is a phone number.
+	// Actual extension number used to reach this channel DOES NOT have to be the same
+	// (i.e. one could use: exten => 222,1,Dial(SIP/200)),
+	// but common practice is to make those numbers the same.
+	// We get the phone number by splitting the channel name on slash
+	channelParts = this->channelName.split('/');
+	if (channelParts.size() > 1)
+		this->number = channelParts.last();
+	else
+		this->number = this->channelName;
 }
 
-const QString& AstCtiChannel::getParsedChannel() const
+const QString& AstCtiChannel::getChannelName() const
 {
-    return this->parsedChannel;
+    return this->channelName;
 }
 
-const QString& AstCtiChannel::getChannelExten() const
+const QString& AstCtiChannel::getNumber() const
 {
-	return this->channelExten;
+	return this->number;
 }
 
 const QString& AstCtiChannel::getCalleridNum() const
@@ -167,6 +176,26 @@ const QString& AstCtiChannel::getConnectedLineNum() const
 void AstCtiChannel::setConnectedLineNum(const QString& connectedLineNum)
 {
 	this->connectedLineNum = connectedLineNum;
+}
+
+const QString& AstCtiChannel::getApplication() const
+{
+	return this->application;
+}
+
+void AstCtiChannel::setApplication(const QString& application)
+{
+	this->application = application;
+}
+
+const QString& AstCtiChannel::getApplicationData() const
+{
+	return this->applicationData;
+}
+
+void AstCtiChannel::setApplicationData(const QString& applicationData)
+{
+	this->applicationData = applicationData;
 }
 
 const QString& AstCtiChannel::getQueue() const
@@ -292,6 +321,16 @@ bool AstCtiChannel::hasMatchingLocalChannel(const QString& localChannel) const
 	return false;
 }
 
+const QDateTime& AstCtiChannel::getStartTime() const
+{
+	return this->startTime;
+}
+
+void AstCtiChannel::setStartTime(const QDateTime &startTime)
+{
+	this->startTime = startTime;
+}
+
 int AstCtiChannel::getBridgeId() const
 {
 	return this->bridgeId;
@@ -373,9 +412,9 @@ QString AstCtiChannel::toXml(const QString& eventName)
 	if (!eventName.isEmpty())
 		writer.writeTextElement(QStringLiteral("Event"), eventName);
 
-	writer.writeTextElement(QStringLiteral("Channel"), this->channel);
-	writer.writeTextElement(QStringLiteral("ParsedChannel"), this->parsedChannel);
-	writer.writeTextElement(QStringLiteral("ChannelExten"), this->channelExten);
+	writer.writeTextElement(QStringLiteral("Channel"), this->channelId);
+	writer.writeTextElement(QStringLiteral("ParsedChannel"), this->channelName);
+	writer.writeTextElement(QStringLiteral("ChannelExten"), this->number);
 	writer.writeTextElement(QStringLiteral("CallerIdNum"), this->callerIdNum);
 	writer.writeTextElement(QStringLiteral("CallerIdName"), this->callerIdName);
 	writer.writeTextElement(QStringLiteral("Context"), this->context);

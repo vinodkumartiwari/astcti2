@@ -207,9 +207,17 @@ bool ConfigurationChecker::readConfiguration()
 										   operatorRow.at(4).toBool(), operatorRow.at(5).toInt(),
 										   operatorRow.at(6).toBool(), operatorRow.at(7).toBool(),
 										   operatorRow.at(8).toBool());
-				ok = op->loadSpeedDials();
+
+				// Check if seat is loaded
+				if (op->getSeatId() != 0)
+					ok = config->seats.contains(op->getSeatId());
+
+				if (ok)
+					ok = op->loadSpeedDials();
+
 				if (ok)
 					ok = op->loadServices(&(config->services));
+
 				if (!ok) {
 					delete op;
 					break;

@@ -46,7 +46,6 @@ ClientManager::ClientManager(QObject* parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating new ClientManager";
 
-	this->state                 = StateLoggedOff;
 	this->socket                = 0;
 	this->activeOperator        = 0;
     this->activeSeat            = 0;

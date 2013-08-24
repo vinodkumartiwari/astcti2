@@ -44,17 +44,13 @@
 
 enum AstCtiCommands {
     CmdNotDefined,
-    CmdNoOp,
-    CmdQuit,
-    CmdCompression,
-    CmdKeepAlive,
-    CmdUser,
-    CmdPass,
+	CmdLogin,
+	CmdKeepAlive,
     CmdChangePassword,
-    CmdMac,
-    CmdOsType,
-    CmdPause,
-	CmdOrig
+	CmdOriginate,
+	CmdConference,
+	CmdPause,
+	CmdQuit
 };
 
 struct AstCtiCommand

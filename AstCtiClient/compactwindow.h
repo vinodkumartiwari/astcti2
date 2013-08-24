@@ -55,10 +55,10 @@ public:
     virtual ~CompactWindow();
 
 public slots:
-    void setStatus(bool status);
-    void pause(bool paused);
-    void pauseAccepted();
-    void pauseError(const QString& message);
+	virtual void setStatus(bool status);
+	virtual void handleChannelEvent(AstCtiChannel* channel);
+	virtual void pause();
+	virtual void agentStatusChanged(const QString& channelName, const AstCtiAgentStatus status);
 
 protected:
     void changeEvent(QEvent* e);
@@ -67,10 +67,14 @@ protected:
 private:
     Ui::CompactWindow* ui;
 
-    void connectSlots();
-    void enableControls(bool enable);
-    void writeSettings();
-    void readSettings();
+	// Compact window can have only one extension
+	QString channelName;
+	bool paused;
+
+	virtual void connectSlots();
+	virtual void enableControls(const bool enable);
+	virtual void writeSettings();
+	virtual void readSettings();
 };
 
 #endif // COMPACTWINDOW_H

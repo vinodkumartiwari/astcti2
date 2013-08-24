@@ -56,7 +56,8 @@ enum AmiAction {
 	AmiActionQueuePause,
 	AmiActionQueueRemove,
 	AmiActionSipShowPeer,
-	AmiActionExtensionState
+	AmiActionExtensionState,
+	AmiActionCoreShowChannels
 };
 Q_DECLARE_METATYPE(AmiAction)
 
@@ -69,14 +70,15 @@ public:
 	explicit AmiCommand(AmiAction action, QObject* parent = 0);
 	~AmiCommand();
 
+	QString         getParameter(const QString& name) const;
 	void            addParameter(const QString& name, const QString& value);
 	void            addVariable(const QString& name, const QString& value);
 	static QString  getActionName(const AmiAction action);
 	QString         toString(const int actionId) const;
 
 	AmiAction       action;
-	QString         exten;
-	QString         responseString;
+	QString         channelName;
+	bool            success;
 	QString         responseMessage;
 
 private:

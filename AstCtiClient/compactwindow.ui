@@ -66,7 +66,16 @@ QToolButton:pressed , QToolButton:checked {
    <property name="spacing">
     <number>2</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
     <number>3</number>
    </property>
    <item>
@@ -125,6 +134,9 @@ QToolButton:pressed , QToolButton:checked {
    </item>
    <item>
     <widget class="QToolButton" name="callButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="toolTip">
       <string>Call</string>
      </property>
@@ -135,38 +147,43 @@ QToolButton:pressed , QToolButton:checked {
     </widget>
    </item>
    <item>
-    <widget class="Line" name="line1">
+    <widget class="Line" name="separatorLine1">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
     </widget>
    </item>
    <item>
+    <widget class="QToolButton" name="startPauseButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="mainresources.qrc">
+       <normaloff>:/res/res/agt_forward.png</normaloff>:/res/res/agt_forward.png</iconset>
+     </property>
+     <property name="shortcut">
+      <string>Pause</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QToolButton" name="passwordButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="toolTip">
       <string>Change password</string>
      </property>
      <property name="icon">
       <iconset resource="mainresources.qrc">
        <normaloff>:/res/res/configure.png</normaloff>:/res/res/configure.png</iconset>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QToolButton" name="aboutButton">
-     <property name="toolTip">
-      <string>About</string>
-     </property>
-     <property name="icon">
-      <iconset resource="mainresources.qrc">
-       <normaloff>:/res/res/documentinfo.png</normaloff>:/res/res/documentinfo.png</iconset>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="Line" name="line2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
      </property>
     </widget>
    </item>
@@ -185,26 +202,20 @@ QToolButton:pressed , QToolButton:checked {
     </widget>
    </item>
    <item>
-    <widget class="Line" name="line3">
+    <widget class="Line" name="separatorLine2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QToolButton" name="pauseButton">
+    <widget class="QToolButton" name="aboutButton">
      <property name="toolTip">
-      <string>Pause</string>
+      <string>About</string>
      </property>
      <property name="icon">
       <iconset resource="mainresources.qrc">
-       <normaloff>:/res/res/agt_pause-queue.png</normaloff>:/res/res/agt_pause-queue.png</iconset>
-     </property>
-     <property name="shortcut">
-      <string>Pause</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
+       <normaloff>:/res/res/documentinfo.png</normaloff>:/res/res/documentinfo.png</iconset>
      </property>
     </widget>
    </item>
@@ -264,9 +275,7 @@ QToolButton:pressed , QToolButton:checked {
   <tabstop>callComboBox</tabstop>
   <tabstop>callButton</tabstop>
   <tabstop>passwordButton</tabstop>
-  <tabstop>aboutButton</tabstop>
   <tabstop>repeatButton</tabstop>
-  <tabstop>pauseButton</tabstop>
   <tabstop>minimizeButton</tabstop>
   <tabstop>quitButton</tabstop>
  </tabstops>

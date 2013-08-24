@@ -110,7 +110,7 @@ CREATE TABLE actions (
 
 CREATE TABLE extensions (
     id_seat bigint NOT NULL,
-    exten character varying(50) NOT NULL,
+    channel character varying(50) NOT NULL,
     description character varying(255) DEFAULT NULL::character varying,
     can_auto_answer boolean NOT NULL,
     enabled boolean NOT NULL
