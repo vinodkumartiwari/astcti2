@@ -65,13 +65,22 @@ Q_DECLARE_FLAGS(AstCtiExtensionStatus, ExtensionStatus)
 Q_DECLARE_OPERATORS_FOR_FLAGS(AstCtiExtensionStatus)
 Q_DECLARE_METATYPE(AstCtiExtensionStatus)
 
+enum AstCtiAgentStatus {
+	AgentStatusLoggedOut,
+	AgentStatusLoggedIn,
+	AgentStatusPaused,
+	AgentStatusLoginFailed, //Agents can't actually have this status, used only for notification
+	AgentStatusPauseFailed //Agents can't actually have this status, used only for notification
+};
+Q_DECLARE_METATYPE(AstCtiAgentStatus)
+
 struct AstCtiExtension
 {
-	QString               channel;
+	QString               channelName;
 	QString               number;
 	QString               name;
 	bool                  canAutoAnswer;
-	bool                  loggedInQueue;
+	AstCtiAgentStatus     agentStatus;
 	AstCtiExtensionStatus status;
 };
 

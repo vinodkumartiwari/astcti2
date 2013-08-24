@@ -67,7 +67,7 @@ public:
 //    SubControl hitTestComplexControl(ComplexControl control, const QStyleOptionComplex* option, const QPoint &pos, const QWidget* widget = 0) const;
 //    QPixmap standardPixmap(StandardPixmap standardPixmap, const QStyleOption* opt, const QWidget* widget = 0) const;
     int styleHint(StyleHint hint, const QStyleOption* option = 0, const QWidget* widget = 0, QStyleHintReturn* returnData = 0) const;
-    QRect itemRect(QPainter* p, const QRect &r, int flags, bool enabled, const QPixmap* pixmap, const QString& text, int len = -1) const;
+	QRect itemRect(QPainter* p, const QRect& r, int flags, bool enabled, const QPixmap* pixmap, const QString& text, int len = -1) const;
 //    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption* opt) const;
 
 //    int pixelMetric(PixelMetric metric, const QStyleOption* option = 0, const QWidget* widget = 0) const;
@@ -75,7 +75,7 @@ public:
 //    QPalette standardPalette() const;
 
     void polish(QWidget* widget);
-    void polish(QPalette &pal);
+	void polish(QPalette& pal);
 
     void unpolish(QWidget* widget);
 //    void unpolish(QApplication* app);
@@ -85,8 +85,8 @@ public:
 
 private:
     AstCtiDefaultStylePrivate* d;
-    static void setTexture(QPalette &palette, QPalette::ColorRole role, const QPixmap &pixmap);
-    static QPainterPath roundRectPath(const QRect &rect);
+	static void setTexture(QPalette& palette, QPalette::ColorRole role, const QPixmap& pixmap);
+	static QPainterPath roundRectPath(const QRect& rect);
 	Q_DISABLE_COPY(AstCtiDefaultStyle)
 };
 

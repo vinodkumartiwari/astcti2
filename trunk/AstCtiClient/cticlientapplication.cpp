@@ -187,9 +187,9 @@ void CtiClientApplication::loginReject()
 }
 
 //Called when the user clicks 'Pause' in the main window
-void CtiClientApplication::pause(bool paused)
+void CtiClientApplication::pause(const QString& channelName)
 {
-	sendCommandToServer(CmdPause, paused ? QStringLiteral("IN") : QStringLiteral("OUT"));
+	this->sendCommandToServer(CmdPause, channelName);
 }
 
 //Called when the user clicks 'Change password' in the main window
@@ -266,6 +266,8 @@ void CtiClientApplication::abortConnection(const StopReason stopReason, const QS
 
     this->localSocket->abort();
 
+	this->resetLastCtiCommand();
+
 	if (config->debug)
 		qDebug() << "Connection to server closed. Reason:" << stopReason << message;
 
@@ -296,6 +298,16 @@ void CtiClientApplication::abortConnection(const StopReason stopReason, const QS
 	this->showLoginWindow(msg, false);
 }
 
+// Sets the keep-alive interval in miliseconds
+void CtiClientApplication::setKeepAliveInterval(const int miliseconds)
+{
+	//Reduce the interval to allow for network latency
+	if (miliseconds > 4000)
+		this->config->keepAliveInterval = miliseconds - 2000;
+	else
+		this->config->keepAliveInterval = miliseconds / 2;
+}
+
 //Called when the client can't start the connection or when connection is broken
 void CtiClientApplication::connectionLost()
 {
@@ -320,18 +332,17 @@ void CtiClientApplication::resetLastCtiCommand()
 }
 
 //Creates AstCtiResponse object from string
-AstCtiResponse CtiClientApplication::parseResponse(const QString& response)
+AstCtiResponse CtiClientApplication::parseResponse(const QString& responseString)
 {
-    QStringList data = response.split(" ");
-    AstCtiResponse newResponse;
-    newResponse.code = (AstCtiResponseCodes)(QString(data.at(0)).toInt());
+	AstCtiResponse response;
+
+	QStringList data = responseString.split(" ");
+	response.code = (AstCtiResponseCodes)(QString(data.at(0)).toInt());
 	// Remove response code
     data.removeFirst();
-	// Response code is usually followed by "OK" or "KO" which we don't care about
-	if (data.first() == QStringLiteral("OK") || data.first() == QStringLiteral("KO"))
-		data.removeFirst();
-	newResponse.data = data;
-    return newResponse;
+	response.data = data;
+
+	return response;
 }
 
 //Analyzes block of data received from server and sends it for further processing
@@ -359,116 +370,55 @@ void CtiClientApplication::processResponse(const AstCtiResponse &response) {
 		qDebug() << "Processing response: <<" << response.code << response.data.join(" ");
 
     switch (response.code) {
-    case RspAuthOK:
-        resetLastCtiCommand();
-        sendCommandToServer(CmdKeepAlive);
-        break;
-    case RspCompressLevel:
-        this->config->compressionLevel = response.data.last().toInt();
-        resetLastCtiCommand();
-		sendCommandToServer(CmdUser, this->config->userName);
-        break;
-    case RspDisconnectOK:
-        //Nothing to do
-        break;
-    case RspError:
-        if (this->lastCtiCommand != 0) {
-            switch (this->lastCtiCommand->command) {
-            case CmdUser:
-            case CmdPass:
-                abortConnection(StopInvalidCredentials, response.data.join(" "));
-                break;
-            case CmdChangePassword:
-                resetLastCtiCommand();
-				this->newMessage(tr("Changing of password did not succeed: %1")
-									.arg(response.data.join(" ")), QSystemTrayIcon::Critical);
-                break;
-            case CmdMac:
-            case CmdOsType:
-                abortConnection(StopServerError, response.data.join(" "));
-                break;
-            case CmdOrig:
-                //TODO
-                break;
-            default:
-				if (config->debug)
-					qDebug() << "Received unexpected response from server:"
-							 << response.code << response.data.join(" ")
-							 << "to command" << this->lastCtiCommand->command;
-                resetLastCtiCommand();
-                break;
-            }
-        } else {
-			if (config->debug)
-				qDebug() << "Received unexpected response from server:"
-						 << response.code << response.data.join(" ")
-						 << "to unknown command";
-        }
-        break;
-    case RspKeepAlive:
-        this->config->keepAliveInterval = response.data.last().toInt();
-        //Reduce the interval to allow for network latency
-        if (this->config->keepAliveInterval > 4000)
-            this->config->keepAliveInterval -= 2000;
-        else
-            this->config->keepAliveInterval /= 2;
-        resetLastCtiCommand();
-		switch (this->clientType) {
-		case CtiClientCallCenter:
-			// Call center operators must authenticate with MAC address
-			sendCommandToServer(CmdMac, this->macAddress);
-			break;
-		case CtiClientPhoneManager:
-			sendCommandToServer(CmdOsType, osType);
-			break;
-		}
-
-        break;
     case RspOK:
         if (this->lastCtiCommand != 0) {
             switch (this->lastCtiCommand->command) {
-            case CmdUser:
-                resetLastCtiCommand();
-				sendCommandToServer(CmdPass, this->config->password);
-                break;
-            case CmdPass:
-                resetLastCtiCommand();
-				sendCommandToServer(CmdKeepAlive);
-                break;
+			case CmdLogin:
+				this->setKeepAliveInterval(response.data.last().toInt());
+				// We wait for XML object with configuration before we show the main window
+				break;
             case CmdChangePassword:
-                resetLastCtiCommand();
                 //Update password
 				this->config->password = this->newPassword;
 				this->newMessage(tr("Changing of password was successfull."),
 								 QSystemTrayIcon::Information);
                 break;
-            case CmdMac:
-				resetLastCtiCommand();
-                sendCommandToServer(CmdOsType, osType);
-                break;
-            case CmdOsType:
-                resetLastCtiCommand();
-                this->connectionStatus = ConnStatusLoggedIn;
-				// We wait for XML object with configuration before we show the main window
-                break;
-            case CmdNoOp:
-                resetLastCtiCommand();
-                break;
-            case CmdOrig:
-                //TODO
+			case CmdKeepAlive:
+				this->setKeepAliveInterval(response.data.last().toInt());
+				break;
+			case CmdOriginate:
+				this->resetLastCtiCommand();
+				//TODO
                 break;            
-            default:
+			case CmdConference:
+				this->resetLastCtiCommand();
+				//TODO
+				break;
+			case CmdPause:
+				this->resetLastCtiCommand();
+				//Server acknowledged pause request, result will be sent later as an event
+				break;
+			case CmdQuit:
+				//Nothing to do, we shouldn't even receive this
+				break;
+			default:
 				if (config->debug)
 					qDebug() << "Received unexpected response from server:"
 							 << response.code << response.data.join(" ")
 							 << "to command" << this->lastCtiCommand->command;
-                resetLastCtiCommand();
                 break;
             }
+			this->resetLastCtiCommand();
         } else {
-			if (response.data.length() > 0) {
-				if (response.data.at(0) == QStringLiteral("Welcome"))
-                    sendCommandToServer(CmdCompression);
+			if (response.data.length() > 0 && response.data.at(0) == QStringLiteral("WELCOME")) {
+				this->config->compressionLevel = response.data.last().toInt();
+				QStringList params;
+				params.append(this->config->userName);
+				params.append(this->config->password);
+				params.append(osType);
+				params.append(this->macAddress);
+
+				this->sendCommandToServer(CmdLogin, params.join(" "));
             } else {
 				if (config->debug)
 					qDebug() << "Received unexpected response from server:"
@@ -477,30 +427,148 @@ void CtiClientApplication::processResponse(const AstCtiResponse &response) {
             }
         }
         break;
-    case RspPauseError:
-        resetLastCtiCommand();
-        emit pauseError(response.data.join(" "));
-        break;
-    case RspPauseOK:
-        resetLastCtiCommand();
-        emit pauseAccepted();
-        break;
-    case RspPausePending:
-        //Pause is pending, it will be confirmed or denied later by RspPauseOK or RspPauseError
-        resetLastCtiCommand();
-        break;
-    }
+	case RspError:
+		if (this->lastCtiCommand != 0) {
+			const AstCtiErrorCodes error = (AstCtiErrorCodes)response.data.at(0).toInt();
+			const QString errorMessage = this->getErrorText(error);
+
+			switch (this->lastCtiCommand->command) {
+			case CmdLogin:
+				this->abortConnection(StopServerError, errorMessage);
+				break;
+			case CmdChangePassword:
+				this->newMessage(errorMessage, QSystemTrayIcon::Critical);
+				break;
+			case CmdOriginate:
+				// This should not happen, it indicates a bug in the client or server
+				//TODO
+				if (config->debug)
+					qWarning() << "Received error response from server:" << errorMessage
+							   << "to command" << this->lastCtiCommand->command;
+				break;
+			case CmdConference:
+				// This should not happen, it indicates a bug in the client or server
+				//TODO
+				if (config->debug)
+					qWarning() << "Received error response from server:" << errorMessage
+							   << "to command" << this->lastCtiCommand->command;
+				break;
+			case CmdPause:
+				// This should not happen, it indicates a bug in the client or server
+				emit this->agentStatusChanged(this->lastCtiCommand->parameters,
+											  AgentStatusPauseFailed);
+				if (config->debug)
+					qWarning() << "Received error response from server:" << errorMessage
+							   << "to command" << this->lastCtiCommand->command;
+				break;
+			default:
+				if (config->debug)
+					qDebug() << "Received unexpected response from server:"
+							 << response.code << response.data.join(" ") << errorMessage
+							 << "to command" << this->lastCtiCommand->command;
+				break;
+			}
+			this->resetLastCtiCommand();
+		} else {
+			if (config->debug)
+				qDebug() << "Received unexpected response from server:"
+						 << response.code << response.data.join(" ")
+						 << "to unknown command";
+		}
+		break;
+	}
 }
 
-//Reads and processes XML object received from server, which can be channel or config object
+//Reads and processes XML object received from server, which can be one of the following:
+//Config
+//Channel
+//Extension status
+//Agent status
 void CtiClientApplication::processXmlObject(const QString& xmlString) {
 	if (config->debug)
-		qDebug() << "Processing xml object:\n" << xmlString;
+		qDebug() << "Processing xml object:" << xmlString;
 
 	QXmlStreamReader reader(xmlString);
 
 	if (reader.readNextStartElement()) {
-		if (reader.name() == QStringLiteral("AsteriskChannel")) {
+		if (reader.name() == QStringLiteral("Operator")) {
+			config->fullName = reader.attributes().value(QStringLiteral("FullName")).toString();
+			while (reader.readNextStartElement()) {
+				if (reader.name() == QStringLiteral("IsCallCenter"))
+					config->isCallCenter = reader.readElementText().toInt() != 0;
+				else if (reader.name() == QStringLiteral("BeginInPause"))
+					config->beginInPause = reader.readElementText().toInt() != 0;
+				else if (reader.name() == QStringLiteral("CanMonitor"))
+					config->canMonitor = reader.readElementText().toInt() != 0;
+				else if (reader.name() == QStringLiteral("CanAlterSpeedDials"))
+					config->canAlterSpeedDials = reader.readElementText().toInt() != 0;
+				else if (reader.name() == QStringLiteral("CanRecord"))
+					config->canRecord = reader.readElementText().toInt() != 0;
+				else if (reader.name() == QStringLiteral("Extensions"))
+					while (reader.readNextStartElement()) {
+						AstCtiExtensionPtr extension = AstCtiExtensionPtr(new AstCtiExtension);
+						extension->number =
+								reader.attributes().value(QStringLiteral("Number")).toString();
+						while (reader.readNextStartElement()) {
+							if (reader.name() == QStringLiteral("Channel"))
+								extension->channelName = reader.readElementText();
+							else if (reader.name() == QStringLiteral("Name"))
+								extension->name = reader.readElementText();
+							else if (reader.name() == QStringLiteral("CanAutoAnswer"))
+								extension->canAutoAnswer = reader.readElementText().toInt() != 0;
+							else if (reader.name() == QStringLiteral("AgentStatus"))
+								extension->agentStatus =
+										(AstCtiAgentStatus)reader.readElementText().toInt();
+							else if (reader.name() == QStringLiteral("Status"))
+								extension->status =
+										(AstCtiExtensionStatus)reader.readElementText().toInt();
+						}
+						config->extensions.append(extension);
+					}
+				else if (reader.name() == QStringLiteral("SpeedDials"))
+					while (reader.readNextStartElement()) {
+						AstCtiSpeedDialPtr speedDial = AstCtiSpeedDialPtr(new AstCtiSpeedDial);
+						while (reader.readNextStartElement()) {
+							if (reader.name() == QStringLiteral("GroupName"))
+								speedDial->groupName = reader.readElementText();
+							else if (reader.name() == QStringLiteral("Name"))
+								speedDial->name = reader.readElementText();
+							else if (reader.name() == QStringLiteral("Number"))
+								speedDial->number = reader.readElementText();
+							else if (reader.name() == QStringLiteral("BLF"))
+								speedDial->isBlf = reader.readElementText().toInt() != 0;
+							else if (reader.name() == QStringLiteral("Order"))
+								speedDial->order = reader.readElementText().toShort();
+							else if (reader.name() == QStringLiteral("ExtensionStatus"))
+								speedDial->extensionStatus =
+										(AstCtiExtensionStatus)reader.readElementText().toInt();
+						}
+						// For key, we use groupName:order, with order left padded with zeros
+						const QString key = QString("%1:%2")
+											.arg(speedDial->groupName)
+											.arg(speedDial->order, 3, 10, QChar('0'));
+						config->speedDials.insert(key, speedDial);
+					}
+				else if (reader.name() == QStringLiteral("Services"))
+					while (reader.readNextStartElement()) {
+						QString name = "";
+						QString serviceType = "";
+						// This data is informational. User is informed about the service name
+						// and type, which can be "Inbound", "Outbound" or "Queue"
+						while (reader.readNextStartElement()) {
+							if (reader.name() == QStringLiteral("Name"))
+								name = reader.readElementText();
+							else if (reader.name() == QStringLiteral("Queue"))
+								serviceType = "Queue";
+							else if (reader.name() == QStringLiteral("ContextType"))
+								if (serviceType.length() == 0)
+									serviceType = reader.readElementText();
+						}
+						config->services.insert(name, serviceType);
+					}
+			}
+			this->showMainWindow();
+		} else if (reader.name() == QStringLiteral("AsteriskChannel")) {
 			AstCtiChannel* channel = new AstCtiChannel();
 
 			channel->uniqueId = reader.attributes().value(QStringLiteral("UniqueId")).toString();
@@ -509,11 +577,11 @@ void CtiClientApplication::processXmlObject(const QString& xmlString) {
 				if (reader.name() == QStringLiteral("Event"))
 					channel->lastEvent = reader.readElementText();
 				else if (reader.name() == QStringLiteral("Channel"))
-					channel->channel = reader.readElementText();
+					channel->channelId = reader.readElementText();
 				else if (reader.name() == QStringLiteral("ParsedChannel"))
-					channel->parsedChannel = reader.readElementText();
+					channel->channelName = reader.readElementText();
 				else if (reader.name() == QStringLiteral("ChannelExten"))
-					channel->channelExten = reader.readElementText();
+					channel->number = reader.readElementText();
 				else if (reader.name() == QStringLiteral("CallerIdNum"))
 					channel->callerIdNum = reader.readElementText();
 				else if (reader.name() == QStringLiteral("CallerIdName"))
@@ -569,83 +637,23 @@ void CtiClientApplication::processXmlObject(const QString& xmlString) {
 
 			//Let main window know about the event
 			//TODO: Perhaps process event (or some events) here?
-			emit channelEventReceived(channel);
-		} else if (reader.name() == QStringLiteral("Operator")) {
-			config->fullName = reader.attributes().value(QStringLiteral("FullName")).toString();
-			while (reader.readNextStartElement()) {
-				if (reader.name() == QStringLiteral("IsCallCenter"))
-					config->isCallCenter = reader.readElementText().toInt() != 0;
-				else if (reader.name() == QStringLiteral("BeginInPause"))
-					config->beginInPause = reader.readElementText().toInt() != 0;
-				else if (reader.name() == QStringLiteral("CanMonitor"))
-					config->canMonitor = reader.readElementText().toInt() != 0;
-				else if (reader.name() == QStringLiteral("CanAlterSpeedDials"))
-					config->canAlterSpeedDials = reader.readElementText().toInt() != 0;
-				else if (reader.name() == QStringLiteral("CanRecord"))
-					config->canRecord = reader.readElementText().toInt() != 0;
-				else if (reader.name() == QStringLiteral("Extensions"))
-					while (reader.readNextStartElement()) {
-						AstCtiExtensionPtr extension = AstCtiExtensionPtr(new AstCtiExtension);
-						extension->number =
-								reader.attributes().value(QStringLiteral("Number")).toString();
-						while (reader.readNextStartElement()) {
-							if (reader.name() == QStringLiteral("Channel"))
-								extension->channel = reader.readElementText();
-							else if (reader.name() == QStringLiteral("Name"))
-								extension->name = reader.readElementText();
-							else if (reader.name() == QStringLiteral("CanAutoAnswer"))
-								extension->canAutoAnswer = reader.readElementText().toInt() != 0;
-							else if (reader.name() == QStringLiteral("LoggedInQueue"))
-								extension->loggedInQueue = reader.readElementText().toInt() != 0;
-							else if (reader.name() == QStringLiteral("Status"))
-								extension->status =
-										(AstCtiExtensionStatus)reader.readElementText().toInt();
-						}
-						config->extensions.append(extension);
+			emit this->channelEventReceived(channel);
+		} else if (reader.name() == QStringLiteral("AgentStatus")) {
+			const QString channelName =
+					reader.attributes().value(QStringLiteral("ChannelName")).toString();
+			const AstCtiAgentStatus status = (AstCtiAgentStatus)reader.readElementText().toInt();
+			const int listSize = this->config->extensions.size();
+			if (status != AgentStatusLoginFailed && status != AgentStatusPauseFailed) {
+				for (int i = 0; i < listSize; i++) {
+					AstCtiExtensionPtr extension = this->config->extensions.at(i);
+					if (extension->channelName == channelName) {
+						extension->agentStatus = status;
+						break;
 					}
-				else if (reader.name() == QStringLiteral("SpeedDials"))
-					while (reader.readNextStartElement()) {
-						AstCtiSpeedDialPtr speedDial = AstCtiSpeedDialPtr(new AstCtiSpeedDial);
-						while (reader.readNextStartElement()) {
-							if (reader.name() == QStringLiteral("GroupName"))
-								speedDial->groupName = reader.readElementText();
-							else if (reader.name() == QStringLiteral("Name"))
-								speedDial->name = reader.readElementText();
-							else if (reader.name() == QStringLiteral("Number"))
-								speedDial->number = reader.readElementText();
-							else if (reader.name() == QStringLiteral("BLF"))
-								speedDial->isBlf = reader.readElementText().toInt() != 0;
-							else if (reader.name() == QStringLiteral("Order"))
-								speedDial->order = reader.readElementText().toShort();
-							else if (reader.name() == QStringLiteral("ExtensionStatus"))
-								speedDial->extensionStatus =
-										(AstCtiExtensionStatus)reader.readElementText().toInt();
-						}
-						// For key, we use groupName:order, with order left padded with zeros
-						const QString key = QString("%1:%2")
-											.arg(speedDial->groupName)
-											.arg(speedDial->order, 3, 10, QChar('0'));
-						config->speedDials.insert(key, speedDial);
-					}
-				else if (reader.name() == QStringLiteral("Services"))
-					while (reader.readNextStartElement()) {
-						QString name = "";
-						QString serviceType = "";
-						// This data is informational. User is informed about the service name
-						// and type, which can be "Inbound", "Outbound" or "Queue"
-						while (reader.readNextStartElement()) {
-							if (reader.name() == QStringLiteral("Name"))
-								name = reader.readElementText();
-							else if (reader.name() == QStringLiteral("Queue"))
-								serviceType = "Queue";
-							else if (reader.name() == QStringLiteral("ContextType"))
-								if (serviceType.length() == 0)
-									serviceType = reader.readElementText();
-						}
-						config->services.insert(name, serviceType);
-					}
+				}
 			}
-			this->showMainWindow();
+			//Let main window know about the event
+			emit this->agentStatusChanged(channelName, status);
 		}
 	}
 }
@@ -706,7 +714,7 @@ void CtiClientApplication::sendCommandToServer(const AstCtiCommands command,
         //We exit without sending the command
         return;
     }
-// Test
+
     //Create and remember command object
     AstCtiCommand* cmd = new AstCtiCommand();
     cmd->command = command;
@@ -753,7 +761,38 @@ void CtiClientApplication::showMainWindow()
 			this->mainWindow = new ManagerWindow(this->config);
             break;
         default:
+			if (!this->config->isCallCenter) {
+				QMessageBox msgBox;
+
+				msgBox.setText(tr("This client layout can only be used for call-center operators. "
+								  "Please log in as a different user or choose another layout."));
+				QPushButton* okBtn = msgBox.addButton(tr("OK"), QMessageBox::AcceptRole);
+				okBtn->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/ok.png"))));
+
+				msgBox.setIcon(QMessageBox::Critical);
+				msgBox.exec();
+
+				this->logOff();
+
+				return;
+			}
+			if (this->config->extensions.size() > 1) {
+				QMessageBox msgBox;
+
+				msgBox.setText(tr("Multiple extensions are not supported for this client layout. "
+								  "Please log in as a different user or choose another layout."));
+				QPushButton* okBtn = msgBox.addButton(tr("OK"), QMessageBox::AcceptRole);
+				okBtn->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/ok.png"))));
+
+				msgBox.setIcon(QMessageBox::Critical);
+				msgBox.exec();
+
+				this->logOff();
+
+				return;
+			}
 			this->mainWindow = new CompactWindow(this->config);
+			break;
         }
 
 		connect(this, SIGNAL(newMessage(QString,QSystemTrayIcon::MessageIcon)),
@@ -761,22 +800,20 @@ void CtiClientApplication::showMainWindow()
 		connect(this, SIGNAL(newConfig(AstCtiConfiguration*)),
 				this->mainWindow, SLOT(newConfig(AstCtiConfiguration*)));
 		connect(this, SIGNAL(channelEventReceived(AstCtiChannel*)),
-				this->mainWindow, SLOT(receiveChannelEvent(AstCtiChannel*)));
+				this->mainWindow, SLOT(handleChannelEvent(AstCtiChannel*)));
 		connect(this, SIGNAL(statusChange(bool)),
 				this->mainWindow, SLOT(setStatus(bool)));
 		connect(this, SIGNAL(closeWindow(bool)),
 				this->mainWindow, SLOT(quit(bool)));
-		connect(this, SIGNAL(pauseAccepted()),
-				this->mainWindow, SLOT(pauseAccepted()));
-		connect(this, SIGNAL(pauseError(QString)),
-				this->mainWindow, SLOT(pauseError(QString)));
+		connect(this, SIGNAL(agentStatusChanged(QString,AstCtiAgentStatus)),
+				this->mainWindow, SLOT(agentStatusChanged(QString,AstCtiAgentStatus)));
 
 		connect(this->mainWindow, SIGNAL(logOff()),
 				this, SLOT(logOff()));
 		connect(this->mainWindow, SIGNAL(changePassword()),
 				this, SLOT(changePassword()));
-		connect(this->mainWindow, SIGNAL(pauseRequest(bool)),
-				this, SLOT(pause(bool)));
+		connect(this->mainWindow, SIGNAL(pauseRequest(QString)),
+				this, SLOT(pause(QString)));
 
 		this->mainWindow->show();
 	} else {
@@ -830,7 +867,7 @@ void CtiClientApplication::socketConnected()
     if (localAddress == QHostAddress::LocalHost) {
 		this->macAddress = QStringLiteral("00:00:00:00:00:00");
     } else {
-        foreach(QNetworkInterface iface, QNetworkInterface::allInterfaces()) {
+		foreach (QNetworkInterface iface, QNetworkInterface::allInterfaces()) {
             if (iface.flags().testFlag(QNetworkInterface::IsRunning)) {
                 foreach (QNetworkAddressEntry entry, iface.addressEntries()) {
                     if (entry.ip() == localAddress) {
@@ -845,7 +882,7 @@ void CtiClientApplication::socketConnected()
     }
     if (this->macAddress.isEmpty()) {
         qCritical() << "Unable to determine local MAC address. Aborting.";
-		abortConnection(StopInternalError, tr("Unable to determine local MAC address."));
+		this->abortConnection(StopInternalError, tr("Unable to determine local MAC address."));
         return;
     }
 
@@ -859,7 +896,7 @@ void CtiClientApplication::socketDisconnected()
     this->config->compressionLevel = 0;
 
     //Delete last command if it exists
-    resetLastCtiCommand();
+	this->resetLastCtiCommand();
 
     if (this->connectionStatus != ConnStatusDisconnected) {
 		if (config->debug)
@@ -998,7 +1035,7 @@ void CtiClientApplication::idleTimerElapsed()
     //Send NoOp command to server to keep connection alive
     if (this->localSocket->state() == QAbstractSocket::ConnectedState) {
         if (this->connectionStatus == ConnStatusLoggedIn)
-            sendCommandToServer(CmdNoOp);
+			this->sendCommandToServer(CmdKeepAlive);
     }
 }
 
@@ -1029,38 +1066,26 @@ QString CtiClientApplication::getCommandName(const AstCtiCommands command)
 	QString commandName;
 
 	switch (command) {
-	case CmdQuit:
-		commandName = QStringLiteral("QUIT");
-		break;
-	case CmdCompression:
-		commandName = QStringLiteral("CMPR");
+	case CmdLogin:
+		commandName = QStringLiteral("LOGIN");
 		break;
 	case CmdKeepAlive:
-		commandName = QStringLiteral("KEEP");
-		break;
-	case CmdNoOp:
 		commandName = QStringLiteral("NOOP");
-		break;
-	case CmdUser:
-		commandName = QStringLiteral("USER");
-		break;
-	case CmdPass:
-		commandName = QStringLiteral("PASS");
 		break;
 	case CmdChangePassword:
 		commandName = QStringLiteral("CHPW");
 		break;
-	case CmdOsType:
-		commandName = QStringLiteral("OSTYPE");
+	case CmdOriginate:
+		commandName = QStringLiteral("ORIG");
+		break;
+	case CmdConference:
+		commandName = QStringLiteral("CONF");
 		break;
 	case CmdPause:
 		commandName = QStringLiteral("PAUSE");
 		break;
-	case CmdOrig:
-		commandName = QStringLiteral("ORIG");
-		break;
-	case CmdMac:
-		commandName = QStringLiteral("MAC");
+	case CmdQuit:
+		commandName = QStringLiteral("QUIT");
 		break;
 	default:
 		commandName = QStringLiteral("");
@@ -1068,4 +1093,45 @@ QString CtiClientApplication::getCommandName(const AstCtiCommands command)
 	}
 
 	return commandName;
+}
+
+QString CtiClientApplication::getErrorText(const AstCtiErrorCodes error)
+{
+	//We use a variable to exploit NRVO
+	QString errorText;
+
+	switch (error) {
+	case ErrUnknownCmd:
+		errorText = tr("Unknown command.");
+		break;
+	case ErrWrongParam:
+		errorText = tr("Wrong number of parameters.");
+		break;
+	case ErrNoAuth:
+		errorText = tr("The client is not authenticated.");
+		break;
+	case ErrUserLoggedIn:
+		errorText = tr("Client with this user name is already logged in.");
+		break;
+	case ErrWrongCreds:
+		errorText = tr("Your user name or password was not accepted by the server.");
+		break;
+	case ErrUnknownOs:
+		errorText = tr("Unknown operating system.");
+		break;
+	case ErrWrongMac:
+		errorText = tr("Your MAC address was not recognized by the server.");
+		break;
+	case ErrPassChgFail:
+		errorText = tr("Changing of password did not succeed due to server error.");
+		break;
+	case ErrUnknownChan:
+		errorText = tr("Unknown channel.");
+		break;
+	default:
+		errorText = QStringLiteral("");
+		break;
+	}
+
+	return errorText;
 }

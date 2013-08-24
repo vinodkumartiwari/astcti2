@@ -18,7 +18,7 @@ COPY actions (id, os_type, action_type, destination, parameters, encoding, enabl
 5	Linux	UdpMessage	192.168.0.2:2323	Caller: {CALLERID}	UTF-8	t
 \.
 
-COPY extensions (id_seat, exten, description, can_auto_answer, enabled) FROM stdin;
+COPY extensions (id_seat, channel, description, can_auto_answer, enabled) FROM stdin;
 1	SIP/32	\N	f	t
 3	SIP/33	\N	t	t
 3	SIP/34	\N	f	t

@@ -53,21 +53,21 @@
 #include "cticlientwindow.h"
 #include "browserwindow.h"
 
-#ifdef Q_OS_WIN
-const QString osType = "Windows";
-#endif
-#ifdef Q_OS_MAC
-const QString osType = "Macintosh";
-#endif
-#ifdef Q_OS_LINUX
-const QString osType = "Linux";
-#endif
-
 const QString defaultServerHost = "localhost";
 const QString defaultServerPort = "5000";
 const QString defaultConnectTimeout = "5000";
 const QString defaultConnectRetryInterval = "2";
 const int     defaultKeepAliveInterval = 5000;
+
+#ifdef Q_OS_WIN
+	const QString osType = "Windows";
+#endif
+#ifdef Q_OS_MAC
+	const QString osType = "Macintosh";
+#endif
+#ifdef Q_OS_LINUX
+	const QString osType = "Linux";
+#endif
 
 enum CtiClientType {
 	CtiClientCallCenter,
@@ -76,18 +76,25 @@ enum CtiClientType {
 
 enum AstCtiResponseCodes {
     RspOK = 100,
-    RspError = 101,
-    RspAuthOK = 102,
-    RspCompressLevel = 103,
-    RspKeepAlive = 104,
-    RspPauseOK = 300,
-    RspPausePending = 301,
-    RspPauseError = 302,
-    RspDisconnectOK = 900
+	RspError = 101
+};
+
+enum AstCtiErrorCodes {
+	ErrNotDefined = 0,
+	ErrUnknownCmd = 900,
+	ErrWrongParam = 901,
+	ErrNoAuth = 902,
+	ErrUserLoggedIn = 910,
+	ErrWrongCreds = 911,
+	ErrUnknownOs = 912,
+	ErrWrongMac = 913,
+	ErrPassChgFail = 914,
+	ErrUnknownChan = 920
 };
 
 struct AstCtiResponse {
 	AstCtiResponseCodes code;
+	AstCtiErrorCodes errorCode;
     QStringList data;
 };
 
@@ -109,7 +116,7 @@ public slots:
     //Signals from main window
 	void                     changePassword();
 	void                     logOff();
-	void                     pause(bool paused);
+	void                     pause(const QString& channelName);
 
     //Signals from browser
 	void                     browserWindowClosed(BrowserWindow* window);
@@ -120,8 +127,8 @@ public slots:
 
 signals:
 	void                     channelEventReceived(AstCtiChannel* channel);
-	void                     pauseAccepted();
-	void                     pauseError(const QString& message);
+	void                     agentStatusChanged(const QString& channelName,
+												const AstCtiAgentStatus status);
 	void                     newMessage(const QString& message,
 										QSystemTrayIcon::MessageIcon severity);
 	void                     statusChange(bool status);
@@ -148,13 +155,13 @@ private:
 	QString                  macAddress;
 	bool                     reconnectNotify;
 	QString                  newPassword;
-    AstCtiConfiguration    * config;
-	AstCtiCommand          * lastCtiCommand;
-    QTimer                 * idleTimer;
-    QTimer                 * connectTimer;
-    QTcpSocket             * localSocket;
-    LoginWindow            * loginWindow;
-    CtiClientWindow        * mainWindow;
+	AstCtiConfiguration*     config;
+	AstCtiCommand*           lastCtiCommand;
+	QTimer*                  idleTimer;
+	QTimer*                  connectTimer;
+	QTcpSocket*              localSocket;
+	LoginWindow*             loginWindow;
+	CtiClientWindow*         mainWindow;
 	QList<BrowserWindow*>    browserWindows;
 	QList<QProcess*>         applications;
 
@@ -163,7 +170,8 @@ private:
 	void                     abortConnection(const StopReason stopReason, const QString& message);
 	void                     connectionLost();
 	void                     resetLastCtiCommand();
-	AstCtiResponse           parseResponse(const QString& response);
+	void                     setKeepAliveInterval(const int miliseconds);
+	AstCtiResponse           parseResponse(const QString& responseString);
 	void                     parseDataReceivedFromServer(const QString& message);
 	void                     processResponse(const AstCtiResponse &response);
 	void                     processXmlObject(const QString& xmlString);
@@ -176,6 +184,7 @@ private:
 	void                     showMainWindow();
 	void                     newApplication(const QString& path, const QString& parameters);
 	QString                  getCommandName(const AstCtiCommands command);
+	QString                  getErrorText(const AstCtiErrorCodes error);
 
 private slots:
 	void                     socketConnected();

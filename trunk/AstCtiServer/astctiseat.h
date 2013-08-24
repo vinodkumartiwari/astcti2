@@ -41,6 +41,7 @@
 
 #include <QObject>
 #include <QList>
+#include <QXmlStreamWriter>
 
 #include "astctiextension.h"
 
@@ -59,11 +60,14 @@ public:
 	const AstCtiExtensionList& getExtensions() const;
 	QStringList                getExtensionNumbers() const;
 	bool                       compareExtensions(const AstCtiExtensionList& newExtensions) const;
-	bool                       hasExtension(const QString& channel) const;
-	void                       setExtensionUserAgent(const QString& channel,
+	bool                       hasExtension(const QString& channelName) const;
+	void                       setExtensionUserAgent(const QString& channelName,
 													 const QString& userAgent);
-	void                       setExtensionStatus(const QString& channel,
+	void                       setExtensionStatus(const QString& channelName,
 												  const AstCtiExtensionStatus status);
+
+	void                       setAgentStatus(const QString& channelName,
+											  const AstCtiAgentStatus status);
 
 private:
 	Q_DISABLE_COPY(AstCtiSeat)
@@ -72,7 +76,7 @@ private:
 	QString              description;
 	AstCtiExtensionList  extensions;
 
-	AstCtiExtension*     getExtension(const QString& channel) const;
+	AstCtiExtension*     getExtension(const QString& channelName) const;
 };
 
 typedef QHash<int, AstCtiSeat*> AstCtiSeatHash;

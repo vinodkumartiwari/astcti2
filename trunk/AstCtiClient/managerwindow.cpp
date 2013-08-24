@@ -160,6 +160,8 @@ void ManagerWindow::connectSlots()
 			this, SLOT(minimizeToTray()));
 	connect(ui->maximizeButton, SIGNAL(clicked()),
 			this, SLOT(showMaxRestore()));
+	connect(ui->pauseButton, SIGNAL(clicked()),
+			this, SLOT(pause()));
 //    connect(ui->passwordButton, SIGNAL(clicked()),
 //            this, SIGNAL(changePassword()));
 	connect(ui->closeButton, SIGNAL(clicked(bool)),
@@ -173,6 +175,8 @@ void ManagerWindow::newConfig(AstCtiConfiguration* config)
 	CtiClientWindow::newConfig(config);
 
 	this->ui->accountsTabWidget->setUpdatesEnabled(false);
+
+	this->isCallCenter = config->isCallCenter;
 
 	const int listSize = config->extensions.size();
 
@@ -230,7 +234,7 @@ void ManagerWindow::newConfig(AstCtiConfiguration* config)
 	this->ui->speedDialsTabWidget->setUpdatesEnabled(true);
 }
 
-void ManagerWindow::receiveChannelEvent(AstCtiChannel* channel)
+void ManagerWindow::handleChannelEvent(AstCtiChannel* channel)
 {
 	const QString eventName = channel->lastEvent;
 
@@ -254,6 +258,39 @@ void ManagerWindow::receiveChannelEvent(AstCtiChannel* channel)
 		// TODO: Change when contacs are implemented
 		callWidget->setCanEditContact(true);
 	}
+}
+
+void ManagerWindow::pause()
+{
+	this->ui->pauseButton->setEnabled(false);
+
+	//TODO
+	//emit this->pauseRequest(this->channelName);
+}
+
+void ManagerWindow::agentStatusChanged(const QString& channelName, const AstCtiAgentStatus status) {
+//	if (this->channelName != channelName)
+//		return;
+//TODO
+	switch (status) {
+	case AgentStatusLoggedOut:
+		break;
+	case AgentStatusLoggedIn:
+		break;
+	case AgentStatusPaused:
+		break;
+	case AgentStatusLoginFailed:
+		break;
+	case AgentStatusPauseFailed:
+		break;
+	}
+
+//	this->ui->callComboBox->setEnabled(!paused);
+//	this->ui->callButton->setEnabled(!paused);
+//	this->ui->passwordButton->setEnabled(!paused);
+//	this->ui->repeatButton->setEnabled(!paused);
+//	this->ui->pauseButton->setChecked(paused);
+//	this->ui->pauseButton->setEnabled(true);
 }
 
 void ManagerWindow::readSettings()
@@ -283,7 +320,7 @@ void ManagerWindow::writeSettings()
     settings.endGroup();
 }
 
-void ManagerWindow::enableControls(bool enable)
+void ManagerWindow::enableControls(const bool enable)
 {
 	//TODO
 }
