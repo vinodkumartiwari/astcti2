@@ -44,50 +44,48 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 
-AboutDialog::AboutDialog(QWidget* parent) :
-    QDialog(parent),
-    ui(new Ui::AboutDialog)
+AboutDialog::AboutDialog(const QString& serviceData, QWidget* parent) :
+	QDialog(parent), ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
+
     this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
 
-    this->setUpInfoLabel();
+	connect(this->ui->showLicenseButton, SIGNAL(clicked()),
+			this, SLOT(showLicense()));
+	connect(this->ui->aboutQtButton, SIGNAL(clicked()),
+			this, SLOT(aboutQt()));
+	connect(this->ui->closeButton, SIGNAL(clicked()),
+			this, SLOT(close()));
+
+	QString version = QLatin1String(APP_VERSION_LONG);
+
+	const QString description = tr(
+		"<h3>AsteriskCTI Client %1</h3>"
+		"Based on Qt %2<br/>"
+		"<br/>"
+		"Built on " __DATE__ " at " __TIME__ "<br />"
+#ifdef APP_REVISION
+		"From revision %6<br/>"
+#endif
+		"Copyright 2008-%3 %4. All rights reserved.<br/>"
+		"<br/>"
+		"The program is provided AS IS with NO WARRANTY OF ANY KIND, "
+		"INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A "
+		"PARTICULAR PURPOSE.<br/><br/>"
+		"You are a member of the following services:<br/><br/>%5")
+		.arg(version, QLatin1String(QT_VERSION_STR),
+			 QLatin1String(APP_YEAR), QLatin1String(APP_AUTHOR), serviceData
+#ifdef APP_REVISION
+			 , QString(APP_REVISION_STR).left(10)
+#endif
+			 );
+	this->ui->infoLabel->setText(description);
 }
 
 AboutDialog::~AboutDialog()
 {
     delete ui;
-}
-
-void AboutDialog::setUpInfoLabel()
-{
-    QString version = QLatin1String(APP_VERSION_LONG);
-    version += QDate(2007, 25, 10).toString(Qt::SystemLocaleDate);
-
-	const QString description = tr(
-        "<h3>AsteriskCTI Client %1</h3>"
-        "Based on Qt %2<br/>"
-        "<br/>"
-        "Built on " __DATE__ " at " __TIME__ "<br />"
-#ifdef APP_REVISION
-        "From revision %5<br/>"
-#endif
-        "Copyright 2008-%3 %4. All rights reserved.<br/>"
-        "<br/>"
-        "The program is provided AS IS with NO WARRANTY OF ANY KIND, "
-        "INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A "
-        "PARTICULAR PURPOSE.<br/>")
-		.arg(version, QLatin1String(QT_VERSION_STR),
-			 QLatin1String(APP_YEAR), (QLatin1String(APP_AUTHOR))
-#ifdef APP_REVISION
-             , QString(APP_REVISION_STR).left(10)
-#endif
-             );
-    this->ui->lblCopyright->setText(description);
-
-    this->ui->lblCopyright->setWordWrap(true);
-    this->ui->lblCopyright->setOpenExternalLinks(true);
-    this->ui->lblCopyright->setTextInteractionFlags(Qt::TextBrowserInteraction);
 }
 
 void AboutDialog::changeEvent(QEvent* e)
@@ -101,17 +99,12 @@ void AboutDialog::changeEvent(QEvent* e)
     }
 }
 
-void AboutDialog::on_btnAboutQt_clicked()
+void AboutDialog::aboutQt()
 {
     QMessageBox::aboutQt(this);
 }
 
-void AboutDialog::on_btnClose_clicked()
-{
-    this->close();
-}
-
-void AboutDialog::on_btnShowLicense_clicked()
+void AboutDialog::showLicense()
 {
     QDialog* dialog = new QDialog(this);
 
@@ -126,7 +119,7 @@ void AboutDialog::on_btnShowLicense_clicked()
     layout->addWidget(licenseBrowser);
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Close);
-    connect(buttonBox , SIGNAL(rejected()), dialog, SLOT(reject()));
+	connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
     layout->addWidget(buttonBox);
 
     QString appPath = QCoreApplication::applicationDirPath();
@@ -135,7 +128,7 @@ void AboutDialog::on_btnShowLicense_clicked()
 
     QString licenseText;
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-		licenseText = tr("Could not read file: ") + fileName;
+		licenseText = tr("Could not read file: %1").arg(fileName);
     else
         licenseText = file.readAll();
 

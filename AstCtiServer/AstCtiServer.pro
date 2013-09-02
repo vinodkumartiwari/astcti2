@@ -1,6 +1,4 @@
-# -------------------------------------------------
-# Project created by QtCreator 2008-12-27T09:05:04
-# -------------------------------------------------
+include(../AstCtiShared/AstCtiShared.pri)
 include(../QtSingleApplication/qtsinglecoreapplication.pri)
 include(../QsLog/QsLog.pri)
 
@@ -12,10 +10,10 @@ TARGET = AstCtiServer
 CONFIG += console
 CONFIG -= app_bundle
 TEMPLATE = app
-SOURCES += main.cpp \
+SOURCES += \
+	main.cpp \
     clientmanager.cpp \
     amiclient.cpp \
-    argumentlist.cpp \
     ctiserverapplication.cpp \
     configurationchecker.cpp \
     coretcpserver.cpp \
@@ -27,10 +25,10 @@ SOURCES += main.cpp \
     astctiseat.cpp \
     astctiservice.cpp \
     astctichannel.cpp
-HEADERS += clientmanager.h \
+HEADERS += \
+	clientmanager.h \
     amiclient.h \
     coreconstants.h \
-    argumentlist.h \
     ctiserverapplication.h \
     configurationchecker.h \
     coretcpserver.h \
@@ -41,8 +39,7 @@ HEADERS += clientmanager.h \
     astctioperator.h \
     astctiseat.h \
     astctiservice.h \
-    astctichannel.h \
-    astctiextension.h
+	astctichannel.h
 
 !equals($${PWD}, $${OUT_PWD}) {
     # Shadow building is enabled

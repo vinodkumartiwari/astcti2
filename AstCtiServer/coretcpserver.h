@@ -50,8 +50,8 @@
 #include "amiclient.h"
 
 // Server responses
-#define RSP_OK             "100"
-#define RSP_ERR            "101"
+#define RSP_OK             "OK"
+#define RSP_ERR            "KO"
 
 // Server error codes
 #define ERR_UNKNOWN_CMD    "900"
@@ -62,9 +62,11 @@
 #define ERR_WRONG_CREDS    "911"
 #define ERR_UNKNOWN_OS     "912"
 #define ERR_WRONG_MAC      "913"
-#define ERR_PASS_CHG_FAIL  "914"
+#define ERR_SEAT_TAKEN     "914"
+#define ERR_PASS_CHG_FAIL  "915"
 
 #define ERR_UNKNOWN_CHAN   "920"
+#define ERR_UNKNOWN_QUEUE  "921"
 
 enum AstCtiCommands {
 	CmdNotDefined,
@@ -73,6 +75,7 @@ enum AstCtiCommands {
 	CmdChangePassword,
 	CmdOriginate,
 	CmdConference,
+	CmdStart,
 	CmdPause,
 	CmdQuit
 };
@@ -89,10 +92,10 @@ class CoreTcpServer : public QTcpServer
 	Q_ENUMS(AstCtiCommands)
 
 public:
-	explicit CoreTcpServer(AstCtiConfiguration* config, QObject* parent = 0);
+	explicit CoreTcpServer(AstCtiConfiguration* const config, QObject* parent = 0);
     ~CoreTcpServer();
 
-	void setConfig(AstCtiConfiguration* newConfig);
+	void setConfig(AstCtiConfiguration* const newConfig);
 
 public slots:
 	void stopServer();
@@ -107,12 +110,7 @@ signals:
 
 private:
 	Q_DISABLE_COPY(CoreTcpServer)
-	AstCtiConfiguration*                config;
-	AmiClient*                          amiClient;
-	QHash<QTcpSocket*, ClientManager*>  clients;
-	QStringList                         users;
-	bool                                isClosing;
-	AmiConnectionStatus                 amiStatus;
+
 	AstCtiCommand                       parseCommand(const QString& command);
 	AstCtiCommands                      parseCommandType(const QString& commandName);
 	bool                                startListening();
@@ -120,29 +118,42 @@ private:
 	bool                                containsUser(const QString& username);
 	void                                addUser(const QString& username);
 	void                                removeUser(const QString& username);
-	void                                processClientData(QTcpSocket* socket, const QString& data);
-	void                                sendDataToClient(QTcpSocket* socket, const QString& data);
-	void                                addClient(QTcpSocket* socket, ClientManager* cm);
-	void                                removeClient(QTcpSocket* socket);
+	void                                processClientData(QTcpSocket* const socket,
+														  const QString& data);
+	void                                sendDataToClient(QTcpSocket* const socket,
+														 const QString& data);
+	void                                addClient(ClientManager* const cm);
+	void                                removeClient(ClientManager* const cm);
 	void                                disconnectClients();
 	ClientManager*                      getClientByChannelName(const QString& channelName);
-	void                                agentLogin(ClientManager* cm);
-	void                                agentLogout(ClientManager* cm);
-	void                                agentPause(ClientManager* cm, const QString& channelName);
-	void                                sendAmiCommand(AmiCommand* cmd);
+	void                                agentLogin(ClientManager* const cm,
+												   const QString& channelName,
+												   const QString& queue);
+	void                                agentLogout(ClientManager* const cm);
+	void                                agentPause(ClientManager* const cm,
+												   const QString& channelName,
+												   const QString& queue);
+	void                                sendAmiCommand(AmiCommand* const cmd);
+
+	AstCtiConfiguration*                config;
+	AmiClient*                          amiClient;
+	QHash<QTcpSocket*, ClientManager*>  clients;
+	QStringList                         users;
+	bool                                isClosing;
+	AmiConnectionStatus                 amiStatus;
 
 private slots:
 	//QTcpSocket
-	void newConnection();
+	void connectionInitiated();
 	void socketDataReceived();
 	void socketDisconnected();
 	void socketError(QAbstractSocket::SocketError error);
 
 	//AmiClient
-	void handleAmiConnectionStatusChange(const AmiConnectionStatus status);
-	void handleAmiChannelEvent(const AmiEvent eventId, AstCtiChannel* channel);
-	void handleAmiStatusEvent(const AmiEvent eventId, const QString& channelName, const int status);
-	void handleAmiCommandFailed(const AmiAction action, const QString& channelName);
+	void handleAmiConnectionStatusChange(AmiConnectionStatus status);
+	void handleAmiChannelEvent(AmiEvent eventId, AstCtiChannel* channel);
+	void handleAmiStatusEvent(AmiEvent eventId, QString channelName, QString data, int status);
+	void handleAmiCommandFailed(AmiAction action, QString channelName);
 };
 
 #endif // CORETCPSERVER_H

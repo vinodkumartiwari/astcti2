@@ -67,7 +67,7 @@ class AmiCommand : public QObject
 	Q_ENUMS(AmiAction)
 
 public:
-	explicit AmiCommand(AmiAction action, QObject* parent = 0);
+	explicit AmiCommand(const AmiAction action, QObject* parent = 0);
 	~AmiCommand();
 
 	QString         getParameter(const QString& name) const;

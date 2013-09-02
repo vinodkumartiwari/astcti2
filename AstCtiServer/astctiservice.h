@@ -60,21 +60,22 @@ public:
 						   const QString& queueName, QObject* parent = 0);
 	~AstCtiService();
 
-	int                    getId() const;
-	const QString&         getName() const;
-	AstCtiServiceType      getContextType() const;
-	QString                getContextTypeString() const;
-	bool                   isQueue() const;
-	const QString&         getQueueName() const;
+	const int                getId() const;
+	const QString&           getName() const;
+	const AstCtiServiceType  getContextType() const;
+	const QString            getContextTypeString() const;
+	const bool               isQueue() const;
+	const QString&           getQueueName() const;
 
-	const QStringList&     getVariables() const;
-	const AstCtiActionMap& getActions() const;
+	const QStringList&       getVariables() const;
+	const AstCtiActionMap&   getActions() const;
 
-	bool                   loadVariables();
-	bool                   loadActions(AstCtiActionHash* actionList);
+	const bool               loadVariables();
+	const bool               loadActions(const AstCtiActionHash* const actionList);
 
 private:
 	Q_DISABLE_COPY(AstCtiService)
+
 	int                    id;
 	QString                name;
 	AstCtiServiceType      contextType;

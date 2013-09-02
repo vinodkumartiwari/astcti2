@@ -43,6 +43,7 @@
 #include <QStringList>
 #include <QHash>
 #include <QTcpSocket>
+#include <QTimer>
 
 #include "astctioperator.h"
 #include "astctiseat.h"
@@ -52,8 +53,42 @@ class ClientManager : public  QObject
     Q_OBJECT
 
 public:
-	explicit ClientManager(QObject* parent = 0);
+	explicit ClientManager(QTcpSocket* const socket, QObject* parent = 0);
     ~ClientManager();
+
+	QTcpSocket* const      getSocket() const;
+
+	AstCtiOperator* const  getActiveOperator() const;
+	void                   setActiveOperator(AstCtiOperator* const op);
+
+	AstCtiSeat* const      getActiveSeat() const;
+	void                   setActiveSeat(AstCtiSeat* const seat);
+
+	const QString&         getClientOperatingSystem() const;
+	void                   setClientOperatingSystem(const QString& os);
+
+	const QString&         getCtiUsername() const;
+	void                   setCtiUsername(const QString& username);
+
+	const bool             getIsAuthenticated() const;
+	void                   setIsAuthenticated(const bool isAuthenticated);
+
+	const int              getCompressionLevel() const;
+	void                   setCompressionLevel(const int compressionLevel);
+
+	const QString&         getLocalIdentifier() const;
+	void                   setLocalIdentifier(const QString& localIdentifier);
+
+	void                   setIdleTimeout(const int miliseconds);
+	void                   resetIdleTimer();
+
+	// We expose this member directly for convenience
+	quint16                blockSize;
+
+private:
+	Q_DISABLE_COPY(ClientManager)
+
+	void              idleTimerElapsed();
 
 	QTcpSocket*       socket;
 	AstCtiOperator*   activeOperator;
@@ -62,12 +97,8 @@ public:
 	QString           ctiUsername;
 	bool              isAuthenticated;
 	int               compressionLevel;
-	int               retries;
-	quint16           blockSize;
 	QString           localIdentifier;
-
-private:
-	Q_DISABLE_COPY(ClientManager)
+	QTimer            idleTimer;
 };
 
 #endif // CLIENTMANAGER_H

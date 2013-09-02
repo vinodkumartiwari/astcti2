@@ -141,11 +141,11 @@ CtiServerApplication::~CtiServerApplication()
     }
 }
 
-bool CtiServerApplication::getCanStart() {
+const bool CtiServerApplication::getCanStart() {
 	return this->canStart;
 }
 
-bool CtiServerApplication::start()
+const bool CtiServerApplication::start()
 {
 	// ConfigurationChecker will check if database configuration will change
 	this->configChecker = new ConfigurationChecker();
@@ -199,7 +199,7 @@ CtiServerApplication* CtiServerApplication::instance()
     return (static_cast<CtiServerApplication*>(QCoreApplication::instance()));
 }
 
-bool CtiServerApplication::buildCoreTcpServer(AstCtiConfiguration* config)
+const bool CtiServerApplication::buildCoreTcpServer(AstCtiConfiguration* const config)
 {
 	this->coreTcpServer = new CoreTcpServer(config, this);
 //	connect(this->coreTcpServer, SIGNAL(destroyed()),
@@ -207,7 +207,7 @@ bool CtiServerApplication::buildCoreTcpServer(AstCtiConfiguration* config)
 	return true;
 }
 
-QString CtiServerApplication::readDatabaseVersion()
+const QString CtiServerApplication::readDatabaseVersion()
 {
 	QVariantList params;
 	params.append(QStringLiteral("db_version"));
@@ -220,7 +220,7 @@ QString CtiServerApplication::readDatabaseVersion()
     return result.toString();
 }
 
-bool CtiServerApplication::createDatabaseConnection(const QString& iniFilePath)
+const bool CtiServerApplication::createDatabaseConnection(const QString& iniFilePath)
 {
 	QLOG_INFO() << "Reading settings from file" << iniFilePath;
 

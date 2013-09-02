@@ -85,9 +85,10 @@ struct AstCtiChannel
 	QString              musicOnHoldState;
 	QString              hangupCause;
 	int                  bridgeId;
-
 	QStringHash          variables;
 	AstCtiActionPtrList  actions;
 };
+
+typedef QHash<QString, AstCtiChannel*> AstCtiChannelHash;
 
 #endif // ASTCTICHANNEL_H

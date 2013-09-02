@@ -10,8 +10,14 @@
     <x>0</x>
     <y>0</y>
     <width>563</width>
-    <height>256</height>
+    <height>324</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>About AsteriskCTI Client</string>
@@ -23,92 +29,124 @@
   <property name="styleSheet">
    <string/>
   </property>
-  <widget class="QLabel" name="lblPicture">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>141</width>
-     <height>131</height>
-    </rect>
-   </property>
-   <property name="autoFillBackground">
-    <bool>true</bool>
-   </property>
-   <property name="styleSheet">
-    <string/>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap resource="mainresources.qrc">:/res/res/asteriskcti-3d128x128.png</pixmap>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnClose">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>210</y>
-     <width>81</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="autoFillBackground">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Close</string>
-   </property>
-   <property name="icon">
-    <iconset resource="mainresources.qrc">
-     <normaloff>:/res/res/cancel.png</normaloff>:/res/res/cancel.png</iconset>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnShowLicense">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>210</y>
-     <width>111</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Show &amp;License</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnAboutQt">
-   <property name="geometry">
-    <rect>
-     <x>140</x>
-     <y>210</y>
-     <width>111</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>About &amp;QT</string>
-   </property>
-   <property name="icon">
-    <iconset resource="mainresources.qrc">
-     <normaloff>:/res/res/documentinfo.png</normaloff>:/res/res/documentinfo.png</iconset>
-   </property>
-  </widget>
-  <widget class="QLabel" name="lblCopyright">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>10</y>
-     <width>381</width>
-     <height>181</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="labelsLayout">
+     <item>
+      <spacer name="labelsSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>2</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="pictureLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <property name="styleSheet">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="mainresources.qrc">:/res/res/asteriskcti-3d128x128.png</pixmap>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="infoLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextBrowserInteraction</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="buttonsLayout">
+     <item>
+      <widget class="QPushButton" name="showLicenseButton">
+       <property name="text">
+        <string>Show &amp;License</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="aboutQtButton">
+       <property name="text">
+        <string>About &amp;QT</string>
+       </property>
+       <property name="icon">
+        <iconset resource="mainresources.qrc">
+         <normaloff>:/res/res/documentinfo.png</normaloff>:/res/res/documentinfo.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="buttonsSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="closeButton">
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>&amp;Close</string>
+       </property>
+       <property name="icon">
+        <iconset resource="mainresources.qrc">
+         <normaloff>:/res/res/cancel.png</normaloff>:/res/res/cancel.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
+ <tabstops>
+  <tabstop>showLicenseButton</tabstop>
+  <tabstop>aboutQtButton</tabstop>
+  <tabstop>closeButton</tabstop>
+ </tabstops>
  <resources>
   <include location="mainresources.qrc"/>
  </resources>

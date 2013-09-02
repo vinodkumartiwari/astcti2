@@ -56,8 +56,8 @@ int main(int argc, char* argv[])
 	//QApplication::setStyle(new AstCtiDefaultStyle);
 
 	//If application encounters any error in constructor, canStart will be false
-	if (!application.canStart)
+	if (!application.getCanStart())
         return 1;
 
-    return application.exec();
+	return application.exec();
 }

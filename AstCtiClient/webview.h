@@ -62,14 +62,14 @@ public:
     WebPage(QObject* parent = 0);
 
 private slots:
-    void handleUnsupportedContent(QNetworkReply* reply);
+	void handleUnsupportedContent(QNetworkReply* const reply);
 
 protected:
 	bool acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest &request,
 								 NavigationType type);
 //    QWebPage* createWindow(QWebPage::WebWindowType type);
 #if !defined(QT_NO_UITOOLS)
-	QObject* createPlugin(const QString& classId, const QUrl &url,
+	QObject* createPlugin(const QString& classId, const QUrl& url,
 						  const QStringList& paramNames, const QStringList& paramValues);
 #endif
 
@@ -82,16 +82,17 @@ class WebView : public QWebView {
     Q_OBJECT
 
 public:
-    WebView(QWidget* parent = 0);
-    WebPage* webPage() const {return m_page;}
+	explicit WebView(QWidget* parent = 0);
 
-    void loadUrl(const QUrl &url);
-    QUrl url() const;
+	WebPage* const webPage() const;
+
+	void loadUrl(const QUrl& url);
+	const QUrl url() const;
 	const QString& lastStatusBarText() const;
-    inline int progress() const {return m_progress;}
+	const int progress() const;
 
 private slots:
-    void setProgress(int progress);
+	void setProgress(const int progress);
     void loadFinished();
     void setStatusBarText(const QString& message);
 

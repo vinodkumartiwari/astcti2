@@ -57,7 +57,7 @@ AstCtiService::~AstCtiService()
 	QLOG_TRACE() << "Destroying AstCtiService" << this->id << this->name;
 }
 
-bool AstCtiService::loadVariables()
+const bool AstCtiService::loadVariables()
 {
 	QLOG_TRACE() << "Loading variables for service" << this->id << this->name;
 
@@ -81,7 +81,7 @@ bool AstCtiService::loadVariables()
 	return ok;
 }
 
-bool AstCtiService::loadActions(AstCtiActionHash* actionList)
+const bool AstCtiService::loadActions(const AstCtiActionHash* const actionList)
 {
 	QLOG_TRACE() << "Loading actions for service" << this->id << this->name;
 
@@ -112,7 +112,7 @@ bool AstCtiService::loadActions(AstCtiActionHash* actionList)
 	return ok;
 }
 
-int AstCtiService::getId() const
+const int AstCtiService::getId() const
 {
 	return this->id;
 }
@@ -122,12 +122,12 @@ const QString& AstCtiService::getName() const
     return this->name;
 }
 
-AstCtiServiceType AstCtiService::getContextType() const
+const AstCtiServiceType AstCtiService::getContextType() const
 {
     return this->contextType;
 }
 
-QString AstCtiService::getContextTypeString() const
+const QString AstCtiService::getContextTypeString() const
 {
 	//We use a variable to exploit NRVO
 	QString typeName;
@@ -135,14 +135,16 @@ QString AstCtiService::getContextTypeString() const
 	switch (this->contextType) {
 	case ServiceTypeInbound:
 		typeName = QStringLiteral("Inbound");
+		break;
 	default: // ServiceTypeOutbound
 		typeName = QStringLiteral("Outbound");
+		break;
 	}
 
 	return typeName;
 }
 
-bool AstCtiService::isQueue() const
+const bool AstCtiService::isQueue() const
 {
 	return !this->queueName.isEmpty();
 }

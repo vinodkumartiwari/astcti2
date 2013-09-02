@@ -57,15 +57,15 @@ namespace Ui {
 class BrowserWindow : public QMainWindow {
     Q_OBJECT
 public:
-    explicit BrowserWindow(const QString& userName, QUrl url, QWidget* parent = 0);
+	explicit BrowserWindow(const QString& userName, const QUrl& url, QWidget* parent = 0);
     virtual ~BrowserWindow();
 
-    void setUrl(QUrl url);
-    WebView* currentView() const;
+	void setUrl(const QUrl& url);
+	WebView* const currentView() const;
 
 signals:
-    void windowClosing(BrowserWindow*);
-    void linkClicked(QUrl);
+	void windowClosing(BrowserWindow* browserWindow);
+	void linkClicked(const QUrl& url);
 
 protected:
     QLabel* statusLabel;
@@ -94,11 +94,11 @@ private slots:
     void reloadButton_clicked();
     void stopButton_clicked();
     void goButton_clicked();
-    void webView_linkClicked(QUrl url);
-    void webView_loadProgress(int progress);
-    void webView_titleChanged(QString title);
-    void webView_statusBarMessage(QString text);
-    void webView_loadFinished(bool );
+	void webView_linkClicked(const QUrl& url);
+	void webView_loadProgress(const int progress);
+	void webView_titleChanged(const QString& title);
+	void webView_statusBarMessage(const QString& text);
+	void webView_loadFinished(const bool success);
     void webView_loadStarted();
 };
 

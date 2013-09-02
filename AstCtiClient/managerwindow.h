@@ -60,20 +60,22 @@ class ManagerWindow : public CtiClientWindow
     Q_OBJECT
 
 public:
-	explicit ManagerWindow(AstCtiConfiguration* config);
+	explicit ManagerWindow(AstCtiConfiguration* const config);
     ~ManagerWindow();
 
 public slots:
 	virtual void newConfig(AstCtiConfiguration* config);
 	virtual void handleChannelEvent(AstCtiChannel* channel);
-	virtual void pause();
-	virtual void agentStatusChanged(const QString& channelName, const AstCtiAgentStatus status);
-
-	void showHelp();
-    void showMaxRestore();
+	virtual void setStatus(bool status);
+	virtual void agentStartPause();
+	virtual void agentStatusChanged(const QString& queue, const QString& channelName,
+									AstCtiAgentStatus status);
 
 protected:
-    void changeEvent(QEvent* e);
+	virtual bool setAgentStatus(const QString& queue, const QString& channelName,
+								AstCtiAgentStatus& status);
+
+	void changeEvent(QEvent* e);
     void resizeEvent(QResizeEvent* e);
     void mouseMoveEvent(QMouseEvent* e);
     void mousePressEvent(QMouseEvent* e);
@@ -81,24 +83,31 @@ protected:
     bool eventFilter(QObject* object, QEvent* e);
 
 private:
-    Ui::ManagerWindow* ui;
-    QVBoxLayout* mainLayout;
-    QWidget* titleDummyWidget;
-    QStackedLayout* titleStackedLayout;
-//    QHBoxLayout* accountsLayout;
-//    QTabBar* accountsTabBar;
-
 	virtual void connectSlots();
 	virtual void enableControls(const bool enable);
 	virtual void writeSettings();
 	virtual void readSettings();
 
-	bool isCallCenter;
+	Ui::ManagerWindow* ui;
+
+    QVBoxLayout* mainLayout;
+    QWidget* titleDummyWidget;
+    QStackedLayout* titleStackedLayout;
+//    QHBoxLayout* accountsLayout;
+//    QTabBar* accountsTabBar;
+	QStandardItemModel* queuesModel;
+	QHash<QToolButton*, QString> queueButtons;
 
     bool resizeLeft;
     bool resizeRight;
     bool resizeUp;
     bool resizeDown;
+
+private slots:
+	void showHelp();
+	void showMaxRestore();
+	void switchAccount(const int index);
+	void startPauseButtonClicked();
 };
 
 #endif // MANAGERWINDOW_H

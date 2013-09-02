@@ -57,7 +57,7 @@ AstCtiConfiguration::~AstCtiConfiguration()
 	qDeleteAll(this->seats);
 }
 
-AstCtiService* AstCtiConfiguration::getServiceByName(const QString& serviceName)
+AstCtiService* const AstCtiConfiguration::getServiceByName(const QString& serviceName)
 {
 	foreach (AstCtiService* service, this->services.values()) {
 		if (service->getName() == serviceName)
@@ -67,7 +67,18 @@ AstCtiService* AstCtiConfiguration::getServiceByName(const QString& serviceName)
 	return 0;
 }
 
-AstCtiSeat* AstCtiConfiguration::getSeatByMac(const QString& mac)
+const int AstCtiConfiguration::getPenaltyByQueueName(const QString& queueName)
+{
+	for (AstCtiServiceHash::const_iterator i = this->services.constBegin();
+		 i != this->services.constEnd();
+		 i++)
+		if (i.value()->getQueueName() == queueName)
+			return i.key();
+
+	return 0;
+}
+
+AstCtiSeat* const AstCtiConfiguration::getSeatByMac(const QString& mac)
 {
 	foreach (AstCtiSeat* seat, this->seats.values()) {
 		if (seat->getMac() == mac)

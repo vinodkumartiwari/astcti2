@@ -90,7 +90,6 @@ void AstCtiChannel::setChannelId(const QString& channelId)
 {
 	this->channelId = channelId;
 
-
 	// Channel format is <technology>/<resource>-<identifier> (e.g. SIP/200-0899e2c8)
 	// <technology>/<resource> pair represents actual channel name, while identifier
 	// is the id of the current channel (there could be multiple simultaneous audio channels).
@@ -208,7 +207,7 @@ void AstCtiChannel::setQueue(const QString& queue)
 	this->queue = queue;
 }
 
-AstCtiChannelState AstCtiChannel::getState() const
+const AstCtiChannelState AstCtiChannel::getState() const
 {
     return this->state;
 }
@@ -305,7 +304,7 @@ void AstCtiChannel::setAssociatedLocalChannel(const QString& localChannel)
 	this->associatedLocalChannel = localChannel;
 }
 
-bool AstCtiChannel::hasMatchingLocalChannel(const QString& localChannel) const
+const bool AstCtiChannel::hasMatchingLocalChannel(const QString& localChannel) const
 {
 	const int length1 = this->associatedLocalChannel.length();
 	const int length2 = localChannel.length();
@@ -331,7 +330,7 @@ void AstCtiChannel::setStartTime(const QDateTime &startTime)
 	this->startTime = startTime;
 }
 
-int AstCtiChannel::getBridgeId() const
+const int AstCtiChannel::getBridgeId() const
 {
 	return this->bridgeId;
 }
@@ -353,7 +352,7 @@ void AstCtiChannel::addVariable(const QString& name, const QString& value)
 	this->variables.insert(name, value);
 }
 
-bool AstCtiChannel::setVariable(const QString& name, const QString& value)
+const bool AstCtiChannel::setVariable(const QString& name, const QString& value)
 {
 	if (this->variables.contains(name)) {
 		this->variables.insert(name, value);
@@ -363,7 +362,7 @@ bool AstCtiChannel::setVariable(const QString& name, const QString& value)
 	return false;
 }
 
-void AstCtiChannel::setActions(AstCtiActionMap callActions) {
+void AstCtiChannel::setActions(const AstCtiActionMap callActions) {
 
     this->actions = callActions;
 }
@@ -376,24 +375,24 @@ void AstCtiChannel::setOperatingSystem(const QString& operatingSystem)
 void AstCtiChannel::parseActionParameters()
 {
 	if (this->actions.size() > 0 && this->variables.size() > 0) {
-		AstCtiActionMap::const_iterator actionIterator = this->actions.constBegin();
-		while (actionIterator != this->actions.constEnd()) {
-			QString parameters = actionIterator.value()->getParameters();
-			QStringHash::const_iterator varIterator = this->variables.constBegin();
-			while (varIterator != this->variables.constEnd()) {
-				QString varName = QString("{%1}").arg(varIterator.key());
-				parameters = parameters.replace(varName, varIterator.value());
+		for (AstCtiActionMap::const_iterator i = this->actions.constBegin();
+			 i != this->actions.constEnd();
+			 i++) {
+			QString parameters = i.value()->getParameters();
 
-				varIterator++;
+			for (QStringHash::const_iterator j = this->variables.constBegin();
+				 j != this->variables.constEnd();
+				 j++) {
+
+				QString varName = QString("{%1}").arg(j.key());
+				parameters = parameters.replace(varName, j.value());
             }
-			((AstCtiAction*)actionIterator.value())->setParameters(parameters);
-
-			actionIterator++;
+			((AstCtiAction*)i.value())->setParameters(parameters);
         }
     }
 }
 
-QString AstCtiChannel::toXml(const QString& eventName)
+const QString AstCtiChannel::toXml(const QString& eventName)
 {
 	QString xmlString;
 
@@ -430,11 +429,10 @@ QString AstCtiChannel::toXml(const QString& eventName)
 	if (this->variables.size() > 0) {
 		writer.writeStartElement(QStringLiteral("Variables"));
 
-		QStringHash::const_iterator varIterator = this->variables.constBegin();
-		while (varIterator != this->variables.constEnd()) {
-			writer.writeTextElement(varIterator.key(), varIterator.value());
-			varIterator++;
-		}
+		for (QStringHash::const_iterator i = this->variables.constBegin();
+			 i != this->variables.constEnd();
+			 i++)
+			writer.writeTextElement(i.key(), i.value());
 
 		writer.writeEndElement(); // Variables
 	}
@@ -442,9 +440,10 @@ QString AstCtiChannel::toXml(const QString& eventName)
 	 if (this->actions.size() > 0) {
 		 writer.writeStartElement(QStringLiteral("Actions"));
 
-		AstCtiActionMap::const_iterator actionsIterator = this->actions.constBegin();
-		while (actionsIterator != this->actions.constEnd()) {
-			AstCtiAction* action = actionsIterator.value();
+		for (AstCtiActionMap::const_iterator i = this->actions.constBegin();
+			 i != this->actions.constEnd();
+			 i++) {
+			AstCtiAction* action = i.value();
 			if (action->getOsType() == ActionOsAll ||
 				action->getOsType() == this->clientOperatingSystem) {
 
@@ -461,7 +460,6 @@ QString AstCtiChannel::toXml(const QString& eventName)
 
 				writer.writeEndElement(); // Action
 			}
-			actionsIterator++;
 		}
 
 		writer.writeEndElement(); // Actions

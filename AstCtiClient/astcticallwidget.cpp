@@ -81,60 +81,55 @@ void AstCtiCallWidget::paintEvent(QPaintEvent* )
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
-QString AstCtiCallWidget::callerIdNumber() const
+const QString AstCtiCallWidget::callerIdNumber() const
 {
     return ui->numberLabel->text();
 }
 
-void AstCtiCallWidget::setCallerIdNumber(const QString& cid)
+void AstCtiCallWidget::setCallerIdNumber(const QString& callerIdNumber)
 {
-    if (cid == ui->numberLabel->text())
+	if (callerIdNumber == ui->numberLabel->text())
         return;
 
-    if (cid.isEmpty()) {
+	if (callerIdNumber.isEmpty()) {
 		ui->numberLabel->setText(tr("???"));
     } else {
-        ui->numberLabel->setText(cid);
+		ui->numberLabel->setText(callerIdNumber);
     }
 }
 
-QString AstCtiCallWidget::callerIdName() const
+const QString AstCtiCallWidget::callerIdName() const
 {
     return ui->nameLabel->text();
 }
 
-void AstCtiCallWidget::setCallerIdName(const QString& cid)
+void AstCtiCallWidget::setCallerIdName(const QString& callerIdName)
 {
-    if (cid == ui->nameLabel->text())
+	if (callerIdName == ui->nameLabel->text())
         return;
-    ui->nameLabel->setText(cid);
+	ui->nameLabel->setText(callerIdName);
 
-    if (cid.isEmpty()) {
+	if (callerIdName.isEmpty()) {
         ui->nameLabel->hide();
     } else {
         ui->nameLabel->show();
     }
 }
 
-QString AstCtiCallWidget::remarks() const
+const QString AstCtiCallWidget::remarks() const
 {
     return ui->remarksLabel->text();
 }
 
-void AstCtiCallWidget::setRemarks(const QString& rms)
+void AstCtiCallWidget::setRemarks(const QString& remarks)
 {
-    if (rms == ui->remarksLabel->text())
+	if (remarks == ui->remarksLabel->text())
         return;
-    ui->remarksLabel->setText(rms);
-
-    if (rms.isEmpty()) {
-        ui->remarksLabel->hide();
-    } else {
-        ui->remarksLabel->show();
-    }
+	ui->remarksLabel->setText(remarks);
+	ui->remarksLabel->setVisible(!remarks.isEmpty());
 }
 
-AstCtiCallWidget::CallDirection AstCtiCallWidget::callDirection() const
+const AstCtiCallWidget::CallDirection AstCtiCallWidget::callDirection() const
 {
     return this->m_callDirection;
 }
@@ -147,13 +142,13 @@ void AstCtiCallWidget::setCallDirection(const CallDirection direction)
 
     if (direction == CallDirectionIncoming)
 		ui->callDirectionLabel->setPixmap(
-					QPixmap(QStringLiteral(":/res/res/direction-incoming.png")));
+					QPixmap(QStringLiteral(":/res/callwidget/direction-incoming.png")));
     else
 		ui->callDirectionLabel->setPixmap(
-					QPixmap(QStringLiteral(":/res/res/direction-outgoing.png")));
+					QPixmap(QStringLiteral(":/res/callwidget/direction-outgoing.png")));
 }
 
-AstCtiCallWidget::CallState AstCtiCallWidget::callState() const
+const AstCtiCallWidget::CallState AstCtiCallWidget::callState() const
 {
     return this->m_callState;
 }
@@ -173,7 +168,7 @@ void AstCtiCallWidget::setCallState(const CallState state)
     this->style()->polish(this);
 }
 
-bool AstCtiCallWidget::canAnswer() const
+const bool AstCtiCallWidget::canAnswer() const
 {
     return this->m_canAnswer;
 }
@@ -184,7 +179,7 @@ void AstCtiCallWidget::setCanAnswer(const bool value)
     enableAnswer();
 }
 
-bool AstCtiCallWidget::canHold() const
+const bool AstCtiCallWidget::canHold() const
 {
     return this->m_canHold;
 }
@@ -195,7 +190,7 @@ void AstCtiCallWidget::setCanHold(const bool value)
     enableHold();
 }
 
-bool AstCtiCallWidget::canConference() const
+const bool AstCtiCallWidget::canConference() const
 {
     return this->m_canConference;
 }
@@ -206,7 +201,7 @@ void AstCtiCallWidget::setCanConference(const bool value)
     enableConference();
 }
 
-bool AstCtiCallWidget::canTransfer() const
+const bool AstCtiCallWidget::canTransfer() const
 {
     return this->m_canTransfer;
 }
@@ -217,7 +212,7 @@ void AstCtiCallWidget::setCanTransfer(const bool value)
     enableTransfer();
 }
 
-bool AstCtiCallWidget::canRecord() const
+const bool AstCtiCallWidget::canRecord() const
 {
     return this->m_canRecord;
 }
@@ -228,7 +223,7 @@ void AstCtiCallWidget::setCanRecord(const bool value)
     enableRecord();
 }
 
-bool AstCtiCallWidget::canEditContact() const
+const bool AstCtiCallWidget::canEditContact() const
 {
     return this->m_canEditContact;
 }
@@ -262,7 +257,8 @@ void AstCtiCallWidget::enableAnswer()
 {
     switch (this->m_callState) {
     case CallStateRinging:
-		ui->callToolButton->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/call-start.png"))));
+		ui->callToolButton->setIcon(
+					QIcon(QPixmap(QStringLiteral(":/res/callwidget/call-start.png"))));
         ui->callToolButton->setEnabled(this->m_canAnswer);
         if (this->m_canAnswer)
 			ui->callToolButton->setToolTip(tr("Answer"));
@@ -274,12 +270,14 @@ void AstCtiCallWidget::enableAnswer()
     case CallStateBusy:
     case CallStateInCall:
     case CallStateOnHold:
-		ui->callToolButton->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/call-stop.png"))));
+		ui->callToolButton->setIcon(
+					QIcon(QPixmap(QStringLiteral(":/res/callwidget/call-stop.png"))));
         ui->callToolButton->setEnabled(true);
 		ui->callToolButton->setToolTip(tr("Hang up"));
         break;
     default:
-		ui->callToolButton->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/call-start.png"))));
+		ui->callToolButton->setIcon(
+					QIcon(QPixmap(QStringLiteral(":/res/callwidget/call-start.png"))));
         ui->callToolButton->setEnabled(true);
 		ui->callToolButton->setToolTip(tr("Answer"));
         break;

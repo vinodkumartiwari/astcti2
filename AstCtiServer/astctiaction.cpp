@@ -112,17 +112,17 @@ AstCtiActionOsType AstCtiAction::parseOsType(const QString& osTypeString) {
 		return ActionOsAll;
 }
 
-int AstCtiAction::getId() const
+const int AstCtiAction::getId() const
 {
 	return this->id;
 }
 
-AstCtiActionType AstCtiAction::getActionType() const
+const AstCtiActionType AstCtiAction::getActionType() const
 {
     return this->actionType;
 }
 
-AstCtiActionOsType AstCtiAction::getOsType() const
+const AstCtiActionOsType AstCtiAction::getOsType() const
 {
 	return this->osType;
 }

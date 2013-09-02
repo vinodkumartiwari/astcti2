@@ -65,8 +65,8 @@ WebPage::WebPage(QObject* parent)
 //            this, SLOT(handleUnsupportedContent(QNetworkReply* )));
 }
 
-bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest &request,
-									  NavigationType type)
+bool WebPage::acceptNavigationRequest(QWebFrame* const frame, const QNetworkRequest &request,
+									  const NavigationType type)
 {
     if (frame == mainFrame()) {
         m_loadingUrl = request.url();
@@ -92,7 +92,7 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest &r
 //}
 
 #if !defined(QT_NO_UITOOLS)
-QObject* WebPage::createPlugin(const QString& classId, const QUrl &url,
+QObject* WebPage::createPlugin(const QString& classId, const QUrl& url,
 							   const QStringList& paramNames, const QStringList& paramValues)
 {
     Q_UNUSED(url);
@@ -165,24 +165,28 @@ WebView::WebView(QWidget* parent)
 	this->setPage(m_page);
 }
 
-void WebView::setProgress(int progress)
+WebPage* const WebView::webPage() const
+{
+	return this->m_page;
+}
+
+void WebView::setProgress(const int progress)
 {
     m_progress = progress;
 }
 
 void WebView::loadFinished()
 {
-    if (m_progress != 100) {
+	if (m_progress != 100)
 		qWarning() << "Recieved finished signal while progress is still:"
 				   << progress() << "Url:" << url();
-    }
     m_progress = 0;
 }
 
 void WebView::loadUrl(const QUrl &url)
 {
     m_initialUrl = url;
-    load(url);
+	this->load(url);
 }
 
 const QString& WebView::lastStatusBarText() const
@@ -190,7 +194,12 @@ const QString& WebView::lastStatusBarText() const
     return m_statusBarText;
 }
 
-QUrl WebView::url() const
+const int WebView::progress() const
+{
+	return this->m_progress;
+}
+
+const QUrl WebView::url() const
 {
     QUrl url = QWebView::url();
 	if (url.isEmpty())

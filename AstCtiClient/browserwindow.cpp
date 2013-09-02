@@ -43,7 +43,7 @@
 #include "browserwindow.h"
 #include "ui_browserwindow.h"
 
-BrowserWindow::BrowserWindow(const QString& userName, QUrl url, QWidget* parent) :
+BrowserWindow::BrowserWindow(const QString& userName, const QUrl& url, QWidget* parent) :
     QMainWindow(parent),
     ui(new Ui::BrowserWindow)
 {
@@ -121,29 +121,28 @@ void BrowserWindow::closeEvent(QCloseEvent* e)
     emit windowClosing(this);
 }
 
-WebView* BrowserWindow::currentView() const
+WebView* const BrowserWindow::currentView() const
 {
     return this->webView;
 }
 
-void BrowserWindow::setUrl(QUrl url)
+void BrowserWindow::setUrl(const QUrl& url)
 {
     this->currentUrl = url;
     //Settings are stored per-site (and per-user)
-    readSettings();
+	this->readSettings();
 
     this->webView->setUrl(url);
-    ++this->currentHistoryItem;
-    for (int i = this->history.size(); i > this->currentHistoryItem; i--) {
+	this->currentHistoryItem++;
+	for (int i = this->history.size(); i > this->currentHistoryItem; i--)
         this->history.removeLast();
-    }
     this->history.append(url.toString());
-    historySetEnabled();
+	this->historySetEnabled();
 }
 
 void BrowserWindow::webView_loadStarted()
 {
-    QUrl url = this->webView->url();
+	const QUrl url = this->webView->url();
     this->ui->urlLineEdit->setText(url.toString());
     this->ui->reloadButton->setEnabled(false);
     this->ui->stopButton->setEnabled(true);
@@ -152,11 +151,11 @@ void BrowserWindow::webView_loadStarted()
 
 void BrowserWindow::goButton_clicked()
 {
-    QString url = this->ui->urlLineEdit->text();
-	if (!url.startsWith(QStringLiteral("http://")) && !url.startsWith(QStringLiteral("https://"))) {
-        url = "http://" + url;
-    }
-    setUrl(QUrl(url));
+	QString urlString = this->ui->urlLineEdit->text();
+	if (!urlString.startsWith(QStringLiteral("http://")) &&
+		!urlString.startsWith(QStringLiteral("https://")))
+		urlString = "http://" + urlString;
+	this->setUrl(QUrl(urlString));
 }
 
 void BrowserWindow::stopButton_clicked()
@@ -171,46 +170,50 @@ void BrowserWindow::reloadButton_clicked()
 
 void BrowserWindow::prevButton_clicked()
 {
-    --this->currentHistoryItem;
+	this->currentHistoryItem--;
     this->webView->setUrl(this->history[this->currentHistoryItem]);
-    historySetEnabled();
+	this->historySetEnabled();
 }
 
 void BrowserWindow::nextButton_clicked()
 {
-    ++this->currentHistoryItem;
+	this->currentHistoryItem++;
     this->webView->setUrl(this->history[this->currentHistoryItem]);
-    historySetEnabled();
+	this->historySetEnabled();
 }
 
-void BrowserWindow::webView_loadFinished(bool)
+void BrowserWindow::webView_loadFinished(const bool success)
 {
     this->ui->reloadButton->setEnabled(true);
     this->ui->stopButton->setEnabled(false);
-	this->statusLabel->setText(tr("Complete"));
+	if (success)
+		this->statusLabel->setText(tr("Completed"));
+	else
+		this->statusLabel->setText(tr("Completed with errors"));
 }
 
-void BrowserWindow::webView_statusBarMessage(QString text)
+void BrowserWindow::webView_statusBarMessage(const QString& text)
 {
      this->statusLabel->setText(text);
 }
 
-void BrowserWindow::webView_titleChanged(QString title)
+void BrowserWindow::webView_titleChanged(const QString& title)
 {
     this->setWindowTitle(title);
 }
 
-void BrowserWindow::webView_loadProgress(int progress)
+void BrowserWindow::webView_loadProgress(const int progress)
 {
    this->statusLabel->setText(tr("Progress: %1 %").arg(progress));
 }
 
-void BrowserWindow::webView_linkClicked(QUrl url)
+void BrowserWindow::webView_linkClicked(const QUrl& url)
 {
-    emit linkClicked(url);
+	emit this->linkClicked(url);
 }
 
-void BrowserWindow::historySetEnabled(){
+void BrowserWindow::historySetEnabled()
+{
     this->ui->prevButton->setEnabled(this->currentHistoryItem > 0);
     this->ui->nextButton->setEnabled(this->currentHistoryItem < this->history.size() - 1);
 }

@@ -76,52 +76,52 @@ AstCtiSpeedDialWidget::~AstCtiSpeedDialWidget()
     delete ui;
 }
 
-QString AstCtiSpeedDialWidget::name() const
+const QString& AstCtiSpeedDialWidget::name() const
 {
     return this->m_name;
 }
 
-void AstCtiSpeedDialWidget::setName(const QString& capt)
+void AstCtiSpeedDialWidget::setName(const QString& name)
 {
-    this->m_name = capt;
-    setCaption();
-    setStatusText();
+	this->m_name = name;
+	this->setCaption();
+	this->setStatusText();
 }
 
-QString AstCtiSpeedDialWidget::number() const
+const QString& AstCtiSpeedDialWidget::number() const
 {
     return this->m_number;
 }
 
-void AstCtiSpeedDialWidget::setNumber(const QString& num)
+void AstCtiSpeedDialWidget::setNumber(const QString& number)
 {
-    this->m_number = num;
-    setCaption();
-    setStatusText();
+	this->m_number = number;
+	this->setCaption();
+	this->setStatusText();
 }
 
-bool AstCtiSpeedDialWidget::showNumber() const
+const bool AstCtiSpeedDialWidget::showNumber() const
 {
     return this->m_showNumber;
 }
 
-void AstCtiSpeedDialWidget::setShowNumber(const bool shownum)
+void AstCtiSpeedDialWidget::setShowNumber(const bool showNumber)
 {
-    this->m_showNumber = shownum;
-    setCaption();
+	this->m_showNumber = showNumber;
+	this->setCaption();
 }
 
-QString AstCtiSpeedDialWidget::group() const
+const QString& AstCtiSpeedDialWidget::group() const
 {
     return this->m_group;
 }
 
-void AstCtiSpeedDialWidget::setGroup(const QString& grp)
+void AstCtiSpeedDialWidget::setGroup(const QString& group)
 {
-    this->m_group = grp;
+	this->m_group = group;
 }
 
-bool AstCtiSpeedDialWidget::busyLampField() const
+const bool AstCtiSpeedDialWidget::busyLampField() const
 {
     return this->m_busyLampField;
 }
@@ -145,10 +145,10 @@ void AstCtiSpeedDialWidget::setBusyLampField(const bool blf)
         this->setExtensionState(AstCtiSpeedDialWidget::ExtensionStateUnknown);
     }
 
-    setStatusText();
+	this->setStatusText();
 }
 
-AstCtiSpeedDialWidget::ExtensionState AstCtiSpeedDialWidget::extensionState() const
+const AstCtiSpeedDialWidget::ExtensionState AstCtiSpeedDialWidget::extensionState() const
 {
     return this->m_extensionState;
 }
@@ -161,10 +161,10 @@ void AstCtiSpeedDialWidget::setExtensionState(const ExtensionState state)
     //this->style()->polish(this);
     this->update();
 
-    setStatusText();
+	this->setStatusText();
 }
 
-bool AstCtiSpeedDialWidget::doNotDisturb() const
+const bool AstCtiSpeedDialWidget::doNotDisturb() const
 {
     return this->m_doNotDisturb;
 }
@@ -173,12 +173,12 @@ void AstCtiSpeedDialWidget::setDoNotDisturb(const bool dnd)
 {
     this->m_doNotDisturb = dnd;
 
-	ui->doNotDisturbLabel->setVisible(dnd && this->m_busyLampField);
+	this->ui->doNotDisturbLabel->setVisible(dnd && this->m_busyLampField);
 
-    setStatusText();
+	this->setStatusText();
 }
 
-bool AstCtiSpeedDialWidget::callWaiting() const
+const bool AstCtiSpeedDialWidget::callWaiting() const
 {
     return this->m_callWaiting;
 }
@@ -187,12 +187,12 @@ void AstCtiSpeedDialWidget::setCallWaiting(const bool cw)
 {
     this->m_callWaiting = cw;
 
-	ui->callWaitingLabel->setVisible(cw && this->m_busyLampField);
+	this->ui->callWaitingLabel->setVisible(cw && this->m_busyLampField);
 
-    setStatusText();
+	this->setStatusText();
 }
 
-AstCtiSpeedDialWidget::CallForward AstCtiSpeedDialWidget::callForward() const
+const AstCtiSpeedDialWidget::CallForward AstCtiSpeedDialWidget::callForward() const
 {
     return this->m_callForward;
 }
@@ -201,36 +201,36 @@ void AstCtiSpeedDialWidget::setCallForward(const AstCtiSpeedDialWidget::CallForw
 {
     this->m_callForward = cf;
 
-	ui->callForwardLabel->setVisible(cf != AstCtiSpeedDialWidget::CallForwardNone &&
+	this->ui->callForwardLabel->setVisible(cf != AstCtiSpeedDialWidget::CallForwardNone &&
 									 this->m_busyLampField);
 
-    setStatusText();
+	this->setStatusText();
 }
 
-QString AstCtiSpeedDialWidget::callForwardNumber() const
+const QString& AstCtiSpeedDialWidget::callForwardNumber() const
 {
     return this->m_CallForwardNumber;
 }
 
-void AstCtiSpeedDialWidget::setCallForwardNumber(const QString& cfnum)
+void AstCtiSpeedDialWidget::setCallForwardNumber(const QString& cfNumber)
 {
-    this->m_CallForwardNumber = cfnum;
+	this->m_CallForwardNumber = cfNumber;
 
-    setStatusText();
+	this->setStatusText();
 }
 
-int AstCtiSpeedDialWidget::voicemail() const
+const int AstCtiSpeedDialWidget::voicemail() const
 {
     return this->m_voicemail;
 }
 
-void AstCtiSpeedDialWidget::setVoicemail(const int vm)
+void AstCtiSpeedDialWidget::setVoicemail(const int vmCount)
 {
-	this->m_voicemail = vm;
+	this->m_voicemail = vmCount;
 
-	ui->voicemailLabel->setVisible(vm && this->m_busyLampField);
+	this->ui->voicemailLabel->setVisible(vmCount && this->m_busyLampField);
 
-    setStatusText();
+	this->setStatusText();
 }
 
 void AstCtiSpeedDialWidget::paintEvent(QPaintEvent* )
@@ -337,7 +337,7 @@ void AstCtiSpeedDialWidget::setStatusText()
     this->ui->captionLabel->setToolTip(status);
 }
 
-QString AstCtiSpeedDialWidget::extensionStateToString()
+const QString AstCtiSpeedDialWidget::extensionStateToString()
 {
 	//We use a variable to exploit NRVO
 	QString stateName;
@@ -363,7 +363,7 @@ QString AstCtiSpeedDialWidget::extensionStateToString()
 	return stateName;
 }
 
-QString AstCtiSpeedDialWidget::callForwardToString()
+const QString AstCtiSpeedDialWidget::callForwardToString()
 {
 	//We use a variable to exploit NRVO
 	QString cfName;

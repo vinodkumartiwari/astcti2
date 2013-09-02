@@ -86,69 +86,72 @@ public:
 	explicit AstCtiChannel(const QString& uniqueId, QObject* parent = 0);
 	~AstCtiChannel();
 
-	const QString&      getUniqueId() const;
-	void                setUniqueId(const QString& uniqueId);
+	const QString&           getUniqueId() const;
+	void                     setUniqueId(const QString& uniqueId);
 
-	const QString&      getChannelId() const;
-	void                setChannelId(const QString& channelId);
-	const QString&      getChannelName() const;
-	const QString&      getNumber() const;
+	const QString&           getChannelId() const;
+	void                     setChannelId(const QString& channelId);
+	const QString&           getChannelName() const;
+	const QString&           getNumber() const;
 
-	const QString&      getCalleridNum() const;
-	void                setCalleridNum(const QString& callerIdNum);
-	const QString&      getCalleridName() const;
-	void                setCalleridName(const QString& callerIdName);
+	const QString&           getCalleridNum() const;
+	void                     setCalleridNum(const QString& callerIdNum);
+	const QString&           getCalleridName() const;
+	void                     setCalleridName(const QString& callerIdName);
 
-	const QString&      getContext() const;
-	void                setContext(const QString& context);
-	const QString&      getDialedLineNum() const;
-	void                setDialedLineNum(const QString& dialedLineNum);
-	const QString&      getConnectedLineNum() const;
-	void                setConnectedLineNum(const QString& connectedLineNum);
+	const QString&           getContext() const;
+	void                     setContext(const QString& context);
+	const QString&           getDialedLineNum() const;
+	void                     setDialedLineNum(const QString& dialedLineNum);
+	const QString&           getConnectedLineNum() const;
+	void                     setConnectedLineNum(const QString& connectedLineNum);
 
-	const QString&      getApplication() const;
-	void                setApplication(const QString& application);
-	const QString&      getApplicationData() const;
-	void                setApplicationData(const QString& applicationData);
+	const QString&           getApplication() const;
+	void                     setApplication(const QString& application);
+	const QString&           getApplicationData() const;
+	void                     setApplicationData(const QString& applicationData);
 
-	const QString&      getQueue() const;
-	void                setQueue(const QString& queue);
+	const QString&           getQueue() const;
+	void                     setQueue(const QString& queue);
 
-	AstCtiChannelState  getState() const;
-	void                setState(const AstCtiChannelState state);
-	static QString      channelStateToString(const AstCtiChannelState state);
+	const AstCtiChannelState getState() const;
+	void                     setState(const AstCtiChannelState state);
+	static QString           channelStateToString(const AstCtiChannelState state);
 
-	const QString&      getAccountCode() const;
-	void                setAccountCode(const QString& accountCode);
+	const QString&           getAccountCode() const;
+	void                     setAccountCode(const QString& accountCode);
 
-	const QString&      getMusicOnHoldState() const;
-	void                setMusicOnHoldState(const QString& state);
+	const QString&           getMusicOnHoldState() const;
+	void                     setMusicOnHoldState(const QString& state);
 
-	const QString&      getHangupCause() const;
-	void                setHangupCause(const QString& hangupCause);
+	const QString&           getHangupCause() const;
+	void                     setHangupCause(const QString& hangupCause);
 
-	const QString&      getAssociatedLocalChannel() const;
-	void                setAssociatedLocalChannel(const QString& localChannel);
-	bool                hasMatchingLocalChannel(const QString& localChannel) const;
+	const QString&           getAssociatedLocalChannel() const;
+	void                     setAssociatedLocalChannel(const QString& localChannel);
+	const bool               hasMatchingLocalChannel(const QString& localChannel) const;
 
-	const QDateTime&    getStartTime() const;
-	void                setStartTime(const QDateTime& startTime);
+	const QDateTime&         getStartTime() const;
+	void                     setStartTime(const QDateTime& startTime);
 
-	int                 getBridgeId() const;
-	void                setBridgeId(const int bridgeId);
-	static int          getNextBridgeId();
+	const int                getBridgeId() const;
+	void                     setBridgeId(const int bridgeId);
+	static int               getNextBridgeId();
 
-	void                addVariable(const QString& name, const QString& value);
-	bool                setVariable(const QString& name, const QString& value);
+	void                     addVariable(const QString& name, const QString& value);
+	const bool               setVariable(const QString& name, const QString& value);
 
-	void                setActions(AstCtiActionMap callActions);
+	void                     setActions(const AstCtiActionMap callActions);
 
-	void                setOperatingSystem(const QString& operatingSystem);
+	void                     setOperatingSystem(const QString& operatingSystem);
 
-	QString             toXml(const QString& eventName);
+	const QString            toXml(const QString& eventName);
 
 private:
 	Q_DISABLE_COPY(AstCtiChannel)
+
+	void                parseActionParameters();
+
 	QString             uniqueId;
 	QString             channelId;
 	QString             channelName;
@@ -169,13 +172,9 @@ private:
 	QDateTime           startTime;
 	int                 bridgeId;
 	AstCtiActionOsType  clientOperatingSystem;
-
 	QStringHash         variables;
 	AstCtiActionMap     actions;
-
 	static int          nextBridgeId;
-
-	void                parseActionParameters();
 };
 Q_DECLARE_METATYPE(AstCtiChannel*)
 

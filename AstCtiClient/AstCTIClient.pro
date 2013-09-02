@@ -1,3 +1,4 @@
+include(../AstCtiShared/AstCtiShared.pri)
 include(../QtSingleApplication/qtsingleapplication.pri)
 
 TARGET = AstCtiClient
@@ -11,28 +12,28 @@ CONFIG += qt \
 contains(QT_BUILD_PARTS, tools):CONFIG += uitools
 else:DEFINES += QT_NO_UITOOLS
 
-SOURCES += main.cpp \
-    aboutdialog.cpp \
-    browserwindow.cpp \
-    cticlientapplication.cpp \
-    webview.cpp \
-    argumentlist.cpp \
-    loginwindow.cpp \
-    compactwindow.cpp \
-    passwordwindow.cpp \
-    managerwindow.cpp \
-    cticlientwindow.cpp \
-    astctidefaultstyle.cpp \
-    astctispeeddialwidget.cpp \
-    astcticallwidget.cpp
+SOURCES += \
+	main.cpp \
+	aboutdialog.cpp \
+	browserwindow.cpp \
+	cticlientapplication.cpp \
+	webview.cpp \
+	loginwindow.cpp \
+	compactwindow.cpp \
+	passwordwindow.cpp \
+	managerwindow.cpp \
+	cticlientwindow.cpp \
+	astctidefaultstyle.cpp \
+	astctispeeddialwidget.cpp \
+	astcticallwidget.cpp \
+    astctitcpclient.cpp
 HEADERS += \
-    aboutdialog.h \
+	aboutdialog.h \
     coreconstants.h \
     browserwindow.h \
     cticlientapplication.h \
     webview.h \
-    argumentlist.h \
-    cticonfig.h \
+	cticonfig.h \
     loginwindow.h \
     astcticommand.h \
     astctichannel.h \
@@ -42,7 +43,8 @@ HEADERS += \
     cticlientwindow.h \
     astctidefaultstyle.h \
     astctispeeddialwidget.h \
-    astcticallwidget.h
+    astcticallwidget.h \
+    astctitcpclient.h
 FORMS += \
     aboutdialog.ui \
     browserwindow.ui \

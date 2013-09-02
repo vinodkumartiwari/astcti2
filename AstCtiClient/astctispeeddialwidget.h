@@ -86,30 +86,30 @@ public:
         ExtensionStateBusy
     };
 
-    QString name() const;
-    QString number() const;
-    bool showNumber() const;
-    QString group() const;
-    bool busyLampField() const;
-    ExtensionState extensionState() const;
-    bool doNotDisturb() const;
-    bool callWaiting() const;
-    CallForward callForward() const;
-    QString callForwardNumber() const;
-    int voicemail() const;
+	const QString& name() const;
+	const QString& number() const;
+	const bool showNumber() const;
+	const QString& group() const;
+	const bool busyLampField() const;
+	const ExtensionState extensionState() const;
+	const bool doNotDisturb() const;
+	const bool callWaiting() const;
+	const CallForward callForward() const;
+	const QString& callForwardNumber() const;
+	const int voicemail() const;
 
 public slots:
-    void setName(const QString& capt);
-    void setNumber(const QString& num);
-    void setShowNumber(const bool shownum);
-    void setGroup(const QString& grp);
+	void setName(const QString& name);
+	void setNumber(const QString& number);
+	void setShowNumber(const bool showNumber);
+	void setGroup(const QString& group);
     void setBusyLampField(const bool blf);
     void setExtensionState(const ExtensionState state);
     void setDoNotDisturb(const bool dnd);
     void setCallWaiting(const bool cw);
     void setCallForward(const CallForward cf);
-    void setCallForwardNumber(const QString& cfnum);
-    void setVoicemail(const int vm);
+	void setCallForwardNumber(const QString& cfNumber);
+	void setVoicemail(const int vmCount);
 
 signals:
     void dial(const QString& number);
@@ -123,12 +123,12 @@ protected:
 private:
 	Q_DISABLE_COPY(AstCtiSpeedDialWidget)
 
-	Ui::AstCtiSpeedDialWidget* ui;
-
     void setCaption();
     void setStatusText();
-    QString extensionStateToString();
-    QString callForwardToString();
+	const QString extensionStateToString();
+	const QString callForwardToString();
+
+	Ui::AstCtiSpeedDialWidget* ui;
 
     QString m_name;
     QString m_number;

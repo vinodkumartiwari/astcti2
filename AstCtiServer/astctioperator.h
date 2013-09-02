@@ -45,18 +45,7 @@
 
 #include "astctiservice.h"
 #include "astctiseat.h"
-
-struct AstCtiSpeedDial
-{
-	QString               groupName;
-	QString               name;
-	QString               number;
-	quint8                order;
-	bool                  isBlf;
-	AstCtiExtensionStatus extensionStatus;
-};
-
-typedef QMap<QString, AstCtiSpeedDial*> AstCtiSpeedDialMap;
+#include "astctiextension.h"
 
 class AstCtiOperator : public QObject
 {
@@ -65,28 +54,29 @@ class AstCtiOperator : public QObject
 
 public:
 	explicit AstCtiOperator(int id, const QString& fullName, const QString& username,
-							const QString& password, bool beginInPause, int seatID,
-							bool canMonitor, bool canAlterSpeedDials, bool canRecord,
-							QObject* parent = 0);
+							const QString& password, const bool beginInPause, const int seatID,
+							const bool canMonitor, const bool canAlterSpeedDials,
+							const bool canRecord, QObject* parent = 0);
 	~AstCtiOperator();
 
-	int                         getId() const;
+	const int                   getId() const;
 	const QString&              getFullName() const;
 	const QString&              getUsername() const;
 	const QString&              getPassword() const;
-	bool                        getBeginInPause() const;
-	int                         getSeatId() const;
-	bool                        getCanMonitor() const;
-	bool                        isCallCenter() const;
+	const bool                  getBeginInPause() const;
+	const int                   getSeatId() const;
+	const bool                  getCanMonitor() const;
+	const bool                  isCallCenter() const;
 
-	bool                        changePassword(const QString& newPassword);
-	bool                        checkPassword(const QString& password) const;
+	const bool                  changePassword(const QString& newPassword);
+	const bool                  checkPassword(const QString& password) const;
 
-	bool                        loadSpeedDials();
-	bool                        loadServices(AstCtiServiceHash* serviceList);
+	const bool                  loadSpeedDials();
+	const bool                  loadServices(const AstCtiServiceHash* const serviceList);
 	const AstCtiServiceRevHash& getServices() const;
+	const bool                  compareServices(const AstCtiServiceRevHash& newServices) const;
 
-	QString                     toXml(AstCtiSeat* seat);
+	const QString               toXml(AstCtiSeat* const seat) const;
 
 private:
 	Q_DISABLE_COPY(AstCtiOperator)
@@ -99,7 +89,6 @@ private:
 	bool                  canMonitor;
 	bool                  canAlterSpeedDials;
 	bool                  canRecord;
-
 	AstCtiSpeedDialMap    speedDials;
 	AstCtiServiceRevHash  services;
 };

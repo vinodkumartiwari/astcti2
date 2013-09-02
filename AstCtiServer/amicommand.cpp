@@ -42,7 +42,7 @@
 #include "QsLog.h"
 #include "amicommand.h"
 
-AmiCommand::AmiCommand(AmiAction action, QObject* parent) : QObject(parent)
+AmiCommand::AmiCommand(const AmiAction action, QObject* parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating new AMI command" << getActionName(action);
 
@@ -132,17 +132,17 @@ QString AmiCommand::toString(const int actionId) const
 	data.append(QString("ActionId:%1\r\n").arg(actionId));
 	//Add parameters, if any
 	if (this->parameters != 0) {
-		QHashIterator<QString, QString> i(*this->parameters);
-		while (i.hasNext()) {
-			i.next();
+		for (QStringHash::const_iterator i = this->parameters->constBegin();
+			 i != this->parameters->constEnd();
+			 i++) {
 			data.append(QString("%1:%2\r\n").arg(i.key()).arg(i.value()));
 		}
 	}
 	//Add variables, if any
 	if (this->variables != 0) {
-		QHashIterator<QString, QString> i(*this->variables);
-		while (i.hasNext()) {
-			i.next();
+		for (QStringHash::const_iterator i = this->variables->constBegin();
+			 i != this->variables->constEnd();
+			 i++) {
 			data.append(QString("Variable:%1=%2\r\n").arg(i.key()).arg(i.value()));
 		}
 	}

@@ -80,13 +80,13 @@ void ConfigurationChecker::stop()
 	this->isRunning = false;
 }
 
-long ConfigurationChecker::readLastModified()
+const long ConfigurationChecker::readLastModified()
 {
 	//If the conversion fails, toLongLong() returns 0, which is what we want
 	return this->readSetting(QStringLiteral("last_update"), 0).toLongLong();
 }
 
-bool ConfigurationChecker::readConfiguration()
+const bool ConfigurationChecker::readConfiguration()
 {
 	QLOG_INFO() << "Reading configuration settings from database";
 
@@ -242,7 +242,8 @@ bool ConfigurationChecker::readConfiguration()
 	return ok;
 }
 
-QVariant ConfigurationChecker::readSetting(const QString& name, const QVariant& defaultValue)
+const QVariant ConfigurationChecker::readSetting(const QString& name,
+												 const QVariant& defaultValue)
 {
 	QVariantList params;
 	params.append(name);
@@ -257,7 +258,7 @@ QVariant ConfigurationChecker::readSetting(const QString& name, const QVariant& 
 	return value;
 }
 
-QString ConfigurationChecker::timestampToString(const long timestamp) {
+const QString ConfigurationChecker::timestampToString(const long timestamp) {
 	QDateTime datetime;
 	datetime.setTime_t(timestamp);
 	return datetime.toString(Qt::SystemLocaleShortDate);

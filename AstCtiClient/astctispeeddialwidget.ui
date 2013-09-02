@@ -32,7 +32,7 @@
     </size>
    </property>
    <property name="pixmap">
-    <pixmap resource="mainresources.qrc">:/res/speeddialwidget/callforward.png</pixmap>
+    <pixmap resource="mainresources.qrc">:/speeddialwidget/res/speeddialwidget/callforward.png</pixmap>
    </property>
   </widget>
   <widget class="QLabel" name="doNotDisturbLabel">
@@ -57,7 +57,7 @@
     </size>
    </property>
    <property name="pixmap">
-    <pixmap resource="mainresources.qrc">:/res/speeddialwidget/donotdisturb.png</pixmap>
+    <pixmap resource="mainresources.qrc">:/speeddialwidget/res/speeddialwidget/donotdisturb.png</pixmap>
    </property>
   </widget>
   <widget class="QLabel" name="callWaitingLabel">
@@ -82,7 +82,7 @@
     </size>
    </property>
    <property name="pixmap">
-    <pixmap resource="mainresources.qrc">:/res/speeddialwidget/callwaiting.png</pixmap>
+    <pixmap resource="mainresources.qrc">:/speeddialwidget/res/speeddialwidget/callwaiting.png</pixmap>
    </property>
   </widget>
   <widget class="QLabel" name="voicemailLabel">
@@ -107,7 +107,7 @@
     </size>
    </property>
    <property name="pixmap">
-    <pixmap resource="mainresources.qrc">:/res/speeddialwidget/voicemail.png</pixmap>
+    <pixmap resource="mainresources.qrc">:/speeddialwidget/res/speeddialwidget/voicemail.png</pixmap>
    </property>
   </widget>
   <widget class="QLabel" name="captionLabel">

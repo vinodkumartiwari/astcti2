@@ -47,7 +47,7 @@
 #include <QtSingleApplication>
 
 #include "cticonfig.h"
-#include "astcticommand.h"
+#include "astctitcpclient.h"
 #include "astctichannel.h"
 #include "loginwindow.h"
 #include "cticlientwindow.h"
@@ -57,45 +57,10 @@ const QString defaultServerHost = "localhost";
 const QString defaultServerPort = "5000";
 const QString defaultConnectTimeout = "5000";
 const QString defaultConnectRetryInterval = "2";
-const int     defaultKeepAliveInterval = 5000;
-
-#ifdef Q_OS_WIN
-	const QString osType = "Windows";
-#endif
-#ifdef Q_OS_MAC
-	const QString osType = "Macintosh";
-#endif
-#ifdef Q_OS_LINUX
-	const QString osType = "Linux";
-#endif
 
 enum CtiClientType {
 	CtiClientCallCenter,
 	CtiClientPhoneManager
-};
-
-enum AstCtiResponseCodes {
-    RspOK = 100,
-	RspError = 101
-};
-
-enum AstCtiErrorCodes {
-	ErrNotDefined = 0,
-	ErrUnknownCmd = 900,
-	ErrWrongParam = 901,
-	ErrNoAuth = 902,
-	ErrUserLoggedIn = 910,
-	ErrWrongCreds = 911,
-	ErrUnknownOs = 912,
-	ErrWrongMac = 913,
-	ErrPassChgFail = 914,
-	ErrUnknownChan = 920
-};
-
-struct AstCtiResponse {
-	AstCtiResponseCodes code;
-	AstCtiErrorCodes errorCode;
-    QStringList data;
 };
 
 class CtiClientApplication : public QtSingleApplication
@@ -106,29 +71,38 @@ public:
     CtiClientApplication(const QString& appId, int &argc, char* *argv);
     ~CtiClientApplication();
 
-	bool                     canStart;
+	const bool               getCanStart() const;
 
 public slots:
-    //Signals from login window
-	void                     loginAccept(const QString& username, const QString& password);
+	//Signals from AstCtiTcpClient
+	void                     connectionLost();
+	void                     processXmlObject(const QString& xmlString);
+	void                     processResponse(AstCtiErrorCodes errorCode, AstCtiCommands command,
+											 const QStringList& parameters);
+
+	//Signals from login window
+	void                     loginAccept(const QString& userName, const QString& password);
 	void                     loginReject();
 
     //Signals from main window
 	void                     changePassword();
 	void                     logOff();
-	void                     pause(const QString& channelName);
+	void                     agentStart(const QString& queue, const QString& channelName);
+	void                     agentPause(const QString& queue, const QString& channelName);
 
     //Signals from browser
 	void                     browserWindowClosed(BrowserWindow* window);
-	void                     newBrowserWindow(QUrl url);
+	void                     newBrowserWindow(const QUrl& url);
 
     //Signals from QProcess
 	void                     applicationClosed(QProcess* process);
 
 signals:
+	void                     newCommand(AstCtiCommands command, const QStringList& parameters);
+	void                     startClient(const QString& username, const QString& password);
 	void                     channelEventReceived(AstCtiChannel* channel);
-	void                     agentStatusChanged(const QString& channelName,
-												const AstCtiAgentStatus status);
+	void                     agentStatusChanged(const QString& queue, const QString& channelName,
+												AstCtiAgentStatus status);
 	void                     newMessage(const QString& message,
 										QSystemTrayIcon::MessageIcon severity);
 	void                     statusChange(bool status);
@@ -136,64 +110,25 @@ signals:
 	void                     closeWindow(bool skipCheck);
 
 private:
-    enum ServerConnectionStatus {
-        ConnStatusDisconnected,
-        ConnStatusConnecting,
-        ConnStatusLoggingIn,
-        ConnStatusLoggedIn
-    };
-    enum StopReason {
-        StopUserDisconnect,
-        StopInvalidCredentials,
-        StopInternalError,
-        StopServerError
-    };
+	void                     abortConnection(const QString& message);
+	void                     showLoginWindow(const QString& message, const bool connectionLost);
+	void                     showMainWindow();
+	void                     newApplication(const QString& path, const QString& parameters);
+	void                     showInfoMessage(const QString& message, QMessageBox::Icon icon);
+	const QString            getErrorText(const AstCtiErrorCodes error);
 
+	bool                     canStart;
 	CtiClientType            clientType;
-	ServerConnectionStatus   connectionStatus;
-	quint16                  blockSize;
-	QString                  macAddress;
-	bool                     reconnectNotify;
-	QString                  newPassword;
+	QTimer*                  startTimer;
+	AstCtiTcpClient*         tcpClient;
 	AstCtiConfiguration*     config;
-	AstCtiCommand*           lastCtiCommand;
-	QTimer*                  idleTimer;
-	QTimer*                  connectTimer;
-	QTcpSocket*              localSocket;
 	LoginWindow*             loginWindow;
 	CtiClientWindow*         mainWindow;
 	QList<BrowserWindow*>    browserWindows;
 	QList<QProcess*>         applications;
 
-
-	void                     connectSocket();
-	void                     abortConnection(const StopReason stopReason, const QString& message);
-	void                     connectionLost();
-	void                     resetLastCtiCommand();
-	void                     setKeepAliveInterval(const int miliseconds);
-	AstCtiResponse           parseResponse(const QString& responseString);
-	void                     parseDataReceivedFromServer(const QString& message);
-	void                     processResponse(const AstCtiResponse &response);
-	void                     processXmlObject(const QString& xmlString);
-	QByteArray               convertDataForSending(const QString& data);
-	void                     sendDataToServer(const QString& data);
-	void                     sendCommandToServer(const AstCtiCommands command);
-	void                     sendCommandToServer(const AstCtiCommands command,
-												 const QString& parameters);
-	void                     showLoginWindow(const QString& message, const bool connectionLost);
-	void                     showMainWindow();
-	void                     newApplication(const QString& path, const QString& parameters);
-	QString                  getCommandName(const AstCtiCommands command);
-	QString                  getErrorText(const AstCtiErrorCodes error);
-
 private slots:
-	void                     socketConnected();
-	void                     socketDisconnected();
-	void                     socketStateChanged(QAbstractSocket::SocketState socketState);
-	void                     socketError(QAbstractSocket::SocketError error);
-	void                     receiveData();
-	void                     idleTimerElapsed();
-	void                     connectTimerElapsed();
+	void                     start();
 };
 
 #endif // CTICLIENTAPPLICATION_H

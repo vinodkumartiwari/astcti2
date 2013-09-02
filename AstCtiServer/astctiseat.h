@@ -50,33 +50,38 @@ class AstCtiSeat : public QObject
     Q_OBJECT
 
 public:
-	explicit AstCtiSeat(int id, const QString& mac,	const QString& description, QObject* parent = 0);
+	explicit AstCtiSeat(const int id, const QString& mac, const QString& description,
+						QObject* parent = 0);
 	~AstCtiSeat();
 
-	int                        getId() const;
+	const int                  getId() const;
 	const QString&             getMac() const;
 	const QString&             getDescription() const;
-	bool                       loadExtensions();
+	const bool                 loadExtensions();
 	const AstCtiExtensionList& getExtensions() const;
-	QStringList                getExtensionNumbers() const;
-	bool                       compareExtensions(const AstCtiExtensionList& newExtensions) const;
-	bool                       hasExtension(const QString& channelName) const;
+	const QStringList          getExtensionNumbers() const;
+	const bool                 compareExtensions(const AstCtiExtensionList& newExtensions) const;
+	const bool                 hasExtension(const QString& channelName) const;
+	const bool                 hasQueue(const QString& channelName, const QString& queue) const;
 	void                       setExtensionUserAgent(const QString& channelName,
 													 const QString& userAgent);
 	void                       setExtensionStatus(const QString& channelName,
 												  const AstCtiExtensionStatus status);
-
+	const AstCtiAgentStatus    getAgentStatus(const QString& channelName,
+											  const QString& queue) const;
 	void                       setAgentStatus(const QString& channelName,
+											  const QString& queue,
 											  const AstCtiAgentStatus status);
 
 private:
 	Q_DISABLE_COPY(AstCtiSeat)
+
+	AstCtiExtension* const getExtension(const QString& channelName) const;
+
 	int                  id;
 	QString              mac;
 	QString              description;
 	AstCtiExtensionList  extensions;
-
-	AstCtiExtension*     getExtension(const QString& channelName) const;
 };
 
 typedef QHash<int, AstCtiSeat*> AstCtiSeatHash;
