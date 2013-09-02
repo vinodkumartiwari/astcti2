@@ -116,21 +116,41 @@ public slots:
 	void               sendCommandToAsterisk(AmiCommand* command);
 
 signals:
-	void               amiChannelEvent(const AmiEvent eventId, AstCtiChannel* channel);
-	void               amiStatusEvent(const AmiEvent eventId, const QString channelName,
-									  const int status);
-	void               amiConnectionStatusChange(const AmiConnectionStatus status);
-	void               amiCommandFailed(const AmiAction action, const QString channelName);
+	void               amiChannelEvent(AmiEvent eventId, AstCtiChannel* channel);
+	void               amiStatusEvent(AmiEvent eventId, QString channelName,
+									  QString data, int status);
+	void               amiConnectionStatusChange(AmiConnectionStatus status);
+	void               amiCommandFailed(AmiAction action, QString channelName);
 
 private:
 	Q_DISABLE_COPY(AmiClient)
+
+	bool               sendDataToAsterisk(const QString& data);
+	void               buildSocket();
+	void               parseDataReceivedFromAsterisk();
+	void               performLogin();
+	void               performLogoff();
+	QStringHash        hashFromMessage(const QString& data);
+	void               bridgeChannels(const QString& uniqueId1, const QString& uniqueId2,
+									  const QString& channelName1, const QString& channelName2);
+	AstCtiChannel*     addConfChannelToBridge(AstCtiChannel* const channel, const int startFrom);
+	AstCtiChannel*     addChannelToBridge(const int bridgeId, const QString& uniqueId,
+										  const QString& channelName);
+	void               removeChannelFromBridge(const QString& uniqueId, const QString& channelName);
+	bool               isLocalChannel(const QString& channelName);
+	void               evaluateEvent(const QStringHash& event);
+	void               evaluateResponse(const QStringHash& response);
+	QDateTime          parseDuration(const QString& duration);
+	QString            socketStateToString(const QAbstractSocket::SocketState socketState);
+	QString            eventToString(const QStringHash& event);
+	void               delay(const int secs);
+
 	QString            amiHost;
 	quint16            amiPort;
 	QString            amiUser;
 	QString            amiSecret;
 	quint16            amiConnectTimeout;
 	quint16            amiConnectRetryAfter;
-
 	QTcpSocket*        localSocket;
 	AstCtiChannelHash  freeChannels;
 	AstCtiChannelHash  bridgedChannels;
@@ -140,31 +160,12 @@ private:
 	bool               reconnectWarningIssued;
 	QString            dataBuffer;
 	AmiClientStatus    amiClientStatus;
-	bool               sendDataToAsterisk(const QString& data);
-	void               buildSocket();
-	void               parseDataReceivedFromAsterisk();
-	void               performLogin();
-	void               performLogoff();
-	QStringHash        hashFromMessage(const QString& data);
-	void               bridgeChannels(const QString& uniqueId1, const QString& uniqueId2,
-									  const QString& channelName1, const QString& channelName2);
-	AstCtiChannel*     addConfChannelToBridge(AstCtiChannel* channel, const int startFrom);
-	AstCtiChannel*     addChannelToBridge(const int bridgeId, const QString& uniqueId,
-										  const QString& channelName);
-	void               removeChannelFromBridge(const QString& uniqueId, const QString& channelName);
-	bool               isLocalChannel(const QString& channelName);
-	void               evaluateEvent(const QStringHash& event);
-	void               evaluateResponse(const QStringHash& response);
-	QDateTime          parseDuration(const QString& duration);
-	QString            socketStateToString(QAbstractSocket::SocketState socketState);
-	QString            eventToString(const QStringHash& event);
-	void               delay(const int secs);
 
 private slots:
 	void               receiveData();
 	void               socketDisconnected();
-	void               socketStateChanged(QAbstractSocket::SocketState socketState);
-	void               socketError(QAbstractSocket::SocketError error);
+	void               socketStateChanged(const QAbstractSocket::SocketState socketState);
+	void               socketError(const QAbstractSocket::SocketError error);
 };
 
 #endif // AMICLIENT_H

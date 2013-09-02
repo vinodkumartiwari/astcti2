@@ -42,7 +42,8 @@
 #include "db.h"
 #include "astctiseat.h"
 
-AstCtiSeat::AstCtiSeat(int id, const QString& mac, const QString& description, QObject* parent)
+AstCtiSeat::AstCtiSeat(const int id, const QString& mac, const QString& description,
+					   QObject* parent)
 	: QObject(parent)
 {
 	QLOG_TRACE() << "Creating new AstCtiSeat" << id << description;
@@ -60,7 +61,7 @@ AstCtiSeat::~AstCtiSeat()
 	qDeleteAll(this->extensions);
 }
 
-int AstCtiSeat::getId() const
+const int AstCtiSeat::getId() const
 {
 	return this->id;
 }
@@ -75,7 +76,7 @@ const QString& AstCtiSeat::getDescription() const
     return this->description;
 }
 
-bool AstCtiSeat::loadExtensions()
+const bool AstCtiSeat::loadExtensions()
 {
 	QLOG_TRACE() << "Loading extensions for seat" << this->id << this->description;
 
@@ -117,7 +118,7 @@ const AstCtiExtensionList& AstCtiSeat::getExtensions() const
 	return this->extensions;
 }
 
-QStringList AstCtiSeat::getExtensionNumbers() const
+const QStringList AstCtiSeat::getExtensionNumbers() const
 {
 	QStringList extNumbers;
 	const int listSize = this->extensions.size();
@@ -126,12 +127,21 @@ QStringList AstCtiSeat::getExtensionNumbers() const
 	return extNumbers;
 }
 
-bool AstCtiSeat::hasExtension(const QString& channelName) const
+const bool AstCtiSeat::hasExtension(const QString& channelName) const
 {
 	return this->getExtension(channelName) != 0;
 }
 
-bool AstCtiSeat::compareExtensions(const AstCtiExtensionList& newExtensions) const
+const bool AstCtiSeat::hasQueue(const QString& channelName, const QString& queue) const
+{
+	AstCtiExtension* const extension = this->getExtension(channelName);
+	if (extension != 0)
+		return extension->queues.contains(queue);
+
+	return false;
+}
+
+const bool AstCtiSeat::compareExtensions(const AstCtiExtensionList& newExtensions) const
 {
 	const int listSize = this->extensions.size();
 	if (listSize != newExtensions.size())
@@ -146,30 +156,39 @@ bool AstCtiSeat::compareExtensions(const AstCtiExtensionList& newExtensions) con
 
 void AstCtiSeat::setExtensionUserAgent(const QString& channelName, const QString& userAgent)
 {
-	AstCtiExtension* extension = this->getExtension(channelName);
+	AstCtiExtension* const extension = this->getExtension(channelName);
 	if (extension != 0)
 		extension->userAgent = userAgent;
 }
 
 void AstCtiSeat::setExtensionStatus(const QString& channelName, const AstCtiExtensionStatus status)
 {
-	AstCtiExtension* extension = this->getExtension(channelName);
+	AstCtiExtension* const extension = this->getExtension(channelName);
 	if (extension != 0)
 		extension->status = status;
 }
 
-void AstCtiSeat::setAgentStatus(const QString& channelName, const AstCtiAgentStatus status)
+const AstCtiAgentStatus AstCtiSeat::getAgentStatus(const QString &channelName,
+												   const QString &queue) const
 {
-	AstCtiExtension* extension = this->getExtension(channelName);
-	if (extension != 0)
-		extension->agentStatus = status;
+	AstCtiExtension* const extension = this->getExtension(channelName);
+	return extension->queues.value(queue);
 }
 
-AstCtiExtension* AstCtiSeat::getExtension(const QString& channelName) const
+void AstCtiSeat::setAgentStatus(const QString& channelName, const QString& queue,
+								const AstCtiAgentStatus status)
+{
+	AstCtiExtension* const extension = this->getExtension(channelName);
+	if (extension != 0)
+		if (extension->queues.contains(queue))
+			extension->queues.insert(queue, status);
+}
+
+AstCtiExtension* const AstCtiSeat::getExtension(const QString& channelName) const
 {
 	const int listSize = this->extensions.size();
 	for (int i = 0; i < listSize; i++) {
-		AstCtiExtension* extension = this->extensions.at(i);
+		AstCtiExtension* const extension = this->extensions.at(i);
 		if (extension->channelName == channelName)
 			return extension;
 	}

@@ -56,6 +56,10 @@ public:
 	explicit AstCtiConfiguration(QObject* parent = 0);
 	~AstCtiConfiguration();
 
+	AstCtiService* const  getServiceByName(const QString& serviceName);
+	const int             getPenaltyByQueueName(const QString& queueName);
+	AstCtiSeat* const     getSeatByMac(const QString& mac);
+
 	QString             ctiServerAddress;
 	quint16             ctiServerPort;
 	quint16             ctiConnectTimeout;
@@ -74,9 +78,6 @@ public:
 	AstCtiServiceHash   services;
 	AstCtiSeatHash      seats;
 	AstCtiOperatorHash  operators;
-
-	AstCtiService*      getServiceByName(const QString& serviceName);
-	AstCtiSeat*         getSeatByMac(const QString& mac);
 
 private:
 	Q_DISABLE_COPY(AstCtiConfiguration)

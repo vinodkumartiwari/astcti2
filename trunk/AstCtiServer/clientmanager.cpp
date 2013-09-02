@@ -42,11 +42,11 @@
 /*!
     ClientManager Constructor
  */
-ClientManager::ClientManager(QObject* parent) : QObject(parent)
+ClientManager::ClientManager(QTcpSocket* const socket, QObject* parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating new ClientManager";
 
-	this->socket                = 0;
+	this->socket                = socket;
 	this->activeOperator        = 0;
     this->activeSeat            = 0;
 	this->localIdentifier       = QStringLiteral("");
@@ -55,7 +55,6 @@ ClientManager::ClientManager(QObject* parent) : QObject(parent)
     this->blockSize             = 0;
     this->compressionLevel      = -1;
 	this->isAuthenticated       = false;
-    this->retries               = 3;
 }
 
 ClientManager::~ClientManager()
@@ -64,4 +63,118 @@ ClientManager::~ClientManager()
 
 	// this->activeSeat does not need to be deleted as it is not allocated in this class
 	// this->activeOperator does not need to be deleted as it is not allocated in this class
+}
+
+QTcpSocket* const ClientManager::getSocket() const
+{
+	return this->socket;
+}
+
+AstCtiOperator* const ClientManager::getActiveOperator() const
+{
+	return this->activeOperator;
+}
+
+void ClientManager::setActiveOperator(AstCtiOperator* const op)
+{
+	this->activeOperator = op;
+}
+
+AstCtiSeat* const ClientManager::getActiveSeat() const
+{
+	return this->activeSeat;
+}
+
+void ClientManager::setActiveSeat(AstCtiSeat* const seat)
+{
+	this->activeSeat = seat;
+
+	// Assign queues to extensions so we can track agent status on each queue
+	if (seat != 0 && this->activeOperator != 0) {
+		AstCtiServiceRevHash services = this->activeOperator->getServices();
+
+		AstCtiExtensionList extensions = seat->getExtensions();
+		const int listSize = extensions.size();
+		for (int i = 0; i < listSize; i++) {
+			AstCtiExtension* extension = extensions.at(i);
+			extension->queues.clear();
+
+			for (AstCtiServiceRevHash::const_iterator i = services.constBegin();
+				 i != services.constEnd();
+				 i++) {
+				AstCtiService* service = i.key();
+				if (service->isQueue())
+					extension->queues.insert(service->getQueueName(), AgentStatusLoggedOut);
+			}
+		}
+	}
+}
+
+const QString& ClientManager::getClientOperatingSystem() const
+{
+	return this->clientOperatingSystem;
+}
+
+void ClientManager::setClientOperatingSystem(const QString& os)
+{
+	this->clientOperatingSystem = os;
+}
+
+const QString& ClientManager::getCtiUsername() const
+{
+	return this->ctiUsername;
+}
+
+void ClientManager::setCtiUsername(const QString& username)
+{
+	this->ctiUsername = username;
+}
+
+const bool ClientManager::getIsAuthenticated() const
+{
+	return this->isAuthenticated;
+}
+
+void ClientManager::setIsAuthenticated(const bool isAuthenticated)
+{
+	this->isAuthenticated = isAuthenticated;
+}
+
+const int ClientManager::getCompressionLevel() const
+{
+	return this->compressionLevel;
+}
+
+void ClientManager::setCompressionLevel(const int compressionLevel)
+{
+	this->compressionLevel = compressionLevel;
+}
+
+const QString& ClientManager::getLocalIdentifier() const
+{
+	return this->localIdentifier;
+}
+
+void ClientManager::setLocalIdentifier(const QString& localIdentifier)
+{
+	this->localIdentifier = localIdentifier;
+}
+
+void ClientManager::setIdleTimeout(const int miliseconds)
+{
+	this->idleTimer.setInterval(miliseconds);
+	this->idleTimer.start();
+}
+
+void ClientManager::idleTimerElapsed()
+{
+	this->idleTimer.stop();
+
+	//Disconnection will delete client and remove it from clients hash
+	this->socket->disconnectFromHost();
+}
+
+void ClientManager::resetIdleTimer()
+{
+	this->idleTimer.start();
 }

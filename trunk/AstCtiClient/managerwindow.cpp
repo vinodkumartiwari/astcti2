@@ -54,7 +54,7 @@
 #include "managerwindow.h"
 #include "ui_managerwindow.h"
 
-ManagerWindow::ManagerWindow(AstCtiConfiguration* config) :
+ManagerWindow::ManagerWindow(AstCtiConfiguration* const config) :
 	CtiClientWindow(config), ui(new Ui::ManagerWindow)
 {
     ui->setupUi(this);
@@ -142,45 +142,46 @@ ManagerWindow::~ManagerWindow()
 {
 //    delete accountsLayout;
 //    delete accountsTabBar;
-    delete mainLayout;
-    delete titleDummyWidget;
-    delete titleStackedLayout;
-    delete ui;
+	qDeleteAll(this->queueButtons.keys());
+	delete this->mainLayout;
+	delete this->titleDummyWidget;
+	//delete this->titleStackedLayout;
+	delete this->ui;
 }
 
 void ManagerWindow::connectSlots()
 {
 //    connect(ui->callButton, SIGNAL(clicked()),
 //	          this, SLOT(placeCall()));
-	connect(ui->aboutButton, SIGNAL(clicked()),
+	connect(this->ui->aboutButton, SIGNAL(clicked()),
 			this, SLOT(about()));
-//    connect(ui->pauseButton, SIGNAL(toggled(bool)),
-//            this, SLOT(pause(bool)));
-	connect(ui->minimizeButton, SIGNAL(clicked()),
+	connect(this->ui->minimizeButton, SIGNAL(clicked()),
 			this, SLOT(minimizeToTray()));
-	connect(ui->maximizeButton, SIGNAL(clicked()),
+	connect(this->ui->maximizeButton, SIGNAL(clicked()),
 			this, SLOT(showMaxRestore()));
-	connect(ui->pauseButton, SIGNAL(clicked()),
-			this, SLOT(pause()));
-//    connect(ui->passwordButton, SIGNAL(clicked()),
+	connect(this->ui->startPauseButton, SIGNAL(clicked()),
+			this, SLOT(agentStartPause()));
+//    connect(this->ui->passwordButton, SIGNAL(clicked()),
 //            this, SIGNAL(changePassword()));
-	connect(ui->closeButton, SIGNAL(clicked(bool)),
+	connect(this->ui->closeButton, SIGNAL(clicked(bool)),
 			this, SLOT(quit(bool)));
 	connect(this->trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 			this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+	connect(this->ui->accountsTabWidget, SIGNAL(currentChanged(int)),
+			this, SLOT(switchAccount(int)));
 }
 
 void ManagerWindow::newConfig(AstCtiConfiguration* config)
 {
 	CtiClientWindow::newConfig(config);
 
-	this->ui->accountsTabWidget->setUpdatesEnabled(false);
+	bool isInitialized = this->ui->accountsTabWidget->count() > 0;
 
-	this->isCallCenter = config->isCallCenter;
+	this->ui->accountsTabWidget->setUpdatesEnabled(false);
 
 	const int listSize = config->extensions.size();
 
-	if (this->ui->accountsTabWidget->count() == 0) {
+	if (!isInitialized) {
 		// We only set accounts the first time this procedure is called
 		// After than, only extension name can change
 		// Changing extension number(s) would cause dropping the connection
@@ -189,6 +190,7 @@ void ManagerWindow::newConfig(AstCtiConfiguration* config)
 
 			QWidget* tab = new QWidget();
 			tab->setObjectName("tab" + extension->number);
+			tab->setProperty("Paused", QVariant(true));
 			this->ui->accountsTabWidget->addTab(tab, QString());
 		}
 	}
@@ -211,9 +213,10 @@ void ManagerWindow::newConfig(AstCtiConfiguration* config)
 	QString lastGroup = "";
 	QWidget* newTab = 0;
 
-	AstCtiSpeedDialPtrMap::const_iterator sdIterator = config->speedDials.constBegin();
-	while (sdIterator != config->speedDials.constEnd()) {
-		AstCtiSpeedDialPtr speedDial = sdIterator.value();
+	for (AstCtiSpeedDialPtrMap::const_iterator i = config->speedDials.constBegin();
+		 i != config->speedDials.constEnd();
+		 i++) {
+		AstCtiSpeedDialPtr speedDial = i.value();
 
 		if (lastGroup != speedDial->groupName) {
 			lastGroup = speedDial->groupName;
@@ -227,11 +230,68 @@ void ManagerWindow::newConfig(AstCtiConfiguration* config)
 		sdWidget->setName(speedDial->name);
 		sdWidget->setNumber(speedDial->number);
 		sdWidget->setBusyLampField(speedDial->isBlf);
-
-		sdIterator++;
+	}
+	if (this->ui->speedDialsTabWidget->count() == 0) {
+		newTab = new QWidget();
+		newTab->setObjectName(QStringLiteral("defaultTab"));
+		this->ui->speedDialsTabWidget->addTab(newTab, tr("Default"));
 	}
 
 	this->ui->speedDialsTabWidget->setUpdatesEnabled(true);
+
+	if (!isInitialized) {
+		if (config->isCallCenter) {
+			this->ui->queuesTableView->setUpdatesEnabled(false);
+
+			this->queuesModel = new QStandardItemModel();
+			this->ui->queuesTableView->setModel(this->queuesModel);
+
+			QStringList headerLabels;
+			headerLabels.append(QStringLiteral(""));
+			headerLabels.append(tr("Queue"));
+			headerLabels.append(tr("Status"));
+			this->queuesModel->setHorizontalHeaderLabels(headerLabels);
+
+			int row = 0;
+			QStandardItem *newItem = 0;
+			// All extensions must have the same queues
+			AstCtiExtensionPtr extension = config->extensions.at(0);
+			for (AstCtiAgentStatusHash::const_iterator i = extension->queues.constBegin();
+				 i != extension->queues.constEnd();
+				 i++) {
+				const QString queue = i.key();
+
+				QToolButton* queueButton = new QToolButton();
+				connect(queueButton, SIGNAL(clicked()),
+						this, SLOT(startPauseButtonClicked()));
+
+				// First column, containing a button
+				newItem = new QStandardItem();
+				this->queuesModel->setItem(row, 0, newItem);
+				this->ui->queuesTableView->setIndexWidget(newItem->index(), queueButton);
+				this->queueButtons.insert(queueButton, queue);
+
+				// Second columnn with queue name
+				newItem = new QStandardItem(queue);
+				this->queuesModel->setItem(row, 1, newItem);
+
+				// Third columnn with agent status
+				newItem = new QStandardItem();
+				this->queuesModel->setItem(row, 2, newItem);
+
+				row++;
+			}
+
+			// No need for this, switchAccount() will enable updates
+			//this->ui->queuesTableView->setUpdatesEnabled(true);
+		} else {
+			this->ui->bottomRightTabWidget->removeTab(3);
+			this->ui->startPauseButton->setVisible(false);
+		}
+	}
+
+	// Read data for the current account
+	this->switchAccount(this->ui->accountsTabWidget->currentIndex());
 }
 
 void ManagerWindow::handleChannelEvent(AstCtiChannel* channel)
@@ -254,50 +314,174 @@ void ManagerWindow::handleChannelEvent(AstCtiChannel* channel)
 		callWidget->setCanHold(true);
 		callWidget->setCanConference(true);
 		callWidget->setCanTransfer(true);
-		callWidget->setCanRecord(this->canRecord);
+		callWidget->setCanRecord(this->config->canRecord);
 		// TODO: Change when contacs are implemented
 		callWidget->setCanEditContact(true);
 	}
 }
 
-void ManagerWindow::pause()
+void ManagerWindow::agentStartPause()
 {
-	this->ui->pauseButton->setEnabled(false);
+	bool allAccounts;
+	if (this->ui->accountsTabWidget->count() > 1) {
+		QMessageBox msgBox;
 
-	//TODO
-	//emit this->pauseRequest(this->channelName);
-}
+		msgBox.setText(tr("You have more than one account."));
+		msgBox.setInformativeText(tr("Do you want to start/pause all accounts "
+									 "or only the current account?"));
+		QAbstractButton* allBtn = msgBox.addButton(tr("All accounts"), QMessageBox::YesRole);
+		QAbstractButton* currentBtn =
+				msgBox.addButton(tr("Current account only"), QMessageBox::NoRole);
+		msgBox.addButton(tr("Cancel"), QMessageBox::RejectRole);
 
-void ManagerWindow::agentStatusChanged(const QString& channelName, const AstCtiAgentStatus status) {
-//	if (this->channelName != channelName)
-//		return;
-//TODO
-	switch (status) {
-	case AgentStatusLoggedOut:
-		break;
-	case AgentStatusLoggedIn:
-		break;
-	case AgentStatusPaused:
-		break;
-	case AgentStatusLoginFailed:
-		break;
-	case AgentStatusPauseFailed:
-		break;
+		msgBox.setIcon(QMessageBox::Question);
+		msgBox.exec();
+		if (msgBox.clickedButton() == allBtn)
+			allAccounts = true;
+		else if (msgBox.clickedButton() == currentBtn)
+			allAccounts = false;
+		else
+			return;
 	}
 
-//	this->ui->callComboBox->setEnabled(!paused);
-//	this->ui->callButton->setEnabled(!paused);
-//	this->ui->passwordButton->setEnabled(!paused);
-//	this->ui->repeatButton->setEnabled(!paused);
-//	this->ui->pauseButton->setChecked(paused);
-//	this->ui->pauseButton->setEnabled(true);
+	//Disable all buttons
+	this->ui->startPauseButton->setEnabled(false);
+	for (QHash<QToolButton*, QString>::const_iterator i = this->queueButtons.constBegin();
+		 i != this->queueButtons.constEnd();
+		 i++) {
+		QToolButton* const queueButton = i.key();
+		queueButton->setEnabled(false);
+	}
+
+	bool paused = this->ui->accountsTabWidget->currentWidget()->property("Paused").toBool();
+
+	const int listSize = this->config->extensions.size();
+	for (int i = 0; i < listSize; i++) {
+		if (allAccounts || i == this->ui->accountsTabWidget->currentIndex()) {
+			//Send start/pause request for all queues this account belongs to
+			AstCtiExtensionPtr extension = this->config->extensions.at(i);
+			if (paused == this->ui->accountsTabWidget->widget(i)->property("Paused").toBool()) {
+				for (AstCtiAgentStatusHash::const_iterator i = extension->queues.constBegin();
+					 i != extension->queues.constEnd();
+					 i++) {
+					const QString queue = i.key();
+					if (paused)
+						if (i.value() == AgentStatusPaused)
+							emit this->pauseRequest(queue, extension->channelName);
+						else
+							emit this->startRequest(queue, extension->channelName);
+					else
+						if (i.value() == AgentStatusLoggedIn)
+							emit this->pauseRequest(queue, extension->channelName);
+				}
+			}
+		}
+	}
+}
+
+void ManagerWindow::agentStatusChanged(const QString& queue, const QString& channelName,
+									   AstCtiAgentStatus status) {
+	const int listSize = this->config->extensions.size();
+	int i;
+	for (i = 0; i < listSize; i++)
+		if (this->config->extensions.at(i)->channelName == channelName)
+			break;
+	if (i == listSize)
+		return;
+
+	CtiClientWindow::agentStatusChanged(queue, channelName, status);
+}
+
+// Returns true if status is the same in all queues, otherwise false
+// Paused and LoggedOut are considered to be the same for this purpose
+bool ManagerWindow::setAgentStatus(const QString& queue, const QString& channelName,
+								   AstCtiAgentStatus& status)
+{
+	bool allSet = CtiClientWindow::setAgentStatus(queue, channelName, status);
+
+	const int listSize = this->config->extensions.size();
+	for (int i = 0; i < listSize; i++) {
+		AstCtiExtensionPtr extension = this->config->extensions.at(i);
+		if (extension->channelName == channelName) {
+			// If we are logged-in even in one queue, we consider us to be "started"
+			switch (status) {
+			case AgentStatusLoggedIn:
+				this->ui->accountsTabWidget->widget(i)->setProperty("Paused", QVariant(false));
+				break;
+			case AgentStatusLoggedOut:
+			case AgentStatusPaused:
+				if (allSet)
+					this->ui->accountsTabWidget->widget(i)->setProperty("Paused", QVariant(true));
+				break;
+			}
+
+			if (i == this->ui->accountsTabWidget->currentIndex()) {
+				// If we are logged-in even in one queue, we consider us to be "started"
+				switch (status) {
+				case AgentStatusLoggedIn:
+					this->toggleStartPauseButton(this->ui->startPauseButton, false);
+					break;
+				case AgentStatusLoggedOut:
+				case AgentStatusPaused:
+					if (allSet)
+						this->toggleStartPauseButton(this->ui->startPauseButton, true);
+					break;
+				}
+
+				for (QHash<QToolButton*, QString>::const_iterator j =
+						this->queueButtons.constBegin();
+					 j != this->queueButtons.constEnd();
+					 j++) {
+					if (j.value() == queue) {
+						switch (status) {
+						case AgentStatusLoggedIn:
+							this->toggleStartPauseButton(j.key(), false);
+							break;
+						case AgentStatusLoggedOut:
+						case AgentStatusPaused:
+							if (allSet)
+								this->toggleStartPauseButton(j.key(), true);
+							break;
+						}
+						break;
+					}
+				}
+				for (int row = 0; row < this->queuesModel->rowCount(); row++) {
+					QModelIndex idx = this->queuesModel->index(row, 1);
+					if (this->queuesModel->data(idx).toString() == queue) {
+						idx = this->queuesModel->index(row, 2);
+						this->queuesModel->setData(idx,
+												   CtiClientWindow::agentStatusToString(status),
+												   Qt::DisplayRole);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	return allSet;
+}
+
+void ManagerWindow::setStatus(bool status)
+{
+	CtiClientWindow::setStatus(status);
+
+	//TODO
+//    if (status) {
+//		this->ui->statusLabel->setPixmap(QPixmap(QStringLiteral(":/res/res/greenled.png")));
+//        this->ui->statusLabel->setToolTip(statusMsgOK);
+//    } else {
+//		this->ui->statusLabel->setPixmap(QPixmap(QStringLiteral(":/res/res/redled.png")));
+//        this->ui->statusLabel->setToolTip(statusMsgNotOK);
+//    }
 }
 
 void ManagerWindow::readSettings()
 {
     QSettings settings(APP_NAME);
 
-    settings.beginGroup("ManagerWindow." + this->userName);
+	settings.beginGroup("ManagerWindow." + this->config->userName);
 	this->restoreGeometry(settings.value(QStringLiteral("geometry")).toByteArray());
 	ui->centerSplitter->restoreState(
 				settings.value(QStringLiteral("centerSplitterSizes")).toByteArray());
@@ -312,7 +496,7 @@ void ManagerWindow::writeSettings()
 {
     QSettings settings(APP_NAME);
 
-    settings.beginGroup("ManagerWindow." + this->userName);
+	settings.beginGroup("ManagerWindow." + this->config->userName);
 	settings.setValue(QStringLiteral("geometry"), this->saveGeometry());
 	settings.setValue(QStringLiteral("centerSplitterSizes"), ui->centerSplitter->saveState());
 	settings.setValue(QStringLiteral("leftSplitterSizes"), ui->leftSplitter->saveState());
@@ -323,6 +507,12 @@ void ManagerWindow::writeSettings()
 void ManagerWindow::enableControls(const bool enable)
 {
 	//TODO
+	//	this->ui->callComboBox->setEnabled(!paused);
+	//	this->ui->callButton->setEnabled(!paused);
+	//	this->ui->passwordButton->setEnabled(!paused);
+	//	this->ui->repeatButton->setEnabled(!paused);
+	//	this->ui->pauseButton->setChecked(paused);
+	//	this->ui->pauseButton->setEnabled(true);
 }
 
 void ManagerWindow::showHelp()
@@ -337,6 +527,68 @@ void ManagerWindow::showMaxRestore()
     } else {
         this->showMaximized();
     }
+}
+
+void ManagerWindow::switchAccount(const int index)
+{
+	if (config->isCallCenter) {
+		bool paused =
+				this->ui->accountsTabWidget->currentWidget()->property("Paused").toBool();
+		if (paused)
+			this->ui->startPauseButton->setIcon(
+						QIcon(QPixmap(QStringLiteral(":/res/res/agt_forward.png"))));
+		else
+			this->ui->startPauseButton->setIcon(
+						QIcon(QPixmap(QStringLiteral(":/res/res/agt_pause-queue.png"))));
+
+		this->ui->queuesTableView->setUpdatesEnabled(false);
+
+		AstCtiExtensionPtr extension = this->config->extensions.at(index);
+		for (QHash<QToolButton*, QString>::const_iterator i = this->queueButtons.constBegin();
+			 i != this->queueButtons.constEnd();
+			 i++) {
+			QToolButton* const queueButton = i.key();
+			const QString queue = i.value();
+			const AstCtiAgentStatus status = extension->queues.value(queue);
+
+			if (status == AgentStatusLoggedIn) {
+				queueButton->setIcon(
+							QIcon(QPixmap(QStringLiteral(":/res/res/agt_pause-queue.png"))));
+				queueButton->setToolTip(tr("Pause"));
+			} else {
+				queueButton->setIcon(
+							QIcon(QPixmap(QStringLiteral(":/res/res/agt_forward.png"))));
+				queueButton->setToolTip(tr("Start"));
+			}
+
+			for (int row = 0; row < this->queuesModel->rowCount(); row++) {
+				QModelIndex idx = this->queuesModel->index(row, 1);
+				if (this->queuesModel->data(idx).toString() == queue) {
+					idx = this->queuesModel->index(row, 2);
+					this->queuesModel->setData(idx, CtiClientWindow::agentStatusToString(status),
+											   Qt::DisplayRole);
+					break;
+				}
+			}
+		}
+
+		this->ui->queuesTableView->setUpdatesEnabled(true);
+	}
+}
+
+void ManagerWindow::startPauseButtonClicked()
+{
+	QToolButton* queueButton = qobject_cast<QToolButton*>(QObject::sender());
+	queueButton->setEnabled(false);
+	QString queue = this->queueButtons.value(queueButton);
+	AstCtiExtensionPtr extension =
+			this->config->extensions.at(this->ui->accountsTabWidget->currentIndex());
+	AstCtiAgentStatus status = extension->queues.value(queue);
+
+	if (status == AgentStatusLoggedIn)
+		emit this->pauseRequest(queue, extension->channelName);
+	else
+		emit this->startRequest(queue, extension->channelName);
 }
 
 void ManagerWindow::changeEvent(QEvent* e)

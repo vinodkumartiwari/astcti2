@@ -161,7 +161,7 @@ bool DB::rollbackTransaction()
 
 //Executes SQL command with optional list of parameters
 //Returns QSqlQuery object
-QSqlQuery* DB::execSQL(const QString& sql, const QVariantList& params, bool* ok)
+QSqlQuery* DB::execSQL(const QString& sql, const QVariantList& params, bool* const ok)
 {
 	QSqlQuery* query = new QSqlQuery(*connection);
 	if (!openConnection()) {
@@ -199,13 +199,13 @@ QSqlQuery* DB::execSQL(const QString& sql, const QVariantList& params, bool* ok)
 }
 
 //Executes SQL command and returns a single value
-QVariant DB::readScalar(const QString& sql, bool* ok)
+QVariant DB::readScalar(const QString& sql, bool* const ok)
 {
     return readScalar(sql, QVariantList(), ok);
 }
 
 //Executes SQL command with parameters and returns a single value
-QVariant DB::readScalar(const QString& sql, const QVariantList& params, bool* ok)
+QVariant DB::readScalar(const QString& sql, const QVariantList& params, bool* const ok)
 {
 	QVariant result;
 
@@ -225,13 +225,13 @@ QVariant DB::readScalar(const QString& sql, const QVariantList& params, bool* ok
 }
 
 //Executes SQL command and returns a list of values
-QVariantList DB::readList(const QString& sql, bool* ok)
+QVariantList DB::readList(const QString& sql, bool* const ok)
 {
     return readList(sql, QVariantList(), ok);
 }
 
 //Executes SQL command with parameters and returns a list of values
-QVariantList DB::readList(const QString& sql, const QVariantList& params, bool* ok)
+QVariantList DB::readList(const QString& sql, const QVariantList& params, bool* const ok)
 {
 	QVariantList result;
 
@@ -247,13 +247,13 @@ QVariantList DB::readList(const QString& sql, const QVariantList& params, bool* 
 }
 
 //Executes SQL command and returns a single row as QVariantList
-QVariantList DB::readRow(const QString& sql, bool* ok)
+QVariantList DB::readRow(const QString& sql, bool* const ok)
 {
 	return readRow(sql, QVariantList(), ok);
 }
 
 //Executes SQL command and returns a single row as QVariantList
-QVariantList DB::readRow(const QString& sql, const QVariantList& params, bool* ok)
+QVariantList DB::readRow(const QString& sql, const QVariantList& params, bool* const ok)
 {
 	QVariantList result;
 
@@ -274,13 +274,13 @@ QVariantList DB::readRow(const QString& sql, const QVariantList& params, bool* o
 }
 
 //Executes SQL command and returns values in a form of a table
-QVariantTable DB::readTable(const QString& sql, bool* ok)
+QVariantTable DB::readTable(const QString& sql, bool* const ok)
 {
     return readTable(sql, QVariantList(), ok);
 }
 
 //Executes SQL command with parameters and returns values in form of a table
-QVariantTable DB::readTable(const QString& sql, const QVariantList& params, bool* ok)
+QVariantTable DB::readTable(const QString& sql, const QVariantList& params, bool* const ok)
 {
 	QVariantTable result;
 

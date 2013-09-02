@@ -42,6 +42,8 @@
 #ifndef ASTCTICOMMAND_H
 #define ASTCTICOMMAND_H
 
+#include <QStringList>
+
 enum AstCtiCommands {
     CmdNotDefined,
 	CmdLogin,
@@ -49,6 +51,7 @@ enum AstCtiCommands {
     CmdChangePassword,
 	CmdOriginate,
 	CmdConference,
+	CmdStart,
 	CmdPause,
 	CmdQuit
 };
@@ -56,7 +59,7 @@ enum AstCtiCommands {
 struct AstCtiCommand
 {
 	AstCtiCommands command;
-    QString parameters;
+	QStringList parameters;
 };
 
 #endif // ASTCTICOMMAND_H

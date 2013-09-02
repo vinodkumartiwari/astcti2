@@ -43,9 +43,9 @@
 #include "astctioperator.h"
 
 AstCtiOperator::AstCtiOperator(int id, const QString& fullName, const QString& username,
-							   const QString& password, bool beginInPause, int seatID,
-							   bool canMonitor, bool canAlterSpeedDials, bool canRecord,
-							   QObject* parent) : QObject(parent)
+							   const QString& password, const bool beginInPause, const int seatID,
+							   const bool canMonitor, const bool canAlterSpeedDials,
+							   const bool canRecord, QObject* parent) : QObject(parent)
 {
 	QLOG_TRACE() << "Creating new AstCtiOperator" << id << username << fullName;
 
@@ -67,7 +67,7 @@ AstCtiOperator::~AstCtiOperator()
 	qDeleteAll(this->speedDials);
 }
 
-bool AstCtiOperator::loadSpeedDials()
+const bool AstCtiOperator::loadSpeedDials()
 {
 	QLOG_TRACE() << "Loading speed dials for operator" << this->id << this->username;
 
@@ -102,7 +102,7 @@ bool AstCtiOperator::loadSpeedDials()
 	return ok;
 }
 
-bool AstCtiOperator::loadServices(AstCtiServiceHash* serviceList)
+const bool AstCtiOperator::loadServices(const AstCtiServiceHash* const serviceList)
 {
 	QLOG_TRACE() << "Loading services for operator" << this->id << this->username;
 
@@ -113,7 +113,9 @@ bool AstCtiOperator::loadServices(AstCtiServiceHash* serviceList)
 	params.append(this->id);
 	const QVariantTable serviceData =
 			DB::readTable("SELECT id_service,penalty FROM services_operators "
-						  "WHERE id_operator=? AND enabled=true", params, &ok);
+						  "WHERE id_operator=? AND enabled=true ORDER BY id_service", params, &ok);
+	// Order by id_service so order will be the same
+	// when comparing two operators (see compareServices)
 	if (ok) {
 		const int listSize = serviceData.size();
 		for (int i = 0; i < listSize; i++) {
@@ -131,7 +133,7 @@ bool AstCtiOperator::loadServices(AstCtiServiceHash* serviceList)
 	return ok;
 }
 
-bool AstCtiOperator::changePassword(const QString& newPassword)
+const bool AstCtiOperator::changePassword(const QString& newPassword)
 {
 	QVariantList params;
 	params.append(newPassword);
@@ -148,12 +150,12 @@ bool AstCtiOperator::changePassword(const QString& newPassword)
 	return ok;
 }
 
-bool AstCtiOperator::checkPassword(const QString& password) const
+const bool AstCtiOperator::checkPassword(const QString& password) const
 {
 	return password.compare(this->password) == 0;
 }
 
-int  AstCtiOperator::getId() const
+const int  AstCtiOperator::getId() const
 {
 	return this->id;
 }
@@ -173,22 +175,22 @@ const QString& AstCtiOperator::getPassword() const
 	return this->password;
 }
 
-bool AstCtiOperator::getBeginInPause() const
+const bool AstCtiOperator::getBeginInPause() const
 {
     return this->beginInPause;
 }
 
-int AstCtiOperator::getSeatId() const
+const int AstCtiOperator::getSeatId() const
 {
 	return this->seatId;
 }
 
-bool AstCtiOperator::getCanMonitor() const
+const bool AstCtiOperator::getCanMonitor() const
 {
 	return this->canMonitor;
 }
 
-bool AstCtiOperator::isCallCenter() const
+const bool AstCtiOperator::isCallCenter() const
 {
 	//Operators that don't have associated seat are considered call-center operators
 	return this->seatId == 0;
@@ -199,7 +201,24 @@ const AstCtiServiceRevHash& AstCtiOperator::getServices() const
 	return this->services;
 }
 
-QString AstCtiOperator::toXml(AstCtiSeat* seat)
+const bool AstCtiOperator::compareServices(const AstCtiServiceRevHash& newServices) const
+{
+	const int listSize = this->services.size();
+	if (listSize != newServices.size())
+		return false;
+
+	for (int i = 0; i < listSize; i++) {
+		AstCtiService* service = this->services.keys().at(i);
+		AstCtiService* newService = newServices.keys().at(i);
+		if (service->getId() != newService->getId() ||
+			service->getQueueName() != newService->getQueueName())
+			return false;
+	}
+
+	return true;
+}
+
+const QString AstCtiOperator::toXml(AstCtiSeat* const seat)const
 {
 	QString xmlString;
 	QXmlStreamWriter writer(&xmlString);
@@ -227,10 +246,25 @@ QString AstCtiOperator::toXml(AstCtiSeat* seat)
 		writer.writeTextElement(QStringLiteral("Name"), extension->name);
 		writer.writeTextElement(QStringLiteral("CanAutoAnswer"),
 								QString::number(extension->canAutoAnswer));
-		writer.writeTextElement(QStringLiteral("AgentStatus"),
-								QString::number((int)extension->agentStatus));
 		writer.writeTextElement(QStringLiteral("Status"),
 								QString::number((int)extension->status));
+		// User agent is not forwarded to client, it is only used by server
+		// to identify whether the device supports auto-answer
+		if (extension->queues.size() > 0) {
+			writer.writeStartElement(QStringLiteral("Queues"));
+
+			for (AstCtiAgentStatusHash::const_iterator i = extension->queues.constBegin();
+				 i != extension->queues.constEnd();
+				 i++) {
+				writer.writeStartElement(QStringLiteral("Queue"));
+				writer.writeAttribute(QStringLiteral("Name"), i.key());
+				writer.writeCharacters(QString::number((int)i.value()));
+				writer.writeEndElement(); // Queue
+			}
+
+
+			writer.writeEndElement(); // Queues
+		}
 		writer.writeEndElement(); // Extension
 	}
 
@@ -239,9 +273,10 @@ QString AstCtiOperator::toXml(AstCtiSeat* seat)
 	if (this->speedDials.size() > 0) {
 		writer.writeStartElement(QStringLiteral("SpeedDials"));
 
-		QMap<QString, AstCtiSpeedDial*>::const_iterator sdIterator = this->speedDials.constBegin();
-		while (sdIterator != this->speedDials.constEnd()) {
-			AstCtiSpeedDial* speedDial = sdIterator.value();
+		for (AstCtiSpeedDialMap::const_iterator i = this->speedDials.constBegin();
+			 i != this->speedDials.constEnd();
+			 i++) {
+			AstCtiSpeedDial* speedDial = i.value();
 
 			writer.writeStartElement(QStringLiteral("SpeedDial"));
 
@@ -254,8 +289,6 @@ QString AstCtiOperator::toXml(AstCtiSeat* seat)
 									QString::number((int)speedDial->extensionStatus));
 
 			writer.writeEndElement(); // SpeedDial
-
-			sdIterator++;
 		}
 
 		writer.writeEndElement(); // SpeedDials
@@ -264,9 +297,10 @@ QString AstCtiOperator::toXml(AstCtiSeat* seat)
 	if (this->services.size() > 0) {
 		writer.writeStartElement(QStringLiteral("Services"));
 
-		AstCtiServiceRevHash::const_iterator servicesIterator = this->services.constBegin();
-		while (servicesIterator != this->services.constEnd()) {
-			AstCtiService* service = servicesIterator.key();
+		for (AstCtiServiceRevHash::const_iterator i = this->services.constBegin();
+			 i != this->services.constEnd();
+			 i++) {
+			AstCtiService* service = i.key();
 
 			writer.writeStartElement(QStringLiteral("Service"));
 
@@ -275,7 +309,6 @@ QString AstCtiOperator::toXml(AstCtiSeat* seat)
 			writer.writeTextElement(QStringLiteral("ContextType"), service->getContextTypeString());
 
 			writer.writeEndElement(); // Service
-			servicesIterator++;
 		}
 
 		writer.writeEndElement(); // Services

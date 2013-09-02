@@ -191,13 +191,13 @@ void AmiClient::socketDisconnected()
 	QLOG_WARN() << "AmiClient Socket Disconnected";
 }
 
-void AmiClient::socketStateChanged(QAbstractSocket::SocketState socketState)
+void AmiClient::socketStateChanged(const QAbstractSocket::SocketState socketState)
 {
 	Q_UNUSED(socketState);
 //	QLOG_TRACE() << "AmiClient socket state changed:" << this->socketStateToString(socketState);
 }
 
-void AmiClient::socketError(QAbstractSocket::SocketError error)
+void AmiClient::socketError(const QAbstractSocket::SocketError error)
 {    
 	if (error != QAbstractSocket::SocketTimeoutError) {
 		QLOG_ERROR() << "AmiClient Socket Error:" << error << this->localSocket->errorString();
@@ -399,7 +399,8 @@ void AmiClient::bridgeChannels(const QString& uniqueId1, const QString& uniqueId
 //   NULL      - No channels were added to bridge
 //   channel*  - First channel was added to bridge
 //   channel2* - Both channels were added to bridge
-AstCtiChannel* AmiClient::addConfChannelToBridge(AstCtiChannel* channel, const int startFrom) {
+AstCtiChannel* AmiClient::addConfChannelToBridge(AstCtiChannel* const channel,
+												 const int startFrom) {
 	// Number of channels moved from free to bridged channels
 	AstCtiChannel* addedChannel = 0;
 
@@ -847,7 +848,7 @@ void AmiClient::evaluateEvent(const QStringHash& event)
 	} else if (eventName == QStringLiteral("ExtensionStatus")) {
 		const QString channel = event.value(QStringLiteral("Hint"));
 		const int status = event.value(QStringLiteral("Status")).toInt();
-		emit this->amiStatusEvent(AmiEventExtensionStatus, channel, status);
+		emit this->amiStatusEvent(AmiEventExtensionStatus, channel, QStringLiteral(""), status);
 
 		QLOG_DEBUG() << "Received new status"
 					 << AmiClient::extensionStatusToString((AstCtiExtensionStatus)status)
@@ -877,7 +878,7 @@ void AmiClient::evaluateEvent(const QStringHash& event)
 		else
 			return;
 
-		emit this->amiStatusEvent(AmiEventPeerStatus, channel, (int)status);
+		emit this->amiStatusEvent(AmiEventPeerStatus, channel, QStringLiteral(""), (int)status);
 	} else if (eventName == QStringLiteral("PeerEntry")) {
 		// This event occurs when we request peer status with commands
 		// TODO
@@ -946,43 +947,50 @@ void AmiClient::evaluateResponse(const QStringHash& response)
 			{
 				// We trigger AgentStatus event
 				bool paused = cmd->getParameter(QStringLiteral("Paused")) == QStringLiteral("true");
+				QString queue = cmd->getParameter(QStringLiteral("Queue"));
 				AstCtiAgentStatus agentStatus;
 				if (cmd->success || cmd->responseMessage.contains(QStringLiteral("Already there")))
 					agentStatus = paused ? AgentStatusPaused : AgentStatusLoggedIn;
 				else
 					agentStatus = AgentStatusLoginFailed;
 
-				emit this->amiStatusEvent(AmiEventAgentStatus, cmd->channelName, (int)agentStatus);
+				emit this->amiStatusEvent(AmiEventAgentStatus, cmd->channelName,
+										  queue, (int)agentStatus);
 			}
 				break;
 			case AmiActionQueueRemove:
 				// We trigger AgentStatus event
 				// We don't check whether the command succeeded
+			{
+				QString queue = cmd->getParameter(QStringLiteral("Queue"));
 				emit this->amiStatusEvent(AmiEventAgentStatus, cmd->channelName,
-										  (int)AgentStatusLoggedOut);
+										  queue, (int)AgentStatusLoggedOut);
+			}
 
 				break;
 			case AmiActionQueuePause:
 			{
 				// We trigger AgentStatus event
 				bool paused = cmd->getParameter(QStringLiteral("Paused")) == QStringLiteral("true");
+				QString queue = cmd->getParameter(QStringLiteral("Queue"));
 				AstCtiAgentStatus agentStatus;
 				if (cmd->success)
 					agentStatus = paused ? AgentStatusPaused : AgentStatusLoggedIn;
 				else
 					agentStatus = AgentStatusPauseFailed;
 
-				emit this->amiStatusEvent(AmiEventAgentStatus, cmd->channelName, (int)agentStatus);
+				emit this->amiStatusEvent(AmiEventAgentStatus, cmd->channelName,
+										  queue, (int)agentStatus);
 			}
 				break;
 			case AmiActionSipShowPeer:
 				// We trigger PeerStatus event
 				if (cmd->success)
 					emit this->amiStatusEvent(AmiEventPeerStatus, cmd->channelName,
-											  (int)AgentStatusLoggedIn);
+											  QStringLiteral(""), (int)AgentStatusLoggedIn);
 				else
 					emit this->amiStatusEvent(AmiEventPeerStatus, cmd->channelName,
-											  (int)AgentStatusLoginFailed);
+											  QStringLiteral(""), (int)AgentStatusLoginFailed);
 
 				break;
 			default:
@@ -1132,7 +1140,7 @@ QString AmiClient::getEventName(const AmiEvent event) {
 	return eventName;
 }
 
-QString AmiClient::socketStateToString(QAbstractSocket::SocketState socketState)
+QString AmiClient::socketStateToString(const QAbstractSocket::SocketState socketState)
 {
 	//We use a variable to exploit NRVO
 	QString stateName;
@@ -1209,16 +1217,19 @@ QString AmiClient::agentStatusToString(const AstCtiAgentStatus status)
 
 	switch (status) {
 	case AgentStatusLoggedIn:
-		result = QStringLiteral("Loged in");
+		result = QStringLiteral("Logged in");
 		break;
 	case AgentStatusLoggedOut:
-		result = QStringLiteral("Loged out");
+		result = QStringLiteral("Logged out");
+		break;
+	case AgentStatusPaused:
+		result = QStringLiteral("Paused");
 		break;
 	case AgentStatusLoginFailed:
 		result = QStringLiteral("Log-in failed");
 		break;
-	case AgentStatusPaused:
-		result = QStringLiteral("Paused");
+	case AgentStatusPauseFailed:
+		result = QStringLiteral("Pause failed");
 		break;
 	default:
 		result = QStringLiteral("");

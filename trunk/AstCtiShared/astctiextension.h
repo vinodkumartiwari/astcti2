@@ -40,6 +40,7 @@
 #define ASTCTIEXTENSION_H
 
 #include <QMetaType>
+#include <QHash>
 
 //	Value   State            Description
 //	0	    NOT_INUSE        Channel is not in use (free)
@@ -65,7 +66,11 @@ enum AstCtiAgentStatus {
 	AgentStatusLoginFailed, //Agents can't actually have this status, used only for notification
 	AgentStatusPauseFailed //Agents can't actually have this status, used only for notification
 };
+// Reccommended to declare enum as Q_PRIMITIVE_TYPE when used in containers
+Q_DECLARE_TYPEINFO(AstCtiAgentStatus, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(AstCtiAgentStatus)
+
+typedef QHash<QString, AstCtiAgentStatus> AstCtiAgentStatusHash;
 
 struct AstCtiExtension
 {
@@ -73,11 +78,25 @@ struct AstCtiExtension
 	QString               number;
 	QString               name;
 	bool                  canAutoAnswer;
-	AstCtiAgentStatus     agentStatus;
-	QString               userAgent;
 	AstCtiExtensionStatus status;
+	AstCtiAgentStatusHash queues;
+	QString               userAgent;
 };
 
 typedef QList<AstCtiExtension*> AstCtiExtensionList;
+
+struct AstCtiSpeedDial
+{
+	QString               groupName;
+	QString               name;
+	QString               number;
+	quint8                order;
+	bool                  isBlf;
+	AstCtiExtensionStatus extensionStatus;
+};
+
+typedef QMap<QString, AstCtiSpeedDial*> AstCtiSpeedDialMap;
+typedef QSharedPointer<AstCtiSpeedDial> AstCtiSpeedDialPtr;
+typedef QMap<QString, AstCtiSpeedDialPtr> AstCtiSpeedDialPtrMap;
 
 #endif // ASTCTIEXTENSION_H

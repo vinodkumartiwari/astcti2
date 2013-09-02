@@ -82,8 +82,8 @@ void LoginWindow::changeEvent(QEvent* e)
 
 void LoginWindow::showMessage(const QString& message, const bool connectionLost)
 {
-    this->ui->dialogButtonBox->buttons().at(0)->setEnabled(!connectionLost);
-    this->ui->messageLabel->setText(message);
+	this->ui->dialogButtonBox->buttons().at(0)->setEnabled(!connectionLost);
+	this->ui->messageLabel->setText(message);
 }
 
 void LoginWindow::accepting()
@@ -93,7 +93,8 @@ void LoginWindow::accepting()
 						  false);
         this->ui->usernameLineEdit->setFocus();
     } else {
-        this->hide();
+		//this->hide();
+		this->ui->dialogButtonBox->buttons().at(0)->setEnabled(false);
 
         QString pass = this->ui->passwordLineEdit->text();
         if (!pass.isEmpty()) {

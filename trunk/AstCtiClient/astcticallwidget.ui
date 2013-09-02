@@ -48,11 +48,20 @@ QToolButton:pressed , QToolButton:checked {
 </string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>4</number>
+   </property>
+   <property name="topMargin">
+    <number>4</number>
+   </property>
+   <property name="rightMargin">
+    <number>4</number>
+   </property>
+   <property name="bottomMargin">
+    <number>4</number>
+   </property>
    <property name="verticalSpacing">
     <number>0</number>
-   </property>
-   <property name="margin">
-    <number>4</number>
    </property>
    <item row="0" column="1">
     <widget class="QLabel" name="numberLabel">
@@ -95,7 +104,16 @@ QToolButton:pressed , QToolButton:checked {
       <property name="spacing">
        <number>1</number>
       </property>
-      <property name="margin">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item>
@@ -104,7 +122,7 @@ QToolButton:pressed , QToolButton:checked {
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="mainresources.qrc">:/res/callwidget/direction-outgoing.png</pixmap>
+         <pixmap>:/res/callwidget/direction-outgoing.png</pixmap>
         </property>
        </widget>
       </item>
@@ -144,7 +162,7 @@ QToolButton:pressed , QToolButton:checked {
         </property>
         <property name="icon">
          <iconset resource="mainresources.qrc">
-          <normaloff>:/res/callwidget/call-start.png</normaloff>:/res/res/call-start.png</iconset>
+          <normaloff>:/callwidget/res/callwidget/call-start.png</normaloff>:/callwidget/res/callwidget/call-start.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -164,7 +182,7 @@ QToolButton:pressed , QToolButton:checked {
         </property>
         <property name="icon">
          <iconset resource="mainresources.qrc">
-          <normaloff>:/res/callwidget/hold.png</normaloff>:/res/res/hold.png</iconset>
+          <normaloff>:/callwidget/res/callwidget/hold.png</normaloff>:/callwidget/res/callwidget/hold.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -184,7 +202,7 @@ QToolButton:pressed , QToolButton:checked {
         </property>
         <property name="icon">
          <iconset resource="mainresources.qrc">
-          <normaloff>:/res/callwidget/conference.png</normaloff>:/res/res/conference.png</iconset>
+          <normaloff>:/callwidget/res/callwidget/conference.png</normaloff>:/callwidget/res/callwidget/conference.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -204,7 +222,7 @@ QToolButton:pressed , QToolButton:checked {
         </property>
         <property name="icon">
          <iconset resource="mainresources.qrc">
-          <normaloff>:/res/callwidget/transfer.png</normaloff>:/res/res/transfer.png</iconset>
+          <normaloff>:/callwidget/res/callwidget/transfer.png</normaloff>:/callwidget/res/callwidget/transfer.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -224,7 +242,7 @@ QToolButton:pressed , QToolButton:checked {
         </property>
         <property name="icon">
          <iconset resource="mainresources.qrc">
-          <normaloff>:/res/callwidget/call-record.png</normaloff>:/res/res/call-record.png</iconset>
+          <normaloff>:/callwidget/res/callwidget/call-record.png</normaloff>:/callwidget/res/callwidget/call-record.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -244,7 +262,7 @@ QToolButton:pressed , QToolButton:checked {
         </property>
         <property name="icon">
          <iconset resource="mainresources.qrc">
-          <normaloff>:/res/callwidget/contact-new.png</normaloff>:/res/res/contact-new.png</iconset>
+          <normaloff>:/callwidget/res/callwidget/contact-new.png</normaloff>:/callwidget/res/callwidget/contact-new.png</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
@@ -272,7 +290,7 @@ QToolButton:pressed , QToolButton:checked {
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="mainresources.qrc">:/res/callwidget/person.png</pixmap>
+      <pixmap resource="mainresources.qrc">:/callwidget/res/callwidget/person.png</pixmap>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

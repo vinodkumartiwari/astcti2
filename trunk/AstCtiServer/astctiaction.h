@@ -68,13 +68,13 @@ public:
 						  const QString& messageEncoding, QObject* parent = 0);
 	~AstCtiAction();
 
-	int                 getId() const;
-	AstCtiActionOsType  getOsType() const;
-	AstCtiActionType    getActionType() const;
-	const QString&      getDestination() const;
-	const QString&      getParameters() const;
-	const QString&      getMessageEncoding() const;
-	void                setParameters(const QString& newParameters);
+	const int                 getId() const;
+	const AstCtiActionOsType  getOsType() const;
+	const AstCtiActionType    getActionType() const;
+	const QString&            getDestination() const;
+	const QString&            getParameters() const;
+	const QString&            getMessageEncoding() const;
+	void                      setParameters(const QString& newParameters);
 
 	static QString            getActionName(const AstCtiActionType actionType);
 	static AstCtiActionType   parseActionType(const QString& actionTypeString);
@@ -82,6 +82,7 @@ public:
 
 private:
 	Q_DISABLE_COPY(AstCtiAction)
+
 	int                 id;
 	AstCtiActionOsType  osType;
 	AstCtiActionType    actionType;

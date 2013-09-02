@@ -51,24 +51,22 @@ namespace Ui {
 
 class AboutDialog : public QDialog {
     Q_OBJECT
-    Q_DISABLE_COPY(AboutDialog)
 
 public:
-	explicit AboutDialog(QWidget* parent = 0);
+	explicit AboutDialog(const QString& serviceData, QWidget* parent = 0);
     virtual ~AboutDialog();
 
 protected:
 	virtual void changeEvent(QEvent* e);
 
 private:
+	Q_DISABLE_COPY(AboutDialog)
+
 	Ui::AboutDialog* ui;
 
-    void setUpInfoLabel();
-
 private slots:
-    void on_btnShowLicense_clicked();
-    void on_btnClose_clicked();
-    void on_btnAboutQt_clicked();
+	void showLicense();
+	void aboutQt();
 };
 
 #endif // ABOUTDIALOG_H

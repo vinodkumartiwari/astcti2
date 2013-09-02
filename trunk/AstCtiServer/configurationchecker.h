@@ -76,11 +76,13 @@ signals:
 
 private:
 	Q_DISABLE_COPY(ConfigurationChecker)
-	long                readLastModified();
-	QVariant            readSetting(const QString& name, const QVariant& defaultValue);
-	bool                readConfiguration();
-	QString             timestampToString(const long timestamp);
+
+	const long          readLastModified();
+	const QVariant      readSetting(const QString& name, const QVariant& defaultValue);
+	const bool          readConfiguration();
+	const QString       timestampToString(const long timestamp);
 	void                delay(const int secs);
+
 	int                 lastTimeStamp;
 	bool                isRunning;
 };

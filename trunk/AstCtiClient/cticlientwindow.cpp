@@ -50,8 +50,9 @@ CtiClientWindow::CtiClientWindow(AstCtiConfiguration* config) :
 	this->statusMsgNotOK = tr("Conection to server has been lost. Trying to reconnect...");
 	this->pauseErrorMsg = tr("There was an error with pause operation:");
 
+	this->newConfig(config);
+
 	this->canClose = false;
-	this->userName = config->userName;
     this->dragOrigin = QPoint(-1, -1);
 
     this->createTrayIcon();
@@ -74,7 +75,7 @@ void CtiClientWindow::closeEvent(QCloseEvent* e)
     }
 }
 
-bool CtiClientWindow::isValidDrag(QMouseEvent* mouseEvent) const
+bool CtiClientWindow::isValidDrag(QMouseEvent* const mouseEvent) const
 {
     if (!mouseEvent || mouseEvent->modifiers() != Qt::NoModifier)
         return false;
@@ -95,6 +96,46 @@ void CtiClientWindow::createTrayIcon()
      this->trayIcon = new QSystemTrayIcon(icon, this);
 	 this->trayIcon->setToolTip(QString(APP_NAME) + tr(" client ") + QString(APP_VERSION_LONG));
      this->trayIcon->show();
+}
+
+// Returns true if status is the same in all queues, otherwise false
+// Paused and LoggedOut are considered to be the same for this purpose
+bool CtiClientWindow::setAgentStatus(const QString &queue, const QString &channelName,
+									 AstCtiAgentStatus& status)
+{
+	bool allSet = true;
+
+
+	AstCtiExtensionPtr extension;
+	const int listSize = this->config->extensions.size();
+	for (int i = 0; i < listSize; i++) {
+		if (this->config->extensions.at(i)->channelName == channelName) {
+			extension = this->config->extensions.at(i);
+			if (status == AgentStatusLoginFailed || status == AgentStatusPauseFailed)
+				status = extension->queues.value(queue);
+			break;
+		}
+	}
+
+	if (!extension.isNull()) {
+		for (AstCtiAgentStatusHash::iterator i = extension->queues.begin();
+			 i != extension->queues.end();
+			 i++) {
+			if (i.key() == queue) {
+				i.value() = status;
+			} else {
+				if (status == AgentStatusLoggedIn) {
+					if (i.value() != status)
+						allSet = false;
+				} else {
+					if (i.value() != AgentStatusLoggedOut && i.value() != AgentStatusPaused)
+						allSet = false;
+				}
+			}
+		}
+	}
+
+	return allSet;
 }
 
 void CtiClientWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -130,9 +171,9 @@ void CtiClientWindow::showMessage(const QString& message, QSystemTrayIcon::Messa
 
 void CtiClientWindow::newConfig(AstCtiConfiguration* config)
 {
+	this->config = config;
+
 	//TODO
-	this->userName = config->userName;
-	this->canRecord = config->canRecord;
 }
 
 void CtiClientWindow::setStatus(bool status)
@@ -148,9 +189,69 @@ void CtiClientWindow::setStatus(bool status)
     }
 }
 
+void CtiClientWindow::agentStatusChanged(const QString &queue, const QString &channelName,
+										 AstCtiAgentStatus status)
+{
+	switch (status) {
+	case AgentStatusLoggedOut:
+		// This should not happen
+		this->showMessage(tr("Agent logged out from queue '%1'.").arg(queue),
+						  QSystemTrayIcon::Warning);
+		break;
+	case AgentStatusLoggedIn:
+		this->showMessage(tr("Agent logged in successfuly."), QSystemTrayIcon::Information);
+		break;
+	case AgentStatusPaused:
+		this->showMessage(tr("Agent paused successfully."), QSystemTrayIcon::Information);
+		break;
+	case AgentStatusLoginFailed:
+		this->showMessage(tr("Agent log-in to queue '%1' failed due to server error.").arg(queue),
+						  QSystemTrayIcon::Critical);
+		break;
+	case AgentStatusPauseFailed:
+		this->showMessage(tr("Pause request in queue '%1' failed due to server error.").arg(queue),
+						  QSystemTrayIcon::Critical);
+		break;
+	}
+	this->setAgentStatus(queue, channelName, status);
+}
+
+void CtiClientWindow::toggleStartPauseButton(QAbstractButton * const button, const bool paused)
+{
+	if (paused) {
+		button->setToolTip(tr("Start"));
+		button->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/agt_forward.png"))));
+	} else {
+		button->setToolTip(tr("Pause"));
+		button->setIcon(QIcon(QPixmap(QStringLiteral(":/res/res/agt_pause-queue.png"))));
+	}
+	button->setEnabled(true);
+}
+
 void CtiClientWindow::about()
 {
-    AboutDialog aboutDialog;
+	QString serviceData = QStringLiteral("");
+
+	for (QStringHash::const_iterator i = this->config->services.constBegin();
+		 i != this->config->services.constEnd();
+		 i++) {
+		const QString serviceName = i.key();
+		QString serviceType = i.value();
+		if (serviceType == QStringLiteral("Inbound"))
+			serviceType = tr("Inbound");
+		else if (serviceType == QStringLiteral("Outbound"))
+			serviceType = tr("Outbound");
+		else if (serviceType == QStringLiteral("Queue"))
+			serviceType = tr("Queue");
+		serviceData.append(QString("<b>%1</b> - %2").arg(serviceName).arg(serviceType));
+		if (i.value() == QStringLiteral("Queue")) {
+			AstCtiAgentStatus status = this->config->extensions.at(0)->queues.value(serviceName);
+			serviceData.append(QString(" (%1)").arg(agentStatusToString(status)));
+		}
+		serviceData.append(QStringLiteral("<br>"));
+	}
+
+	AboutDialog aboutDialog(serviceData);
     aboutDialog.exec();
 }
 
@@ -190,4 +291,27 @@ void CtiClientWindow::quit(bool skipCheck)
 
         this->close();
     }
+}
+
+QString CtiClientWindow::agentStatusToString(const AstCtiAgentStatus status)
+{
+	//We use a variable to exploit NRVO
+	QString result;
+
+	switch (status) {
+	case AgentStatusLoggedIn:
+		result = tr("Started");
+		break;
+	case AgentStatusLoggedOut:
+		result = tr("Stopped");
+		break;
+	case AgentStatusPaused:
+		result = tr("Paused");
+		break;
+	default:
+		result = QStringLiteral("");
+		break;
+	}
+
+	return result;
 }

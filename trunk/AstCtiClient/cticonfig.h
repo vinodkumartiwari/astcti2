@@ -46,71 +46,17 @@
 #include <QMap>
 #include <QSharedPointer>
 
+#include "astctiextension.h"
+
 typedef QHash<QString, QString> QStringHash;
-
-//	Value   State            Description
-//	0	    NOT_INUSE        Channel is not in use (free)
-//	1	    INUSE            One or more devices are in use
-//	2	    BUSY             All devices are busy
-//	4	    UNAVAILABLE      All devices are unavailable
-//	8	    RINGING          One or more devices are ringing
-enum ExtensionStatus {
-	ExtensionStatusNotInUse = 0,
-	ExtensionStatusInUse = 1,
-	ExtensionStatusBusy = 2,
-	ExtensionStatusUnavailable = 4,
-	ExtensionStatusRinging = 8
-};
-Q_DECLARE_FLAGS(AstCtiExtensionStatus, ExtensionStatus)
-Q_DECLARE_OPERATORS_FOR_FLAGS(AstCtiExtensionStatus)
-Q_DECLARE_METATYPE(AstCtiExtensionStatus)
-
-enum AstCtiAgentStatus {
-	AgentStatusLoggedOut,
-	AgentStatusLoggedIn,
-	AgentStatusPaused,
-	AgentStatusLoginFailed, //Agents can't actually have this status, used only for notification
-	AgentStatusPauseFailed //Agents can't actually have this status, used only for notification
-};
-Q_DECLARE_METATYPE(AstCtiAgentStatus)
-
-struct AstCtiExtension
-{
-	QString               channelName;
-	QString               number;
-	QString               name;
-	bool                  canAutoAnswer;
-	AstCtiAgentStatus     agentStatus;
-	AstCtiExtensionStatus status;
-};
 
 typedef QSharedPointer<AstCtiExtension> AstCtiExtensionPtr;
 typedef QList<AstCtiExtensionPtr> AstCtiExtensionPtrList;
 
-struct AstCtiSpeedDial
-{
-	QString               groupName;
-	QString               name;
-	QString               number;
-	quint8                order;
-	bool                  isBlf;
-	AstCtiExtensionStatus extensionStatus;
-};
-
-typedef QSharedPointer<AstCtiSpeedDial> AstCtiSpeedDialPtr;
-typedef QMap<QString, AstCtiSpeedDialPtr> AstCtiSpeedDialPtrMap;
-
 struct AstCtiConfiguration
 {
 	bool     debug;
-	int      keepAliveInterval;
-	int      compressionLevel;
-	QString  serverHost;
-	quint16  serverPort;
-	int      connectTimeout;
-	quint32  connectRetryInterval;
 	QString  userName;
-	QString  password;
 	QString  fullName;
 	bool     isCallCenter;
 	bool     beginInPause;

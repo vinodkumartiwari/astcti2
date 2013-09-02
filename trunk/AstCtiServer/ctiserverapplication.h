@@ -68,20 +68,22 @@ public:
     ~CtiServerApplication();
     static CtiServerApplication* instance();
 
-	bool                  getCanStart();
-	bool                  start();
+	const bool            getCanStart();
+	const bool            start();
 
 public slots:
 	void                  reloadSettings(AstCtiConfiguration* newConfig);
 
 private:
 	Q_DISABLE_COPY(CtiServerApplication)
+
+	const bool            buildCoreTcpServer(AstCtiConfiguration* const config);
+	const QString         readDatabaseVersion();
+	const bool            createDatabaseConnection(const QString& iniFilePath);
+
 	bool                  canStart;
 	CoreTcpServer*        coreTcpServer;
 	ConfigurationChecker* configChecker;
-	bool                  buildCoreTcpServer(AstCtiConfiguration* config);
-	QString               readDatabaseVersion();
-	bool                  createDatabaseConnection(const QString& iniFilePath);
 };
 
 #endif // CTISERVERAPPLICATION_H

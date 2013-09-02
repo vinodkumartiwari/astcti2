@@ -87,24 +87,24 @@ public:
         CallStateOnHold
     };
 
-	QString callerIdNumber() const;
-	QString callerIdName() const;
-	QString remarks() const;
-    CallDirection callDirection() const;
-    CallState callState() const;
-    bool canAnswer() const;
-    bool canHold() const;
-    bool canConference() const;
-    bool canTransfer() const;
-    bool canRecord() const;
-    bool canEditContact() const;
+	const QString callerIdNumber() const;
+	const QString callerIdName() const;
+	const QString remarks() const;
+	const CallDirection callDirection() const;
+	const CallState callState() const;
+	const bool canAnswer() const;
+	const bool canHold() const;
+	const bool canConference() const;
+	const bool canTransfer() const;
+	const bool canRecord() const;
+	const bool canEditContact() const;
 
 	static CallState callStateFromString(const QString& state);
 
 public slots:
-    void setCallerIdNumber(const QString& cid);
-    void setCallerIdName(const QString& cid);
-    void setRemarks(const QString& rems);
+	void setCallerIdNumber(const QString& callerIdNumber);
+	void setCallerIdName(const QString& callerIdName);
+	void setRemarks(const QString& remarks);
     void setCallDirection(const CallDirection direction);
     void setCallState(const CallState state);
     void setCanAnswer(const bool value);
@@ -128,6 +128,13 @@ protected:
 private:
 	Q_DISABLE_COPY(AstCtiCallWidget)
 
+	void enableAnswer();
+	void enableHold();
+	void enableConference();
+	void enableTransfer();
+	void enableRecord();
+	void enableEditContact();
+
 	Ui::AstCtiCallWidget* ui;
 
     CallDirection m_callDirection;
@@ -138,13 +145,6 @@ private:
     bool m_canTransfer;
     bool m_canRecord;
     bool m_canEditContact;
-
-    void enableAnswer();
-    void enableHold();
-    void enableConference();
-    void enableTransfer();
-    void enableRecord();
-    void enableEditContact();
 
 private slots:
     void editContactClicked();

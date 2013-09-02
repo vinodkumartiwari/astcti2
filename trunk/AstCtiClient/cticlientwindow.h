@@ -65,44 +65,50 @@ public slots:
 	virtual void about();
 	virtual void minimizeToTray();
 	virtual void placeCall();
-	virtual void pause() = 0;
+	virtual void agentStartPause() = 0;
 	virtual void quit(bool skipCheck);
 
 	// Signals from CtiClientApplication
 	virtual void showMessage(const QString& message, QSystemTrayIcon::MessageIcon severity);
-    virtual void setStatus(bool status);
+	virtual void setStatus(bool status);
 	virtual void newConfig(AstCtiConfiguration* config);
+	virtual void agentStatusChanged(const QString& queue, const QString& channelName,
+									AstCtiAgentStatus status);
 	virtual void handleChannelEvent(AstCtiChannel* channel) = 0;
-	virtual void agentStatusChanged(const QString& channelName, const AstCtiAgentStatus status) = 0;
 
 signals:
-	void pauseRequest(const QString& channelName);
-    void changePassword();
+	void startRequest(const QString& queue, const QString& channelName);
+	void pauseRequest(const QString& queue, const QString& channelName);
+	void changePassword();
     void logOff();
 
 protected:
-	QString statusMsgOK;
-	QString statusMsgNotOK;
-	QString pauseErrorMsg;
-
-	void closeEvent(QCloseEvent* e);
-
-    bool canClose;
-	bool canRecord;
-    QPoint dragOrigin;
-    QString userName;
-    QSystemTrayIcon* trayIcon;
-	QHash<QString, AstCtiChannel*> activeChannels;
-
-    virtual bool isValidDrag(QMouseEvent* mouseEvent) const;
-    virtual void createTrayIcon();
-    virtual void connectSlots() = 0;
+	virtual bool isValidDrag(QMouseEvent* const mouseEvent) const;
+	virtual void createTrayIcon();
+	virtual bool setAgentStatus(const QString& queue, const QString& channelName,
+								AstCtiAgentStatus& status);
+	virtual void connectSlots() = 0;
 	virtual void enableControls(const bool enable) = 0;
-    virtual void writeSettings() = 0;
-    virtual void readSettings() = 0;
+	virtual void writeSettings() = 0;
+	virtual void readSettings() = 0;
+	virtual void toggleStartPauseButton(QAbstractButton* const button, const bool paused);
+
+	static QString agentStatusToString(const AstCtiAgentStatus status);
+
+	void         closeEvent(QCloseEvent* e);
+
+	QString              statusMsgOK;
+	QString              statusMsgNotOK;
+	QString              pauseErrorMsg;
+
+	bool                 canClose;
+	QPoint               dragOrigin;
+	AstCtiChannelHash    activeChannels;
+	QSystemTrayIcon*     trayIcon;
+	AstCtiConfiguration* config;
 
 protected slots:
-    virtual void iconActivated(QSystemTrayIcon::ActivationReason reason);
+	virtual void iconActivated(const QSystemTrayIcon::ActivationReason reason);
 };
 
 #endif // CTICLIENTWINDOW_H

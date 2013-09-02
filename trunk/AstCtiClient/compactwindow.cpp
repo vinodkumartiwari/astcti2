@@ -47,8 +47,7 @@
 #include "managerwindow.h"
 
 CompactWindow::CompactWindow(AstCtiConfiguration* config) :
-	CtiClientWindow(config),
-    ui(new Ui::CompactWindow)
+	CtiClientWindow(config), ui(new Ui::CompactWindow)
 {
 	this->ui->setupUi(this);
 
@@ -65,9 +64,9 @@ CompactWindow::CompactWindow(AstCtiConfiguration* config) :
     this->ui->statusLabel->installEventFilter(this);
     this->ui->sizeLabel->installEventFilter(this);
 
-	this->channelName = config->extensions.at(0)->channelName;
 	this->paused = false;
 
+	this->newConfig(config);
 	this->enableControls(false);
     this->connectSlots();
     this->readSettings();
@@ -76,6 +75,13 @@ CompactWindow::CompactWindow(AstCtiConfiguration* config) :
 CompactWindow::~CompactWindow()
 {
     delete ui;
+}
+
+void CompactWindow::newConfig(AstCtiConfiguration* config)
+{
+	CtiClientWindow::newConfig(config);
+
+	this->extension = config->extensions.at(0);
 }
 
 void CompactWindow::changeEvent(QEvent* e)
@@ -131,11 +137,11 @@ void CompactWindow::connectSlots()
 	connect(this->ui->aboutButton, SIGNAL(clicked()),
 			this, SLOT(about()));
 	connect(this->ui->startPauseButton, SIGNAL(clicked()),
-			this, SLOT(pause()));
+			this, SLOT(agentStartPause()));
 	connect(this->ui->minimizeButton, SIGNAL(clicked()),
 			this, SLOT(minimizeToTray()));
-	connect(this->ui->passwordButton, SIGNAL(clicked())
-			, this, SIGNAL(changePassword()));
+	connect(this->ui->passwordButton, SIGNAL(clicked()),
+			this, SIGNAL(changePassword()));
 	connect(this->ui->quitButton, SIGNAL(clicked(bool)),
 			this, SLOT(quit(bool)));
 	connect(this->trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
@@ -147,22 +153,13 @@ void CompactWindow::enableControls(const bool enable)
 	this->ui->callComboBox->setEditable(enable);
 	this->ui->callButton->setEnabled(enable);
 	this->ui->passwordButton->setEnabled(enable);
-	if (enable) {
-		this->ui->startPauseButton->setToolTip(tr("Pause"));
-		this->ui->startPauseButton->setIcon(
-					QIcon(QPixmap(QStringLiteral(":/res/res/agt_pause-queue.png"))));
-	} else {
-		this->ui->startPauseButton->setToolTip(tr("Start"));
-		this->ui->startPauseButton->setIcon(
-					QIcon(QPixmap(QStringLiteral(":/res/res/agt_forward.png"))));
-	}
 }
 
 void CompactWindow::readSettings()
 {
     QSettings settings(APP_NAME);
 
-    settings.beginGroup("CompactWindow." + this->userName);
+	settings.beginGroup("CompactWindow." + this->config->userName);
 	this->restoreGeometry(settings.value(QStringLiteral("geometry")).toByteArray());
     settings.endGroup();
 }
@@ -171,9 +168,34 @@ void CompactWindow::writeSettings()
 {
     QSettings settings(APP_NAME);
 
-    settings.beginGroup("CompactWindow." + this->userName);
+	settings.beginGroup("CompactWindow." + this->config->userName);
 	settings.setValue(QStringLiteral("geometry"), this->saveGeometry());
     settings.endGroup();
+}
+
+// Returns true if status is the same in all queues, otherwise false
+// Paused and LoggedOut are considered to be the same for this purpose
+bool CompactWindow::setAgentStatus(const QString &queue, const QString &channelName,
+								   AstCtiAgentStatus& status)
+{
+	bool allSet = CtiClientWindow::setAgentStatus(queue, channelName, status);
+
+	// If we are logged-in even in one queue, we consider us to be "started"
+	switch (status) {
+	case AgentStatusLoggedIn:
+		this->toggleStartPauseButton(this->ui->startPauseButton, false);
+		this->paused = false;
+		break;
+	case AgentStatusLoggedOut:
+	case AgentStatusPaused:
+		if (allSet) {
+			this->toggleStartPauseButton(this->ui->startPauseButton, true);
+			this->paused = true;
+		}
+		break;
+	}
+
+	return allSet;
 }
 
 void CompactWindow::setStatus(bool status)
@@ -195,41 +217,30 @@ void CompactWindow::handleChannelEvent(AstCtiChannel* channel)
 	//TODO
 }
 
-void CompactWindow::pause()
+void CompactWindow::agentStartPause()
 {
 	this->ui->startPauseButton->setEnabled(false);
 
-	emit this->pauseRequest(this->channelName);
+	//Send start/pause request for all queues this operator belongs to
+	for (AstCtiAgentStatusHash::const_iterator i = this->extension->queues.constBegin();
+		 i != this->extension->queues.constEnd();
+		 i++) {
+		const QString queue = i.key();
+		if (this->paused)
+			if (i.value() == AgentStatusPaused)
+				emit this->pauseRequest(queue, this->extension->channelName);
+			else
+				emit this->startRequest(queue, this->extension->channelName);
+		else
+			if (i.value() == AgentStatusLoggedIn)
+				emit this->pauseRequest(queue, this->extension->channelName);
+	}
 }
 
-void CompactWindow::agentStatusChanged(const QString& channelName, const AstCtiAgentStatus status) {
-	if (this->channelName != channelName)
+void CompactWindow::agentStatusChanged(const QString& queue, const QString& channelName,
+									   AstCtiAgentStatus status) {
+	if (this->extension->channelName != channelName)
 		return;
 
-	switch (status) {
-	case AgentStatusLoggedOut:
-		this->showMessage(tr("Agent logged out."), QSystemTrayIcon::Warning);
-		this->enableControls(false);
-		break;
-	case AgentStatusLoggedIn:
-		this->showMessage(tr("Agent logged in successfuly."), QSystemTrayIcon::Information);
-		this->enableControls(true);
-		break;
-	case AgentStatusPaused:
-		this->showMessage(tr("Agent paused successfully."), QSystemTrayIcon::Information);
-		this->ui->startPauseButton->setChecked(true);
-		this->ui->startPauseButton->setEnabled(true);
-		break;
-	case AgentStatusLoginFailed:
-		this->showMessage(tr("Agent log-in failed due to server error."),
-						  QSystemTrayIcon::Critical);
-		this->enableControls(false);
-		break;
-	case AgentStatusPauseFailed:
-		this->showMessage(tr("Pause request failed due to server error."),
-						  QSystemTrayIcon::Critical);
-		this->ui->startPauseButton->toggle();
-		this->ui->startPauseButton->setEnabled(true);
-		break;
-	}
+	CtiClientWindow::agentStatusChanged(queue, channelName, status);
 }

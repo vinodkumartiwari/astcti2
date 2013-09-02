@@ -52,6 +52,7 @@ namespace Ui {
 
 class PasswordWindow : public QDialog {
     Q_OBJECT
+
 public:
     PasswordWindow(QWidget* parent = 0);
     ~PasswordWindow();
